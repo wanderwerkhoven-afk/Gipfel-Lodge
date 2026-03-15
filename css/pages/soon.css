@@ -1,6 +1,7 @@
 /* Page specific: Coming Soon */
 .soon {
-  height: 100vh;
+  height: auto; /* Change from 100vh to auto to allow for padding */
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,6 +9,7 @@
   overflow: hidden;
   color: var(--color-white);
   text-align: center;
+  padding-bottom: 120px; /* Space for the mountain divider to overlap */
 }
 
 .soon-bg {

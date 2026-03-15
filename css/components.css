@@ -60,7 +60,7 @@
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 2;
 }
 
@@ -72,8 +72,8 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(5px);
   color: #fff;
   font-size: 32px;
@@ -85,12 +85,17 @@
 }
 
 .hero-nav:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-color: #fff;
 }
 
-.hero-nav.prev { left: 30px; }
-.hero-nav.next { right: 30px; }
+.hero-nav.prev {
+  left: 30px;
+}
+
+.hero-nav.next {
+  right: 30px;
+}
 
 .hero-dots {
   position: absolute;
@@ -128,7 +133,7 @@
   margin-bottom: 24px;
   font-weight: 400;
   letter-spacing: var(--letter-spacing-heading);
-  text-shadow: 0 4px 30px rgba(0,0,0,0.2);
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
 }
 
 .hero-btn {
@@ -470,10 +475,11 @@ header.topbar .topbar-book:hover {
 
 /* ========== FOOTER ========== */
 .footer {
+  position: relative;
   background-color: var(--color-primary);
   color: var(--color-white);
   padding: 80px 0 40px;
-  margin-top: 100px;
+  margin-top: 0; /* Removed margin to allow seamless overlap of mountains */
 }
 
 /* ========== HIGHLIGHTS SECTION ========== */
@@ -501,8 +507,8 @@ header.topbar .topbar-book:hover {
 .highlight-card {
   text-align: center;
   padding: 40px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .highlight-icon {
@@ -524,6 +530,34 @@ header.topbar .topbar-book:hover {
   .highlights-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+.footer-divider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 12vw;
+  min-height: 80px;
+  max-height: 200px;
+  transform: translateY(-99%);
+  pointer-events: none;
+  z-index: 1;
+  /* The mountains themselves should be the primary color */
+  background-color: var(--color-primary);
+  /* The mask now defines the 'cutout' area above the mountains */
+  -webkit-mask-image: url('../assets/devider-mountain.svg');
+  mask-image: url('../assets/devider-mountain.svg');
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center bottom;
+  mask-position: center bottom;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.footer-divider-inner {
+  display: none; /* No longer needed with this approach */
 }
 
 .footer-grid {
