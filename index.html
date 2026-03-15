@@ -189,28 +189,109 @@
       </div>
     </section>
 
-    <!-- HIGHLIGHTS -->
-    <section class="highlights-section">
-        <div class="container">
-            <div class="reveal highlights-header">
-                <h2 data-i18n="why-title">Warum Gipfel Lodge?</h2>
+    <!-- HIGHLIGHTS (Premium Amenities) -->
+    <section class="amenities-bar">
+        <div class="container amenities-grid">
+            <div class="reveal amenity-item">
+                <img src="assets/icon-sauna.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/sauna.png'">
+                <span data-i18n="amenity-sauna">Privé Sauna</span>
             </div>
-            <div class="highlights-grid">
-                <div class="reveal highlight-card">
-                    <img src="assets/icon-food.png" alt="" class="highlight-icon">
-                    <h3 data-i18n="feature-1-title">Exklusivität</h3>
-                    <p data-i18n="feature-1-text">Durchdacht gestaltet für maximalen Komfort en alpinen Stil.</p>
+            <div class="reveal amenity-item" style="transition-delay: 0.1s;">
+                <img src="assets/icon-wine.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/wine-glass.png'">
+                <span data-i18n="amenity-wine">Wijnkelder</span>
+            </div>
+            <div class="reveal amenity-item" style="transition-delay: 0.2s;">
+                <img src="assets/icon-parking.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/garage.png'">
+                <span data-i18n="amenity-parking">Garage & E-Lader</span>
+            </div>
+            <div class="reveal amenity-item" style="transition-delay: 0.3s;">
+                <img src="assets/icon-wifi.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/wi-fi.png'">
+                <span data-i18n="amenity-wifi">High-speed Wi-Fi</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE SUITE LIFE -->
+    <section class="suite-life">
+        <div class="container suite-grid">
+            <div class="reveal suite-image">
+                <img src="assets/pictures/livingroom.png" alt="Suite Impression">
+            </div>
+            <div class="reveal suite-content">
+                <span class="intro-tag" data-i18n="suite-tag">Living in Style</span>
+                <h2 data-i18n="suite-title">The Suite Life</h2>
+                <p data-i18n="suite-text">Genießen Sie 135m² puren Luxus...</p>
+                <ul class="suite-features">
+                    <li data-i18n="suite-f1">Groot terras met panoramisch uitzicht</li>
+                    <li data-i18n="suite-f2">Moderne open keuken & haard</li>
+                    <li data-i18n="suite-f3">4 stijlvolle slaapkamers</li>
+                </ul>
+                <a href="#lodge" class="nav-link-lodge" data-lang-switch="lodge" data-i18n="suite-link">Zur Lodge-Tour</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ALPINE EXPERIENCES -->
+    <section class="experience-section">
+        <div class="container">
+            <div class="reveal section-center">
+                <span class="intro-tag" data-i18n="exp-tag">Your Adventure</span>
+                <h2 data-i18n="exp-title">Alpine Experiences</h2>
+            </div>
+            <div class="experience-grid">
+                <div class="reveal exp-card">
+                    <div class="exp-img">
+                        <img src="assets/pictures/winter-outside.png" alt="Winter">
+                    </div>
+                    <div class="exp-overlay">
+                        <h3 data-i18n="exp-winter-title">Winter Wonderland</h3>
+                        <p data-i18n="exp-winter-text">Direkter Zugang zum Skigebiet...</p>
+                        <a href="#activities" class="exp-link" data-i18n="exp-link">Entdecken</a>
+                    </div>
                 </div>
-                <div class="reveal highlight-card" style="transition-delay: 0.1s;">
-                    <img src="assets/icon-sofa.png" alt="" class="highlight-icon">
-                    <h3 data-i18n="feature-2-title">Privatsphäre</h3>
-                    <p data-i18n="feature-2-text">Ideal voor Families, Freunde of exklusive Retreats.</p>
+                <div class="reveal exp-card" style="transition-delay: 0.2s;">
+                    <div class="exp-img">
+                        <img src="assets/pictures/summer-outside.png" alt="Summer">
+                    </div>
+                    <div class="exp-overlay">
+                        <h3 data-i18n="exp-summer-title">Summer Serenity</h3>
+                        <p data-i18n="exp-summer-text">Bergwandern und Alpenglück...</p>
+                        <a href="#activities" class="exp-link" data-i18n="exp-link">Entdecken</a>
+                    </div>
                 </div>
-                <div class="reveal highlight-card" style="transition-delay: 0.2s;">
-                    <img src="assets/icon-location.png" alt="" class="highlight-icon">
-                    <h3 data-i18n="feature-3-title">Ganzjährig</h3>
-                    <p data-i18n="feature-3-text">Skifahren, Wandern of Wellness – zu jeder Jahreszeit.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- GUEST IMPRESSIONS -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="reveal testimonial-content">
+                <span class="quote-icon">“</span>
+                <p class="testimonial-text" data-i18n="testi-text">"Ein unvergesslicher Aufenthalt..."</p>
+                <cite class="testimonial-author" data-i18n="testi-author">— Familie Müller, Berlin</cite>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOCATION HIGHLIGHT -->
+    <section class="location-section">
+        <div class="container location-grid">
+            <div class="reveal location-content">
+                <span class="intro-tag" data-i18n="loc-tag">Central & Quiet</span>
+                <h2 data-i18n="loc-title">Eben im Pongau</h2>
+                <p data-i18n="loc-text">Zentral gelegen in der Ski Amadé...</p>
+                <div class="loc-details">
+                    <div class="loc-item">
+                        <strong data-i18n="loc-ski">Ski Amadé:</strong> 8 min
+                    </div>
+                    <div class="loc-item">
+                        <strong data-i18n="loc-shop">Supermarkt:</strong> 5 min
+                    </div>
                 </div>
+            </div>
+            <div class="reveal location-map">
+                <img src="assets/pictures/outside-view-winter.jpg" alt="Local Area" style="border-radius: 8px;">
             </div>
         </div>
     </section>

@@ -482,6 +482,284 @@ header.topbar .topbar-book:hover {
   margin-top: 0; /* Removed margin to allow seamless overlap of mountains */
 }
 
+/* ========== AMENITIES BAR ========== */
+.amenities-bar {
+  padding: 40px 0;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  text-align: center;
+}
+
+.amenity-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.amenity-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.amenity-item span {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+
+/* ========== SUITE LIFE ========== */
+.suite-life {
+  padding: var(--section-padding-fluid);
+  background-color: var(--color-background);
+}
+
+.suite-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.suite-image img {
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.suite-content h2 {
+  font-size: var(--h2-size);
+  margin: 16px 0 24px;
+}
+
+.suite-text {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 32px;
+}
+
+.suite-features {
+  list-style: none;
+  margin-bottom: 40px;
+}
+
+.suite-features li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 12px;
+  color: var(--color-text-main);
+}
+
+.suite-features li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+}
+
+.nav-link-lodge {
+  display: inline-block;
+  padding: 12px 32px;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.nav-link-lodge:hover {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+/* ========== EXPERIENCE GRID ========== */
+.experience-section {
+  padding: var(--section-padding-fluid);
+  background: #fdfdfd;
+}
+
+.section-center {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.experience-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.exp-card {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.exp-img {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.exp-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.exp-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(32, 48, 61, 0.9), transparent 70%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px;
+  color: var(--color-white);
+  transition: background 0.3s ease;
+}
+
+.exp-card:hover .exp-img {
+  transform: scale(1.05);
+}
+
+.exp-overlay h3 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.exp-overlay p {
+  opacity: 0.8;
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+
+.exp-link {
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exp-link::after {
+  content: '→';
+}
+
+/* ========== TESTIMONIALS ========== */
+.testimonials {
+  padding: 120px 0;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  text-align: center;
+}
+
+.testimonial-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quote-icon {
+  font-family: var(--font-heading);
+  font-size: 5rem;
+  color: var(--color-accent);
+  display: block;
+  line-height: 1;
+  margin-bottom: -20px;
+  opacity: 0.5;
+}
+
+.testimonial-text {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-style: italic;
+  line-height: 1.4;
+  margin-bottom: 30px;
+}
+
+.testimonial-author {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-accent);
+}
+
+/* ========== LOCATION ========== */
+.location-section {
+  padding: var(--section-padding-fluid);
+}
+
+.location-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.location-content h2 {
+  font-size: var(--h2-size);
+  margin: 16px 0 24px;
+}
+
+.location-content p {
+  color: var(--color-text-muted);
+  margin-bottom: 32px;
+}
+
+.loc-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loc-item {
+  font-size: 1.1rem;
+}
+
+.loc-item strong {
+  margin-right: 8px;
+}
+
+@media (max-width: 1024px) {
+  .suite-grid, .location-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .amenities-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .experience-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .exp-card {
+    height: 400px;
+  }
+  
+  .testimonial-text {
+    font-size: 1.5rem;
+  }
+}
+
 /* ========== HIGHLIGHTS SECTION ========== */
 .highlights-section {
   padding: 100px 0;
