@@ -1,0 +1,98 @@
+/* =========================================================
+   GIPFEL LODGE - DESIGN TOKENS (BASE.CSS)
+   ========================================================= */
+
+:root {
+  /* ========== COLORS (Kaiserlodge Inspired Palette) ========== */
+  --color-primary: #20303D;      /* Deep Slate / Navy */
+  --color-secondary: #8B5E3C;    /* Refined Old Wood */
+  --color-accent: #C5A059;       /* Brushed Gold */
+  --color-accent-2: #78868A;     /* Mountain Mist (Sophisticated Blue-Grey) */
+  --color-background: #FAF9F6;  /* Premium Warm White */
+  
+  --color-text-main: #20303D;
+  --color-text-muted: rgba(32, 48, 61, 0.7);
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* ========== GLASSMORPHISM (Subtle) ========== */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 15px;
+
+  /* ========== TYPOGRAPHY ========== */
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+  --letter-spacing-heading: 0.02em;
+  --letter-spacing-nav: 0.15em;
+
+  /* ========== LAYOUT ========== */
+  /* ========== LAYOUT ========== */
+  --container-max: 1400px;
+  --header-height: 80px;
+
+  /* ========== RESPONSIVE TOKENS (FLUID) ========== */
+  --h1-size: clamp(2.5rem, 8vw, 6.5rem);
+  --h2-size: clamp(2rem, 6vw, 4rem);
+  --h3-size: clamp(1.5rem, 4vw, 2.5rem);
+  --body-size: clamp(1rem, 1.5vw, 1.15rem);
+  --section-padding-fluid: clamp(60px, 8vw, 120px) 0;
+  --gap-fluid: clamp(20px, 5vw, 80px);
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --container-max: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: 70px;
+  }
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-main);
+  background-color: var(--color-background);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.container {
+  width: 92%; /* Immediate "active" shrinking */
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+}

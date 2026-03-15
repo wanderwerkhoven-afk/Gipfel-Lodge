@@ -1,0 +1,485 @@
+<!-- ============================================================
+     TABLE OF CONTENTS
+     ============================================================
+     1.  HEAD
+         1.1  Meta Tags & Fonts
+         1.2  Stylesheets (Variables, Components, Pages)
+         1.3  Page-specific Styles (SPA logic)
+
+     2.  BODY
+         2.1  SPLASH SCREEN (Entry Animation)
+         2.2  HEADER (Navigation Bar)
+         2.3  MAIN: Pages (Home, Lodge, Activities, Genuss, Booking)
+         2.4  FOOTER (Shared Footer)
+
+     3.  SCRIPTS
+         3.1  Utilities (Scroll, i18n)
+         3.2  Components (Carousels, Lightbox)
+         3.3  Core (Entry, Router)
+     ============================================================ -->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gipfel Lodge | Alpiner Luxus & Raum</title>
+  
+  <!-- 1.1 FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- 1.2 STYLESHEETS -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/components/splash.css" />
+  <link rel="stylesheet" href="css/pages/home.css" />
+  <link rel="stylesheet" href="css/pages/lodge.css" />
+  <link rel="stylesheet" href="css/pages/soon.css" />
+
+  <!-- 1.3 SPA LOGIC STYLES -->
+  <style>
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.8s ease-out; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LIGHTBOX MODAL (Shared) -->
+  <div id="lightboxModal" class="lightbox-modal">
+    <div class="lightbox-content">
+      <button class="lightbox-close" aria-label="Schließen">×</button>
+      <button class="lightbox-nav lightbox-prev" aria-label="Vorheriges Foto">‹</button>
+      <img class="lightbox-image" src="" alt="">
+      <button class="lightbox-nav lightbox-next" aria-label="Nächstes Foto">›</button>
+      <div class="lightbox-counter">
+        <span class="lightbox-current">1</span> / <span class="lightbox-total">21</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.1 SPLASH SCREEN -->
+  <div id="splash-screen">
+    <div class="splash-logo-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="gipfel-logo-svg">
+        <path class="line mountain-1" d="M 65 210 L 160 50 L 220 145" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        <path class="line mountain-2" d="M 180 145 L 240 50 L 335 210" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        <g class="stars">
+          <path d="M 155 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+          <path d="M 185 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+          <path d="M 215 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+          <path d="M 245 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+          <text x="265" y="190" font-size="28" class="text" style="text-transform: none; fill: currentColor;">s</text>
+        </g>
+        <text x="65" y="270" text-anchor="start" font-size="41" font-weight="700" letter-spacing="1" textLength="270" lengthAdjust="spacing" class="text" style="text-transform: uppercase; fill: currentColor;">Gipfel Lodge</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 2.2 HEADER (Shared) -->
+  <header class="topbar">
+    <div class="topbar-inner">
+
+      <!-- Left: 9-dot menu toggle -->
+      <button class="topbar-dots" aria-label="Menu" aria-expanded="false">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8"  cy="8"  r="4" fill="currentColor"/>
+          <circle cx="20" cy="8"  r="4" fill="currentColor"/>
+          <circle cx="32" cy="8"  r="4" fill="currentColor"/>
+          <circle cx="8"  cy="20" r="4" fill="currentColor"/>
+          <circle cx="20" cy="20" r="4" fill="currentColor"/>
+          <circle cx="32" cy="20" r="4" fill="currentColor"/>
+          <circle cx="8"  cy="32" r="4" fill="currentColor"/>
+          <circle cx="20" cy="32" r="4" fill="currentColor"/>
+          <circle cx="32" cy="32" r="4" fill="currentColor"/>
+        </svg>
+      </button>
+
+      <!-- Center: logo -->
+      <div class="topbar-center">
+        <a class="topbar-logo" href="#home">
+          <img src="assets/logo-Topbar.png" alt="Gipfel Lodge" />
+        </a>
+      </div>
+
+      <!-- Right: lang + actions -->
+      <div class="topbar-actions">
+        <div class="lang-dropdown">
+          <button class="lang-toggle" aria-haspopup="true" aria-expanded="false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </button>
+          <div class="lang-menu">
+            <a href="#" class="lang-link" data-lang-switch="de">DEUTSCH</a>
+            <a href="#" class="lang-link" data-lang-switch="en">ENGLISH</a>
+            <a href="#" class="lang-link" data-lang-switch="nl">NEDERLANDS</a>
+          </div>
+        </div>
+        <a class="topbar-book" href="#booking" data-i18n="nav-book-short">BOOK</a>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="mobile-toggle" aria-label="Menu" aria-expanded="false">
+        <span class="hamburger"></span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- Mobile nav drawer (moved outside header for better isolation) -->
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="menu-close" aria-label="Close menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <a class="menu-link is-active" href="#home" data-i18n="nav-home">HOME</a>
+    <a class="menu-link" href="#lodge" data-i18n="nav-lodge">DIE LODGE</a>
+    <a class="menu-link" href="#activities" data-i18n="nav-activities">AKTIVITÄTEN</a>
+    <a class="menu-link" href="#enjoyment" data-i18n="nav-enjoyment">GENUSS</a>
+    <a class="menu-link" href="#booking" data-i18n="nav-book">JETZT BUCHEN</a>
+  </nav>
+
+  <!-- 2.3 MAIN: HOME PAGE -->
+  <main id="home-page" class="page active">
+    <!-- HERO -->
+    <section class="hero" aria-label="Welcome Hero">
+      <div class="hero-carousel">
+        <div class="hero-slide active"><img src="assets/pictures/winter-outside.png" alt="Winter View"></div>
+        <div class="hero-slide"><img src="assets/pictures/summer-outside.png" alt="Summer View"></div>
+        <div class="hero-slide"><img src="assets/pictures/livingroom.png" alt="Living Room"></div>
+      </div>
+
+      <!-- CAROUSEL CONTROLS -->
+      <button class="hero-nav prev" aria-label="Vorheriges Bild">‹</button>
+      <button class="hero-nav next" aria-label="Nächstes Bild">›</button>
+      <div class="hero-dots"></div>
+
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <div class="reveal">
+            <span class="intro-tag" style="color: white;" data-i18n="hero-welcome">Willkommen im</span>
+            <h1 class="hero-title" data-i18n="hero-title">Gipfel Lodge</h1>
+            <p style="font-size: 1.2rem; letter-spacing: 0.1em; text-transform: uppercase;" data-i18n="hero-subtitle">Exklusives Wohnerlebnis in den Alpen</p>
+            <a href="#booking" class="hero-btn" data-i18n="hero-btn">Jetzt Entdecken</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTRO -->
+    <section class="intro">
+      <div class="container intro-grid">
+        <div class="reveal">
+          <span class="intro-tag" data-i18n="intro-tag">Alpine Elegance</span>
+          <h2 class="intro-title" data-i18n="intro-title">Zeitloser Charme, moderner Komfort</h2>
+        </div>
+        <div class="reveal" style="transition-delay: 0.2s;">
+          <p class="intro-text" data-i18n="intro-text-1">Hoch oben in den österreichischen Alpen gelegen, ist die Gipfel Lodge een ruhiger Rückzugsort...</p>
+          <p class="intro-text" style="margin-top: 24px;" data-i18n="intro-text-2">Ob Entspannung, Abenteuer oder wertvolle gemeinsame Zeit – wij bieden u de ideale omgeving...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HIGHLIGHTS -->
+    <section class="highlights-section">
+        <div class="container">
+            <div class="reveal highlights-header">
+                <h2 data-i18n="why-title">Warum Gipfel Lodge?</h2>
+            </div>
+            <div class="highlights-grid">
+                <div class="reveal highlight-card">
+                    <img src="assets/icon-food.png" alt="" class="highlight-icon">
+                    <h3 data-i18n="feature-1-title">Exklusivität</h3>
+                    <p data-i18n="feature-1-text">Durchdacht gestaltet für maximalen Komfort en alpinen Stil.</p>
+                </div>
+                <div class="reveal highlight-card" style="transition-delay: 0.1s;">
+                    <img src="assets/icon-sofa.png" alt="" class="highlight-icon">
+                    <h3 data-i18n="feature-2-title">Privatsphäre</h3>
+                    <p data-i18n="feature-2-text">Ideal voor Families, Freunde of exklusive Retreats.</p>
+                </div>
+                <div class="reveal highlight-card" style="transition-delay: 0.2s;">
+                    <img src="assets/icon-location.png" alt="" class="highlight-icon">
+                    <h3 data-i18n="feature-3-title">Ganzjährig</h3>
+                    <p data-i18n="feature-3-text">Skifahren, Wandern of Wellness – zu jeder Jahreszeit.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+  </main>
+
+  <!-- 2.4 MAIN: LODGE PAGE -->
+  <main id="lodge-page" class="page">
+    <!-- PROPERTY GALLERY -->
+    <section class="property-gallery" aria-label="Fotos der Gipfel Lodge">
+      <div class="gallery-scroll-container">
+        <div class="gallery-grid">
+          <div class="gallery-item"><img src="assets/pictures/winter-outside.png" alt="Winter View"></div>
+          <div class="gallery-item"><img src="assets/pictures/winter-outside-2.png" alt="Winter View 2"></div>
+          <div class="gallery-item"><img src="assets/pictures/livingroom.png" alt="Living Room"></div>
+          <div class="gallery-item"><img src="assets/pictures/dinertable.png" alt="Dining Table"></div>
+          <div class="gallery-item"><img src="assets/pictures/kitchen-1.png" alt="Kitchen"></div>
+          <div class="gallery-item"><img src="assets/pictures/kitchen-2.png" alt="Kitchen Detail"></div>
+          <div class="gallery-item"><img src="assets/pictures/bedroom-1.png" alt="Bedroom 1"></div>
+          <div class="gallery-item"><img src="assets/pictures/bedroom-2.png" alt="Bedroom 2"></div>
+          <div class="gallery-item"><img src="assets/pictures/bedroom-3.png" alt="Bedroom 3"></div>
+          <div class="gallery-item"><img src="assets/pictures/bunkbedroom.png" alt="Bunk Bedroom"></div>
+          <div class="gallery-item"><img src="assets/pictures/bathroom-1.png" alt="Bathroom"></div>
+          <div class="gallery-item"><img src="assets/pictures/bathroom-2.png" alt="Bathroom 2"></div>
+          <div class="gallery-item"><img src="assets/pictures/hallways.png" alt="Hallways"></div>
+          <div class="gallery-item"><img src="assets/pictures/entrancehall.png" alt="Entrance"></div>
+          <div class="gallery-item"><img src="assets/pictures/readingcorner.png" alt="Reading Corner"></div>
+          <div class="gallery-item"><img src="assets/pictures/summer-outside.png" alt="Summer View"></div>
+          <div class="gallery-item"><img src="assets/pictures/summer-outside-2.png" alt="Summer View 2"></div>
+          <div class="gallery-item"><img src="assets/pictures/summer-outside-terrace.png" alt="Terrace"></div>
+          <div class="gallery-item"><img src="assets/pictures/garage.png" alt="Garage"></div>
+        </div>
+      </div>
+
+      <!-- GALLERY CONTROLS -->
+      <div class="gallery-actions">
+        <button class="action-btn" id="openPhotos">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <span data-i18n="gallery-btn-photos">Fotos</span>
+        </button>
+        <button class="action-btn" id="sharePage">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+          <span data-i18n="gallery-btn-share">Teilen</span>
+        </button>
+        <button class="action-btn" id="toggleFavorite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <span data-i18n="gallery-btn-favorite">Merken</span>
+        </button>
+      </div>
+      
+      <button class="gallery-nav-btn prev" aria-label="Vorheriges Bild">‹</button>
+      <button class="gallery-nav-btn next" aria-label="Nächstes Bild">›</button>
+    </section>
+
+    <!-- QUICK FACTS BAR -->
+    <section class="quick-facts-bar">
+        <div class="container">
+            <div class="facts-grid">
+                <div class="fact-item reveal">
+                    <svg class="fact-icon" viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.999-4A4 4 0 0 0 16 11Zm-8 0a3 3 0 1 0-3-3a3 3 0 0 0 3 3Zm8 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4ZM8 13c-2.2 0-6 1.1-6 3.3V19h6v-2c0-1.32.7-2.4 1.84-3.2A10.3 10.3 0 0 0 8 13Z"/></svg>
+                    <span class="fact-label" data-i18n="lodge-max-guests">10 Gäste</span>
+                </div>
+                <div class="fact-item reveal" style="transition-delay: 0.1s;">
+                    <svg class="fact-icon" viewBox="0 0 24 24"><path d="M7 10a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v3H7Zm-2 3V9a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4h1v6h-2v-2H6v2H4v-6Z"/></svg>
+                    <span class="fact-label" data-i18n="lodge-bedrooms">4 Suiten</span>
+                </div>
+                <div class="fact-item reveal" style="transition-delay: 0.2s;">
+                    <svg class="fact-icon" viewBox="0 0 24 24"><path d="M7 21a2 2 0 0 0 2-2v-2h6v2a2 2 0 0 0 2 2h1v2H6v-2Zm1-6v-2a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3v2Zm10-9h-5V4a2 2 0 0 1 4 0h1Z"/></svg>
+                    <span class="fact-label" data-i18n="lodge-bathrooms">3 Bäder</span>
+                </div>
+                <div class="fact-item reveal" style="transition-delay: 0.3s;">
+                    <svg class="fact-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3Zm2 2v14h14V5Zm2 2h4v2H7Zm0 4h2v2H7Zm0 4h4v2H7Zm6-8h4v2h-4Zm0 4h2v2h-2Zm0 4h4v2h-4Z"/></svg>
+                    <span class="fact-label" data-i18n="lodge-area">135 m² Luxus</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTRO SECTION -->
+    <section class="section-lodge">
+        <div class="container">
+            <div class="section-split reveal">
+                <div class="split-image">
+                    <img src="assets/pictures/summer-outside-terrace.png" alt="Terrace">
+                </div>
+                <div class="split-text">
+                    <span class="intro-tag" data-i18n="intro-tag">Alpine Luxury</span>
+                    <h2 data-i18n="lodge-title">Tradition trifft modernen Luxus</h2>
+                    <p data-i18n="lodge-about-text">
+                        Die Gipfel Lodge verbindet authentische alpine Materialien wie Altholz und Natursteen met modernstem Komfort. Eingebettet in de idyllische Landschaft des Pongau, bietet dieses Refugium alles voor einen exklusiven Aufenthalt – nur 8 Minuten von Flachau entfernt.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WELLNESS SECTION -->
+    <section class="section-lodge bg-light">
+        <div class="container">
+            <div class="section-split reverse reveal">
+                <div class="split-image">
+                    <img src="assets/Foto-collage-woning/sauna-1.jpg" alt="Sauna">
+                </div>
+                <div class="split-text">
+                    <h2 data-i18n="lodge-sauna">Private Spa Erfahrung</h2>
+                    <p>
+                        Nach einem Tag in den Bergen erwartet Sie Ihre private Wellness-Oase. Entspannen Sie in der eigenen Sauna und genießen Sie de Ruhe in einem Ambiente aus edlen Hölzern und sanftem Licht. Ein Ort, an dem Körper und Geist regenerieren.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FLOOR LAYOUT -->
+    <section class="section-lodge">
+        <div class="container">
+            <div class="section-center reveal">
+                <h2 data-i18n="lodge-indeling-title" style="margin-bottom: 16px;">Indeling woning</h2>
+                <p data-i18n="lodge-indeling-subtitle">Ein Zuhause auf drei Ebenen, durchdacht für Ihren Komfort.</p>
+            </div>
+
+            <div class="floor-layout-grid">
+                <div class="floor-card reveal">
+                    <div class="floor-card-img"><img src="assets/pictures/bedroom-1.png" alt="Untergeschoss"></div>
+                    <div class="floor-card-content">
+                        <span class="floor-card-title" data-i18n="lodge-ug">Entspannung (UG)</span>
+                        <p class="floor-card-list" data-i18n="lodge-ug-list">Wellness-Suite mit Bad, Private Sauna, Skiraum & Technik</p>
+                    </div>
+                </div>
+                <div class="floor-card reveal" style="transition-delay: 0.1s;">
+                    <div class="floor-card-img"><img src="assets/pictures/bedroom-2.png" alt="1. Etage"></div>
+                    <div class="floor-card-content">
+                        <span class="floor-card-title" data-i18n="lodge-1og">Schlafkomfort (1. OG)</span>
+                        <p class="floor-card-list" data-i18n="lodge-1og-list">3 edle Suiten, 2 Designer-Bäder, Panorama-Terrasse</p>
+                    </div>
+                </div>
+                <div class="floor-card reveal" style="transition-delay: 0.2s;">
+                    <div class="floor-card-img"><img src="assets/pictures/kitchen-1.png" alt="2. Etage"></div>
+                    <div class="floor-card-content">
+                        <span class="floor-card-title" data-i18n="lodge-2og">Genuss & Panorama (2. OG)</span>
+                        <p class="floor-card-list" data-i18n="lodge-2og-list">Offene Gourmet-Küche, Kamin-Lounge, Panorama-Balkon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLEAN GALLERY -->
+    <section class="section-lodge bg-light">
+        <div class="container">
+            <div class="section-center reveal" style="margin-bottom: 60px;">
+                <h2 style="font-size: 3rem;">Galerie</h2>
+            </div>
+            <div class="clean-gallery">
+                <div class="gallery-item item-large reveal"><img src="assets/pictures/livingroom.png" alt="Woonkamer"></div>
+                <div class="gallery-item item-tall reveal"><img src="assets/pictures/bathroom-1.png" alt="Badkamer"></div>
+                <div class="gallery-item item-wide reveal"><img src="assets/pictures/kitchen-2.png" alt="Keuken"></div>
+                <div class="gallery-item item-small reveal"><img src="assets/pictures/bedroom-3.png" alt="Slaapkamer"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BOOKING CALLOUT -->
+    <section class="booking-callout reveal">
+        <div class="container">
+            <h2 data-i18n="lodge-book-title">Buchen</h2>
+            <p>Ab € 255 <span data-i18n="lodge-price-suffix">pro Nacht</span>. Inklusive Endreinigung und Wellness.</p>
+            <a href="#booking" class="menu-btn" data-i18n="lodge-cta">Verfügbare Termine</a>
+        </div>
+    </section>
+  </main>
+
+  <!-- 2.5 MAIN: ACTIVITIES PAGE -->
+  <main id="activities-page" class="page">
+    <section class="soon">
+      <img class="soon-bg" src="assets/Foto-collage-woning/outside-view-winter.jpg" alt="">
+      <div class="soon-overlay"></div>
+      <div class="container">
+        <div class="soon-card reveal">
+          <h1 class="soon-title" data-i18n="soon-title">Coming soon</h1>
+          <p class="soon-text" data-i18n="soon-text">We’re putting the finishing touches on this page.</p>
+          <a class="menu-btn" href="#booking" data-i18n="soon-btn-booking">Check availability</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 2.6 MAIN: ENJOYMENT PAGE -->
+  <main id="enjoyment-page" class="page">
+    <section class="soon">
+      <img class="soon-bg" src="assets/hero.png" alt="">
+      <div class="soon-overlay"></div>
+      <div class="container">
+        <div class="soon-card reveal">
+          <h1 class="soon-title" data-i18n="soon-title">Coming soon</h1>
+          <p class="soon-text" data-i18n="soon-text">We’re putting the finishing touches on this page.</p>
+          <a class="menu-btn" href="#booking" data-i18n="soon-btn-booking">Check availability</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 2.7 MAIN: BOOKING PAGE -->
+  <main id="booking-page" class="page">
+    <section class="soon">
+      <img class="soon-bg" src="assets/hero.png" alt="">
+      <div class="soon-overlay"></div>
+      <div class="container">
+        <div class="soon-card reveal">
+          <h1 class="soon-title" data-i18n="soon-title">Coming soon</h1>
+          <p class="soon-text" data-i18n="soon-text">We’re putting the finishing touches on this page.</p>
+          <a class="menu-btn" href="#home" data-i18n="soon-btn-home">Return Track</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 2.8 FOOTER (Shared Footer) -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <h3 class="footer-title" data-i18n="footer-reservations">Reservations</h3>
+        <p>Eben im Pongau, Austria<br>+43 000 000 000<br><a href="mailto:hello@gipfellodge.com">hello@gipfellodge.com</a></p>
+      </div>
+      <div>
+        <h3 class="footer-title" data-i18n="footer-hours">Öffnungszeiten</h3>
+        <p data-i18n="footer-hours-week">Montag bis Freitag: 09:00 - 18:00 Uhr</p>
+      </div>
+      <div>
+        <h3 class="footer-title" data-i18n="footer-follow">Folgen Sie uns</h3>
+        <p><a href="#">Instagram</a> | <a href="#">Facebook</a></p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Gipfel Lodge. <span data-i18n="footer-rights">Alle Rechte vorbehalten.</span></p>
+    </div>
+  </footer>
+
+  <!-- GALLERY LIGHTBOX MODAL -->
+  <div id="gallery-lightbox" class="lightbox-modal">
+    <div class="lightbox-overlay"></div>
+    <div class="lightbox-container">
+      <button class="lightbox-close" aria-label="Galerie schließen">&times;</button>
+      <div class="lightbox-content">
+        <button class="lightbox-nav prev" aria-label="Vorheriges Bild">‹</button>
+        <div class="lightbox-image-wrapper">
+          <img id="lightboxImage" src="" alt="Gallerie Bild">
+        </div>
+        <button class="lightbox-nav next" aria-label="Nächstes Bild">›</button>
+      </div>
+      <div class="lightbox-counter">
+        <span id="currentImgIndex">1</span> / <span id="totalImgCount">10</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.1 UTILITIES -->
+  <script src="js/utils/scroll-events.js"></script>
+  <script src="js/utils/i18n.js"></script>
+  
+  <!-- 3.2 COMPONENTS -->
+  <script src="js/components/hero-carousel.js"></script>
+  <script src="js/components/gallery-carousel.js"></script>
+  <script src="js/components/lightbox.js"></script>
+  <script explorer src="js/components/mobile-menu.js"></script>
+  <script src="js/core/entry.js"></script>
+  <script src="js/core/router.js"></script>
+  
+  <!-- 3.4 PAGES -->
+  <script src="js/pages/home.js"></script>
+  <script src="js/pages/lodge.js"></script>
+</body>
+</html>

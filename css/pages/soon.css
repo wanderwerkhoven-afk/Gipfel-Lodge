@@ -1,0 +1,68 @@
+/* Page specific: Coming Soon */
+.soon {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  color: var(--color-white);
+  text-align: center;
+}
+
+.soon-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.soon-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(32, 48, 61, 0.85); /* Slate with higher opacity for premium focus */
+  z-index: 2;
+  backdrop-filter: blur(8px);
+}
+
+.soon-card {
+  position: relative;
+  z-index: 3;
+  padding: 80px 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  max-width: 600px;
+}
+
+.soon-eyebrow {
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  margin-bottom: 24px;
+  display: block;
+}
+
+.soon-title {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  margin-bottom: 24px;
+}
+
+.soon-text {
+  font-size: 1.1rem;
+  color: hsla(0, 0%, 100%, 0.8);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.soon-actions {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}

@@ -1,0 +1,43 @@
+/* Page specific: Home */
+.intro {
+  padding: var(--section-padding-fluid);
+  background-color: var(--color-white);
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5vw; /* Active fluid gap */
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .intro-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+}
+
+.intro-tag {
+  color: var(--color-accent);
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.intro-title {
+  font-size: var(--h2-size);
+  color: var(--color-primary);
+  line-height: 1.1;
+  margin-bottom: 40px;
+  font-weight: 400;
+}
+
+.intro-text {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
