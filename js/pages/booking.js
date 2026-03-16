@@ -196,43 +196,67 @@ const GipfelBooking = {
                 finalBtn.classList.add('disabled');
 
                 const t = (key) => window.i18n ? window.i18n.t(key) : key;
+                let templateParams;
 
-                const templateParams = {
-                    user_name: document.getElementById('b-name').value,
-                    user_email: document.getElementById('b-email').value,
-                    user_phone: document.getElementById('b-phone').value || '-',
-                    check_in: document.getElementById('b-checkin').value,
-                    check_out: document.getElementById('b-checkout').value,
-                    guests: `${document.getElementById('b-adults').value} ${t('form-adults')}, ${document.getElementById('b-children').value} ${t('form-children')}, ${document.getElementById('b-babies').value} ${t('form-babies')}`,
-                    message: document.getElementById('b-message').value || '-',
+                try {
+                    templateParams = {
+                        user_name: document.getElementById('b-name').value,
+                        user_email: document.getElementById('b-email').value,
+                        user_phone: document.getElementById('b-phone').value || '-',
+                        check_in: document.getElementById('b-checkin').value,
+                        check_out: document.getElementById('b-checkout').value,
+                        guests: `${document.getElementById('b-adults').value} ${t('form-adults')}, ${document.getElementById('b-children').value} ${t('form-children')}, ${document.getElementById('b-babies').value} ${t('form-babies')}`,
+                        message: document.getElementById('b-message').value || '-',
+                        
+                        email_tagline: "Alpine Elegance",
+                        email_heading: t('success-title'),
+                        email_intro: t('email-intro'),
+                        label_travel_data: t('email-travel-data'),
+                        label_guests: t('email-guests'),
+                        label_message: t('email-message'),
+                        label_contact: t('email-contact'),
+                        email_closing: t('email-closing'),
+                        email_visit_website: t('email-visit-website'),
+                        
+                        // Extra technical fields
+                        reply_to: document.getElementById('b-email').value,
+                        to_email: document.getElementById('b-email').value // In case they used {{to_email}} in the dashboard
+                    };
                     
-                    // Localized Email Parts
-                    email_tagline: "Alpine Elegance",
-                    email_heading: t('success-title'),
-                    email_intro: t('email-intro'),
-                    label_travel_data: t('email-travel-data'),
-                    label_guests: t('email-guests'),
-                    label_message: t('email-message'),
-                    label_contact: t('email-contact'),
-                    email_closing: t('email-closing'),
-                    email_visit_website: t('email-visit-website')
-                };
+                    console.log("Template Params to be sent:", templateParams);
+                } catch (paramError) {
+                    console.error("Form Data Error:", paramError);
+                    alert("Fout bij verzamelen gegevens: " + paramError.message);
+                    finalBtn.innerText = originalText;
+                    finalBtn.classList.remove('disabled');
+                    return;
+                }
 
                 try {
                     if (typeof emailjs === 'undefined') {
-                        throw new Error("EmailJS library not loaded");
+                        throw new Error("EmailJS library (SDK) is niet geladen. Controleer je internetverbinding.");
                     }
                     
-                    const response = await emailjs.send('service_rl6qzmr', 'template_3029w4q', templateParams);
+                    // Sending with explicit public key for maximum robustness
+                    const response = await emailjs.send(
+                        'service_rl6qzmr', 
+                        'template_3029w4q', 
+                        templateParams,
+                        'WC62OFB5MXpryYO1u'
+                    );
+                    
                     console.log("EmailJS Success:", response.status, response.text);
                     this.goToStep(4);
                 } catch (error) {
                     console.error("Detailed EmailJS Error:", error);
-                    let errorMsg = "Es gab einen Fehler beim Senden Ihrer Anfrage.";
-                    if (error.status === 400) errorMsg += " (Falsche IDs)";
-                    if (error.status === 401) errorMsg += " (Public Key Fehler)";
                     
-                    alert(errorMsg + " Bitte versuchen Sie es later opnieuw of neem direct contact op.");
+                    let errorMsg = "Fout bij verzenden:";
+                    if (error.status === 400) errorMsg = "EmailJS Error 400: Controleer je Service of Template ID.";
+                    else if (error.status === 401) errorMsg = "EmailJS Error 401: Public Key is ongeldig.";
+                    else if (error.status === 403) errorMsg = "EmailJS Error 403: Domein niet toegestaan of limiet bereikt.";
+                    else errorMsg += " " + (error.message || error.text || "Onbekende fout");
+
+                    alert(errorMsg + "\n\nTip: Bekijk de Console (F12) voor de volledige foutcode.");
                     finalBtn.innerText = originalText;
                     finalBtn.classList.remove('disabled');
                 }
