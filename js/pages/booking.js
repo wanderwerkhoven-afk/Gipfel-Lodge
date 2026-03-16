@@ -219,13 +219,20 @@ const GipfelBooking = {
                 };
 
                 try {
-                    if (typeof emailjs !== 'undefined') {
-                        await emailjs.send('service_rl6qzmr', 'template_3029w4q', templateParams);
+                    if (typeof emailjs === 'undefined') {
+                        throw new Error("EmailJS library not loaded");
                     }
+                    
+                    const response = await emailjs.send('service_rl6qzmr', 'template_3029w4q', templateParams);
+                    console.log("EmailJS Success:", response.status, response.text);
                     this.goToStep(4);
                 } catch (error) {
-                    console.error("EmailJS Error:", error);
-                    alert("Es gab einen Fehler beim Senden Ihrer Anfrage. Bitte versuchen Sie es später erneut.");
+                    console.error("Detailed EmailJS Error:", error);
+                    let errorMsg = "Es gab einen Fehler beim Senden Ihrer Anfrage.";
+                    if (error.status === 400) errorMsg += " (Falsche IDs)";
+                    if (error.status === 401) errorMsg += " (Public Key Fehler)";
+                    
+                    alert(errorMsg + " Bitte versuchen Sie es later opnieuw of neem direct contact op.");
                     finalBtn.innerText = originalText;
                     finalBtn.classList.remove('disabled');
                 }
