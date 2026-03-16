@@ -47,6 +47,13 @@ const GipfelBooking = {
             this.updateLocalizationData();
             this.renderAll();
         });
+
+        // Initialize EmailJS
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init({
+                publicKey: "WC62OFB5MXpryYO1u",
+            });
+        }
     },
 
     updateLocalizationData() {
@@ -183,8 +190,45 @@ const GipfelBooking = {
         // Final Confirmation
         const finalBtn = document.getElementById('final-confirm-btn');
         if (finalBtn) {
-            finalBtn.onclick = () => {
-                this.goToStep(4);
+            finalBtn.onclick = async () => {
+                const originalText = finalBtn.innerText;
+                finalBtn.innerText = "Senden..."; // Or use i18n
+                finalBtn.classList.add('disabled');
+
+                const t = (key) => window.i18n ? window.i18n.t(key) : key;
+
+                const templateParams = {
+                    user_name: document.getElementById('b-name').value,
+                    user_email: document.getElementById('b-email').value,
+                    user_phone: document.getElementById('b-phone').value || '-',
+                    check_in: document.getElementById('b-checkin').value,
+                    check_out: document.getElementById('b-checkout').value,
+                    guests: `${document.getElementById('b-adults').value} ${t('form-adults')}, ${document.getElementById('b-children').value} ${t('form-children')}, ${document.getElementById('b-babies').value} ${t('form-babies')}`,
+                    message: document.getElementById('b-message').value || '-',
+                    
+                    // Localized Email Parts
+                    email_tagline: "Alpine Elegance",
+                    email_heading: t('success-title'),
+                    email_intro: t('email-intro'),
+                    label_travel_data: t('email-travel-data'),
+                    label_guests: t('email-guests'),
+                    label_message: t('email-message'),
+                    label_contact: t('email-contact'),
+                    email_closing: t('email-closing'),
+                    email_visit_website: t('email-visit-website')
+                };
+
+                try {
+                    if (typeof emailjs !== 'undefined') {
+                        await emailjs.send('service_rl6qzmr', 'template_3029w4q', templateParams);
+                    }
+                    this.goToStep(4);
+                } catch (error) {
+                    console.error("EmailJS Error:", error);
+                    alert("Es gab einen Fehler beim Senden Ihrer Anfrage. Bitte versuchen Sie es später erneut.");
+                    finalBtn.innerText = originalText;
+                    finalBtn.classList.remove('disabled');
+                }
             }
         }
 

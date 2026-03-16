@@ -152,8 +152,8 @@ const translations = {
         "booking-success": "Anfrage erfolgreich gesendet!",
         "cal-price-from": "ab",
         "step-finished": "Fertig",
-        "success-tag": "Buchung Erfolgreich",
-        "success-title": "Was für ein Glück, dass Sie gebucht haben!",
+        "success-tag": "Anfrage erhalten",
+        "success-title": "Ihre Bergreise beginnt hier!",
         "success-subtitle": "Wir werden Ihre Anfrage umgehend bearbeiten.",
         "success-text": "In Kürze erhalten Sie von uns eine Bestätigungs-E-Mail mit allen Details. Dort finden Sie auch die Informationen zur Anzahlung sowie die weiteren Schritte für Ihren Aufenthalt in der Gipfel Lodge.",
         "success-btn": "Zurück zur Startseite",
@@ -163,7 +163,16 @@ const translations = {
         "soon-title": "Demnächst verfügbar",
         "soon-text": "Wir arbeiten gerade an dieser Seite. Möchten Sie Ihren Aufenthalt bereits planen? Prüfen Sie die Verfügbarkeit oder kontaktieren Sie uns – wir helfen Ihnen gerne weiter.",
         "soon-btn-booking": "Verfügbarkeit prüfen",
-        "soon-btn-home": "Zurück zur Startseite"
+        "soon-btn-home": "Zurück zur Startseite",
+        
+        /* EMAIL STRINGS */
+        "email-intro": "Vielen Dank für Ihre Buchungsanfrage bei der Gipfel Lodge. Wir haben Ihre Daten erhalten und werden uns so schnell wie möglich bei Ihnen mit einem passenden Angebot melden.",
+        "email-travel-data": "REISEDATEN",
+        "email-guests": "GEZELSCHAFT",
+        "email-message": "NACHRICHT",
+        "email-contact": "KONTAKT",
+        "email-closing": "In der Zwischenzeit können Sie bereits von den wunderschönen Bildern der Lodge auf unserer Website träumen. Wir freuen uns darauf, Sie begrüßen zu dürfen!",
+        "email-visit-website": "Website Besuchen"
     },
     en: {
         "nav-home": "HOME",
@@ -318,8 +327,8 @@ const translations = {
         "booking-success": "Request sent successfully!",
         "cal-price-from": "from",
         "step-finished": "Finished",
-        "success-tag": "Booking Successful",
-        "success-title": "How wonderful that you've booked!",
+        "success-tag": "Inquiry Received",
+        "success-title": "Your mountain journey starts here!",
         "success-subtitle": "We will process your request shortly.",
         "success-text": "You will soon receive a confirmation email from us with all the details. There you will also find information about the deposit and the next steps for your stay at Gipfel Lodge.",
         "success-btn": "Back to Home",
@@ -329,7 +338,16 @@ const translations = {
         "soon-title": "Coming Soon",
         "soon-text": "We’re putting the finishing touches on this page. Want to plan your stay already? Check availability or reach out — we’ll be happy to help.",
         "soon-btn-booking": "Check availability",
-        "soon-btn-home": "Return to Home"
+        "soon-btn-home": "Return to Home",
+
+        /* EMAIL STRINGS */
+        "email-intro": "Thank you for your booking inquiry at Gipfel Lodge. We have received your details and will get back to you as soon as possible with a suitable offer.",
+        "email-travel-data": "TRAVEL DATA",
+        "email-guests": "GUESTS",
+        "email-message": "MESSAGE",
+        "email-contact": "CONTACT",
+        "email-closing": "In the meantime, you can already start dreaming with the beautiful images of the lodge on our website. We look forward to welcoming you!",
+        "email-visit-website": "Visit Website"
     },
     nl: {
         "nav-home": "HOME",
@@ -484,8 +502,8 @@ const translations = {
         "booking-success": "Aanvraag succesvol verzonden!",
         "cal-price-from": "vanaf",
         "step-finished": "Klaar",
-        "success-tag": "Boeking Geslaagd",
-        "success-title": "Wat leuk dat je hebt geboekt!",
+        "success-tag": "Aanvraag Ontvangen",
+        "success-title": "Uw bergreis begint hier!",
         "success-subtitle": "We gaan je aanvraag direct in behandeling nemen.",
         "success-text": "Je ontvangt zo direct een bevestigingsmail van ons met alle details. Daarin vind je ook de informatie over de aanbetaling en de verdere stappen voor je verblijf in de Gipfel Lodge.",
         "success-btn": "Terug naar Home",
@@ -495,7 +513,16 @@ const translations = {
         "soon-title": "Binnenkort beschikbaar",
         "soon-text": "We leggen de laatste hand aan deze pagina. Wilt u uw verblijf alvast plannen? Controleer de beschikbaarheid of neem contact op — we helpen u graag verder.",
         "soon-btn-booking": "Beschikbaarheid controleren",
-        "soon-btn-home": "Terug naar Home"
+        "soon-btn-home": "Terug naar Home",
+
+        /* EMAIL STRINGS */
+        "email-intro": "Bedankt voor je boekingsaanvraag bij de Gipfel Lodge. We hebben je gegevens ontvangen en nemen zo spoedig mogelijk contact op met een passend aanbod.",
+        "email-travel-data": "REISDATA",
+        "email-guests": "GEZELSCHAP",
+        "email-message": "BERICHT",
+        "email-contact": "CONTACT",
+        "email-closing": "In de tussentijd kun je alvast wegdromen bij de prachtige beelden van de lodge op onze website. We kijken ernaar uit je te verwelkomen!",
+        "email-visit-website": "Website Bezoeken"
     }
 };
 
