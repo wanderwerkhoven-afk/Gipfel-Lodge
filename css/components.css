@@ -484,16 +484,18 @@ header.topbar .topbar-book:hover {
 
 /* ========== AMENITIES BAR ========== */
 .amenities-bar {
-  padding: 40px 0;
+  padding: 80px 0; /* Increased padding for more breathing room */
   background-color: var(--color-primary);
   color: var(--color-white);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(181, 150, 74, 0.2); /* Subtle gold top border */
+  border-bottom: 1px solid rgba(181, 150, 74, 0.2); /* Subtle gold bottom border */
 }
 
 .amenities-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 40px;
   text-align: center;
 }
 
@@ -501,19 +503,35 @@ header.topbar .topbar-book:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 20px;
+  flex: 1;
+  min-width: 150px;
+  transition: transform 0.3s ease;
+}
+
+.amenity-item:hover {
+  transform: translateY(-5px);
 }
 
 .amenity-icon {
-  width: 32px;
-  height: 32px;
+  width: 44px; /* Slightly larger icon */
+  height: 44px;
   object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(75%) sepia(19%) saturate(884%) hue-rotate(1deg) brightness(89%) contrast(85%); /* Force gold color if white icon */
+  transition: filter 0.3s ease;
+}
+
+.amenity-item:hover .amenity-icon {
+  filter: brightness(0) saturate(100%) invert(85%) sepia(20%) saturate(1200%) hue-rotate(10deg) brightness(105%) contrast(100%); /* Brighter gold on hover */
 }
 
 .amenity-item span {
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  letter-spacing: 0.05em;
+  font-family: var(--font-body); /* Body font for cleaner uppercase look */
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--color-accent); /* Use gold color for text */
 }
 
 /* ========== SUITE LIFE ========== */
@@ -584,12 +602,35 @@ header.topbar .topbar-book:hover {
 /* ========== EXPERIENCE GRID ========== */
 .experience-section {
   padding: var(--section-padding-fluid);
-  background: #fdfdfd;
+  background: var(--color-background);
+}
+
+.experience-section .section-center h2 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin-top: 10px;
+  letter-spacing: -0.02em;
 }
 
 .section-center {
   text-align: center;
   margin-bottom: 60px;
+}
+
+.intro-centered {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.intro-text-box {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--color-text-muted);
 }
 
 .experience-grid {
@@ -663,45 +704,107 @@ header.topbar .topbar-book:hover {
 /* ========== TESTIMONIALS ========== */
 .testimonials {
   padding: 120px 0;
-  background-color: var(--color-primary);
-  color: var(--color-white);
+  background-color: var(--color-background-soft);
+  color: var(--color-text-main);
   text-align: center;
 }
 
-.testimonial-content {
-  max-width: 800px;
-  margin: 0 auto;
+.reviews-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 30px;
+  padding: 40px 24px;
 }
 
-.quote-icon {
-  font-family: var(--font-heading);
-  font-size: 5rem;
+.reviews-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.review-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+}
+
+.review-card {
+  background: var(--color-white);
+  padding: 50px 40px;
+  border-radius: 8px;
+  border: 1px solid rgba(181, 150, 74, 0.15); /* Subtle gold border */
+  box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  position: relative;
+  width: 100%;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(181, 150, 74, 0.1);
+}
+
+.review-stars {
   color: var(--color-accent);
-  display: block;
-  line-height: 1;
-  margin-bottom: -20px;
-  opacity: 0.5;
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+  letter-spacing: 0.2em;
 }
 
 .testimonial-text {
   font-family: var(--font-heading);
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-style: italic;
   line-height: 1.4;
   margin-bottom: 30px;
+  color: var(--color-primary);
 }
 
 .testimonial-author {
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--color-text-muted);
+}
+
+.carousel-hint {
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--color-accent);
+  color: var(--color-text-muted);
+  opacity: 0.8;
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.carousel-hint::before,
+.carousel-hint::after {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .review-slide {
+    flex: 0 0 calc(50% - 15px); /* Show two cards on larger screens */
+  }
+}
+
+@media (min-width: 1200px) {
+  .review-slide {
+    flex: 0 0 calc(33.333% - 20px); /* Show three cards on desktops */
+  }
 }
 
 /* ========== LOCATION ========== */
 .location-section {
   padding: var(--section-padding-fluid);
+  padding-bottom: 240px; /* Increased for mountain divider spacing */
 }
 
 .location-grid {
@@ -709,6 +812,17 @@ header.topbar .topbar-book:hover {
   grid-template-columns: 1fr 1.5fr;
   gap: 80px;
   align-items: center;
+}
+
+.map-container {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.map-container iframe {
+  display: block;
 }
 
 .location-content h2 {

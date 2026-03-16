@@ -17,7 +17,7 @@ const GipfelLightbox = {
     this.totalSpan = this.modal.querySelector('.lightbox-total');
 
     // Re-scan for images (handles hidden sections correctly)
-    const galleryItems = document.querySelectorAll('.gallery-item img, .gallery-slide img');
+    const galleryItems = document.querySelectorAll('.gallery-item img, .gallery-slide img, .masonry-item img');
     this.items = Array.from(galleryItems);
     this.totalSpan.textContent = this.items.length;
 

@@ -24,7 +24,7 @@
   font-weight: 500;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 0.9rem; /* Increased for better readability */
   margin-bottom: 24px;
   display: block;
 }

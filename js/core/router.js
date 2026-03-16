@@ -56,6 +56,8 @@ function reInitPageContent(pageId) {
         window.HomePage.init();
     } else if (pageId === 'lodge' && window.LodgePage) {
         window.LodgePage.init();
+    } else if (pageId === 'booking' && window.GipfelBooking) {
+        window.GipfelBooking.init();
     }
 
     // Global components re-scan

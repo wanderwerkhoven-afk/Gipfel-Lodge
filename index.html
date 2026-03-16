@@ -30,10 +30,12 @@
 
   <!-- 1.2 STYLESHEETS -->
   <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/components/splash.css" />
   <link rel="stylesheet" href="css/pages/home.css" />
   <link rel="stylesheet" href="css/pages/lodge.css" />
+  <link rel="stylesheet" href="css/pages/booking.css" />
   <link rel="stylesheet" href="css/pages/soon.css" />
 
   <!-- 1.3 SPA LOGIC STYLES -->
@@ -177,14 +179,14 @@
 
     <!-- INTRO -->
     <section class="intro">
-      <div class="container intro-grid">
-        <div class="reveal">
+      <div class="container intro-centered">
+        <div class="reveal section-center">
           <span class="intro-tag" data-i18n="intro-tag">Alpine Elegance</span>
           <h2 class="intro-title" data-i18n="intro-title">Zeitloser Charme, moderner Komfort</h2>
         </div>
-        <div class="reveal" style="transition-delay: 0.2s;">
-          <p class="intro-text" data-i18n="intro-text-1">Hoch oben in den österreichischen Alpen gelegen, ist die Gipfel Lodge een ruhiger Rückzugsort...</p>
-          <p class="intro-text" style="margin-top: 24px;" data-i18n="intro-text-2">Ob Entspannung, Abenteuer oder wertvolle gemeinsame Zeit – wij bieden u de ideale omgeving...</p>
+        <div class="reveal intro-text-box" style="transition-delay: 0.2s;">
+          <p class="intro-text" data-i18n="intro-text-1">Hoch oben in den österreichischen Alpen gelegen, ist die Gipfel Lodge een ruhiger Rückzugsort voor iedereen die waarde hecht aan ruimte, comfort en verfijnd design. Omringd door een adembenemend panorama combineert de lodge warme natuurlijke materialen met moderne luxe.</p>
+          <p class="intro-text" style="margin-top: 24px;" data-i18n="intro-text-2">Ob Entspannung, Abenteuer oder wertvolle gemeinsame Zeit – wij bieden u de ideale omgeving om tot rust te komen en te genieten.</p>
         </div>
       </div>
     </section>
@@ -197,15 +199,15 @@
                 <span data-i18n="amenity-sauna">Privé Sauna</span>
             </div>
             <div class="reveal amenity-item" style="transition-delay: 0.1s;">
-                <img src="assets/icon-wine.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/wine-glass.png'">
-                <span data-i18n="amenity-wine">Wijnkelder</span>
+                <img src="assets/icon-lounge.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/sofa.png'">
+                <span data-i18n="amenity-wine">Luxe Loungesets</span>
             </div>
             <div class="reveal amenity-item" style="transition-delay: 0.2s;">
                 <img src="assets/icon-parking.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/garage.png'">
-                <span data-i18n="amenity-parking">Garage & E-Lader</span>
+                <span data-i18n="amenity-parking">Overdekte Garage</span>
             </div>
             <div class="reveal amenity-item" style="transition-delay: 0.3s;">
-                <img src="assets/icon-wifi.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/wi-fi.png'">
+                <img src="assets/icon-wifi.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/wifi--v1.png'">
                 <span data-i18n="amenity-wifi">High-speed Wi-Fi</span>
             </div>
         </div>
@@ -265,12 +267,118 @@
 
     <!-- GUEST IMPRESSIONS -->
     <section class="testimonials">
-        <div class="container">
-            <div class="reveal testimonial-content">
-                <span class="quote-icon">“</span>
-                <p class="testimonial-text" data-i18n="testi-text">"Ein unvergesslicher Aufenthalt..."</p>
-                <cite class="testimonial-author" data-i18n="testi-author">— Familie Müller, Berlin</cite>
+        <div class="container overflow-hidden">
+            <div class="reveal section-center">
+                <span class="intro-tag" data-i18n="testi-tag">Guest Impressions</span>
             </div>
+            <div class="reviews-carousel">
+                <!-- Review 1 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-1-text">"Ein unvergesslicher Aufenthalt..."</p>
+                        <cite class="testimonial-author" data-i18n="review-1-author">— Familie Müller, Berlin</cite>
+                    </div>
+                </div>
+                <!-- Review 2 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-2-text">"Die Aussicht vom Panorama-Balkon..."</p>
+                        <cite class="testimonial-author" data-i18n="review-2-author">— Sarah & Tom, London</cite>
+                    </div>
+                </div>
+                <!-- Review 3 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-3-text">"Luxus-Pur! Besonders der private Wellnessbereich..."</p>
+                        <cite class="testimonial-author" data-i18n="review-3-author">— Jan de Vries, Amsterdam</cite>
+                    </div>
+                </div>
+                <!-- Review 4 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-4-text">"Hervorragend gestaltetes Interieur..."</p>
+                        <cite class="testimonial-author" data-i18n="review-4-author">— Sophie Laurent, Paris</cite>
+                    </div>
+                </div>
+                <!-- Review 5 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-5-text">"Ideal für unseren Familienurlaub..."</p>
+                        <cite class="testimonial-author" data-i18n="review-5-author">— Familie Henderson, New York</cite>
+                    </div>
+                </div>
+                <!-- Review 6 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-6-text">"Perfekte Lage. Nur ein paar Minuten..."</p>
+                        <cite class="testimonial-author" data-i18n="review-6-author">— Luca Rossi, Milano</cite>
+                    </div>
+                </div>
+                <!-- Review 7 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-7-text">"Eine Oase der Ruhe..."</p>
+                        <cite class="testimonial-author" data-i18n="review-7-author">— Elena Petrova, Moskau</cite>
+                    </div>
+                </div>
+                <!-- Review 8 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-8-text">"Hervorragende Ausstattung..."</p>
+                        <cite class="testimonial-author" data-i18n="review-8-author">— Markus Weber, Zürich</cite>
+                    </div>
+                </div>
+                <!-- Review 9 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-9-text">"Sehr freundliche Gastgeber..."</p>
+                        <cite class="testimonial-author" data-i18n="review-9-author">— Anna Kovács, Budapest</cite>
+                    </div>
+                </div>
+                <!-- Review 10 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-10-text">"Modernes Design trifft auf gemütliche Gemütlichkeit..."</p>
+                        <cite class="testimonial-author" data-i18n="review-10-author">— Lars Jensen, Kopenhagen</cite>
+                    </div>
+                </div>
+                <!-- Review 11 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-11-text">"Ein Traumziel. Wir haben die Wanderwege..."</p>
+                        <cite class="testimonial-author" data-i18n="review-11-author">— Emma Wilson, Sydney</cite>
+                    </div>
+                </div>
+                <!-- Review 12 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-12-text">"Minimalistischer alpiner Luxus..."</p>
+                        <cite class="testimonial-author" data-i18n="review-12-author">— Hiroshi Tanaka, Tokio</cite>
+                    </div>
+                </div>
+                <!-- Review 13 -->
+                <div class="review-slide reveal">
+                    <div class="review-card">
+                        <div class="review-stars">★★★★★</div>
+                        <p class="testimonial-text" data-i18n="review-13-text">"Ein wunderbarer Aufenthalt..."</p>
+                        <cite class="testimonial-author" data-i18n="review-13-author">— Maria Garcia, Madrid</cite>
+                    </div>
+                </div>
+            </div>
+            <!-- Pagination/Indicator -->
+            <div class="carousel-hint" data-i18n="carousel-hint">Scroll to read more reviews</div>
         </div>
     </section>
 
@@ -286,12 +394,23 @@
                         <strong data-i18n="loc-ski">Ski Amadé:</strong> 8 min
                     </div>
                     <div class="loc-item">
+                        <i class="fas fa-shopping-cart"></i>
                         <strong data-i18n="loc-shop">Supermarkt:</strong> 5 min
                     </div>
                 </div>
+                <form action="#" method="POST">
+                    <div class="form-row">
+                        <button type="submit" class="btn btn-primary w-100" data-i18n="form-submit">Anfrage senden</button>
+                    </div>
+                    <div class="disclaimer text-center mt-3">
+                        <small data-i18n="form-disclaimer">Dies ist eine unverbindliche Anfrage. Wir melden uns umgehend bei Ihnen.</small>
+                    </div>
+                </form>
             </div>
             <div class="reveal location-map">
-                <img src="assets/pictures/outside-view-winter.jpg" alt="Local Area" style="border-radius: 8px;">
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d332.4825106119371!2d13.371368964281311!3d47.41895876151502!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4776d3000549f133%3A0xbe34a295af6ca0cc!2sTauernlodge%20Eben!5e0!3m2!1snl!2snl!4v1773605404998!5m2!1snl!2snl" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
             </div>
         </div>
     </section>
@@ -395,9 +514,10 @@
                     <img src="assets/Foto-collage-woning/sauna-1.jpg" alt="Sauna">
                 </div>
                 <div class="split-text">
-                    <h2 data-i18n="lodge-sauna">Private Spa Erfahrung</h2>
-                    <p>
-                        Nach einem Tag in den Bergen erwartet Sie Ihre private Wellness-Oase. Entspannen Sie in der eigenen Sauna und genießen Sie de Ruhe in einem Ambiente aus edlen Hölzern und sanftem Licht. Ein Ort, an dem Körper und Geist regenerieren.
+                    <span class="intro-tag" data-i18n="lodge-sauna-tag">Wellness & Entspannung</span>
+                    <h2 data-i18n="lodge-sauna-title">Private Spa Erfahrung</h2>
+                    <p data-i18n="lodge-sauna-text">
+                        Nach einem Tag in den Bergen erwartet Sie Ihre private Wellness-Oase. Entspannen Sie in der eigenen Sauna und genießen Sie die Ruhe in einem Ambiente aus edlen Hölzern und sanftem Licht. Ein Ort, an dem Körper und Geist regenerieren.
                     </p>
                 </div>
             </div>
@@ -408,7 +528,8 @@
     <section class="section-lodge">
         <div class="container">
             <div class="section-center reveal">
-                <h2 data-i18n="lodge-indeling-title" style="margin-bottom: 16px;">Indeling woning</h2>
+                <span class="intro-tag" data-i18n="lodge-indeling-tag">Wohnkonzept</span>
+                <h2 data-i18n="lodge-indeling-title" style="margin-bottom: 16px; font-size: clamp(2.5rem, 4vw, 3.5rem);">Indeling woning</h2>
                 <p data-i18n="lodge-indeling-subtitle">Ein Zuhause auf drei Ebenen, durchdacht für Ihren Komfort.</p>
             </div>
 
@@ -442,13 +563,31 @@
     <section class="section-lodge bg-light">
         <div class="container">
             <div class="section-center reveal" style="margin-bottom: 60px;">
-                <h2 style="font-size: 3rem;">Galerie</h2>
+                <span class="intro-tag" data-i18n="gallery-tag">Impressionen</span>
+                <h2 data-i18n="gallery-title" style="font-size: 3rem;">Galerie</h2>
             </div>
-            <div class="clean-gallery">
-                <div class="gallery-item item-large reveal"><img src="assets/pictures/livingroom.png" alt="Woonkamer"></div>
-                <div class="gallery-item item-tall reveal"><img src="assets/pictures/bathroom-1.png" alt="Badkamer"></div>
-                <div class="gallery-item item-wide reveal"><img src="assets/pictures/kitchen-2.png" alt="Keuken"></div>
-                <div class="gallery-item item-small reveal"><img src="assets/pictures/bedroom-3.png" alt="Slaapkamer"></div>
+            <div class="masonry-gallery">
+                <div class="masonry-item reveal"><img src="assets/pictures/winter-outside.png" alt="Winter View"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/livingroom.png" alt="Living Room"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/kitchen-1.png" alt="Kitchen"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/bedroom-1.png" alt="Bedroom 1"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/bathroom-1.png" alt="Bathroom"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/readingcorner.png" alt="Reading Corner"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/summer-outside.png" alt="Summer View"></div>
+                
+                <div class="masonry-item reveal"><img src="assets/pictures/winter-outside-2.png" alt="Winter View 2"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/dinertable.png" alt="Dining Table"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/bedroom-2.png" alt="Bedroom 2"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/bunkbedroom.png" alt="Bunk Bedroom"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/hallways.png" alt="Hallways"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/summer-outside-terrace.png" alt="Terrace"></div>
+                
+                <div class="masonry-item reveal"><img src="assets/pictures/kitchen-2.png" alt="Kitchen Detail"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/bedroom-3.png" alt="Bedroom 3"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/bathroom-2.png" alt="Bathroom 2"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/entrancehall.png" alt="Entrance"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/summer-outside-2.png" alt="Summer View 2"></div>
+                <div class="masonry-item reveal"><img src="assets/pictures/garage.png" alt="Garage"></div>
             </div>
         </div>
     </section>
@@ -485,17 +624,189 @@
   </main>
 
   <!-- 2.7 MAIN: BOOKING PAGE -->
-  <main id="booking-page" class="page">
-    <section class="soon">
-      <img class="soon-bg" src="assets/hero.png" alt="">
-      <div class="soon-overlay"></div>
-      <div class="container">
-        <div class="soon-card reveal">
-          <h1 class="soon-title" data-i18n="soon-title">Coming soon</h1>
-          <p class="soon-text" data-i18n="soon-text">We’re putting the finishing touches on this page.</p>
-          <a class="menu-btn" href="#home" data-i18n="soon-btn-home">Return Track</a>
+  <main id="booking-page" class="page bg-light">
+    
+    <!-- Booking Flow Container -->
+    <section class="section-booking-flow container">
+      
+      <!-- 1. Progress Steps (Fixed at top) -->
+      <div class="booking-steps">
+        <div class="step active" data-step="1">
+          <span class="step-icon">📅</span>
+          <span class="step-label" data-i18n="step-date">Reisedaten</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <span class="step-icon">👤</span>
+          <span class="step-label" data-i18n="step-personal">Persönliche Info</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <span class="step-icon">✨</span>
+          <span class="step-label" data-i18n="step-summary">Bestätigung</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="4">
+          <span class="step-icon">🎉</span>
+          <span class="step-label" data-i18n="step-finished">Fertig</span>
         </div>
       </div>
+
+      <div class="booking-viewport">
+        <div class="booking-slider">
+          
+          <!-- STEP 1: CALENDAR -->
+          <div class="booking-step" id="step-1">
+            <div class="booking-flow-card">
+              <div class="booking-header-bar">
+                <div class="booking-title-area">
+                  <h2 data-i18n="booking-calendar-title">Reisedatum</h2>
+                  <p data-i18n="booking-calendar-text">Wählen Sie Ihr Anreisedatum</p>
+                </div>
+                <div class="month-navigator">
+                  <button class="month-nav-prev" aria-label="Previous Month">‹</button>
+                  <div id="month-nav-track" class="month-nav-track"></div>
+                  <button class="month-nav-next" aria-label="Next Month">›</button>
+                </div>
+              </div>
+
+              <div class="double-calendar-wrapper">
+                <div class="kalender-box">
+                  <div class="kalender-header">
+                    <button class="cal-nav-prev">‹</button>
+                    <span id="cal1-title" class="cal-title"></span>
+                    <button class="cal-nav-next" aria-label="Next Month">›</button>
+                  </div>
+                  <div id="cal1-grid" class="cal-grid premium-grid"></div>
+                </div>
+                <div class="kalender-box">
+                  <div class="kalender-header">
+                    <button class="cal-nav-prev" aria-label="Previous Month">‹</button>
+                    <span id="cal2-title" class="cal-title"></span>
+                    <button class="cal-nav-next">›</button>
+                  </div>
+                  <div id="cal2-grid" class="cal-grid premium-grid"></div>
+                </div>
+              </div>
+
+              <div class="calendar-actions">
+                <div class="calendar-legend">
+                  <span class="legend-item"><span class="legend-color available"></span> <span data-i18n="cal-available">Online buchbar</span></span>
+                  <span class="legend-item"><span class="legend-color on-request"></span> <span data-i18n="cal-request">Auf Anfrage</span></span>
+                  <span class="legend-item"><span class="legend-color booked"></span> <span data-i18n="cal-booked">Geschlossen</span></span>
+                </div>
+                <button id="cal-continue-btn" class="btn btn-primary btn-booking-next disabled" data-i18n="btn-continue">Weiter ›</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: PERSONAL INFO -->
+          <div class="booking-step" id="step-2">
+            <div class="booking-flow-card">
+              <h3 data-i18n="booking-form-title" style="margin-bottom: 30px;">Ihre Daten</h3>
+              <form id="booking-form" class="gipfel-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="b-name" data-i18n="form-name">Name</label>
+                    <input type="text" id="b-name" required>
+                  </div>
+                </div>
+                <div class="form-row split">
+                  <div class="form-group">
+                    <label for="b-email" data-i18n="form-email">E-Mail</label>
+                    <input type="email" id="b-email" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="b-phone" data-i18n="form-phone">Telefon</label>
+                    <input type="tel" id="b-phone">
+                  </div>
+                </div>
+                <div class="form-row split">
+                  <div class="form-group">
+                    <label for="b-checkin" data-i18n="form-checkin">Anreise</label>
+                    <input type="text" id="b-checkin" readonly required>
+                  </div>
+                  <div class="form-group">
+                    <label for="b-checkout" data-i18n="form-checkout">Abreise</label>
+                    <input type="text" id="b-checkout" readonly required>
+                  </div>
+                </div>
+                <div class="form-row split-3">
+                  <div class="form-group">
+                    <label data-i18n="form-adults">Erwachsene</label>
+                    <div class="guest-counter">
+                      <button type="button" class="counter-btn minus" data-target="b-adults" aria-label="Decrease">&minus;</button>
+                      <input type="number" id="b-adults" value="2" min="2" max="10" readonly>
+                      <button type="button" class="counter-btn plus" data-target="b-adults" aria-label="Increase">+</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="form-children">Kinder (2-14)</label>
+                    <div class="guest-counter">
+                      <button type="button" class="counter-btn minus" data-target="b-children" aria-label="Decrease">&minus;</button>
+                      <input type="number" id="b-children" value="0" min="0" max="8" readonly>
+                      <button type="button" class="counter-btn plus" data-target="b-children" aria-label="Increase">+</button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label data-i18n="form-babies">Babys (0-1)</label>
+                    <div class="guest-counter">
+                      <button type="button" class="counter-btn minus" data-target="b-babies" aria-label="Decrease">&minus;</button>
+                      <input type="number" id="b-babies" value="0" min="0" max="1" readonly>
+                      <button type="button" class="counter-btn plus" data-target="b-babies" aria-label="Increase">+</button>
+                    </div>
+                  </div>
+                </div>
+                <div id="guest-limit-msg" style="color: #d9534f; font-size: 0.82rem; margin-top: -5px; margin-bottom: 20px; display: none;" data-i18n="form-guest-limit-msg">Gesamtzahl der Gäste mag niet meer dan 10 personen zijn.</div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="b-message" data-i18n="form-message">Nachricht / Wünsche</label>
+                    <textarea id="b-message" rows="4"></textarea>
+                  </div>
+                </div>
+                <div class="form-actions-between">
+                   <button type="button" class="btn-back" onclick="GipfelBooking.goToStep(1)">‹ <span data-i18n="btn-back">Zurück</span></button>
+                   <button type="submit" class="btn btn-primary" data-i18n="form-submit">Weiter zur Übersicht ›</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- STEP 3: SUMMARY -->
+          <div class="booking-step" id="step-3">
+            <div class="booking-flow-card">
+              <h3 data-i18n="booking-summary-title" style="margin-bottom: 30px;">Zusammenfassung</h3>
+              
+              <div id="booking-summary-content" class="booking-summary-grid">
+                <!-- Populated by JS -->
+              </div>
+
+              <div class="form-actions-between" style="margin-top: 50px;">
+                <button type="button" class="btn-back" onclick="GipfelBooking.goToStep(2)">‹ <span data-i18n="btn-back">Zurück</span></button>
+                <button type="button" id="final-confirm-btn" class="btn btn-primary" data-i18n="form-confirm">Buchungsanfrage abschließen ›</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: SUCCESS -->
+          <div class="booking-step" id="step-4">
+            <div class="booking-flow-card">
+              <div class="success-step-content">
+                <span class="success-tag" data-i18n="success-tag">Buchung Erfolgreich</span>
+                <h2 class="success-title" data-i18n="success-title">Was für ein Glück, dass Sie gebucht haben!</h2>
+                <h3 class="success-subtitle" data-i18n="success-subtitle">Wir werden Ihre Anfrage umgehend bearbeiten.</h3>
+                <p class="success-body" data-i18n="success-text">
+                  In Kürze erhalten Sie von uns eine Bestätigungs-E-Mail mit allen Details. Dort finden Sie auch die Informationen zur Anzahlung sowie die weiteren Schritte für Ihren Aufenthalt in der Gipfel Lodge.
+                </p>
+                <div class="success-actions">
+                  <a href="#home" class="btn btn-primary" data-i18n="success-btn" onclick="window.navigateTo('home')">Zurück zur Startseite</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- /.booking-slider -->
+      </div> <!-- /.booking-viewport -->
     </section>
   </main>
 
@@ -556,5 +867,6 @@
   <!-- 3.4 PAGES -->
   <script src="js/pages/home.js"></script>
   <script src="js/pages/lodge.js"></script>
+  <script src="js/pages/booking.js"></script>
 </body>
 </html>
