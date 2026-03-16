@@ -225,10 +225,87 @@
 
 /* (Topbar responsive hiding rules removed) */
 
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
 .topbar-logo img {
-  height: 42px;
+  height: 48px;
   width: auto;
   display: block;
+  flex-shrink: 0;
+}
+
+.logo-text-part {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--color-accent); /* Gold */
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+/* Mobile Stacked & Centered Layout */
+@media (max-width: 590px) {
+  .topbar-logo {
+    display: grid;
+    /* 3 columns: Left (Text), Center (Icon), Right (Invisible Spacer to balance) */
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+      "gipfel icon spacer"
+      "lodge  icon spacer";
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 2px;
+    width: auto;
+  }
+
+  /* Balancing spacer to keep icon in the absolute center */
+  .topbar-logo::after {
+    content: "";
+    grid-area: spacer;
+    width: 100%; /* Matches the 1fr of the text column */
+  }
+
+  .logo-text-part.left {
+    grid-area: gipfel;
+    justify-self: end;
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  .logo-text-part.right {
+    grid-area: lodge;
+    justify-self: end;
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  .topbar-logo img {
+    grid-area: icon;
+    height: 38px;
+    justify-self: center;
+  }
+}
+
+/* Very small screens polish */
+@media (max-width: 380px) {
+  .logo-text-part {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+  }
+  .topbar-logo img {
+    height: 32px;
+  }
+  .topbar-logo {
+    column-gap: 8px;
+  }
 }
 
 .nav-group {
