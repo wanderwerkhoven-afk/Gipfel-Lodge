@@ -1,6 +1,7 @@
 /**
  * Booking Page Calendar Logic (Redesign for Double Month View)
  */
+import { db, collection, addDoc, serverTimestamp } from '../core/firebase.js';
 
 const GipfelBooking = {
     currentDate: new Date(),
@@ -279,55 +280,52 @@ const GipfelBooking = {
                         throw new Error("EmailJS library (SDK) is niet geladen. Controleer je internetverbinding.");
                     }
 
-                    // Send ONLY the confirmation e-mail to the guest
-                    // The owner notification is now handled via the Firebase dashboard
-                    const guestResponse = await emailjs.send(
+                    // --- 1. Optimistic UI Transition ---
+                    // We transition to the success page immediately to provide a fast user experience
+                    this.goToStep(4);
+
+                    // --- 2. Send email in background ---
+                    emailjs.send(
                         'service_rl6qzmr', 
                         'template_3029w4q',   // Guest confirmation
                         guestParams
-                    );
-                    
-                    console.log("Guest email sent successfully:", guestResponse.status);
+                    ).then(response => {
+                        console.log("Email successfully sent:", response.status, response.text);
+                    }).catch(err => {
+                        console.error("Delayed EmailJS Error (Occurred after transition):", err);
+                    });
 
-                    // Show success page immediately after e-mail is confirmed
-                    this.goToStep(4);
-
-                    // --- 3. Save to Firebase Database (Background Task) ---
-                    // We do this AFTER showing the success page so any DB lag doesn't block the user
-                    try {
-                        const { db, collection, addDoc, serverTimestamp } = await import('../core/firebase.js');
-                        await addDoc(collection(db, "bookings"), {
-                            guestName: ownerParams.user_name,
-                            guestEmail: ownerParams.user_email,
-                            guestPhone: ownerParams.user_phone,
-                            checkIn: ownerParams.check_in,
-                            checkOut: ownerParams.check_out,
-                            nights: ownerParams.nights,
-                            totalGuests: ownerParams.total_guests,
-                            adults: ownerParams.adults,
-                            children: ownerParams.children,
-                            babies: ownerParams.babies,
-                            message: ownerParams.message,
-                            status: "pending", 
-                            receivedDate: ownerParams.received_date,
-                            receivedTime: ownerParams.received_time,
-                            createdAt: serverTimestamp() 
-                        });
-                        console.log("Booking successfully archived in Firestore.");
-                    } catch (dbError) {
-                        console.error("Firebase Archiving Error:", dbError);
-                    }
+                    // --- 3. Save to Firebase Database in background ---
+                    // Using a small timeout to ensure UI transition finishes first
+                    setTimeout(async () => {
+                        try {
+                            console.log("Attempting Firestore Archive...");
+                            await addDoc(collection(db, "bookings"), {
+                                guestName: ownerParams.user_name || 'Anoniem',
+                                guestEmail: ownerParams.user_email || '',
+                                guestPhone: ownerParams.user_phone || '-',
+                                checkIn: ownerParams.check_in || '',
+                                checkOut: ownerParams.check_out || '',
+                                nights: ownerParams.nights || 0,
+                                totalGuests: ownerParams.total_guests || 0,
+                                adults: ownerParams.adults || 0,
+                                children: ownerParams.children || 0,
+                                babies: ownerParams.babies || 0,
+                                message: ownerParams.message || '-',
+                                status: "pending", 
+                                receivedDate: ownerParams.received_date || '',
+                                receivedTime: ownerParams.received_time || '',
+                                createdAt: serverTimestamp() 
+                            });
+                            console.log("Booking successfully archived in Firestore.");
+                        } catch (dbError) {
+                            console.error("Firestore Archiving Error:", dbError);
+                        }
+                    }, 800);
 
                 } catch (error) {
-                    console.error("Detailed EmailJS Error:", error);
-
-                    let errorMsg = "Fout bij verzenden:";
-                    if (error.status === 400) errorMsg = "EmailJS Error 400: Controleer je Service of Template ID.";
-                    else if (error.status === 401) errorMsg = "EmailJS Error 401: Public Key is ongeldig.";
-                    else if (error.status === 403) errorMsg = "EmailJS Error 403: Domein niet toegestaan of limiet bereikt.";
-                    else errorMsg += " " + (error.message || error.text || "Onbekende fout");
-
-                    alert(errorMsg + "\n\nTip: Bekijk de Console (F12) voor de volledige foutcode.");
+                    console.error("Critical Submission Error:", error);
+                    alert("Er is een fout opgetreden bij het verwerken van je aanvraag: " + (error.message || "Onbekende fout"));
                     finalBtn.innerText = originalText;
                     finalBtn.classList.remove('disabled');
                 }
