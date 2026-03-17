@@ -212,7 +212,8 @@
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  color: var(--color-accent); /* Gold */
+  color: var(--color-accent);
+  /* Gold */
   text-transform: uppercase;
   transition: all 0.3s ease;
   line-height: 1;
@@ -225,7 +226,7 @@
     /* 3 columns: Left (Text), Center (Icon), Right (Invisible Spacer to balance) */
     grid-template-columns: 1fr auto 1fr;
     grid-template-rows: auto auto;
-    grid-template-areas: 
+    grid-template-areas:
       "gipfel icon spacer"
       "lodge  icon spacer";
     align-items: center;
@@ -238,7 +239,8 @@
   .topbar-logo::after {
     content: "";
     grid-area: spacer;
-    width: 100%; /* Matches the 1fr of the text column */
+    width: 100%;
+    /* Matches the 1fr of the text column */
   }
 
   .logo-text-part.left {
@@ -268,9 +270,11 @@
     font-size: 0.8rem;
     letter-spacing: 0.1em;
   }
+
   .topbar-logo img {
     height: 32px;
   }
+
   .topbar-logo {
     column-gap: 8px;
   }
@@ -524,16 +528,20 @@ header.topbar .topbar-book:hover {
   background-color: var(--color-primary);
   color: var(--color-white);
   padding: 80px 0 40px;
-  margin-top: 0; /* Removed margin to allow seamless overlap of mountains */
+  margin-top: 0;
+  /* Removed margin to allow seamless overlap of mountains */
 }
 
 /* ========== AMENITIES BAR ========== */
 .amenities-bar {
-  padding: 80px 0; /* Increased padding for more breathing room */
+  padding: 80px 0;
+  /* Increased padding for more breathing room */
   background-color: var(--color-primary);
   color: var(--color-white);
-  border-top: 1px solid rgba(181, 150, 74, 0.2); /* Subtle gold top border */
-  border-bottom: 1px solid rgba(181, 150, 74, 0.2); /* Subtle gold bottom border */
+  border-top: 1px solid rgba(181, 150, 74, 0.2);
+  /* Subtle gold top border */
+  border-bottom: 1px solid rgba(181, 150, 74, 0.2);
+  /* Subtle gold bottom border */
 }
 
 .amenities-grid {
@@ -559,24 +567,29 @@ header.topbar .topbar-book:hover {
 }
 
 .amenity-icon {
-  width: 44px; /* Slightly larger icon */
+  width: 44px;
+  /* Slightly larger icon */
   height: 44px;
   object-fit: contain;
-  filter: brightness(0) saturate(100%) invert(75%) sepia(19%) saturate(884%) hue-rotate(1deg) brightness(89%) contrast(85%); /* Force gold color if white icon */
+  filter: brightness(0) saturate(100%) invert(75%) sepia(19%) saturate(884%) hue-rotate(1deg) brightness(89%) contrast(85%);
+  /* Force gold color if white icon */
   transition: filter 0.3s ease;
 }
 
 .amenity-item:hover .amenity-icon {
-  filter: brightness(0) saturate(100%) invert(85%) sepia(20%) saturate(1200%) hue-rotate(10deg) brightness(105%) contrast(100%); /* Brighter gold on hover */
+  filter: brightness(0) saturate(100%) invert(85%) sepia(20%) saturate(1200%) hue-rotate(10deg) brightness(105%) contrast(100%);
+  /* Brighter gold on hover */
 }
 
 .amenity-item span {
-  font-family: var(--font-body); /* Body font for cleaner uppercase look */
+  font-family: var(--font-body);
+  /* Body font for cleaner uppercase look */
   font-size: 0.8rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.25em;
-  color: var(--color-accent); /* Use gold color for text */
+  color: var(--color-accent);
+  /* Use gold color for text */
 }
 
 /* ========== SUITE LIFE ========== */
@@ -595,7 +608,7 @@ header.topbar .topbar-book:hover {
 .suite-image img {
   width: 100%;
   border-radius: 4px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .suite-content h2 {
@@ -780,8 +793,9 @@ header.topbar .topbar-book:hover {
   background: var(--color-white);
   padding: 50px 40px;
   border-radius: 8px;
-  border: 1px solid rgba(181, 150, 74, 0.15); /* Subtle gold border */
-  box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+  border: 1px solid rgba(181, 150, 74, 0.15);
+  /* Subtle gold border */
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.05);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   position: relative;
   width: 100%;
@@ -836,20 +850,23 @@ header.topbar .topbar-book:hover {
 
 @media (min-width: 768px) {
   .review-slide {
-    flex: 0 0 calc(50% - 15px); /* Show two cards on larger screens */
+    flex: 0 0 calc(50% - 15px);
+    /* Show two cards on larger screens */
   }
 }
 
 @media (min-width: 1200px) {
   .review-slide {
-    flex: 0 0 calc(33.333% - 20px); /* Show three cards on desktops */
+    flex: 0 0 calc(33.333% - 20px);
+    /* Show three cards on desktops */
   }
 }
 
 /* ========== LOCATION ========== */
 .location-section {
   padding: var(--section-padding-fluid);
-  padding-bottom: 240px; /* Increased for mountain divider spacing */
+  padding-bottom: 240px;
+  /* Increased for mountain divider spacing */
 }
 
 .location-grid {
@@ -863,7 +880,7 @@ header.topbar .topbar-book:hover {
   width: 100%;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .map-container iframe {
@@ -895,11 +912,13 @@ header.topbar .topbar-book:hover {
 }
 
 @media (max-width: 1024px) {
-  .suite-grid, .location-grid {
+
+  .suite-grid,
+  .location-grid {
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  
+
   .amenities-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -909,11 +928,11 @@ header.topbar .topbar-book:hover {
   .experience-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .exp-card {
     height: 400px;
   }
-  
+
   .testimonial-text {
     font-size: 1.5rem;
   }
@@ -971,18 +990,19 @@ header.topbar .topbar-book:hover {
 
 .footer-divider {
   position: absolute;
-  top: 0;
+  /* top: 4px + translateY(-100%) places the element's bottom edge
+     exactly 4px inside the footer top → guaranteed overlap, no gap. */
+  top: 4px;
   left: 0;
   width: 100%;
   height: 12vw;
   min-height: 80px;
   max-height: 200px;
-  transform: translateY(-99%);
+  /* Move the element upward so it sits above the footer */
+  transform: translateY(-70%);
   pointer-events: none;
   z-index: 1;
-  /* The mountains themselves should be the primary color */
   background-color: var(--color-primary);
-  /* The mask now defines the 'cutout' area above the mountains */
   -webkit-mask-image: url('../assets/devider-mountain.svg');
   mask-image: url('../assets/devider-mountain.svg');
   -webkit-mask-size: 100% 100%;
@@ -993,8 +1013,16 @@ header.topbar .topbar-book:hover {
   mask-repeat: no-repeat;
 }
 
+@media (max-width: 768px) {
+  .footer-divider {
+    height: 25vw;
+    min-height: 100px;
+  }
+}
+
 .footer-divider-inner {
-  display: none; /* No longer needed with this approach */
+  display: none;
+  /* No longer needed with this approach */
 }
 
 .footer-grid {
@@ -1141,5 +1169,11 @@ header.topbar .topbar-book:hover {
 @media (max-width: 768px) {
   .footer-grid {
     gap: 40px;
+  }
+
+  .location-section {
+    /* On mobile the mountain divider is ~100px tall (25vw, min 100px).
+       Match the padding-bottom so the mountains sit flush on the footer. */
+    padding-bottom: clamp(110px, 28vw, 160px);
   }
 }
