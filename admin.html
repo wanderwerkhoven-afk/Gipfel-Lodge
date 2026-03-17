@@ -653,11 +653,10 @@
             };
 
             try {
-                // Verstuur email (Vervang `template_ACCEPT_ID` door het echte template ID van "Acceptance Email")
-                // TODO: Je moet in EmailJS een nieuw template maken (op basis van email-acceptance.html) en dat ID hier invoullen!
+                // Verstuur email
                 await emailjs.send(
                     'service_rl6qzmr', 
-                    'template_ACCEPT_ID', // <--- ⚠️ VUL HIER JOUW NIEUWE TEMPLATE ID IN
+                    'template_oy6c1fe', // Gebruik het door user opgegeven acceptatie template ID
                     tmplParams
                 );
                 

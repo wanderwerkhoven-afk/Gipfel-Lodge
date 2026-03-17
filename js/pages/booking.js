@@ -279,26 +279,16 @@ const GipfelBooking = {
                         throw new Error("EmailJS library (SDK) is niet geladen. Controleer je internetverbinding.");
                     }
 
-                    // Send both emails in parallel for speed
-                    const [guestResponse, ownerResponse] = await Promise.all([
-                        // 1. Confirmation e-mail to the guest
-                        emailjs.send(
-                            'service_rl6qzmr',
-                            'template_3029w4q',   // <-- guest template ID
-                            guestParams,
-                            'WC62OFB5MXpryYO1u'
-                        ),
-                        // 2. Notification e-mail to the owner
-                        emailjs.send(
-                            'service_rl6qzmr',
-                            'template_d5cqatd',
-                            ownerParams,
-                            'WC62OFB5MXpryYO1u'
-                        ),
-                    ]);
-
+                    // Send ONLY the confirmation e-mail to the guest
+                    // Owner notification is now handled via the Firebase Database overview
+                    const guestResponse = await emailjs.send(
+                        'service_rl6qzmr', 
+                        'template_3029w4q',   // Guest confirmation
+                        guestParams,
+                        'WC62OFB5MXpryYO1u'
+                    );
+                    
                     console.log("Guest email sent:", guestResponse.status);
-                    console.log("Owner email sent:", ownerResponse.status);
 
                     // --- 3. Save to Firebase Database ---
                     try {
