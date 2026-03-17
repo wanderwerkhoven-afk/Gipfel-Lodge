@@ -695,7 +695,14 @@
                     statusElement.style.display = "block";
                 }
 
-                await emailjs.send('service_rl6qzmr', 'template_oy6c1fe', tmplParams);
+                // Ensure to_email is present, fallback to a dash if missing (to see error clearer)
+                if (!tmplParams.to_email) {
+                    console.warn("to_email was missing in tmplParams, attempting to fix...");
+                    tmplParams.to_email = tmplParams.user_email || ""; 
+                }
+
+                console.log("EmailJS Sending with template_oy6c1fe...", tmplParams);
+                await emailjs.send('service_rl6qzmr', 'template_oy6c1fe', tmplParams, "WC62OFB5MXpryYO1u");
                 
                 // Update Firestore status if we have an ID
                 if (bookingId) {
@@ -720,11 +727,13 @@
                 }
                 return true;
             } catch (error) {
-                console.error("EmailJS Error:", error);
-                btnElement.innerHTML = "❌ FOUT";
+                console.error("EmailJS or Firestore Error:", error);
+                const errorStr = error.text || error.message || "Onbekende fout";
+                btnElement.innerHTML = "❌ FOUT: " + errorStr.substring(0, 20);
+                btnElement.title = errorStr;
                 btnElement.style.background = "#e74c3c";
                 if(statusElement) {
-                    statusElement.innerHTML = "❌ Er is een fout opgetreden bij het versturen.";
+                    statusElement.innerHTML = "❌ Fout: " + errorStr;
                     statusElement.classList.add("error");
                 }
                 setTimeout(() => {
@@ -734,6 +743,21 @@
                 }, 3000);
                 return false;
             }
+        }
+
+        function confirmDirectlyFromButton(btn) {
+            const ds = btn.dataset;
+            console.log("Direct confirmation button dataset:", ds);
+            const params = {
+                user_name: ds.name,
+                user_email: ds.email,
+                to_email: ds.email, 
+                check_in: ds.in,
+                check_out: ds.out,
+                guests: ds.guests + " personen"
+            };
+            console.log("Sending confirmation with params:", params);
+            sendBookingConfirmation(params, btn, null, ds.id);
         }
 
         document.getElementById("accept-booking-form").addEventListener("submit", async function(e) {
@@ -748,10 +772,11 @@
             
             const tmplParams = {
                 user_name: document.getElementById("guest-name").value,
+                user_email: document.getElementById("guest-email").value,
                 to_email: document.getElementById("guest-email").value,
                 check_in: dIn.toLocaleDateString('nl-NL', fmtOpts),
                 check_out: dOut.toLocaleDateString('nl-NL', fmtOpts),
-                guests: document.getElementById("guest-count").value
+                guests: document.getElementById("guest-count").value + " personen"
             };
 
             const success = await sendBookingConfirmation(tmplParams, submitBtn, statusDiv);
@@ -797,19 +822,10 @@
                     const card = document.createElement('div');
                     card.className = 'booking-card';
                     
-                    // Prepare params for direct email
                     const dIn = new Date(data.checkIn);
                     const dOut = new Date(data.checkOut);
                     const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
                     
-                    const tmplParams = JSON.stringify({
-                        user_name: data.guestName,
-                        to_email: data.guestEmail,
-                        check_in: dIn.toLocaleDateString('nl-NL', fmtOpts),
-                        check_out: dOut.toLocaleDateString('nl-NL', fmtOpts),
-                        guests: data.totalGuests
-                    }).replace(/"/g, '&quot;');
-
                     card.innerHTML = `
                         <div class="booking-card-header">
                             <div>
@@ -836,10 +852,24 @@
                             </div>
                         </div>
                         <div class="booking-card-footer" style="display:flex; flex-direction:column; gap:12px;">
-                            <button class="btn btn-primary action-btn" onclick="sendBookingConfirmation(${tmplParams}, this, null, '${doc.id}')">DIRECT BEVESTIGEN</button>
+                            <button class="btn btn-primary action-btn" 
+                                data-name="${data.guestName || 'Gast'}"
+                                data-email="${data.guestEmail || ''}"
+                                data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}"
+                                data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}"
+                                data-guests="${data.totalGuests}"
+                                data-id="${doc.id}"
+                                onclick="confirmDirectlyFromButton(this)">
+                                DIRECT BEVESTIGEN
+                            </button>
                             <a href="#" style="text-align:center; font-size:0.85rem; color:var(--color-gold); text-decoration:none;" 
-                               onclick="confirmBookingFromList('${doc.id}', '${data.guestName}', '${data.guestEmail}', '${data.guestPhone}', '${data.checkIn}', '${data.checkOut}', '${data.totalGuests}')">
-                               Details / Handmatig aanpassen
+                               data-name="${data.guestName || 'Gast'}"
+                               data-email="${data.guestEmail || ''}"
+                               data-in-raw="${data.checkIn}"
+                               data-out-raw="${data.checkOut}"
+                               data-guests="${data.totalGuests}"
+                               onclick="confirmBookingFromList(this)">
+                                Details / Handmatig aanpassen
                             </a>
                         </div>
                     `;
@@ -853,13 +883,14 @@
             }
         }
 
-        function confirmBookingFromList(id, name, email, phone, checkin, checkout, guests) {
+        function confirmBookingFromList(el) {
+            const ds = el.dataset;
             // Fill the form
-            document.getElementById('guest-name').value = name;
-            document.getElementById('guest-email').value = email;
-            document.getElementById('check-in').value = checkin;
-            document.getElementById('check-out').value = checkout;
-            document.getElementById('guest-count').value = guests;
+            document.getElementById('guest-name').value = ds.name;
+            document.getElementById('guest-email').value = ds.email;
+            document.getElementById('check-in').value = ds.inRaw;
+            document.getElementById('check-out').value = ds.outRaw;
+            document.getElementById('guest-count').value = ds.guests;
             
             // Switch view
             switchView('confirm-view', document.querySelector('.nav-item:first-child'));
