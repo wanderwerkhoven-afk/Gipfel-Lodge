@@ -471,9 +471,10 @@
 .premium-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+    gap: 6px;
     background: var(--color-white);
     width: 100%;
+    padding: 10px;
 }
 
 .cal-day-header {
@@ -494,14 +495,12 @@
     justify-content: center;
     font-size: 1.1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    background: #fdfcfb;
-    min-width: 0;
-    gap: 2px;
+    border-radius: 6px;
+    gap: 0;
 }
 
 .cal-day-num {
-    font-weight: 400;
+    font-weight: 500;
 }
 
 @media (max-width: 400px) {
@@ -521,26 +520,17 @@
     }
 }
 
-.cal-day-price {
-    font-size: 0.6rem;
-    color: var(--color-text-muted);
-    margin-top: 2px;
-    transition: opacity 0.2s ease;
-}
-
-.cal-day.empty .cal-day-price,
-.cal-day.booked .cal-day-price {
-    visibility: hidden; /* Takes up space but invisible - keeps alignment perfect */
-}
-
-/* Day States (Matching Reference) */
 .cal-day.empty {
-    background: var(--color-white);
+    background: transparent;
     cursor: default;
 }
 
+.cal-day.empty .cal-day-num {
+    visibility: hidden;
+}
+
 .cal-day.available {
-    background: #eaf1d5; /* Very pale green/gold from reference */
+    background: #eaf1d5; /* Soft Green */
     color: var(--color-primary);
 }
 
@@ -549,15 +539,96 @@
 }
 
 .cal-day.booked {
-    background: #f7f7f7;
-    color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.7;
+    background: #f9e8d5; /* Soft Orange/Gold Tint */
+    color: var(--color-primary);
+}
+
+/* Half-Day Splits (Confirmed) */
+.cal-day.is-check-in,
+.cal-day.is-check-out,
+.cal-day.is-pending-in,
+.cal-day.is-pending-out {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Base states for confirmed */
+.cal-day.is-check-in { background: #f9e8d5; } /* Right = Orange */
+.cal-day.is-check-in::before { background: #eaf1d5; } /* Left = Green */
+
+.cal-day.is-check-out { background: #eaf1d5; } /* Right = Green */
+.cal-day.is-check-out::before { background: #f9e8d5; } /* Left = Orange */
+
+/* Hovers for confirmed */
+.cal-day.is-check-in:hover::before { background: #d3e1ad; }
+.cal-day.is-check-out:hover { background: #d3e1ad; }
+
+/* Base states for pending */
+.cal-day.is-pending-in { background: #fdf5e6; } /* Right = Cream */
+.cal-day.is-pending-in::before { background: #eaf1d5; } /* Left = Green */
+
+.cal-day.is-pending-out { background: #eaf1d5; } /* Right = Green */
+.cal-day.is-pending-out::before { background: #fdf5e6; } /* Left = Cream */
+
+/* Hovers for pending */
+.cal-day.is-pending-in:hover::before { background: #d3e1ad; }
+.cal-day.is-pending-out:hover { background: #d3e1ad; }
+
+/* The "pointed" shape on the left */
+.cal-day.is-check-in::before,
+.cal-day.is-check-out::before,
+.cal-day.is-pending-in::before,
+.cal-day.is-pending-out::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(0% 0%, 50% 0%, 75% 50%, 50% 100%, 0% 100%);
+    z-index: 1;
+    transition: background 0.2s ease;
+}
+
+/* Selection states for transition days (highlight only the active stay-half) */
+.cal-day.selected.is-check-in { background: #f9e8d5; } /* Right = Orange */
+.cal-day.selected.is-check-in::before { background: var(--color-primary); } /* Left = Blue */
+
+.cal-day.selected.is-check-out { background: var(--color-primary); } /* Right = Blue */
+.cal-day.selected.is-check-out::before { background: #f9e8d5; } /* Left = Orange */
+
+/* Pending states */
+.cal-day.selected.is-pending-in { background: #fdf5e6; } /* Right = Cream */
+.cal-day.selected.is-pending-in::before { background: var(--color-primary); } /* Left = Blue */
+
+.cal-day.selected.is-pending-out { background: var(--color-primary); } /* Right = Blue */
+.cal-day.selected.is-pending-out::before { background: #fdf5e6; } /* Left = Cream */
+
+/* Ensure white text for selected transition days */
+.cal-day.selected.is-check-in .cal-day-num,
+.cal-day.selected.is-check-out .cal-day-num,
+.cal-day.selected.is-pending-in .cal-day-num,
+.cal-day.selected.is-pending-out .cal-day-num {
+    color: var(--color-white);
+}
+
+/* Ensure the number is above the shape */
+.cal-day-num {
+    position: relative;
+    z-index: 2;
 }
 
 .cal-day.on-request {
-    background: #f9f0d8;
+    background: #fdf5e6; /* Very pale cream */
     color: var(--color-primary);
+}
+
+.cal-day.past,
+.cal-day.unavailable {
+    background: #f2f2f2;
+    color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.8;
 }
 
 .cal-day.selected {
@@ -604,8 +675,9 @@
 }
 
 .legend-color.available { background: #eaf1d5; }
-.legend-color.on-request { background: #f9f0d8; }
-.legend-color.booked { background: #eaeaea; }
+.legend-color.on-request { background: #fdf5e6; }
+.legend-color.unavailable { background: #f2f2f2; }
+.legend-color.booked { background: #f9e8d5; }
 
 .form-actions-between {
     display: flex;
@@ -684,6 +756,80 @@
 
 .summary-full {
     grid-column: 1 / -1;
+}
+
+/* --------------------------------------------------------------------------
+   PRICE BREAKDOWN (Factuur Specificatie)
+   -------------------------------------------------------------------------- */
+.booking-price-breakdown-container {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.settlement-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--color-primary);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.settlement-table {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fdfcfb;
+    padding: 25px;
+    border-radius: 8px;
+    border: 1px solid rgba(197, 160, 89, 0.15);
+}
+
+.settlement-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--color-text-main);
+}
+
+.settle-label {
+    font-weight: 500;
+}
+
+.settle-val {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.settlement-row.settlement-row--total {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid var(--color-accent);
+    font-size: 1.25rem;
+    color: var(--color-primary);
+}
+
+.settlement-row.settlement-row--total .settle-label {
+    font-family: var(--font-heading);
+}
+
+.settlement-row.settlement-row--total .settle-val {
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+@media (max-width: 576px) {
+    .settlement-table {
+        padding: 15px;
+    }
+    .settlement-row {
+        font-size: 0.9rem;
+    }
+    .settlement-row.settlement-row--total {
+        font-size: 1.1rem;
+    }
 }
 
 .btn-booking-next.disabled {

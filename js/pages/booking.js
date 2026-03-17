@@ -11,9 +11,21 @@ const GipfelBooking = {
     // Real Pricing Data
     pricingData: {}, // Map of 'YYYY-MM-DD' to price object
     
-    // Mock Availability Data
-    bookedDates: ['2026-03-20', '2026-03-21', '2026-04-10', '2026-04-11'],
-    onRequestDates: ['2026-03-25', '2026-03-26'],
+    // Real Availability Data (fetched from Firestore)
+    bookedDates: [],
+    onRequestDates: [],
+    
+    // Split day tracking
+    confirmedCheckIns: [],
+    confirmedCheckOuts: [],
+    pendingCheckIns: [],
+    pendingCheckOuts: [],
+
+    // Pricing Constants
+    CLEANING_FEE: 350.00,
+    BED_LINEN_FEE: 20.95,
+    TOURIST_TAX_FEE: 2.50,
+    MOBILITY_FEE: 0.50,
 
     currentStep: 1,
 
@@ -55,6 +67,63 @@ const GipfelBooking = {
             emailjs.init({
                 publicKey: "WC62OFB5MXpryYO1u",
             });
+        }
+
+        // Load dynamic availability
+        this.loadAvailabilityData().then(() => {
+            this.renderAll();
+        });
+    },
+
+    async loadAvailabilityData() {
+        try {
+            const { getDocs, query, collection, where, db } = await import('../core/firebase.js');
+            
+            // Fetch ALL bookings (or filter by status if preferred)
+            const q = query(collection(db, "bookings"));
+            const querySnapshot = await getDocs(q);
+            
+            this.bookedDates = [];
+            this.onRequestDates = [];
+            this.confirmedCheckIns = [];
+            this.confirmedCheckOuts = [];
+            this.pendingCheckIns = [];
+            this.pendingCheckOuts = [];
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (!data.checkIn || !data.checkOut) return;
+
+                const startStr = data.checkIn;
+                const endStr = data.checkOut;
+                
+                const start = new Date(startStr);
+                const end = new Date(endStr);
+                
+                // Track start/end for confirmed bookings
+                if (data.status === 'confirmed') {
+                    if (!this.confirmedCheckIns.includes(startStr)) this.confirmedCheckIns.push(startStr);
+                    if (!this.confirmedCheckOuts.includes(endStr)) this.confirmedCheckOuts.push(endStr);
+                } else {
+                    if (!this.pendingCheckIns.includes(startStr)) this.pendingCheckIns.push(startStr);
+                    if (!this.pendingCheckOuts.includes(endStr)) this.pendingCheckOuts.push(endStr);
+                }
+
+                // Internal nights (nights actually stayed)
+                let current = new Date(start);
+                while (current < end) { 
+                    const dateStr = current.toISOString().split('T')[0];
+                    if (data.status === 'confirmed') {
+                        if (!this.bookedDates.includes(dateStr)) this.bookedDates.push(dateStr);
+                    } else if (data.status === 'pending' || !data.status) {
+                        if (!this.onRequestDates.includes(dateStr)) this.onRequestDates.push(dateStr);
+                    }
+                    current.setDate(current.getDate() + 1);
+                }
+            });
+            console.log("Loaded live availability:", { booked: this.bookedDates.length, request: this.onRequestDates.length });
+        } catch (e) {
+            console.error("Error loading availability from Firebase:", e);
         }
     },
 
@@ -383,6 +452,11 @@ const GipfelBooking = {
             const targetY = card.getBoundingClientRect().top + window.pageYOffset - headerH;
             window.scrollTo({ top: targetY, behavior: 'smooth' });
         }
+
+        // Always re-render summary when entering Step 3
+        if (n === 3) {
+            this.renderSummary();
+        }
     },
 
     renderSummary() {
@@ -423,6 +497,41 @@ const GipfelBooking = {
                 <span class="summary-value">${message}</span>
             </div>
         `;
+
+        const costs = this.calculateCosts();
+        const priceContainer = document.getElementById('booking-price-breakdown');
+        if (costs && priceContainer) {
+            const t = (key) => window.i18n ? window.i18n.t(key) : key;
+            priceContainer.innerHTML = `
+                <h4 class="settlement-title">${t('settle-title')}</h4>
+                <div class="settlement-table">
+                    <div class="settlement-row">
+                        <span class="settle-label">${t('settle-rent')} (${costs.nights} ${t('unit-nights')})</span>
+                        <span class="settle-val">${this.fmtEUR(costs.rent)}</span>
+                    </div>
+                    <div class="settlement-row">
+                        <span class="settle-label">${t('settle-cleaning')}</span>
+                        <span class="settle-val">${this.fmtEUR(costs.cleaning)}</span>
+                    </div>
+                    <div class="settlement-row">
+                        <span class="settle-label">${t('settle-linen')} (${costs.chargeableGuests}x)</span>
+                        <span class="settle-val">${this.fmtEUR(costs.bedLinen)}</span>
+                    </div>
+                    <div class="settlement-row">
+                        <span class="settle-label">${t('settle-tax')}</span>
+                        <span class="settle-val">${this.fmtEUR(costs.touristTax)}</span>
+                    </div>
+                    <div class="settlement-row">
+                        <span class="settle-label">${t('settle-mobility')}</span>
+                        <span class="settle-val">${this.fmtEUR(costs.mobilityFee)}</span>
+                    </div>
+                    <div class="settlement-row settlement-row--total">
+                        <span class="settle-label">${t('settle-total')}</span>
+                        <span class="settle-val">${this.fmtEUR(costs.total)}</span>
+                    </div>
+                </div>
+            `;
+        }
     },
 
     renderAll() {
@@ -443,6 +552,54 @@ const GipfelBooking = {
         if (this.currentStep === 3) {
             this.renderSummary();
         }
+    },
+
+    calculateCosts() {
+        if (!this.selectedCheckIn || !this.selectedCheckOut) return null;
+
+        const checkIn = new Date(this.selectedCheckIn);
+        const checkOut = new Date(this.selectedCheckOut);
+        
+        const adults = parseInt(document.getElementById('b-adults').value) || 0;
+        const children = parseInt(document.getElementById('b-children').value) || 0;
+        const babies = parseInt(document.getElementById('b-babies').value) || 0;
+        const totalGuests = adults + children + babies;
+        const chargeableGuests = adults + children;
+
+        const diffTime = Math.abs(checkOut - checkIn);
+        const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        let rent = 0;
+        let tempDate = new Date(checkIn);
+        for (let i = 0; i < nights; i++) {
+            const dateStr = tempDate.toISOString().split('T')[0];
+            const dayPrice = this.pricingData[dateStr]?.dagprijs || 0;
+            rent += dayPrice;
+            tempDate.setDate(tempDate.getDate() + 1);
+        }
+
+        const cleaning = this.CLEANING_FEE;
+        const bedLinen = chargeableGuests * this.BED_LINEN_FEE;
+        const touristTax = chargeableGuests * nights * this.TOURIST_TAX_FEE;
+        const mobilityFee = chargeableGuests * nights * this.MOBILITY_FEE;
+        
+        const total = rent + cleaning + bedLinen + touristTax + mobilityFee;
+
+        return {
+            rent,
+            cleaning,
+            bedLinen,
+            touristTax,
+            mobilityFee,
+            total,
+            nights,
+            totalGuests,
+            chargeableGuests
+        };
+    },
+
+    fmtEUR(val) {
+        return new Intl.NumberFormat('de-AT', { style: 'currency', currency: 'EUR' }).format(val);
     },
 
     updateNavigationButtons() {
@@ -535,36 +692,79 @@ const GipfelBooking = {
             // Basic Content
             el.innerHTML = `<span>${i}</span>`;
             
-            // Render price if available
-            let priceVal = 485; // Fallback
-            if (this.pricingData[dateStr] && this.pricingData[dateStr].dagprijs) {
-                priceVal = Math.round(this.pricingData[dateStr].dagprijs);
-            }
-            
-            const fromText = window.i18n ? window.i18n.t('cal-price-from') : 'ab';
-            const priceHtml = `<span class="cal-day-price"><span class="price-from">${fromText}</span> €${priceVal},-</span>`;
-            
-            // Structured content for all days to keep alignment
-            el.innerHTML = `
-                <span class="cal-day-num">${i}</span>
-                ${priceHtml}
-            `;
+            // Structured content
+            el.innerHTML = `<span class="cal-day-num">${i}</span>`;
             
             // Logic state
+            const isConfirmedIn = (this.confirmedCheckIns || []).includes(dateStr);
+            const isConfirmedOut = (this.confirmedCheckOuts || []).includes(dateStr);
+            const isBooked = (this.bookedDates || []).includes(dateStr);
+            
+            const isPendingIn = (this.pendingCheckIns || []).includes(dateStr);
+            const isPendingOut = (this.pendingCheckOuts || []).includes(dateStr);
+            const isOnRequest = (this.onRequestDates || []).includes(dateStr);
+
+            // Selection state
             if (cellDate < today) {
-                el.classList.add('booked');
                 el.classList.add('past');
-            } else if (this.bookedDates.includes(dateStr)) {
+            } else if (isConfirmedIn && isConfirmedOut) {
+                el.classList.add('booked'); // Fully orange night
+                // Overlap: can be checkout for someone else
+            } else if (isConfirmedIn) {
+                el.classList.add('is-check-in');
+                el.classList.add('booked'); 
+            } else if (isConfirmedOut) {
+                el.classList.add('is-check-out');
+                el.classList.add('available');
+            } else if (isBooked) {
                 el.classList.add('booked');
-            } else if (this.onRequestDates.includes(dateStr)) {
+            } else if (isPendingIn && isPendingOut) {
+                el.classList.add('on-request'); 
+            } else if (isPendingIn) {
+                el.classList.add('is-pending-in');
                 el.classList.add('on-request');
-                el.onclick = () => this.selectDate(dateStr);
+            } else if (isPendingOut) {
+                el.classList.add('is-pending-out');
+                el.classList.add('available'); 
+            } else if (isOnRequest) {
+                el.classList.add('on-request');
             } else {
                 el.classList.add('available');
+            }
+
+            // Selection state logic
+            const isOverlap = (isConfirmedIn && isConfirmedOut) || (isPendingIn && isPendingOut);
+
+            if (isOverlap) {
+                // If it's both Check-In and Check-Out, it's completely's full for a 3rd party
+                el.style.cursor = 'not-allowed';
+                el.onclick = null;
+            } else if (isConfirmedIn || isPendingIn) {
+                // Already a check-in? New guest can ONLY end here (DEPART in the morning).
+                el.onclick = () => {
+                    // Only call selectDate if we already have an arrival date, 
+                    // because we cannot START a booking on an arrival day of someone else.
+                    if (this.selectedCheckIn) {
+                        this.selectDate(dateStr);
+                    }
+                };
+                el.style.cursor = 'pointer'; 
+            } else if (isConfirmedOut || isPendingOut) {
+                // Already a check-out? New guest can ARRIVE here in the afternoon (START booking).
+                el.onclick = () => {
+                    // Always allow selectDate here. 
+                    // If we have a selection, selectDate will try to end here (which is invalid and will reset it to START here).
+                    this.selectDate(dateStr);
+                };
+                el.style.cursor = 'pointer';
+            } else if (isBooked || el.classList.contains('past')) {
+                el.style.cursor = 'not-allowed';
+                el.onclick = null;
+            } else {
+                el.style.cursor = 'pointer';
                 el.onclick = () => this.selectDate(dateStr);
             }
 
-            // Selection state
             if (this.selectedCheckIn === dateStr || this.selectedCheckOut === dateStr) {
                 el.classList.add('selected');
             } else if (this.selectedCheckIn && this.selectedCheckOut && dateStr > this.selectedCheckIn && dateStr < this.selectedCheckOut) {
@@ -600,9 +800,10 @@ const GipfelBooking = {
         let current = new Date(startStr);
         const end = new Date(endStr);
         
-        while (current <= end) {
-            const str = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
-            if (this.bookedDates.includes(str)) return false; // Block range if a booked day is inside
+        // Loop through all nights [start, end)
+        while (current < end) {
+            const str = current.toISOString().split('T')[0];
+            if (this.bookedDates.includes(str)) return false; 
             current.setDate(current.getDate() + 1);
         }
         return true;

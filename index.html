@@ -684,8 +684,9 @@
               <div class="calendar-actions">
                 <div class="calendar-legend">
                   <span class="legend-item"><span class="legend-color available"></span> <span data-i18n="cal-available">Online buchbar</span></span>
-                  <span class="legend-item"><span class="legend-color on-request"></span> <span data-i18n="cal-request">Auf Anfrage</span></span>
-                  <span class="legend-item"><span class="legend-color booked"></span> <span data-i18n="cal-booked">Geschlossen</span></span>
+                  <span class="legend-item"><span class="legend-color on-request"></span> <span data-i18n="cal-request">Reserviert</span></span>
+                  <span class="legend-item"><span class="legend-color unavailable"></span> <span data-i18n="cal-unavailable">Nicht verfügbar</span></span>
+                  <span class="legend-item"><span class="legend-color booked"></span> <span data-i18n="cal-booked">Reeds geboekt</span></span>
                 </div>
                 <button id="cal-continue-btn" class="btn btn-primary btn-booking-next disabled" data-i18n="btn-continue">Weiter ›</button>
               </div>
@@ -770,6 +771,10 @@
               <h3 data-i18n="booking-summary-title" style="margin-bottom: 30px;">Zusammenfassung</h3>
               
               <div id="booking-summary-content" class="booking-summary-grid">
+                <!-- Populated by JS -->
+              </div>
+
+              <div id="booking-price-breakdown" class="booking-price-breakdown-container">
                 <!-- Populated by JS -->
               </div>
 
