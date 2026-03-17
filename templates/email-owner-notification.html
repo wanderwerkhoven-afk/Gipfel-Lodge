@@ -212,7 +212,8 @@
                             <!-- ACTIES -->
                             <p class="section-title">Snelle acties</p>
                             <div class="action-row">
-                                <a href="mailto:{{user_email}}?subject=Uw%20boeking%20bij%20Gipfel%20Lodge%20Eben%20is%20geaccepteerd!&body=Beste%20{{user_name}}%2C%0A%0AUw%20boeking%20bij%20Gipfel%20Lodge%20Eben%20is%20geaccepteerd%20en%20staat%20voor%20u%20gereserveerd!%0A%0A---%20Reisdata:%20{{check_in}}%20tot%20{{check_out}}%0A---%20Gezelschap:%20{{total_guests}}%20personen%0A%0ABelangrijke%20informatie%20voor%20uw%20verblijf:%0A%0A1.%20Betaling%0AOm%20uw%20reservering%20definitief%20te%20maken%2C%20vragen%20wij%20een%20aanbetaling%20van%2030%25.%20Het%20restbedrag%20dient%20uiterlijk%206%20weken%20voor%20aankomst%20te%20worden%20voldaan.%0A%0A2.%20Aankomst%20%26%20Vertrek%0AInchecken%20is%20mogelijk%20vanaf%2015:00%20uur.%20Op%20de%20dag%20van%20vertrek%20vragen%20we%20u%20de%20lodge%20uiterlijk%20om%2010:00%20uur%20vrij%20te%20maken.%0A%0A3.%20Huisregels%0AGipfel%20Lodge%20is%20een%20rookvrij%20verblijf.%20Voor%20aankomst%20ontvangt%20u%20van%20ons%20de%20toegangscode%20en%20uitgebreide%20huisinformatie.%0A%0AMet%20vriendelijke%20groet%2C%0A%0ATeam%20Gipfel%20Lodge" class="btn-primary">&#9993;&nbsp; Accepteer boeking</a>
+                                <!-- De link verwijst nu naar het admin dashboard op het gipfellodge domein, en geeft de aanvraag data mee via URL parameters -->
+                                <a href="https://gipfellodge.com/admin.html?name={{user_name}}&email={{user_email}}&checkin={{check_in}}&checkout={{check_out}}&guests={{total_guests}}" class="btn-primary">&#10003;&nbsp; Accepteer boeking (Dashboard)</a>
                                 <a href="tel:{{user_phone}}" class="btn-secondary">&#128222;&nbsp; Bel direct</a>
                             </div>
 

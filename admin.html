@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gipfel Lodge | Beheer</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- We hergebruiken een paar basis styles -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
+    <style>
+        /* Reset & Variables (Hergebruik van hoofdthema) */
+        :root {
+            --color-bg-dark: #1a2830;
+            --color-bg-light: #FAF9F6;
+            --color-slate: #20303D;
+            --color-slate-light: #3a4a58;
+            --color-gold: #C5A059;
+            --color-gold-hover: #b5924e;
+            --color-text-light: #78868A;
+            --color-border: #e8e2d0;
+            
+            --font-primary: 'Cormorant Garamond', serif;
+            --font-secondary: 'Inter', sans-serif;
+            
+            --radius-md: 12px;
+            --radius-sm: 6px;
+        }
+
+        body {
+            background-color: var(--color-bg-dark);
+            /* Subtiele background image / texture if present, otherwise solid dark */
+            background-image: radial-gradient(circle at 50% 0%, #2f4452 0%, #1a2830 70%);
+            color: var(--color-slate);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: var(--font-secondary);
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        * { box-sizing: border-box; }
+
+        /* Login Scherm */
+        #login-screen {
+            background: #ffffff;
+            padding: 50px 40px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid var(--color-gold);
+        }
+
+        .admin-logo {
+            font-family: var(--font-primary);
+            color: var(--color-slate);
+            font-size: 2.8rem;
+            margin: 0 0 5px 0;
+            letter-spacing: 0.02em;
+        }
+
+        .admin-subtitle {
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 35px;
+            font-weight: 600;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 4px; /* Hide password length slightly */
+            background-color: var(--color-bg-light);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--color-gold);
+            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
+        }
+
+        .login-btn, .action-btn {
+            background-color: var(--color-gold);
+            color: #ffffff;
+            border: none;
+            padding: 16px 24px;
+            width: 100%;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .login-btn:hover, .action-btn:hover {
+            background-color: var(--color-gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(197, 160, 89, 0.3);
+        }
+
+        .error-msg {
+            color: #d9534f;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            display: none;
+            background: #fdf3f2;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid #fadbd8;
+        }
+
+        /* Dashboard Scherm (verborgen tot login) */
+        #dashboard-screen {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            background: var(--color-bg-light);
+            border-radius: var(--radius-md);
+            box-shadow: 0 24px 50px rgba(0,0,0,0.4);
+            overflow: hidden;
+            margin: auto;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Layout: Sidebar + Main */
+        .dashboard-layout {
+            display: flex;
+            min-height: 600px;
+        }
+
+        /* Sidebar Styling */
+        .dashboard-sidebar {
+            width: 250px;
+            background-color: var(--color-slate);
+            padding: 40px 30px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand h2 {
+            font-family: var(--font-primary);
+            color: var(--color-gold);
+            font-size: 1.8rem;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .sidebar-brand p {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255,255,255,0.5);
+            margin: 5px 0 40px 0;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 auto 0;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item:hover {
+            color: #fff;
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .nav-item.active {
+            color: var(--color-slate);
+            background-color: var(--color-gold);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(197, 160, 89, 0.5);
+            color: var(--color-gold);
+            padding: 10px 15px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logout-btn:hover {
+            background: rgba(197, 160, 89, 0.1);
+            border-color: var(--color-gold);
+        }
+
+        /* Main Content Styling */
+        .dashboard-main {
+            flex: 1;
+            padding: 40px 50px;
+            background-color: #ffffff;
+        }
+
+        .page-header {
+            margin-bottom: 35px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 20px;
+        }
+
+        .page-header h1 {
+            font-family: var(--font-primary);
+            font-size: 2.2rem;
+            color: var(--color-slate);
+            margin: 0 0 10px 0;
+        }
+
+        .page-header p {
+            color: var(--color-text-light);
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* Form Styling */
+        .admin-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 5px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--color-slate-light);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-secondary);
+            font-size: 1rem;
+            color: var(--color-slate);
+            background-color: var(--color-bg-light);
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-gold);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.1);
+        }
+
+        .status-message {
+            margin-top: 25px;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .status-message.success {
+            background-color: #eef3eb;
+            color: #295e1e;
+            border: 1px solid #d5e9cc;
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: #fdf3f2;
+            color: #d9534f;
+            border: 1px solid #fadbd8;
+            display: block;
+        }
+
+        /* Spinner for loading state */
+        .spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -11px;
+            margin-top: -11px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 800px) {
+            .dashboard-layout { flex-direction: column; }
+            .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 25px; }
+            .nav-menu { display: flex; gap: 10px; margin-bottom: 20px; }
+            .nav-item { margin-bottom: 0; padding: 10px; flex: 1; text-align: center; justify-content: center; }
+            .sidebar-brand p { margin-bottom: 20px; }
+            .dashboard-main { padding: 30px 20px; }
+        }
+
+        @media (max-width: 600px) {
+            .admin-form-grid { grid-template-columns: 1fr; gap: 20px; }
+            body { padding: 0; }
+            #login-screen { border-radius: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; border-top: none; }
+            #dashboard-screen { border-radius: 0; min-height: 100vh; }
+        }
+
+        .dashboard-view { display: none; }
+        .dashboard-view.active { display: block; animation: fadeIn 0.4s ease-out; }
+
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .booking-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--gold);
+        }
+
+        .booking-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(197, 160, 89, 0.2);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+        }
+
+        .status-accepted {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .booking-info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .booking-info-row span {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .booking-card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .action-btn.small {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCHERM -->
+    <div id="login-screen">
+        <h1 class="admin-logo">Gipfel Lodge</h1>
+        <p class="admin-subtitle">Beveiligd Beheer</p>
+        
+        <input type="password" id="admin-password" class="password-input" placeholder="••••••••" onkeypress="if(event.key === 'Enter') login()">
+        <button class="login-btn" onclick="login()">Inloggen</button>
+        <div id="login-error" class="error-msg">Onjuist wachtwoord. Probeer opnieuw.</div>
+    </div>
+
+    <!-- DASHBOARD SCHERM -->
+    <div id="dashboard-screen">
+        <div class="dashboard-layout">
+            
+            <!-- Sidebar -->
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-brand">
+                    <h2>Gipfel Lodge</h2>
+                    <p>Admin Paneel</p>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li class="nav-item active" onclick="switchView('confirm-view', this)">&#10003;&nbsp; Bevestigen</li>
+                    <li class="nav-item" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Alle Aanvragen</li>
+                    <!-- Future tabs can go here -->
+                </ul>
+
+                <button class="logout-btn" onclick="logout()">Veilig Uitloggen</button>
+            </aside>
+
+                <!-- Confirm Booking View -->
+                <div id="confirm-view" class="dashboard-view active">
+                    <div class="page-header">
+                        <h1>Aanvraag Bevestigen</h1>
+                        <p>Genereer en verstuur automatisch de bevestigings-e-mail naar de hoofdboeker.</p>
+                    </div>
+                    
+                    <form id="accept-booking-form">
+                        <div class="admin-form-grid">
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="guest-name">Naam Gast</label>
+                                <input type="text" id="guest-name" class="form-input" required placeholder="Bijvoorbeeld Familie Jansen">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="guest-email">E-mailadres Gast</label>
+                                <input type="email" id="guest-email" class="form-input" required placeholder="gast@email.com">
+                            </div>
+    
+                            <div class="form-group">
+                                <label class="form-label" for="check-in">Aankomstdatum</label>
+                                <input type="date" id="check-in" class="form-input" required>
+                            </div>
+    
+                            <div class="form-group">
+                                <label class="form-label" for="check-out">Vertrekdatum</label>
+                                <input type="date" id="check-out" class="form-input" required>
+                            </div>
+    
+                            <div class="form-group full-width">
+                                <label class="form-label" for="guest-count">Reisgezelschap / Omschrijving</label>
+                                <input type="text" id="guest-count" class="form-input" required placeholder="Bijvoorbeeld: 2 Volwassenen, 1 Kind (3 personen totaal)">
+                            </div>
+    
+                        </div>
+    
+                        <div style="margin-top: 35px;">
+                            <button type="submit" id="submit-btn" class="action-btn">
+                                <span id="btn-text">Verstuur Acceptatie E-mail</span>
+                                <div id="btn-spinner" class="spinner"></div>
+                            </button>
+                        </div>
+    
+                        <div id="form-status" class="status-message"></div>
+                    </form>
+                </div>
+
+                <!-- Bookings List View -->
+                <div id="bookings-view" class="dashboard-view">
+                    <div class="page-header">
+                        <h1>Ingekomen Aanvragen</h1>
+                        <p>Overzicht van alle boekingen die via de website zijn binnengekomen.</p>
+                    </div>
+
+                    <div id="bookings-loader" class="spinner" style="margin: 40px auto;"></div>
+                    <div id="bookings-list" class="bookings-grid">
+                        <!-- Bookings populate here -->
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function prefillFormFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            if (urlParams.has('name')) document.getElementById('guest-name').value = urlParams.get('name');
+            if (urlParams.has('email')) document.getElementById('guest-email').value = urlParams.get('email');
+            if (urlParams.has('checkin')) {
+                // Ensure date format is correct for input type="date" (YYYY-MM-DD)
+                // If it comes from EmailJS it might be formatted differently, but we try anyway.
+                document.getElementById('check-in').value = urlParams.get('checkin'); 
+            }
+            if (urlParams.has('checkout')) {
+                document.getElementById('check-out').value = urlParams.get('checkout');
+            }
+            if (urlParams.has('guests')) document.getElementById('guest-count').value = urlParams.get('guests');
+        }
+
+        // --- 1. LOGIN LOGICA (Simpele client-side checks) ---
+        // LET OP: Omdat dit een statische HTML file is, is "alpine2026" hardcoded.
+        // Dit is afdoende tegen bots en verdwaalde gasten, maar niet extreem veilig.
+        const SECRET_PW = "alpine2026"; 
+        
+        // Controleer of we al ingelogd zijn (sessie)
+        if (sessionStorage.getItem("gipfel_admin_logged_in") === "true") {
+            showDashboard();
+        }
+
+        function login() {
+            const input = document.getElementById("admin-password").value;
+            const errorMsg = document.getElementById("login-error");
+            
+            if (input === SECRET_PW) {
+                // Sla op voor de sessie (wordt gewist als tabblad sluit)
+                sessionStorage.setItem("gipfel_admin_logged_in", "true");
+                showDashboard();
+                errorMsg.style.display = "none";
+            } else {
+                errorMsg.style.display = "block";
+                document.getElementById("admin-password").value = "";
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem("gipfel_admin_logged_in");
+            document.getElementById("dashboard-screen").style.display = "none";
+            document.getElementById("login-screen").style.display = "block";
+            
+            // Verwijder URL parameters uit adresbalk voor netheid
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Reset body uitlijning
+            document.body.style.display = 'flex';
+            document.getElementById("admin-password").value = "";
+        }
+
+        function showDashboard() {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("dashboard-screen").style.display = "block";
+            // Pas flex toe op small screens
+            if(window.innerWidth > 600) {
+                 document.body.style.display = 'flex';
+            } else {
+                 document.body.style.display = 'block'; // beter voor scrolling p mobiel
+            }
+            
+            // Vul data in vanuit URL
+            prefillFormFromUrl();
+        }
+
+        // --- 2. EMAILJS LOGICA ---
+        // Initialize EmailJS config
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init({ publicKey: "WC62OFB5MXpryYO1u" });
+        }
+
+        document.getElementById("accept-booking-form").addEventListener("submit", async function(e) {
+            e.preventDefault(); // Voorkom pagina reload
+            
+            const btnText = document.getElementById("btn-text");
+            const spinner = document.getElementById("btn-spinner");
+            const submitBtn = document.getElementById("submit-btn");
+            const statusDiv = document.getElementById("form-status");
+            
+            // UI State: Loading
+            btnText.style.display = "none";
+            spinner.style.display = "block";
+            submitBtn.disabled = true;
+            statusDiv.className = "status-message"; // reset classes
+            
+            // Verzamelen data  
+            // Date parsing for formatting nicely in the email (optioneel)
+            const dIn = new Date(document.getElementById("check-in").value);
+            const dOut = new Date(document.getElementById("check-out").value);
+            
+            const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' }; // bv "01 mrt 2026"
+            const formattedCheckIn = dIn.toLocaleDateString('nl-NL', fmtOpts);
+            const formattedCheckOut = dOut.toLocaleDateString('nl-NL', fmtOpts);
+
+            const tmplParams = {
+                user_name: document.getElementById("guest-name").value,
+                to_email: document.getElementById("guest-email").value, // EmailJS stuurt hem hiernaartoe
+                check_in: formattedCheckIn,
+                check_out: formattedCheckOut,
+                guests: document.getElementById("guest-count").value
+            };
+
+            try {
+                // Verstuur email (Vervang `template_ACCEPT_ID` door het echte template ID van "Acceptance Email")
+                // TODO: Je moet in EmailJS een nieuw template maken (op basis van email-acceptance.html) en dat ID hier invoullen!
+                await emailjs.send(
+                    'service_rl6qzmr', 
+                    'template_ACCEPT_ID', // <--- ⚠️ VUL HIER JOUW NIEUWE TEMPLATE ID IN
+                    tmplParams
+                );
+                
+                // Success UI
+                statusDiv.innerHTML = "✅ De acceptatie-email is succesvol verstuurd naar " + tmplParams.to_email;
+                statusDiv.classList.add("success");
+                this.reset(); // Maak formulier leeg
+                
+            } catch (error) {
+                console.error("EmailJS Error:", error);
+                // Error UI
+                let errorMsg = "Er is een fout opgetreden bij het versturen. Controleer de console (F12).";
+                if(error.status === 400) errorMsg = "Service ID of Template ID is onjuist ingesteld in admin.html.";
+                
+                statusDiv.innerHTML = "❌ " + errorMsg;
+                statusDiv.classList.add("error");
+            } finally {
+                // UI State: Reset
+                btnText.style.display = "inline";
+                spinner.style.display = "none";
+                submitBtn.disabled = false;
+            }
+        });
+
+        // --- 3. VIEW SWITCHING ---
+        function switchView(viewId, navEl) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            navEl.classList.add('active');
+
+            // Update views
+            document.querySelectorAll('.dashboard-view').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+
+            if (viewId === 'bookings-view') {
+                loadBookings();
+            }
+        }
+
+        async function loadBookings() {
+            const list = document.getElementById('bookings-list');
+            const loader = document.getElementById('bookings-loader');
+            
+            list.innerHTML = '';
+            loader.style.display = 'block';
+
+            try {
+                const { db, collection, getDocs, query, orderBy } = await import('./js/core/firebase.js');
+                const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                loader.style.display = 'none';
+
+                if (querySnapshot.empty) {
+                    list.innerHTML = '<p style="grid-column: 1/-1; text-align: center; opacity: 0.6; padding: 40px;">Nog geen boekingen gevonden.</p>';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'booking-card';
+                    card.innerHTML = `
+                        <div class="booking-card-header">
+                            <div>
+                                <h3 style="margin: 0; font-family: 'Cormorant Garamond', serif; font-size: 1.5rem;">${data.guestName}</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.7;">${data.guestEmail}</p>
+                            </div>
+                            <span class="status-badge status-${data.status || 'pending'}">${data.status || 'pending'}</span>
+                        </div>
+                        <div class="booking-card-body">
+                            <div class="booking-info-row">
+                                <span>📅 Datum:</span>
+                                <strong>${data.checkIn} t/m ${data.checkOut}</strong>
+                            </div>
+                            <div class="booking-info-row">
+                                <span>👥 Gasten:</span>
+                                <strong>${data.totalGuests} personen</strong>
+                            </div>
+                            <div class="booking-info-row">
+                                <span>💬 Bericht:</span>
+                                <p style="margin: 5px 0 0 0; font-style: italic; font-size: 0.9rem;">"${data.message || 'Geen bericht'}"</p>
+                            </div>
+                        </div>
+                        <div class="booking-card-footer">
+                            <button class="action-btn small" onclick="confirmBookingFromList('${doc.id}', '${data.guestName}', '${data.guestEmail}', '${data.checkIn}', '${data.checkOut}', '${data.totalGuests}')">Bevestigen</button>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+            } catch (err) {
+                console.error("Fout bij laden boekingen:", err);
+                loader.style.display = 'none';
+                list.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center;">Fout bij laden van gegevens.</p>';
+            }
+        }
+
+        function confirmBookingFromList(id, name, email, checkin, checkout, guests) {
+            // Fill the form
+            document.getElementById('guest-name').value = name;
+            document.getElementById('guest-email').value = email;
+            document.getElementById('check-in').value = checkin; // Note: may need formatting if not YYYY-MM-DD
+            document.getElementById('check-out').value = checkout;
+            document.getElementById('guest-count').value = guests;
+
+            // Switch view
+            switchView('confirm-view', document.querySelector('.nav-item:first-child'));
+        }
+    </script>
+</body>
+</html>

@@ -17,6 +17,7 @@ const GipfelBooking = {
     currentStep: 1,
 
     init() {
+        console.log("Initializing GipfelBooking...");
         this.cal1Title = document.getElementById('cal1-title');
         this.cal2Title = document.getElementById('cal2-title');
         this.cal1Grid = document.getElementById('cal1-grid');
@@ -298,6 +299,33 @@ const GipfelBooking = {
 
                     console.log("Guest email sent:", guestResponse.status);
                     console.log("Owner email sent:", ownerResponse.status);
+
+                    // --- 3. Save to Firebase Database ---
+                    try {
+                        const { db, collection, addDoc, serverTimestamp } = await import('../core/firebase.js');
+                        const docRef = await addDoc(collection(db, "bookings"), {
+                            guestName: ownerParams.user_name,
+                            guestEmail: ownerParams.user_email,
+                            guestPhone: ownerParams.user_phone,
+                            checkIn: ownerParams.check_in,
+                            checkOut: ownerParams.check_out,
+                            nights: ownerParams.nights,
+                            totalGuests: ownerParams.total_guests,
+                            adults: ownerParams.adults,
+                            children: ownerParams.children,
+                            babies: ownerParams.babies,
+                            message: ownerParams.message,
+                            status: "pending", // Status for the admin dashboard (pending, accepted, rejected)
+                            receivedDate: ownerParams.received_date,
+                            receivedTime: ownerParams.received_time,
+                            createdAt: serverTimestamp() // Cloud timestamp for sorting
+                        });
+                        console.log("Firebase Backup Success! Document written with ID: ", docRef.id);
+                    } catch (dbError) {
+                        console.error("Firebase Backup Error (Emails were sent though):", dbError);
+                        // We continue even if DB fails, as emails are the primary notification
+                    }
+
                     this.goToStep(4);
 
                 } catch (error) {
