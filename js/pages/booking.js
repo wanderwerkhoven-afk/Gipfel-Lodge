@@ -280,20 +280,23 @@ const GipfelBooking = {
                     }
 
                     // Send ONLY the confirmation e-mail to the guest
-                    // Owner notification is now handled via the Firebase Database overview
+                    // The owner notification is now handled via the Firebase dashboard
                     const guestResponse = await emailjs.send(
                         'service_rl6qzmr', 
                         'template_3029w4q',   // Guest confirmation
-                        guestParams,
-                        'WC62OFB5MXpryYO1u'
+                        guestParams
                     );
                     
-                    console.log("Guest email sent:", guestResponse.status);
+                    console.log("Guest email sent successfully:", guestResponse.status);
 
-                    // --- 3. Save to Firebase Database ---
+                    // Show success page immediately after e-mail is confirmed
+                    this.goToStep(4);
+
+                    // --- 3. Save to Firebase Database (Background Task) ---
+                    // We do this AFTER showing the success page so any DB lag doesn't block the user
                     try {
                         const { db, collection, addDoc, serverTimestamp } = await import('../core/firebase.js');
-                        const docRef = await addDoc(collection(db, "bookings"), {
+                        await addDoc(collection(db, "bookings"), {
                             guestName: ownerParams.user_name,
                             guestEmail: ownerParams.user_email,
                             guestPhone: ownerParams.user_phone,
@@ -305,18 +308,15 @@ const GipfelBooking = {
                             children: ownerParams.children,
                             babies: ownerParams.babies,
                             message: ownerParams.message,
-                            status: "pending", // Status for the admin dashboard (pending, accepted, rejected)
+                            status: "pending", 
                             receivedDate: ownerParams.received_date,
                             receivedTime: ownerParams.received_time,
-                            createdAt: serverTimestamp() // Cloud timestamp for sorting
+                            createdAt: serverTimestamp() 
                         });
-                        console.log("Firebase Backup Success! Document written with ID: ", docRef.id);
+                        console.log("Booking successfully archived in Firestore.");
                     } catch (dbError) {
-                        console.error("Firebase Backup Error (Emails were sent though):", dbError);
-                        // We continue even if DB fails, as emails are the primary notification
+                        console.error("Firebase Archiving Error:", dbError);
                     }
-
-                    this.goToStep(4);
 
                 } catch (error) {
                     console.error("Detailed EmailJS Error:", error);
