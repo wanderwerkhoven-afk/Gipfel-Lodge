@@ -357,7 +357,7 @@
 
         .bookings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            grid-template-columns: repeat(2, 1fr); /* Precies 2 breed op desktop */
             gap: 50px; /* Grotere gaten tussen de kaarten */
             margin-top: 40px;
         }
@@ -785,6 +785,7 @@
                             <div>
                                 <h3>${data.guestName || 'Anonieme Gast'}</h3>
                                 <p>${data.guestEmail || 'Geen e-mail'}</p>
+                                <p style="font-size: 0.85rem; opacity: 0.7;">${data.guestPhone || '-'}</p>
                             </div>
                             <span class="status-badge status-${data.status || 'pending'}">
                                 ${data.status || 'pending'}
@@ -805,7 +806,7 @@
                             </div>
                         </div>
                         <div class="booking-card-footer">
-                            <button class="btn btn-primary action-btn" onclick="confirmBookingFromList('${doc.id}', '${data.guestName}', '${data.guestEmail}', '${data.checkIn}', '${data.checkOut}', '${data.totalGuests}')">BEVESTIGEN</button>
+                            <button class="btn btn-primary action-btn" onclick="confirmBookingFromList('${doc.id}', '${data.guestName}', '${data.guestEmail}', '${data.guestPhone}', '${data.checkIn}', '${data.checkOut}', '${data.totalGuests}')">BEVESTIGEN</button>
                         </div>
                     `;
                     list.appendChild(card);
