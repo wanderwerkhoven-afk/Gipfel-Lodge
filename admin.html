@@ -773,6 +773,10 @@
             document.getElementById('check-in').value = checkin; // Note: may need formatting if not YYYY-MM-DD
             document.getElementById('check-out').value = checkout;
             document.getElementById('guest-count').value = guests;
+            
+            // Switch view
+            switchView('confirm-view', document.querySelector('.nav-item:first-child'));
+        }
 
         async function testFirebaseConnection() {
             const statusTag = document.getElementById('db-status-tag');
