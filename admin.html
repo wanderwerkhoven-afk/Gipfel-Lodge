@@ -475,10 +475,21 @@
                 <ul class="nav-menu">
                     <li class="nav-item active" onclick="switchView('confirm-view', this)">&#10003;&nbsp; Bevestigen</li>
                     <li class="nav-item" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Alle Aanvragen</li>
-                    <!-- Future tabs can go here -->
                 </ul>
 
-                <button class="logout-btn" onclick="logout()">Veilig Uitloggen</button>
+                <div style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
+                    <strong style="display: block; margin-bottom: 10px; color: var(--gold);">System Status</strong>
+                    <div id="db-status-tag" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; opacity: 0.7;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></span>
+                        Firebase Status: Onbekend
+                    </div>
+                    <button onclick="testFirebaseConnection()" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 5px; cursor: pointer; transition: all 0.2s;">
+                        Test Verbinding
+                    </button>
+                    <div id="db-test-result" style="margin-top: 10px; font-size: 0.75rem; color: #ff6b6b; display: none;"></div>
+                </div>
+
+                <button class="logout-btn" onclick="logout()" style="margin-top: 20px;">Veilig Uitloggen</button>
             </aside>
 
                 <!-- Confirm Booking View -->
@@ -763,8 +774,46 @@
             document.getElementById('check-out').value = checkout;
             document.getElementById('guest-count').value = guests;
 
-            // Switch view
-            switchView('confirm-view', document.querySelector('.nav-item:first-child'));
+        async function testFirebaseConnection() {
+            const statusTag = document.getElementById('db-status-tag');
+            const resultDiv = document.getElementById('db-test-result');
+            const dot = statusTag.querySelector('span');
+            
+            resultDiv.style.display = 'none';
+            dot.style.background = '#f1c40f'; // geel: bezig
+            statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #f1c40f;"></span> Verbinding testen...`;
+
+            try {
+                const { db, collection, addDoc, serverTimestamp } = await import('./js/core/firebase.js');
+                
+                // Probeer een tijdelijk test-document te schrijven
+                await addDoc(collection(db, "system_checks"), {
+                    timestamp: serverTimestamp(),
+                    check: "Manual Health Check"
+                });
+
+                dot.style.background = '#2ecc71'; // groen: succes
+                statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #2ecc71;"></span> Firebase: Verbonden`;
+                resultDiv.style.color = '#2ecc71';
+                resultDiv.innerText = "Succes! De verbinding met de database werkt.";
+                resultDiv.style.display = 'block';
+                
+            } catch (err) {
+                console.error("Firebase Test Error:", err);
+                dot.style.background = '#e74c3c'; // rood: fout
+                statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #e74c3c;"></span> Firebase: Error`;
+                
+                let msg = "Fout: " + err.message;
+                if (err.message.includes("permission-denied")) {
+                    msg = "Permissions Error: Controleer je 'Security Rules' in de Firebase Console.";
+                } else if (err.message.includes("network")) {
+                    msg = "Netwerk Fout: Ben je online? Of blokkeert de browser de import?";
+                }
+                
+                resultDiv.style.color = '#ff6b6b';
+                resultDiv.innerText = msg;
+                resultDiv.style.display = 'block';
+            }
         }
     </script>
 </body>
