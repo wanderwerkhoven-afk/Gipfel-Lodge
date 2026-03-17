@@ -137,13 +137,15 @@
         #dashboard-screen {
             display: none;
             width: 100%;
-            max-width: 900px;
-            background: var(--color-bg-light);
-            border-radius: var(--radius-md);
-            box-shadow: 0 24px 50px rgba(0,0,0,0.4);
-            overflow: hidden;
-            margin: auto;
+            max-width: 1400px;
+            height: 85vh; /* Fixeer de hoogte van de 'tile' */
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.2);
+            overflow: hidden; 
+            margin: 40px auto;
             animation: fadeIn 0.4s ease-out;
+            position: relative; /* Voor spinners etc */
         }
         
         @keyframes fadeIn {
@@ -151,10 +153,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Dashboard Layout: Sidebar + Main */
         .dashboard-layout {
             display: flex;
-            min-height: 600px;
+            height: 100%; /* Fill the 90vh container */
         }
 
         /* Sidebar Styling */
@@ -236,8 +237,10 @@
         /* Main Content Styling */
         .dashboard-main {
             flex: 1;
-            padding: 60px 80px;
-            background-color: #fcfbf7; /* Slightly cream for premium feel */
+            padding: 80px 100px; 
+            background-color: #fcfbf7; 
+            overflow-y: auto; /* Makes the right side scrollable */
+            height: 100%;
         }
 
         .page-header {
@@ -348,31 +351,15 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Responsive Breakpoints */
-        @media (max-width: 800px) {
-            .dashboard-layout { flex-direction: column; }
-            .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 25px; }
-            .nav-menu { display: flex; gap: 10px; margin-bottom: 20px; }
-            .nav-item { margin-bottom: 0; padding: 10px; flex: 1; text-align: center; justify-content: center; }
-            .sidebar-brand p { margin-bottom: 20px; }
-            .dashboard-main { padding: 30px 20px; }
-        }
-
-        @media (max-width: 600px) {
-            .admin-form-grid { grid-template-columns: 1fr; gap: 20px; }
-            body { padding: 0; }
-            #login-screen { border-radius: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; border-top: none; }
-            #dashboard-screen { border-radius: 0; min-height: 100vh; }
-        }
 
         .dashboard-view { display: none; }
         .dashboard-view.active { display: block; animation: fadeIn 0.4s ease-out; }
 
         .bookings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 40px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 50px; /* Grotere gaten tussen de kaarten */
+            margin-top: 40px;
         }
 
         .booking-card {
@@ -470,6 +457,44 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Responsive Breakpoints (Altijd onderaan voor juiste overschrijving) */
+        @media (max-width: 900px) {
+            .dashboard-layout { flex-direction: column; height: auto; }
+            #dashboard-screen { height: auto; min-height: 100vh; margin: 0; border-radius: 0; }
+            .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 30px 20px; }
+            .nav-menu { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+            .nav-item { 
+                margin-bottom: 0; 
+                padding: 12px 15px; 
+                flex: 1 1 calc(50% - 10px); 
+                min-width: 140px; 
+                text-align: center; 
+                justify-content: center; 
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            .sidebar-brand p { margin-bottom: 20px; }
+            .dashboard-main { padding: 40px 20px; overflow-y: visible; }
+            .page-header { margin-bottom: 30px; padding-bottom: 20px; }
+            .page-header h1 { font-size: 2rem; }
+            .bookings-grid { grid-template-columns: 1fr !important; gap: 25px; }
+            .booking-card { padding: 25px 20px; width: 100%; max-width: 100%; }
+            .booking-card-header { flex-direction: column; gap: 10px; }
+            .status-badge { align-self: flex-start; }
+        }
+
+        @media (max-width: 600px) {
+            .admin-form-grid { grid-template-columns: 1fr; gap: 20px; }
+            body { padding: 0; }
+            #login-screen { border-radius: 0; height: 100vh; padding: 40px 25px; display: flex; flex-direction: column; justify-content: center; border-top: none; max-width: none; }
+            #dashboard-screen { border-radius: 0; min-height: 100vh; margin: 0; }
+            .dashboard-main { padding: 30px 20px; }
+            .page-header h1 { font-size: 1.8rem; }
+            .nav-item { flex: 1 1 100%; min-width: auto; }
+        }
     </style>
 </head>
 <body>
@@ -514,7 +539,8 @@
 
                 <button class="logout-btn" onclick="logout()" style="margin-top: 20px;">Veilig Uitloggen</button>
             </aside>
-
+            
+            <main class="dashboard-main">
                 <!-- Confirm Booking View -->
                 <div id="confirm-view" class="dashboard-view active">
                     <div class="page-header">
