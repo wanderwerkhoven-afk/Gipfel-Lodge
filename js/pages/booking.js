@@ -196,34 +196,75 @@ const GipfelBooking = {
                 finalBtn.classList.add('disabled');
 
                 const t = (key) => window.i18n ? window.i18n.t(key) : key;
-                let templateParams;
+                let guestParams, ownerParams;
 
                 try {
-                    templateParams = {
-                        user_name: document.getElementById('b-name').value,
-                        user_email: document.getElementById('b-email').value,
-                        user_phone: document.getElementById('b-phone').value || '-',
-                        check_in: document.getElementById('b-checkin').value,
-                        check_out: document.getElementById('b-checkout').value,
-                        guests: `${document.getElementById('b-adults').value} ${t('form-adults')}, ${document.getElementById('b-children').value} ${t('form-children')}, ${document.getElementById('b-babies').value} ${t('form-babies')}`,
-                        message: document.getElementById('b-message').value || '-',
-                        
-                        email_tagline: "Alpine Elegance",
-                        email_heading: t('success-title'),
-                        email_intro: t('email-intro'),
-                        label_travel_data: t('email-travel-data'),
-                        label_guests: t('email-guests'),
-                        label_message: t('email-message'),
-                        label_contact: t('email-contact'),
-                        email_closing: t('email-closing'),
+                    // --- Gather raw form values ---
+                    const userName   = document.getElementById('b-name').value;
+                    const userEmail  = document.getElementById('b-email').value;
+                    const userPhone  = document.getElementById('b-phone').value || '-';
+                    const checkIn    = document.getElementById('b-checkin').value;
+                    const checkOut   = document.getElementById('b-checkout').value;
+                    const adults     = document.getElementById('b-adults').value;
+                    const children   = document.getElementById('b-children').value;
+                    const babies     = document.getElementById('b-babies').value;
+                    const message    = document.getElementById('b-message').value || '-';
+
+                    // --- Calculate derived values ---
+                    const msPerDay   = 1000 * 60 * 60 * 24;
+                    const nights     = Math.round((new Date(checkOut) - new Date(checkIn)) / msPerDay);
+                    const totalGuests = parseInt(adults) + parseInt(children) + parseInt(babies);
+
+                    const now         = new Date();
+                    const receivedDate = now.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
+                    const receivedTime = now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+
+                    // --- Guest confirmation e-mail params ---
+                    guestParams = {
+                        user_name:           userName,
+                        user_email:          userEmail,
+                        user_phone:          userPhone,
+                        check_in:            checkIn,
+                        check_out:           checkOut,
+                        guests:              `${adults} ${t('form-adults')}, ${children} ${t('form-children')}, ${babies} ${t('form-babies')}`,
+                        message:             message,
+
+                        email_tagline:       "Alpine Elegance",
+                        email_heading:       t('success-title'),
+                        email_intro:         t('email-intro'),
+                        label_travel_data:   t('email-travel-data'),
+                        label_guests:        t('email-guests'),
+                        label_message:       t('email-message'),
+                        label_contact:       t('email-contact'),
+                        email_closing:       t('email-closing'),
                         email_visit_website: t('email-visit-website'),
-                        
-                        // Extra technical fields
-                        reply_to: document.getElementById('b-email').value,
-                        to_email: document.getElementById('b-email').value // In case they used {{to_email}} in the dashboard
+
+                        reply_to:            userEmail,
+                        to_email:            userEmail,
                     };
-                    
-                    console.log("Template Params to be sent:", templateParams);
+
+                    // --- Owner notification e-mail params ---
+                    ownerParams = {
+                        user_name:      userName,
+                        user_email:     userEmail,
+                        user_phone:     userPhone,
+                        check_in:       checkIn,
+                        check_out:      checkOut,
+                        nights:         nights,
+                        adults:         adults,
+                        children:       children,
+                        babies:         babies,
+                        total_guests:   totalGuests,
+                        message:        message,
+                        received_date:  receivedDate,
+                        received_time:  receivedTime,
+
+                        reply_to:       userEmail,
+                    };
+
+                    console.log("Guest params:", guestParams);
+                    console.log("Owner params:", ownerParams);
+
                 } catch (paramError) {
                     console.error("Form Data Error:", paramError);
                     alert("Fout bij verzamelen gegevens: " + paramError.message);
@@ -236,20 +277,32 @@ const GipfelBooking = {
                     if (typeof emailjs === 'undefined') {
                         throw new Error("EmailJS library (SDK) is niet geladen. Controleer je internetverbinding.");
                     }
-                    
-                    // Sending with explicit public key for maximum robustness
-                    const response = await emailjs.send(
-                        'service_rl6qzmr', 
-                        'template_3029w4q', 
-                        templateParams,
-                        'WC62OFB5MXpryYO1u'
-                    );
-                    
-                    console.log("EmailJS Success:", response.status, response.text);
+
+                    // Send both emails in parallel for speed
+                    const [guestResponse, ownerResponse] = await Promise.all([
+                        // 1. Confirmation e-mail to the guest
+                        emailjs.send(
+                            'service_rl6qzmr',
+                            'template_3029w4q',   // <-- guest template ID
+                            guestParams,
+                            'WC62OFB5MXpryYO1u'
+                        ),
+                        // 2. Notification e-mail to the owner
+                        emailjs.send(
+                            'service_rl6qzmr',
+                            'template_d5cqatd',
+                            ownerParams,
+                            'WC62OFB5MXpryYO1u'
+                        ),
+                    ]);
+
+                    console.log("Guest email sent:", guestResponse.status);
+                    console.log("Owner email sent:", ownerResponse.status);
                     this.goToStep(4);
+
                 } catch (error) {
                     console.error("Detailed EmailJS Error:", error);
-                    
+
                     let errorMsg = "Fout bij verzenden:";
                     if (error.status === 400) errorMsg = "EmailJS Error 400: Controleer je Service of Template ID.";
                     else if (error.status === 401) errorMsg = "EmailJS Error 401: Public Key is ongeldig.";
