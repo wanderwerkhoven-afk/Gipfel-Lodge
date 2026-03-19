@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <!-- We hergebruiken een paar basis styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/base/style.css">
     
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -126,11 +126,20 @@
             color: #d9534f;
             font-size: 0.85rem;
             margin-top: 15px;
-            display: none;
+            opacity: 0;
+            pointer-events: none;
             background: #fdf3f2;
             padding: 10px;
             border-radius: var(--radius-sm);
             border: 1px solid #fadbd8;
+            transition: opacity 0.3s ease;
+            height: 40px; /* Reserve space so password field doesn't jump */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-msg.visible {
+            opacity: 1;
         }
 
         /* Dashboard Scherm (verborgen tot login) */
@@ -418,6 +427,18 @@
             border: 1px solid rgba(197, 160, 89, 0.2);
         }
 
+        .status-confirmed {
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
+            border: 1px solid rgba(46, 125, 50, 0.2);
+        }
+
+        .status-declined {
+            background: rgba(211, 47, 47, 0.08);
+            color: #c62828;
+            border: 1px solid rgba(211, 47, 47, 0.2);
+        }
+
         .booking-info-row {
             display: flex;
             flex-direction: column;
@@ -453,6 +474,35 @@
             letter-spacing: 0.05em;
         }
 
+        .btn-decline {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(198, 40, 40, 0.25);
+            background: transparent;
+            color: #c62828;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .btn-decline:hover {
+            background: rgba(198, 40, 40, 0.06);
+        }
+        .btn-decline.confirming {
+            background: #c62828;
+            border-color: #c62828;
+            color: #fff;
+            animation: pulse-red 0.6s ease;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(198,40,40,0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(198,40,40,0); }
+            100% { box-shadow: 0 0 0 0 rgba(198,40,40,0); }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -484,6 +534,155 @@
             .booking-card { padding: 25px 20px; width: 100%; max-width: 100%; }
             .booking-card-header { flex-direction: column; gap: 10px; }
             .status-badge { align-self: flex-start; }
+        }
+
+        /* --- Text-inside Toggle Switch --- */
+        .switch {
+            position: relative;
+            display: inline-flex;
+            width: 90px;
+            height: 28px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .slider {
+            position: absolute;
+            inset: 0;
+            background-color: #ddd;
+            border-radius: 28px;
+            transition: background-color .3s;
+            display: flex;
+            align-items: center;
+        }
+        /* The knob */
+        .slider::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            left: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: transform .3s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        /* OFF label (right side, visible when unchecked) */
+        .slider::after {
+            content: attr(data-off);
+            position: absolute;
+            right: 8px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: rgba(0,0,0,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: opacity .2s;
+        }
+        /* ON label (left side, hidden when unchecked) */
+        .slider-on-label {
+            position: absolute;
+            left: 8px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0;
+            transition: opacity .2s;
+            z-index: 2;
+            pointer-events: none;
+        }
+        input:checked + .slider {
+            background-color: var(--color-gold);
+        }
+        input:checked + .slider::before {
+            transform: translateX(62px);
+        }
+        input:checked + .slider::after {
+            opacity: 0;
+        }
+        input:checked + .slider .slider-on-label {
+            opacity: 1;
+        }
+        .status-label { display: none; }
+        .payment-info {
+            margin-top: 10px;
+            padding: 20px;
+            background: #fafaf8;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .payment-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--color-slate-light);
+        }
+        .payment-toggle-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tile-section-label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            color: var(--color-gold);
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+        .tile-data-row {
+            margin-bottom: 20px;
+        }
+        .tile-data-row:last-child { margin-bottom: 0; }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        .filter-btn {
+            background: #f4f4f2;
+            border: 1px solid rgba(0,0,0,0.05);
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--color-slate-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .filter-btn:hover {
+            background: #eee;
+        }
+        .filter-btn.active {
+            background: var(--color-gold);
+            color: #fff;
+            border-color: var(--color-gold);
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.2);
+        }
+        
+        /* Green accent for confirmed filter */
+        .filter-btn.confirmed.active {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+        }
+        /* Red accent for declined filter */
+        .filter-btn.declined.active {
+            background: #c62828;
+            border-color: #c62828;
+            box-shadow: 0 4px 12px rgba(198, 40, 40, 0.2);
         }
 
         @media (max-width: 600px) {
@@ -521,8 +720,9 @@
                 </div>
                 
                 <ul class="nav-menu">
-                    <li class="nav-item active" onclick="switchView('confirm-view', this)">&#10003;&nbsp; Bevestigen</li>
-                    <li class="nav-item" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Alle Aanvragen</li>
+                    <li class="nav-item active" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Alle Aanvragen</li>
+                    <li class="nav-item" onclick="switchView('confirm-view', this)">&#10003;&nbsp; Bevestigen</li>
+                    <li class="nav-item" onclick="switchView('mailchain-view', this)">&#9993;&nbsp; Mail-Chain</li>
                 </ul>
 
                 <div style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
@@ -534,6 +734,11 @@
                     <button onclick="testFirebaseConnection()" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 5px; cursor: pointer; transition: all 0.2s;">
                         Test Verbinding
                     </button>
+                    
+                    <a href="https://console.firebase.google.com/project/gipfel-lodge/firestore/databases/-default-/data" target="_blank" style="display: block; margin-top: 12px; text-align: center; color: rgba(255,255,255,0.3); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.05em; transition: all 0.2s;" onmouseover="this.style.color='var(--color-gold)'; this.style.opacity='1';" onmouseout="this.style.color='rgba(255,255,255,0.3)';">
+                        &#x2197; BEHEER DATA IN FIREBASE
+                    </a>
+
                     <div id="db-test-result" style="margin-top: 10px; font-size: 0.75rem; color: #ff6b6b; display: none;"></div>
                 </div>
 
@@ -542,7 +747,7 @@
             
             <main class="dashboard-main">
                 <!-- Confirm Booking View -->
-                <div id="confirm-view" class="dashboard-view active">
+                <div id="confirm-view" class="dashboard-view">
                     <div class="page-header">
                         <h1>Aanvraag Bevestigen</h1>
                         <p>Genereer en verstuur automatisch de bevestigings-e-mail naar de hoofdboeker.</p>
@@ -590,15 +795,36 @@
                 </div>
 
                 <!-- Bookings List View -->
-                <div id="bookings-view" class="dashboard-view">
+                <div id="bookings-view" class="dashboard-view active">
                     <div class="page-header">
                         <h1>Ingekomen Aanvragen</h1>
                         <p>Overzicht van alle boekingen die via de website zijn binnengekomen.</p>
+                        
+                        <div class="filter-bar">
+                            <button class="filter-btn active" onclick="filterBookings('all', this)">Alle</button>
+                            <button class="filter-btn" onclick="filterBookings('pending', this)">Pending</button>
+                            <button class="filter-btn confirmed" onclick="filterBookings('confirmed', this)">Confirmed</button>
+                            <button class="filter-btn declined" onclick="filterBookings('declined', this)">Declined</button>
+                            <button class="filter-btn" onclick="filterBookings('completed', this)">Completed</button>
+                        </div>
                     </div>
 
                     <div id="bookings-loader" class="spinner" style="margin: 40px auto;"></div>
                     <div id="bookings-list" class="bookings-grid">
                         <!-- Bookings populate here -->
+                    </div>
+                </div>
+
+                <!-- Mail-Chain View -->
+                <div id="mailchain-view" class="dashboard-view">
+                    <div class="page-header">
+                        <h1>Communicatie & Mail-Chain</h1>
+                        <p>Beheer de status van verschillende e-mails voor alle <strong>bevestigde</strong> boekingen.</p>
+                    </div>
+
+                    <div id="mailchain-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
+                    <div id="mailchain-list" class="bookings-grid">
+                        <!-- Mail-chain cards populate here -->
                     </div>
                 </div>
 
@@ -641,9 +867,9 @@
                 // Sla op voor de sessie (wordt gewist als tabblad sluit)
                 sessionStorage.setItem("gipfel_admin_logged_in", "true");
                 showDashboard();
-                errorMsg.style.display = "none";
+                errorMsg.classList.remove('visible');
             } else {
-                errorMsg.style.display = "block";
+                errorMsg.classList.add('visible');
                 document.getElementById("admin-password").value = "";
             }
         }
@@ -661,6 +887,15 @@
             document.getElementById("admin-password").value = "";
         }
 
+        // --- FILTER LOGICA ---
+        let currentFilter = 'all';
+        function filterBookings(status, el) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            currentFilter = status;
+            loadBookings(status);
+        }
+
         function showDashboard() {
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("dashboard-screen").style.display = "block";
@@ -670,9 +905,33 @@
             } else {
                  document.body.style.display = 'block'; // beter voor scrolling p mobiel
             }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasUrlData = urlParams.has('name') || urlParams.has('email');
             
-            // Vul data in vanuit URL
-            prefillFormFromUrl();
+            if (hasUrlData) {
+                // We kwamen binnen via een email link. Vul form in en switch naar confirm-view.
+                prefillFormFromUrl();
+                // We hebben mogelijk de nav nog niet bijgewerkt:
+                const confirmNav = document.querySelector('.nav-item[onclick*="confirm-view"]');
+                if (confirmNav) {
+                    switchView('confirm-view', confirmNav);
+                } else {
+                    document.getElementById('bookings-view').classList.remove('active');
+                    document.getElementById('confirm-view').classList.add('active');
+                }
+            } else {
+                // Zorg dat de juiste view geladen wordt (default Alle Aanvragen)
+                const activeNav = document.querySelector('.nav-item.active');
+                if (activeNav) {
+                    const clickAttr = activeNav.getAttribute('onclick');
+                    if (clickAttr.includes('bookings-view')) {
+                        loadBookings('all');
+                    } else if (clickAttr.includes('mailchain-view')) {
+                        loadMailChain();
+                    }
+                }
+            }
         }
 
         // --- 2. EMAILJS LOGICA ---
@@ -795,10 +1054,12 @@
 
             if (viewId === 'bookings-view') {
                 loadBookings();
+            } else if (viewId === 'mailchain-view') {
+                loadMailChain();
             }
         }
 
-        async function loadBookings() {
+        async function loadBookings(status = 'all') {
             const list = document.getElementById('bookings-list');
             const loader = document.getElementById('bookings-loader');
             
@@ -807,18 +1068,42 @@
 
             try {
                 const { db, collection, getDocs, query, orderBy } = await import('./js/core/firebase.js');
+                
+                // Fetch all initially to avoid composite index requirements in Firestore
                 const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
 
                 loader.style.display = 'none';
 
-                if (querySnapshot.empty) {
-                    list.innerHTML = '<p style="grid-column: 1/-1; text-align: center; opacity: 0.6; padding: 40px;">Nog geen boekingen gevonden.</p>';
-                    return;
-                }
+                let matchCount = 0;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    
+                    // Bereken of datum verstreken is (check-out is voor vandaag)
+                    const checkOutDate = new Date(data.checkOut);
+                    checkOutDate.setHours(0, 0, 0, 0);
+                    const isPassed = checkOutDate < today;
+
+                    // Client-side filtering logic
+                    let isMatch = false;
+                    if (status === 'all') {
+                        isMatch = true;
+                    } else if (status === 'completed') {
+                        isMatch = isPassed;
+                    } else if (status === 'pending') {
+                        isMatch = !isPassed && data.status === 'pending';
+                    } else if (status === 'confirmed') {
+                        isMatch = !isPassed && data.status === 'confirmed';
+                    } else if (status === 'declined') {
+                        isMatch = data.status === 'declined';
+                    }
+                    
+                    if (!isMatch) return;
+                    
+                    matchCount++;
                     const card = document.createElement('div');
                     card.className = 'booking-card';
                     
@@ -826,60 +1111,389 @@
                     const dOut = new Date(data.checkOut);
                     const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
                     
+                    const raw = data.totalAmount || 0;
+                    const fmt = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n);
+                    const totalAmount = raw ? fmt(raw) : 'N/A';
+                    const depositAmount = raw ? fmt(raw * 0.30) : '';
+                    const balanceAmount = raw ? fmt(raw * 0.70) : '';
+                    
+                    // Construct Pre-filled Email Body
+                    let emailBody = `Beste ${data.guestName || 'Gast'},\n\n`;
+                    emailBody += `Hierbij sturen wij u een bericht over uw boeking:\n\n`;
+                    emailBody += `• Check-in:  ${dIn.toLocaleDateString('nl-NL', fmtOpts)}\n`;
+                    emailBody += `• Check-out: ${dOut.toLocaleDateString('nl-NL', fmtOpts)}\n`;
+                    emailBody += `• Reizigers: ${data.totalGuests} personen\n`;
+                    if (raw) emailBody += `• Totaalbedrag: ${totalAmount}\n`;
+                    emailBody += `\nMet vriendelijke groet,\nTeam Gipfel Lodge\nwww.gipfellodge.at`;
+                    
+                    const encodedSubject = encodeURIComponent("Bericht over uw boeking bij Gipfel Lodge");
+                    const encodedBody = encodeURIComponent(emailBody);
+                    const mailtoLink = `mailto:${data.guestEmail || ''}?subject=${encodedSubject}&body=${encodedBody}`;
+
                     card.innerHTML = `
                         <div class="booking-card-header">
                             <div>
-                                <h3>${data.guestName || 'Anonieme Gast'}</h3>
-                                <p style="margin-bottom: 2px;">${data.guestEmail || 'Geen e-mail'}</p>
-                                <p style="font-size: 0.85rem; opacity: 0.6;">${data.guestPhone || '-'}</p>
+                                <h3>${data.guestName || 'Gast'}</h3>
+                                <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
+                                <p style="font-size: 0.85rem;">${data.guestPhone || '-'}</p>
                             </div>
                             <span class="status-badge status-${data.status || 'pending'}">
                                 ${data.status || 'pending'}
                             </span>
                         </div>
                         <div class="booking-card-body">
-                            <div class="booking-info-row">
-                                <span>🗓️ Datum:</span>
+                            <div class="tile-data-row">
+                                <span class="tile-section-label">Boeking binnengekomen:</span>
+                                <strong>${data.receivedDate || '-'}</strong> om ${data.receivedTime || '-'}
+                            </div>
+                            
+                            <div class="tile-data-row">
+                                <span class="tile-section-label">Gewenst verblijf periode:</span>
                                 <strong>${data.checkIn} t/m ${data.checkOut}</strong>
                             </div>
-                            <div class="booking-info-row">
-                                <span>👥 Gasten:</span>
-                                <strong>${data.totalGuests} personen</strong>
+                            
+                            <div class="tile-data-row">
+                                <span class="tile-section-label">Gasten:</span>
+                                <strong>volw: ${data.adults || 0} | kind: ${data.children || 0} | baby: ${data.babies || 0}</strong>
                             </div>
-                            <div class="booking-info-row">
-                                <span>💬 Bericht:</span>
-                                <p style="font-style: italic; opacity: 0.8;">"${data.message || 'Geen bericht'}"</p>
+                            
+                            <div class="tile-data-row">
+                                <span class="tile-section-label">Bericht / opmerking:</span>
+                                <p style="font-style: italic; opacity: 0.8; font-size: 0.95rem;">"${data.message || 'Geen bericht'}"</p>
+                            </div>
+
+                            <div class="payment-info">
+                                <div class="payment-toggle" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; margin-bottom: 5px;">
+                                    <strong style="color: var(--color-slate); font-size: 1rem;">Totaal bedrag:</strong>
+                                    <strong style="color: var(--color-gold); font-size: 1.1rem;">${totalAmount}</strong>
+                                </div>
+                                
+                                <div class="payment-toggle">
+                                    <span>30% aanbetaling: <strong style="color: var(--color-slate); margin-left: 4px;">${depositAmount}</strong></span>
+                                    <div class="payment-toggle-controls">
+                                        <label class="switch">
+                                            <input type="checkbox" ${data.depositPaid ? 'checked' : ''} onchange="togglePayment('${doc.id}', 'depositPaid', this.checked, this)">
+                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="payment-toggle">
+                                    <span>Rest betaling: <strong style="color: var(--color-slate); margin-left: 4px;">${balanceAmount}</strong></span>
+                                    <div class="payment-toggle-controls">
+                                        <label class="switch">
+                                            <input type="checkbox" ${data.balancePaid ? 'checked' : ''} onchange="togglePayment('${doc.id}', 'balancePaid', this.checked, this)">
+                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="booking-card-footer" style="display:flex; flex-direction:column; gap:12px;">
-                            <button class="btn btn-primary action-btn" 
-                                data-name="${data.guestName || 'Gast'}"
-                                data-email="${data.guestEmail || ''}"
-                                data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}"
-                                data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}"
-                                data-guests="${data.totalGuests}"
-                                data-id="${doc.id}"
-                                onclick="confirmDirectlyFromButton(this)">
-                                DIRECT BEVESTIGEN
-                            </button>
-                            <a href="#" style="text-align:center; font-size:0.85rem; color:var(--color-gold); text-decoration:none;" 
-                               data-name="${data.guestName || 'Gast'}"
-                               data-email="${data.guestEmail || ''}"
-                               data-in-raw="${data.checkIn}"
-                               data-out-raw="${data.checkOut}"
-                               data-guests="${data.totalGuests}"
-                               onclick="confirmBookingFromList(this)">
-                                Details / Handmatig aanpassen
-                            </a>
+                            ${data.status === 'declined' ? `
+                                <a href="${mailtoLink}" class="btn btn-primary action-btn" style="background: var(--color-gold); border-color: var(--color-gold); color: #fff; text-decoration: none;">
+                                    ✉ Stuur Bericht
+                                </a>
+                                <button class="btn btn-primary action-btn" style="background: #fff; color: var(--color-gold); border-color: rgba(0,0,0,0.1); font-size: 0.8rem;"
+                                    data-name="${data.guestName || 'Gast'}"
+                                    data-email="${data.guestEmail || ''}"
+                                    data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}"
+                                    data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}"
+                                    data-guests="${data.totalGuests}"
+                                    onclick="copyRichTextEmail(this)">
+                                    ⎘ Kopieer HTML-Code
+                                </button>
+                                <button class="btn-decline confirming" style="background: rgba(198,40,40,0.06); color: #c62828; border-color: rgba(198,40,40,0.3);" onclick="undeclineBooking('${doc.id}', this)">
+                                    ↩ Weigering ongedaan maken
+                                </button>
+                            ` : `
+                                <button class="btn btn-primary action-btn" 
+                                    data-name="${data.guestName || 'Gast'}"
+                                    data-email="${data.guestEmail || ''}"
+                                    data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}"
+                                    data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}"
+                                    data-guests="${data.totalGuests}"
+                                    data-id="${doc.id}"
+                                    onclick="confirmDirectlyFromButton(this)">
+                                    DIRECT BEVESTIGEN
+                                </button>
+                                <a href="${mailtoLink}" class="btn btn-primary action-btn" style="background: #fff; color: var(--color-gold); border-color: rgba(0,0,0,0.1); text-decoration: none; font-size: 0.8rem;">
+                                    ✉ Stuur Bericht
+                                </a>
+                                <button class="btn btn-primary action-btn" style="background: #fff; color: var(--color-gold); border-color: rgba(0,0,0,0.1); font-size: 0.8rem;"
+                                    data-name="${data.guestName || 'Gast'}"
+                                    data-email="${data.guestEmail || ''}"
+                                    data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}"
+                                    data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}"
+                                    data-guests="${data.totalGuests}"
+                                    onclick="copyRichTextEmail(this)">
+                                    ⎘ Kopieer HTML-Code
+                                </button>
+                                <a href="#" style="text-align:center; font-size:0.85rem; color:var(--color-gold); text-decoration:none;" 
+                                   data-name="${data.guestName || 'Gast'}"
+                                   data-email="${data.guestEmail || ''}"
+                                   data-in-raw="${data.checkIn}"
+                                   data-out-raw="${data.checkOut}"
+                                   data-guests="${data.totalGuests}"
+                                   onclick="confirmBookingFromList(this)">
+                                    Details / Handmatig aanpassen
+                                </a>
+                                <button class="btn-decline" onclick="declineBooking('${doc.id}', this)">
+                                    ✕ Boeking Weigeren
+                                </button>
+                            `}
                         </div>
                     `;
                     list.appendChild(card);
                 });
 
+                if (matchCount === 0) {
+                    list.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.6; padding: 40px;">Geen boeking gevonden voor de status: <strong>${status}</strong></p>`;
+                }
+
             } catch (err) {
                 console.error("Fout bij laden boekingen:", err);
                 loader.style.display = 'none';
                 list.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center;">Fout bij laden van gegevens.</p>';
+            }
+        }
+
+        // --- MAIL-CHAIN LOGICA ---
+        async function loadMailChain() {
+            const list = document.getElementById('mailchain-list');
+            const loader = document.getElementById('mailchain-loader');
+            
+            list.innerHTML = '';
+            loader.style.display = 'block';
+
+            try {
+                const { db, collection, getDocs } = await import('./js/core/firebase.js');
+                const querySnapshot = await getDocs(collection(db, "bookings"));
+                
+                loader.style.display = 'none';
+
+                let matchCount = 0;
+                const now = new Date();
+
+                // Sort bookings by check-in date (closest first)
+                const bookings = [];
+                querySnapshot.forEach(doc => {
+                    bookings.push({ id: doc.id, ...doc.data() });
+                });
+                bookings.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn));
+
+                bookings.forEach(data => {
+                    // We only show track mail chains for 'confirmed' bookings
+                    if (data.status !== 'confirmed') return;
+                    
+                    matchCount++;
+                    const card = document.createElement('div');
+                    card.className = 'booking-card';
+                    
+                    const dIn = new Date(data.checkIn);
+                    const dOut = new Date(data.checkOut);
+                    const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+
+                    // Ensure mailChain object exists
+                    const mc = data.mailChain || {};
+                    // Step 1 and 2 are implicitly true if we are in this 'confirmed' list
+                    const s1_reg = true; 
+                    const s2_conf = true;
+                    const s3_depRem = mc.depositReminder || false;
+                    const s4_depRec = mc.depositReceived || false;
+                    const s5_balRem = mc.balanceReminder || false;
+                    const s6_preStay = mc.preStayInfo || false;
+
+                    card.innerHTML = `
+                        <div class="booking-card-header">
+                            <div>
+                                <h3>${data.guestName || 'Gast'}</h3>
+                                <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
+                            </div>
+                            <span class="status-badge status-confirmed">Confirmed</span>
+                        </div>
+                        <div class="booking-card-body">
+                            <div class="booking-info-row">
+                                <span class="tile-section-label">Verblijf:</span>
+                                <strong>${dIn.toLocaleDateString('nl-NL', fmtOpts)} – ${dOut.toLocaleDateString('nl-NL', fmtOpts)}</strong>
+                            </div>
+                            
+                            <div class="payment-info" style="margin-top: 15px;">
+                                <!-- Step 1 -->
+                                <div class="payment-toggle">
+                                    <span style="opacity: 0.6;">1. Boeking geregistreerd</span>
+                                    <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">✔ VOLTOOID</span>
+                                </div>
+                                <!-- Step 2 -->
+                                <div class="payment-toggle" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; margin-bottom: 5px;">
+                                    <span style="opacity: 0.6;">2. Boeking confirmed</span>
+                                    <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">✔ VOLTOOID</span>
+                                </div>
+                                
+                                <!-- Step 3 -->
+                                <div class="payment-toggle">
+                                    <span>3. Deposit reminder mail</span>
+                                    <div class="payment-toggle-controls">
+                                        <label class="switch">
+                                            <input type="checkbox" ${s3_depRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReminder', this.checked)">
+                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4 -->
+                                <div class="payment-toggle">
+                                    <span>4. Deposit ontvangen mail</span>
+                                    <div class="payment-toggle-controls">
+                                        <label class="switch">
+                                            <input type="checkbox" ${s4_depRec ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReceived', this.checked)">
+                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Step 5 -->
+                                <div class="payment-toggle">
+                                    <span>5. Balance reminder mail</span>
+                                    <div class="payment-toggle-controls">
+                                        <label class="switch">
+                                            <input type="checkbox" ${s5_balRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'balanceReminder', this.checked)">
+                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Step 6 -->
+                                <div class="payment-toggle">
+                                    <span>6. Regels & wachtwoorden</span>
+                                    <div class="payment-toggle-controls">
+                                        <label class="switch">
+                                            <input type="checkbox" ${s6_preStay ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'preStayInfo', this.checked)">
+                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+
+                if (matchCount === 0) {
+                    list.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.6; padding: 40px;">Geen bevestigde boekingen gevonden voor de mail-chain.</p>`;
+                }
+
+            } catch (err) {
+                console.error("Fout bij laden mail-chain:", err);
+                loader.style.display = 'none';
+                list.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center;">Fout bij laden van gegevens.</p>';
+            }
+        }
+
+        async function toggleMailStep(bookingId, stepKey, value) {
+            try {
+                const { db, doc, updateDoc } = await import('./js/core/firebase.js');
+                
+                // Nested update in Firestore object
+                await updateDoc(doc(db, "bookings", bookingId), {
+                    [`mailChain.${stepKey}`]: value
+                });
+                
+            } catch (err) {
+                console.error(`Fout bij updaten mail-chain stap ${stepKey}:`, err);
+                alert("Kon de status niet opslaan in Database.");
+            }
+        }
+
+        async function togglePayment(bookingId, field, value, checkboxEl) {
+            try {
+                const { db, doc, updateDoc } = await import('./js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), {
+                    [field]: value
+                });
+                
+                // Update only the adjacent status label — no page reload needed
+                const label = checkboxEl.closest('.payment-toggle-controls').querySelector('.status-label');
+                if (label) {
+                    if (field === 'depositPaid') {
+                        label.textContent = value ? 'Voltooid' : 'Nog niet voltooid';
+                    } else {
+                        label.textContent = value ? 'Voltooid' : 'Nog niet gedaan';
+                    }
+                }
+            } catch (err) {
+                console.error("Fout bij bijwerken betalingsstatus:", err);
+                // Revert the checkbox on failure
+                checkboxEl.checked = !value;
+                alert("Kon de status niet bijwerken in de database.");
+            }
+        }
+
+        let _declineTimer = null;
+        async function declineBooking(bookingId, btnEl) {
+            if (!btnEl.classList.contains('confirming')) {
+                // --- Step 1: Ask for confirmation ---
+                btnEl.classList.add('confirming');
+                btnEl.textContent = '⚠ Zeker weten? Klik opnieuw om te weigeren';
+                
+                // Auto-reset after 4 seconds if user doesn't confirm
+                clearTimeout(_declineTimer);
+                _declineTimer = setTimeout(() => {
+                    if (btnEl.classList.contains('confirming')) {
+                        btnEl.classList.remove('confirming');
+                        btnEl.textContent = '✕ Boeking Weigeren';
+                    }
+                }, 4000);
+            } else {
+                // --- Step 2: Execute decline ---
+                clearTimeout(_declineTimer);
+                btnEl.textContent = 'Bezig...';
+                btnEl.disabled = true;
+                
+                try {
+                    const { db, doc, updateDoc } = await import('./js/core/firebase.js');
+                    await updateDoc(doc(db, "bookings", bookingId), {
+                        status: 'declined'
+                    });
+
+                    // Fade out the card
+                    const card = btnEl.closest('.booking-card');
+                    card.style.transition = 'opacity 0.4s, transform 0.4s';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.97)';
+                    setTimeout(() => card.remove(), 400);
+                } catch (err) {
+                    console.error("Fout bij weigeren boeking:", err);
+                    btnEl.classList.remove('confirming');
+                    btnEl.disabled = false;
+                    btnEl.textContent = '✕ Boeking Weigeren';
+                    alert("Kon de boeking niet weigeren. Probeer opnieuw.");
+                }
+            }
+        }
+
+        async function undeclineBooking(bookingId, btnEl) {
+            btnEl.textContent = 'Bezig met herstellen...';
+            btnEl.disabled = true;
+
+            try {
+                const { db, doc, updateDoc } = await import('./js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), {
+                    status: 'pending' // Zet terug naar pending
+                });
+
+                // Fade out the card from the declined view
+                const card = btnEl.closest('.booking-card');
+                card.style.transition = 'opacity 0.4s, transform 0.4s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.97)';
+                setTimeout(() => card.remove(), 400);
+
+            } catch (err) {
+                console.error("Fout bij herstellen boeking:", err);
+                btnEl.disabled = false;
+                btnEl.textContent = '↩ Weigering ongedaan maken';
+                alert("Kon de boeking niet herstellen. Probeer opnieuw.");
             }
         }
 
@@ -896,6 +1510,120 @@
             switchView('confirm-view', document.querySelector('.nav-item:first-child'));
         }
 
+        async function copyRichTextEmail(btn) {
+            const ds = btn.dataset;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = 'Kopiëren...';
+            btn.disabled = true;
+
+            const name = ds.name || 'Gast';
+            const dateIn = ds.in || '';
+            const dateOut = ds.out || '';
+            const guests = ds.guests || '';
+
+            // This is the HTML from owner-notification-template.html with variables injected
+            // Dit inlines de CSS volledig voor e-mailclients die <style> tags strippen
+            const htmlString = `
+            \x3C!DOCTYPE html>
+            \x3Chtml lang="nl">
+            \x3Chead>
+                \x3Cmeta charset="UTF-8">
+            \x3C/head>
+            \x3Cbody style="margin: 0; padding: 0; background-color: #1a2830; font-family: 'Inter', Arial, sans-serif; color: #20303D; line-height: 1.6;">
+                \x3Ctable width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed; background-color: #1a2830; padding: 30px 0 50px; border-collapse: collapse;">
+                    \x3Ctr>
+                        \x3Ctd>
+                            \x3Ctable width="100%" cellpadding="0" cellspacing="0" align="center" style="max-width: 620px; margin: 0 auto; background-color: #ffffff; border-radius: 6px; overflow: hidden; border-collapse: collapse;">
+                                \x3Ctr>
+                                    \x3Ctd style="background-color: #20303D; padding: 30px 30px 25px; text-align: center;">
+                                        \x3Ch1 style="color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; letter-spacing: 0.05em; margin: 0; text-transform: uppercase;">Gipfel Lodge\x3C/h1>
+                                        \x3Ch2 style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin: 15px 0 6px;">Uw Verblijf in Oostenrijk\x3C/h2>
+                                        \x3Cp style="color: #C5A059; font-size: 13px; margin: 0; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Bericht over uw boeking\x3C/p>
+                                    \x3C/td>
+                                \x3C/tr>
+                                \x3Ctr>
+                                    \x3Ctd style="padding: 35px 30px;">
+                                        \x3Cp style="font-size: 16px; margin-bottom: 30px; color: #20303D;">
+                                            Hallo \x3Cstrong>${name}\x3C/strong>,\x3Cbr>\x3Cbr>
+                                            [ PLAATS HIER JE EIGEN BERICHT - Typ hier de reden van je bericht en wat je wilt vertellen aan de gast. ]
+                                        \x3C/p>
+                                        
+                                        \x3Cp style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #C5A059; margin: 0 0 12px;">Verblijfsperiode\x3C/p>
+                                        \x3Cdiv style="background-color: #20303D; border-radius: 6px; padding: 20px 25px; margin-bottom: 25px;">
+                                            \x3Ctable width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                                \x3Ctr>
+                                                    \x3Ctd style="width: 45%; vertical-align: top; padding-bottom: 4px;">
+                                                        \x3Cdiv style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #78868A; margin-bottom: 5px;">Check-in\x3C/div>
+                                                        \x3Cdiv style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #ffffff; font-weight: 600;">${dateIn}\x3C/div>
+                                                    \x3C/td>
+                                                    \x3Ctd style="width: 10%; text-align: center; vertical-align: middle; color: #C5A059; font-size: 20px; font-weight: 300;">&rarr;\x3C/td>
+                                                    \x3Ctd style="width: 45%; vertical-align: top; padding-bottom: 4px;">
+                                                        \x3Cdiv style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #78868A; margin-bottom: 5px;">Check-out\x3C/div>
+                                                        \x3Cdiv style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #ffffff; font-weight: 600;">${dateOut}\x3C/div>
+                                                    \x3C/td>
+                                                \x3C/tr>
+                                            \x3C/table>
+                                        \x3C/div>
+
+                                        \x3Cp style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #C5A059; margin: 0 0 12px;">Reisgezelschap\x3C/p>
+                                        \x3Ctable width="100%" cellpadding="8" cellspacing="0" style="border-collapse: separate; border-spacing: 6px; margin-bottom: 25px;">
+                                            \x3Ctr>
+                                                \x3Ctd style="background-color: #fcfbf8; border: 1px solid #e8e2d0; border-radius: 6px; padding: 12px 8px; text-align: center; width: 100%;">
+                                                    \x3Cdiv style="font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #20303D; font-weight: 600; line-height: 1;">${guests}\x3C/div>
+                                                    \x3Cdiv style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #78868A; margin-top: 4px;">Personen Totaal\x3C/div>
+                                                \x3C/td>
+                                            \x3C/tr>
+                                        \x3C/table>
+
+                                        \x3Cp style="font-size: 16px; margin-bottom: 30px; color: #20303D;">
+                                            Mocht u verdere vragen hebben, aarzel dan niet om contact met ons op te nemen. Wij kijken er ontzettend naar uit om u te mogen verwelkomen in de bergen!
+                                        \x3C/p>
+                                        
+                                        \x3Cdiv style="text-align: center; margin-top: 30px;">
+                                            \x3Ca href="https://gipfellodge.at" style="background-color: #C5A059; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: 700; display: inline-block; text-transform: uppercase; letter-spacing: 0.06em; font-size: 13px;">Kijk op de Website\x3C/a>
+                                        \x3C/div>
+                                    \x3C/td>
+                                \x3C/tr>
+                                \x3Ctr>
+                                    \x3Ctd style="background-color: #20303D; padding: 25px 30px; text-align: center; font-size: 12px; color: #78868A;">
+                                        \x3Cp style="margin: 0 0 6px;">
+                                            \x3Cstrong style="color: #ffffff;">Gipfel Lodge\x3C/strong> &mdash; Alpiner Luxus & Raum\x3Cbr>
+                                            Eben im Pongau, Austria &nbsp;|&nbsp; hello@gipfellodge.at
+                                        \x3C/p>
+                                    \x3C/td>
+                                \x3C/tr>
+                            \x3C/table>
+                        \x3C/td>
+                    \x3C/tr>
+                \x3C/table>
+            \x3C/body>
+            \x3C/html>
+            `;
+
+            try {
+                if (!navigator.clipboard) {
+                    throw new Error("Clipboard API niet ondersteund.");
+                }
+
+                await navigator.clipboard.writeText(htmlString);
+
+                btn.innerHTML = '✔ HTML-Code Gekopieerd!';
+                btn.style.color = '#2ecc71';
+            } catch (err) {
+                console.error("Kopiëren mislukt:", err);
+                alert("Kopiëren van broncode mislukt in deze browser. Probeer handmatig.");
+                btn.innerHTML = 'Kopiëren mislukt';
+                btn.style.color = 'red';
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.style.color = '';
+            }, 3000);
+        }
+
         async function testFirebaseConnection() {
             const statusTag = document.getElementById('db-status-tag');
             const resultDiv = document.getElementById('db-test-result');
@@ -903,7 +1631,7 @@
             
             resultDiv.style.display = 'none';
             dot.style.background = '#f1c40f'; // geel: bezig
-            statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #f1c40f;"></span> Verbinding testen...`;
+            statusTag.innerHTML = '\x3Cspan style="width: 8px; height: 8px; border-radius: 50%; background: #f1c40f;">\x3C/span> Verbinding testen...';
 
             try {
                 const { db, collection, addDoc, serverTimestamp } = await import('./js/core/firebase.js');
@@ -915,7 +1643,7 @@
                 });
 
                 dot.style.background = '#2ecc71'; // groen: succes
-                statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #2ecc71;"></span> Firebase: Verbonden`;
+                statusTag.innerHTML = '\x3Cspan style="width: 8px; height: 8px; border-radius: 50%; background: #2ecc71;">\x3C/span> Firebase: Verbonden';
                 resultDiv.style.color = '#2ecc71';
                 resultDiv.innerText = "Succes! De verbinding met de database werkt.";
                 resultDiv.style.display = 'block';

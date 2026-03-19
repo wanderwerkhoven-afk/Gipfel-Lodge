@@ -29,9 +29,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
   <!-- 1.2 STYLESHEETS -->
-  <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/base/variables.css" />
+  <link rel="stylesheet" href="css/base/style.css" />
+  <link rel="stylesheet" href="css/components/global.css" />
   <link rel="stylesheet" href="css/components/splash.css" />
   <link rel="stylesheet" href="css/pages/home.css" />
   <link rel="stylesheet" href="css/pages/lodge.css" />
@@ -106,7 +106,7 @@
       <div class="topbar-center">
         <a class="topbar-logo" href="#home">
           <span class="logo-text-part left">GIPFEL</span>
-          <img src="assets/logo-Topbar.png" alt="Gipfel Lodge" />
+          <img src="assets/images/logo-Topbar.png" alt="Gipfel Lodge" />
           <span class="logo-text-part right">LODGE</span>
         </a>
       </div>
@@ -158,9 +158,9 @@
     <!-- HERO -->
     <section class="hero" aria-label="Welcome Hero">
       <div class="hero-carousel">
-        <div class="hero-slide active"><img src="assets/pictures/winter-outside.png" alt="Winter View"></div>
-        <div class="hero-slide"><img src="assets/pictures/summer-outside.png" alt="Summer View"></div>
-        <div class="hero-slide"><img src="assets/pictures/livingroom.png" alt="Living Room"></div>
+        <div class="hero-slide active"><img src="assets/images/pictures/winter-outside.png" alt="Winter View"></div>
+        <div class="hero-slide"><img src="assets/images/pictures/summer-outside.png" alt="Summer View"></div>
+        <div class="hero-slide"><img src="assets/images/pictures/livingroom.png" alt="Living Room"></div>
       </div>
 
       <!-- CAROUSEL CONTROLS -->
@@ -199,7 +199,7 @@
                 <span data-i18n="amenity-sauna">Privé Sauna</span>
             </div>
             <div class="reveal amenity-item" style="transition-delay: 0.1s;">
-                <img src="assets/icon-sofa.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/sofa.png'">
+                <img src="assets/images/icon-sofa.png" alt="" class="amenity-icon" onerror="this.src='https://img.icons8.com/ios/100/C5A059/sofa.png'">
                 <span data-i18n="amenity-wine">Luxe Loungesets</span>
             </div>
             <div class="reveal amenity-item" style="transition-delay: 0.2s;">
@@ -217,7 +217,7 @@
     <section class="suite-life">
         <div class="container suite-grid">
             <div class="reveal suite-image">
-                <img src="assets/pictures/livingroom.png" alt="Suite Impression">
+                <img src="assets/images/pictures/livingroom.png" alt="Suite Impression">
             </div>
             <div class="reveal suite-content">
                 <span class="intro-tag" data-i18n="suite-tag">Living in Style</span>
@@ -243,7 +243,7 @@
             <div class="experience-grid">
                 <div class="reveal exp-card">
                     <div class="exp-img">
-                        <img src="assets/pictures/winter-outside.png" alt="Winter">
+                        <img src="assets/images/pictures/winter-outside.png" alt="Winter">
                     </div>
                     <div class="exp-overlay">
                         <h3 data-i18n="exp-winter-title">Winter Wonderland</h3>
@@ -253,7 +253,7 @@
                 </div>
                 <div class="reveal exp-card" style="transition-delay: 0.2s;">
                     <div class="exp-img">
-                        <img src="assets/pictures/summer-outside.png" alt="Summer">
+                        <img src="assets/images/pictures/summer-outside.png" alt="Summer">
                     </div>
                     <div class="exp-overlay">
                         <h3 data-i18n="exp-summer-title">Summer Serenity</h3>
@@ -414,25 +414,25 @@
     <section class="property-gallery" aria-label="Fotos der Gipfel Lodge">
       <div class="gallery-scroll-container">
         <div class="gallery-grid">
-          <div class="gallery-item"><img src="assets/pictures/winter-outside.png" alt="Winter View"></div>
-          <div class="gallery-item"><img src="assets/pictures/winter-outside-2.png" alt="Winter View 2"></div>
-          <div class="gallery-item"><img src="assets/pictures/livingroom.png" alt="Living Room"></div>
-          <div class="gallery-item"><img src="assets/pictures/dinertable.png" alt="Dining Table"></div>
-          <div class="gallery-item"><img src="assets/pictures/kitchen-1.png" alt="Kitchen"></div>
-          <div class="gallery-item"><img src="assets/pictures/kitchen-2.png" alt="Kitchen Detail"></div>
-          <div class="gallery-item"><img src="assets/pictures/bedroom-1.png" alt="Bedroom 1"></div>
-          <div class="gallery-item"><img src="assets/pictures/bedroom-2.png" alt="Bedroom 2"></div>
-          <div class="gallery-item"><img src="assets/pictures/bedroom-3.png" alt="Bedroom 3"></div>
-          <div class="gallery-item"><img src="assets/pictures/bunkbedroom.png" alt="Bunk Bedroom"></div>
-          <div class="gallery-item"><img src="assets/pictures/bathroom-1.png" alt="Bathroom"></div>
-          <div class="gallery-item"><img src="assets/pictures/bathroom-2.png" alt="Bathroom 2"></div>
-          <div class="gallery-item"><img src="assets/pictures/hallways.png" alt="Hallways"></div>
-          <div class="gallery-item"><img src="assets/pictures/entrancehall.png" alt="Entrance"></div>
-          <div class="gallery-item"><img src="assets/pictures/readingcorner.png" alt="Reading Corner"></div>
-          <div class="gallery-item"><img src="assets/pictures/summer-outside.png" alt="Summer View"></div>
-          <div class="gallery-item"><img src="assets/pictures/summer-outside-2.png" alt="Summer View 2"></div>
-          <div class="gallery-item"><img src="assets/pictures/summer-outside-terrace.png" alt="Terrace"></div>
-          <div class="gallery-item"><img src="assets/pictures/garage.png" alt="Garage"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/winter-outside.png" alt="Winter View"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/winter-outside-2.png" alt="Winter View 2"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/livingroom.png" alt="Living Room"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/dinertable.png" alt="Dining Table"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/kitchen-1.png" alt="Kitchen"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/kitchen-2.png" alt="Kitchen Detail"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/bedroom-1.png" alt="Bedroom 1"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/bedroom-2.png" alt="Bedroom 2"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/bedroom-3.png" alt="Bedroom 3"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/bunkbedroom.png" alt="Bunk Bedroom"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/bathroom-1.png" alt="Bathroom"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/bathroom-2.png" alt="Bathroom 2"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/hallways.png" alt="Hallways"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/entrancehall.png" alt="Entrance"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/readingcorner.png" alt="Reading Corner"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/summer-outside.png" alt="Summer View"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/summer-outside-2.png" alt="Summer View 2"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/garage.png" alt="Garage"></div>
         </div>
       </div>
 
@@ -485,7 +485,7 @@
         <div class="container">
             <div class="section-split reveal">
                 <div class="split-image">
-                    <img src="assets/pictures/summer-outside-terrace.png" alt="Terrace">
+                    <img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace">
                 </div>
                 <div class="split-text">
                     <span class="intro-tag" data-i18n="intro-tag">Alpine Luxury</span>
@@ -503,7 +503,7 @@
         <div class="container">
             <div class="section-split reverse reveal">
                 <div class="split-image">
-                    <img src="assets/Foto-collage-woning/sauna-1.jpg" alt="Sauna">
+                    <img src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Sauna">
                 </div>
                 <div class="split-text">
                     <span class="intro-tag" data-i18n="lodge-sauna-tag">Wellness & Entspannung</span>
@@ -527,21 +527,21 @@
 
             <div class="floor-layout-grid">
                 <div class="floor-card reveal">
-                    <div class="floor-card-img"><img src="assets/pictures/bedroom-1.png" alt="Untergeschoss"></div>
+                    <div class="floor-card-img"><img src="assets/images/pictures/bedroom-1.png" alt="Untergeschoss"></div>
                     <div class="floor-card-content">
                         <span class="floor-card-title" data-i18n="lodge-ug">Entspannung (UG)</span>
                         <p class="floor-card-list" data-i18n="lodge-ug-list">Wellness-Suite mit Bad, Private Sauna, Skiraum & Technik</p>
                     </div>
                 </div>
                 <div class="floor-card reveal" style="transition-delay: 0.1s;">
-                    <div class="floor-card-img"><img src="assets/pictures/bedroom-2.png" alt="1. Etage"></div>
+                    <div class="floor-card-img"><img src="assets/images/pictures/bedroom-2.png" alt="1. Etage"></div>
                     <div class="floor-card-content">
                         <span class="floor-card-title" data-i18n="lodge-1og">Schlafkomfort (1. OG)</span>
                         <p class="floor-card-list" data-i18n="lodge-1og-list">3 edle Suiten, 2 Designer-Bäder, Panorama-Terrasse</p>
                     </div>
                 </div>
                 <div class="floor-card reveal" style="transition-delay: 0.2s;">
-                    <div class="floor-card-img"><img src="assets/pictures/kitchen-1.png" alt="2. Etage"></div>
+                    <div class="floor-card-img"><img src="assets/images/pictures/kitchen-1.png" alt="2. Etage"></div>
                     <div class="floor-card-content">
                         <span class="floor-card-title" data-i18n="lodge-2og">Genuss & Panorama (2. OG)</span>
                         <p class="floor-card-list" data-i18n="lodge-2og-list">Offene Gourmet-Küche, Kamin-Lounge, Panorama-Balkon</p>
@@ -559,27 +559,27 @@
                 <h2 data-i18n="gallery-title" style="font-size: 3rem;">Galerie</h2>
             </div>
             <div class="masonry-gallery">
-                <div class="masonry-item reveal"><img src="assets/pictures/winter-outside.png" alt="Winter View"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/livingroom.png" alt="Living Room"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/kitchen-1.png" alt="Kitchen"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/bedroom-1.png" alt="Bedroom 1"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/bathroom-1.png" alt="Bathroom"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/readingcorner.png" alt="Reading Corner"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/summer-outside.png" alt="Summer View"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/winter-outside.png" alt="Winter View"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/livingroom.png" alt="Living Room"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/kitchen-1.png" alt="Kitchen"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/bedroom-1.png" alt="Bedroom 1"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/bathroom-1.png" alt="Bathroom"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/readingcorner.png" alt="Reading Corner"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/summer-outside.png" alt="Summer View"></div>
                 
-                <div class="masonry-item reveal"><img src="assets/pictures/winter-outside-2.png" alt="Winter View 2"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/dinertable.png" alt="Dining Table"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/bedroom-2.png" alt="Bedroom 2"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/bunkbedroom.png" alt="Bunk Bedroom"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/hallways.png" alt="Hallways"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/summer-outside-terrace.png" alt="Terrace"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/winter-outside-2.png" alt="Winter View 2"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/dinertable.png" alt="Dining Table"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/bedroom-2.png" alt="Bedroom 2"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/bunkbedroom.png" alt="Bunk Bedroom"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/hallways.png" alt="Hallways"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace"></div>
                 
-                <div class="masonry-item reveal"><img src="assets/pictures/kitchen-2.png" alt="Kitchen Detail"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/bedroom-3.png" alt="Bedroom 3"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/bathroom-2.png" alt="Bathroom 2"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/entrancehall.png" alt="Entrance"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/summer-outside-2.png" alt="Summer View 2"></div>
-                <div class="masonry-item reveal"><img src="assets/pictures/garage.png" alt="Garage"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/kitchen-2.png" alt="Kitchen Detail"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/bedroom-3.png" alt="Bedroom 3"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/bathroom-2.png" alt="Bathroom 2"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/entrancehall.png" alt="Entrance"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/summer-outside-2.png" alt="Summer View 2"></div>
+                <div class="masonry-item reveal"><img src="assets/images/pictures/garage.png" alt="Garage"></div>
             </div>
         </div>
     </section>
@@ -588,7 +588,7 @@
   <!-- 2.5 MAIN: ACTIVITIES PAGE -->
   <main id="activities-page" class="page">
     <section class="soon">
-      <img class="soon-bg" src="assets/Foto-collage-woning/outside-view-winter.jpg" alt="">
+      <img class="soon-bg" src="assets/images/Foto-collage-woning/outside-view-winter.jpg" alt="">
       <div class="soon-overlay"></div>
       <div class="container">
         <div class="soon-card reveal">
@@ -603,7 +603,7 @@
   <!-- 2.6 MAIN: ENJOYMENT PAGE -->
   <main id="enjoyment-page" class="page">
     <section class="soon">
-      <img class="soon-bg" src="assets/hero.png" alt="">
+      <img class="soon-bg" src="assets/images/hero.png" alt="">
       <div class="soon-overlay"></div>
       <div class="container">
         <div class="soon-card reveal">
@@ -850,7 +850,7 @@
   </div>
 
   <!-- 3.1 UTILITIES -->
-  <script src="js/utils/scroll-events.js"></script>
+  <script src="js/utils/scroll.js"></script>
   <script src="js/utils/i18n.js"></script>
   
   <!-- EmailJS SDK -->

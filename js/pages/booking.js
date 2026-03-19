@@ -269,6 +269,16 @@ const GipfelBooking = {
                 const t = (key) => window.i18n ? window.i18n.t(key) : key;
                 let guestParams, ownerParams;
 
+                // Calculate total amount safely — outside the critical try block
+                // so a failure here never blocks email or Firebase submission
+                let totalAmount = 0;
+                try {
+                    const costs = this.calculateCosts();
+                    totalAmount = costs ? costs.total : 0;
+                } catch (e) {
+                    console.warn('Could not calculate total amount:', e);
+                }
+
                 try {
                     // --- Gather raw form values ---
                     const userName   = document.getElementById('b-name').value;
@@ -329,6 +339,7 @@ const GipfelBooking = {
                         message:        message,
                         received_date:  receivedDate,
                         received_time:  receivedTime,
+                        total_amount:   new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(totalAmount || 0),
 
                         reply_to:       userEmail,
                     };
@@ -353,16 +364,20 @@ const GipfelBooking = {
                     // We transition to the success page immediately to provide a fast user experience
                     this.goToStep(4);
 
-                    // --- 2. Send email in background ---
+                    // --- 2. Send emails in background ---
+                    // Guest confirmation email
                     emailjs.send(
                         'service_rl6qzmr', 
                         'template_3029w4q',   // Guest confirmation
                         guestParams
                     ).then(response => {
-                        console.log("Email successfully sent:", response.status, response.text);
+                        console.log("Guest email sent:", response.status, response.text);
                     }).catch(err => {
-                        console.error("Delayed EmailJS Error (Occurred after transition):", err);
+                        console.error("Guest EmailJS Error:", err);
                     });
+
+                    // Owner notification temporarily disabled
+                    // emailjs.send('service_rl6qzmr', 'template_oy6c1fe', ownerParams, 'WC62OFB5MXpryYO1u');
 
                     // --- 3. Save to Firebase Database in background ---
                     // Using a small timeout to ensure UI transition finishes first
@@ -381,6 +396,9 @@ const GipfelBooking = {
                                 children: ownerParams.children || 0,
                                 babies: ownerParams.babies || 0,
                                 message: ownerParams.message || '-',
+                                totalAmount: totalAmount,
+                                depositPaid: false,
+                                balancePaid: false,
                                 status: "pending", 
                                 receivedDate: ownerParams.received_date || '',
                                 receivedTime: ownerParams.received_time || '',
