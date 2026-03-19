@@ -18,14 +18,14 @@
         .email-header { background-color: #20303D; padding: 40px 20px; text-align: center; }
         .logo-text { color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; letter-spacing: 0.05em; margin: 0; text-transform: uppercase; }
         
-        /* Alert Banner Success */
-        .alert-banner { background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc; }
-        .alert-banner p { margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+        /* Alert Banner Action */
+        .alert-banner { background-color: #fef0d9; padding: 14px 30px; text-align: center; border-bottom: 1px solid #fae4c1; }
+        .alert-banner p { margin: 0; color: #a56100; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
 
         /* Content Body */
         .email-body { padding: 40px 30px; }
         .heading { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: #20303D; margin-bottom: 15px; font-weight: 600; }
-        .tagline { color: #C5A059; font-size: 14px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 10px; }
+        .tagline { color: #F59E0B; font-size: 14px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 10px; }
         .intro-text { font-size: 16px; margin-bottom: 30px; }
         
         /* Details Grid */
@@ -36,13 +36,13 @@
         .value { font-size: 16px; color: #20303D; font-weight: 500; }
         
         /* Info Cards */
-        .info-card { border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background-color: #f9f9f9; }
+        .info-card { border-left: 3px solid #F59E0B; padding: 15px 20px; margin-bottom: 20px; background-color: #f9f9f9; }
         .info-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px; }
         .info-desc { font-size: 14px; color: #56686d; margin: 0; }
 
         /* Button */
         .button-wrapper { text-align: center; margin-top: 35px; margin-bottom: 15px; }
-        .btn { background-color: #C5A059; color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; }
+        .btn { background-color: #F59E0B; color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; }
         
         /* Footer */
         .email-footer { background-color: #f4f4f4; padding: 30px; text-align: center; font-size: 12px; color: #78868A; }
@@ -66,21 +66,21 @@
                         </td>
                     </tr>
                     
-                    <!-- SUCCESS BANNER -->
+                    <!-- ALERT BANNER -->
                     <tr>
                         <td class="alert-banner">
-                            <p>&#10003;&nbsp; Boeking Geaccepteerd</p>
+                            <p>€&nbsp; Aanbetaling Vereist</p>
                         </td>
                     </tr>
 
                     <!-- BODY -->
                     <tr>
                         <td class="email-body">
-                            <p class="tagline">Alpine Elegance</p>
-                            <h2 class="heading">Uw verblijf is gereserveerd</h2>
+                            <p class="tagline">Actie Vereist</p>
+                            <h2 class="heading">Aanbetaling &amp; Bevestiging</h2>
                             <p class="intro-text">
                                 Beste <strong>{{user_name}}</strong>,<br><br>
-                                Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.
+                                Bedankt voor uw boeking bij Gipfel Lodge. We hebben de details van jullie naderende reis in goede orde ontvangen voor de volgende verblijfsperiode:
                             </p>
                             
                             <!-- DETAILS -->
@@ -93,32 +93,28 @@
                                     <div class="label">Reisgezelschap</div>
                                     <div class="value">{{guests}}</div>
                                 </div>
+                                <div class="detail-row">
+                                    <div class="label">Totaalprijs</div>
+                                    <div class="value">&euro; {{total_price}}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="label">Aanbetaling (30%)</div>
+                                    <div class="value" style="color: #c47e09; font-weight: 700;">&euro; {{deposit_amount}}</div>
+                                </div>
                             </div>
                             
-                            <p class="intro-text" style="font-weight: 600; margin-bottom: 20px;">
-                                Belangrijke informatie voor uw verblijf:
-                            </p>
-
-                            <!-- NEXT STEPS: PAYMENT -->
+                            <!-- NEXT STEPS: PAYMENT INSTRUCTIONS -->
                             <div class="info-card">
-                                <div class="info-title">1. Betaling</div>
-                                <p class="info-desc">Om uw reservering definitief te maken, vragen wij een aanbetaling van 30%. Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. De factuur met betaalinstructies ontvangt u in een aparte e-mail.</p>
-                            </div>
-
-                            <!-- NEXT STEPS: CHECKIN -->
-                            <div class="info-card">
-                                <div class="info-title">2. Aankomst & Vertrek</div>
-                                <p class="info-desc">Inchecken is mogelijk vanaf <strong>15:00 uur</strong> op de dag van aankomst. Op de dag van vertrek vragen we u de lodge uiterlijk om <strong>10:00 uur</strong> vrij te maken.</p>
-                            </div>
-
-                            <!-- NEXT STEPS: RULES -->
-                            <div class="info-card">
-                                <div class="info-title">3. Huisregels</div>
-                                <p class="info-desc">Gipfel Lodge is een rookvrij verblijf en huisdieren zijn in overleg toegestaan. Voor aankomst ontvangt u van ons de toegangscode en uitgebreide huisinformatie.</p>
+                                <div class="info-title">Betaalinstructies</div>
+                                <p class="info-desc">Om uw reservering definitief te bevestigen, verzoeken we u vriendelijk om de aanbetaling uiterlijk binnen 7 dagen na dagtekening over te maken op het volgende rekeningnummer:<br><br>
+                                <strong>IBAN:</strong> NL00 INGB 0000 0000 00<br>
+                                <strong>T.n.v.:</strong> Gipfel Lodge<br>
+                                <strong>Omschrijving:</strong> Aanbetaling {{check_in}} – {{user_name}}</p>
                             </div>
 
                             <p class="intro-text" style="margin-top: 30px;">
-                                Heeft u in de tussentijd nog vragen of speciale wensen? Reageer dan gerust op deze e-mail.
+                                Het restbedrag (&euro; {{balance_amount}}) dient uiterlijk 6 weken voor aankomst te worden voldaan.
+                                Zodra de betaling goed en wel bij ons binnen is gekomen op de rekening sturen wij u een definitieve bevestiging met alle overige details.
                             </p>
 
                             <p class="intro-text">
@@ -127,7 +123,7 @@
                             </p>
                             
                             <div class="button-wrapper">
-                                <a href="https://gipfellodge.com" class="btn">Bereid uw reis voor</a>
+                                <a href="https://gipfellodge.com" class="btn">Naar Website</a>
                             </div>
                         </td>
                     </tr>

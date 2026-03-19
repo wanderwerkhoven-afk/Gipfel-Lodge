@@ -66,21 +66,21 @@
                         </td>
                     </tr>
                     
-                    <!-- SUCCESS BANNER -->
+                    <!-- ALERT BANNER -->
                     <tr>
                         <td class="alert-banner">
-                            <p>&#10003;&nbsp; Boeking Geaccepteerd</p>
+                            <p>&#10003;&nbsp; Aanbetaling Ontvangen</p>
                         </td>
                     </tr>
 
                     <!-- BODY -->
                     <tr>
                         <td class="email-body">
-                            <p class="tagline">Alpine Elegance</p>
-                            <h2 class="heading">Uw verblijf is gereserveerd</h2>
+                            <p class="tagline">Boeking Definitief Bevestigd</p>
+                            <h2 class="heading">Aanbetaling succesvol verwerkt</h2>
                             <p class="intro-text">
                                 Beste <strong>{{user_name}}</strong>,<br><br>
-                                Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.
+                                We hebben je aanbetaling in goede orde ontvangen! Hiermee is je boeking bij Gipfel Lodge officieel en definitief bevestigd voor onderstaande reisgegevens:
                             </p>
                             
                             <!-- DETAILS -->
@@ -93,41 +93,30 @@
                                     <div class="label">Reisgezelschap</div>
                                     <div class="value">{{guests}}</div>
                                 </div>
-                            </div>
-                            
-                            <p class="intro-text" style="font-weight: 600; margin-bottom: 20px;">
-                                Belangrijke informatie voor uw verblijf:
-                            </p>
-
-                            <!-- NEXT STEPS: PAYMENT -->
-                            <div class="info-card">
-                                <div class="info-title">1. Betaling</div>
-                                <p class="info-desc">Om uw reservering definitief te maken, vragen wij een aanbetaling van 30%. Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. De factuur met betaalinstructies ontvangt u in een aparte e-mail.</p>
+                                <div class="detail-row">
+                                    <div class="label">Ontvangen Aanbetaling</div>
+                                    <div class="value" style="color: #295e1e; font-weight: 700;">&euro; {{deposit_amount}}</div>
+                                </div>
                             </div>
 
-                            <!-- NEXT STEPS: CHECKIN -->
+                            <!-- NEXT STEPS: BALANCE -->
                             <div class="info-card">
-                                <div class="info-title">2. Aankomst & Vertrek</div>
-                                <p class="info-desc">Inchecken is mogelijk vanaf <strong>15:00 uur</strong> op de dag van aankomst. Op de dag van vertrek vragen we u de lodge uiterlijk om <strong>10:00 uur</strong> vrij te maken.</p>
-                            </div>
-
-                            <!-- NEXT STEPS: RULES -->
-                            <div class="info-card">
-                                <div class="info-title">3. Huisregels</div>
-                                <p class="info-desc">Gipfel Lodge is een rookvrij verblijf en huisdieren zijn in overleg toegestaan. Voor aankomst ontvangt u van ons de toegangscode en uitgebreide huisinformatie.</p>
+                                <div class="info-title">Restbetaling</div>
+                                <p class="info-desc">Het resterende bedrag (&euro; {{balance_amount}}) ontvangen we graag uiterlijk 6 weken voor aankomst op dezelfde rekening. We sturen ruim op tijd nog een vriendelijke herinnering hiervoor!</p>
                             </div>
 
                             <p class="intro-text" style="margin-top: 30px;">
-                                Heeft u in de tussentijd nog vragen of speciale wensen? Reageer dan gerust op deze e-mail.
+                                Mochten er tussentijds vragen zijn over je verblijf of de omgeving, laat het ons dan gerust weten door deze e-mail te beantwoorden. We helpen je graag!
                             </p>
 
                             <p class="intro-text">
+                                We kijken ernaar uit je te mogen verwelkomen!<br><br>
                                 Met hartelijke groet,<br>
                                 <strong>Team Gipfel Lodge</strong>
                             </p>
                             
                             <div class="button-wrapper">
-                                <a href="https://gipfellodge.com" class="btn">Bereid uw reis voor</a>
+                                <a href="https://gipfellodge.com" class="btn">Bekijk Gipfel Lodge</a>
                             </div>
                         </td>
                     </tr>

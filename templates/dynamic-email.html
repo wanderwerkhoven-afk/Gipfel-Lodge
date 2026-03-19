@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         /* Base Reset */
         body { margin: 0; padding: 0; background-color: #FAF9F6; font-family: 'Inter', Arial, sans-serif; color: #20303D; line-height: 1.6; }
@@ -16,12 +16,16 @@
         
         /* Header */
         .email-header { background-color: #20303D; padding: 40px 20px; text-align: center; }
-        .logo-text { color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; letter-spacing: 0.05em; margin: 0; text-transform: uppercase; }
+        .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; letter-spacing: 0.05em; margin: 0; text-transform: uppercase; }
         
+        /* Alert Banner */
+        .alert-banner { background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc; }
+        .alert-banner p { margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
         /* Content Body */
         .email-body { padding: 40px 30px; }
         .heading { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: #20303D; margin-bottom: 15px; font-weight: 600; }
-        .tagline { color: #C5A059; font-size: 14px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 10px; }
+        .tagline { font-size: 14px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 10px; }
         .intro-text { font-size: 16px; margin-bottom: 30px; }
         
         /* Details Grid */
@@ -31,9 +35,14 @@
         .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A; margin-bottom: 4px; }
         .value { font-size: 16px; color: #20303D; font-weight: 500; }
         
+        /* Info Cards */
+        .info-card { border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background-color: #f9f9f9; }
+        .info-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px; }
+        .info-desc { font-size: 14px; color: #56686d; margin: 0; }
+
         /* Button */
-        .button-wrapper { text-align: center; margin-top: 30px; }
-        .btn { background-color: #C5A059; color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; }
+        .button-wrapper { text-align: center; margin-top: 35px; margin-bottom: 15px; }
+        .btn { color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; }
         
         /* Footer */
         .email-footer { background-color: #f4f4f4; padding: 30px; text-align: center; font-size: 12px; color: #78868A; }
@@ -47,52 +56,37 @@
                     <!-- HEADER -->
                     <tr>
                         <td class="email-header">
-                            <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
-                                <tr>
-                                    <td style="vertical-align: middle;"><span class="logo-text">GIPFEL</span></td>
-                                    <td style="vertical-align: middle; padding: 0 15px;"><img src="https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/assets/images/logo-Topbar.png" alt="Logo" style="height: 38px; display: block; border: 0;"></td>
-                                    <td style="vertical-align: middle;"><span class="logo-text">LODGE</span></td>
-                                </tr>
-                            </table>
+                            <h1 class="logo-text" style="color: {{themeColor}};">Gipfel Lodge</h1>
                         </td>
                     </tr>
                     
+                    <!-- DYNAMIC BANNER -->
+                    {{{alert_banner}}}
+
                     <!-- BODY -->
                     <tr>
                         <td class="email-body">
-                            <p class="tagline">{{email_tagline}}</p>
+                            <p class="tagline" style="color: {{themeColor}};">{{email_tagline}}</p>
                             <h2 class="heading">{{email_heading}}</h2>
-                            <p class="intro-text">
-                                Hallo <strong>{{user_name}}</strong>,<br><br>
-                                {{email_intro}}
-                            </p>
-                            
-                            <!-- DETAILS -->
-                            <div class="details-box">
-                                <div class="detail-row">
-                                    <div class="label">{{label_travel_data}}</div>
-                                    <div class="value">{{check_in}} &mdash; {{check_out}}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="label">{{label_guests}}</div>
-                                    <div class="value">{{guests}}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="label">{{label_message}}</div>
-                                    <div class="value">{{message}}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="label">{{label_contact}}</div>
-                                    <div class="value">{{user_email}}<br>{{user_phone}}</div>
-                                </div>
+                            <div class="intro-text">
+                                Beste <strong>{{user_name}}</strong>,<br><br>
+                                {{{email_intro}}}
                             </div>
                             
-                            <p class="intro-text">
-                                {{email_closing}}
-                            </p>
+                            <!-- DETAILS BOX DYNAMIC ROWS -->
+                            <div class="details-box">
+                                {{{details_html}}}
+                            </div>
+                            
+                            <!-- EXTRA CONTENT (Like the info cards) -->
+                            {{{extra_content}}}
+
+                            <div class="intro-text">
+                                {{{email_closing}}}
+                            </div>
                             
                             <div class="button-wrapper">
-                                <a href="https://gipfellodge.com" class="btn">{{email_visit_website}}</a>
+                                <a href="https://gipfellodge.com" class="btn" style="background-color: {{themeColor}};">{{email_visit_website}}</a>
                             </div>
                         </td>
                     </tr>

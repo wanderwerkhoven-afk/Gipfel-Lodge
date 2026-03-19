@@ -18,9 +18,9 @@
         .email-header { background-color: #20303D; padding: 40px 20px; text-align: center; }
         .logo-text { color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; letter-spacing: 0.05em; margin: 0; text-transform: uppercase; }
         
-        /* Alert Banner Success */
-        .alert-banner { background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc; }
-        .alert-banner p { margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+        /* Alert Banner Info */
+        .alert-banner { background-color: #f7f9fa; padding: 14px 30px; text-align: center; border-bottom: 1px solid #e0e4e8; }
+        .alert-banner p { margin: 0; color: #78868A; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
 
         /* Content Body */
         .email-body { padding: 40px 30px; }
@@ -35,11 +35,14 @@
         .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A; margin-bottom: 4px; }
         .value { font-size: 16px; color: #20303D; font-weight: 500; }
         
-        /* Info Cards */
-        .info-card { border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background-color: #f9f9f9; }
-        .info-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px; }
-        .info-desc { font-size: 14px; color: #56686d; margin: 0; }
-
+        /* Checklist */
+        .rule-item { display: flex; align-items: flex-start; margin-bottom: 15px; }
+        /* Since many email clients strip flexbox, fallback table layout for rules */
+        .rule-table { width: 100%; margin-bottom: 25px; }
+        .rule-table td { padding-bottom: 15px; vertical-align: top; }
+        .rule-icon { width: 30px; color: #C5A059; font-size: 18px; line-height: 1.4; padding-right: 10px; font-weight: bold; }
+        .rule-text { font-size: 15px; color: #20303D; line-height: 1.5; }
+        
         /* Button */
         .button-wrapper { text-align: center; margin-top: 35px; margin-bottom: 15px; }
         .btn { background-color: #C5A059; color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; }
@@ -66,69 +69,77 @@
                         </td>
                     </tr>
                     
-                    <!-- SUCCESS BANNER -->
+                    <!-- ALERT BANNER -->
                     <tr>
                         <td class="alert-banner">
-                            <p>&#10003;&nbsp; Boeking Geaccepteerd</p>
+                            <p>&#10548;&nbsp; Pre-Stay Informatie & Huisregels</p>
                         </td>
                     </tr>
 
                     <!-- BODY -->
                     <tr>
                         <td class="email-body">
-                            <p class="tagline">Alpine Elegance</p>
-                            <h2 class="heading">Uw verblijf is gereserveerd</h2>
+                            <p class="tagline">Voorbereiding op uw verblijf</p>
+                            <h2 class="heading">Tijd om in te pakken!</h2>
                             <p class="intro-text">
                                 Beste <strong>{{user_name}}</strong>,<br><br>
-                                Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.
+                                De aankomst in de Gipfel Lodge komt nu écht dichterbij! Om ervoor te zorgen dat je verblijf vanaf het eerste moment soepel en zorgeloos verloopt, delen we alvast de belangrijkste praktische informatie en huisregels met jullie.
                             </p>
                             
                             <!-- DETAILS -->
                             <div class="details-box">
                                 <div class="detail-row">
-                                    <div class="label">Reisdata</div>
-                                    <div class="value">{{check_in}} &mdash; {{check_out}}</div>
+                                    <div class="label">Inchecken</div>
+                                    <div class="value">Vanaf 15:00 uur (Zelf inchecken met code)</div>
                                 </div>
                                 <div class="detail-row">
-                                    <div class="label">Reisgezelschap</div>
-                                    <div class="value">{{guests}}</div>
+                                    <div class="label">Uitchecken</div>
+                                    <div class="value">Uiterlijk om 10:00 uur</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="label" style="opacity: 0.8;">Aankomstdatum</div>
+                                    <div class="value" style="font-size: 14px;">{{check_in}}</div>
+                                </div>
+                                <div class="detail-row" style="background-color: #faf9f6; margin: 10px -25px -25px -25px; padding: 25px; border-radius: 0 0 8px 8px; border-top: 1px solid #e0e4e8;">
+                                    <div class="label" style="color: #78868A;">Wifi Netwerk</div>
+                                    <div class="value" style="color: #20303D; font-weight: 700;">GipfelLodge_Guest<br>
+                                    <span style="font-size: 13px; font-weight: 500; opacity: 0.8; letter-spacing: 1px;">WACHTWOORD: AlpinerLuxus2026</span></div>
                                 </div>
                             </div>
+
+                            <p class="tagline" style="font-size: 11px; color: #78868A; margin-top: 35px;">Lodge Etiquette</p>
+                            <h2 class="heading" style="font-size: 22px;">Onze Huisregels</h2>
                             
-                            <p class="intro-text" style="font-weight: 600; margin-bottom: 20px;">
-                                Belangrijke informatie voor uw verblijf:
-                            </p>
+                            <!-- RULES TABLE (email client safe) -->
+                            <table class="rule-table" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Schoeisel:</strong> In de lodge dragen we graag pantoffels. Natte of vieze bergschoenen en skischoenen kun je veilig en verwarmd achterlaten in de speciale 'boot-room' (skiruimte) op de begane grond.</td>
+                                </tr>
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Rust en Respect:</strong> Uit respect voor de andere gasten en de omwonenden, hanteren we een rustige avond en nachtrust tussen 22:00 uur en 07:00 uur. Geniet samen in de woonkamer, maar pas het volume 's avonds iets aan.</td>
+                                </tr>
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Rookvrij:</strong> De gehele binnenkant van Gipfel Lodge is strikt rookvrij. Mocht je willen roken, dan kan dit buiten op de balkons of het terras. Gebruik hiervoor altijd de beschikbare asbakken.</td>
+                                </tr>
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Afval Scheiden:</strong> Oostenrijk is streng op afval scheiden. Onder de gootsteen vind je verschillende bakken. De grote containers voor papier, restafval en plastic bevinden zich rechts naast de voordeur buiten.</td>
+                                </tr>
+                            </table>
 
-                            <!-- NEXT STEPS: PAYMENT -->
-                            <div class="info-card">
-                                <div class="info-title">1. Betaling</div>
-                                <p class="info-desc">Om uw reservering definitief te maken, vragen wij een aanbetaling van 30%. Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. De factuur met betaalinstructies ontvangt u in een aparte e-mail.</p>
-                            </div>
-
-                            <!-- NEXT STEPS: CHECKIN -->
-                            <div class="info-card">
-                                <div class="info-title">2. Aankomst & Vertrek</div>
-                                <p class="info-desc">Inchecken is mogelijk vanaf <strong>15:00 uur</strong> op de dag van aankomst. Op de dag van vertrek vragen we u de lodge uiterlijk om <strong>10:00 uur</strong> vrij te maken.</p>
-                            </div>
-
-                            <!-- NEXT STEPS: RULES -->
-                            <div class="info-card">
-                                <div class="info-title">3. Huisregels</div>
-                                <p class="info-desc">Gipfel Lodge is een rookvrij verblijf en huisdieren zijn in overleg toegestaan. Voor aankomst ontvangt u van ons de toegangscode en uitgebreide huisinformatie.</p>
-                            </div>
-
-                            <p class="intro-text" style="margin-top: 30px;">
-                                Heeft u in de tussentijd nog vragen of speciale wensen? Reageer dan gerust op deze e-mail.
+                            <p class="intro-text" style="font-size: 14px; color: #78868A; margin-top: 30px;">
+                                <em>Let op: op de dag (of vlak voor de dag) van aankomst ontvangt u van ons een kort bericht met de unieke pincode voor de sleutelkluis van uw appartement.</em>
                             </p>
 
                             <p class="intro-text">
+                                We wensen je alvast een veilige reis!<br><br>
                                 Met hartelijke groet,<br>
                                 <strong>Team Gipfel Lodge</strong>
                             </p>
                             
-                            <div class="button-wrapper">
-                                <a href="https://gipfellodge.com" class="btn">Bereid uw reis voor</a>
-                            </div>
                         </td>
                     </tr>
                     
