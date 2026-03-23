@@ -30,11 +30,72 @@
         .config-toggle { cursor: pointer; color: #007bff; font-size: 0.8rem; text-decoration: underline; text-align: center; margin-top: 10px; }
         .config-box { background: #fff; border: 1px dashed #ccc; padding: 15px; border-radius: 6px; display: none; margin-top: 10px; }
         .config-box input { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+
+        /* Responsive Mobile Taps */
+        .tab-nav {
+            display: none;
+            background: #fff;
+            border-bottom: 1px solid #e1e4e8;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--color-gold, #C5A059);
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; height: 100vh; overflow: hidden; }
+            .tab-nav { display: flex; gap: 10px; flex-shrink: 0; }
+            .sidebar { 
+                width: 100%; 
+                border-right: none; 
+                display: none; /* Hidden by default on mobile, shown by tabs */
+                flex: 1;
+                overflow-y: auto;
+            }
+            .sidebar.active { display: flex; }
+            .preview-area { 
+                padding: 15px 10px; 
+                display: none; /* Hidden by default on mobile, shown by tabs */
+                background: #f0f2f5;
+                flex: 1;
+                box-sizing: border-box;
+                overflow-y: auto;
+            }
+            .preview-area.active { display: flex; }
+            .iframe-container { 
+                width: 100%;
+                height: 100%; 
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+                border-radius: 12px; 
+                background: #fff;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('edit')">Aanpassen</button>
+        <button class="tab-btn" onclick="switchTab('preview')">Voorbeeld</button>
+    </div>
+
+    <div class="sidebar active">
         <h2>Gipfel Lodge - Snel E-mailen</h2>
         <p style="font-size: 0.85rem; color: #666; margin-top: -10px; margin-bottom: 5px;">
             Controleer de teksten en klik op verzenden.
@@ -105,6 +166,33 @@
         .button-wrapper { text-align: center; margin-top: 35px; margin-bottom: 15px; }
         .btn { color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; }
         .email-footer { background-color: #f4f4f4; padding: 30px; text-align: center; font-size: 12px; color: #78868A; }
+
+        /* Inline Editing Styles */
+        [contenteditable="true"] {
+            outline: none;
+            transition: all 0.2s;
+            position: relative;
+        }
+        [contenteditable="true"]:hover {
+            background-color: rgba(197, 160, 89, 0.05);
+            box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.3);
+            cursor: text;
+        }
+        [contenteditable="true"]:focus {
+            background-color: rgba(197, 160, 89, 0.1);
+            box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.8);
+        }
+
+        @media screen and (max-width: 600px) {
+            .email-container { width: 100% !important; border: 0 !important; }
+            .email-body { padding: 25px 15px !important; }
+            .heading { font-size: 24px !important; }
+            .logo-text { font-size: 24px !important; }
+            .details-box { padding: 15px !important; }
+            .value { font-size: 14px !important; }
+            .detail-row { flex-direction: column !important; align-items: flex-start !important; gap: 4px !important; }
+            .value { text-align: left !important; }
+        }
     </style>
 </head>
 <body>
@@ -130,14 +218,14 @@
                             <h2 class="heading">{{email_heading}}</h2>
                             <div class="intro-text">
                                 Beste <strong>{{user_name}}</strong>,<br><br>
-                                <span style="white-space: pre-wrap;">{{{email_intro}}}</span>
+                                <div id="editable-intro" contenteditable="true" style="white-space: pre-wrap;">{{{email_intro}}}</div>
                             </div>
                             <div class="details-box">
                                 {{{details_html}}}
                             </div>
                             {{{extra_content}}}
                             <div class="intro-text">
-                                <span style="white-space: pre-wrap;">{{{email_closing}}}</span>
+                                <div id="editable-closing" contenteditable="true" style="white-space: pre-wrap;">{{{email_closing}}}</div>
                             </div>
                             <div class="button-wrapper">
                                 <a href="https://gipfellodge.com" class="btn" style="background-color: {{themeColor}};">{{email_visit_website}}</a>
@@ -149,11 +237,54 @@
             </td>
         </tr>
     </table>
+    <script>
+        // Sync changes back to parent
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.addEventListener('input', () => {
+                const id = el.id.replace('editable-', 'email_');
+                window.parent.syncFromPreview(id, el.innerText);
+            });
+            // Prevent accidental formatting (keep it plain text)
+            el.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
+        });
+    </script>
 </body>
 </html>
     </template>
 
     <script>
+        window.syncFromPreview = function(id, text) {
+            const el = document.getElementById(id);
+            if (el) {
+                // Update textarea value without triggering full preview refresh
+                // to avoid losing cursor position/focus in the preview
+                el.value = text;
+            }
+        };
+
+        function switchTab(tab) {
+            const sidebar = document.querySelector('.sidebar');
+            const preview = document.querySelector('.preview-area');
+            const btns = document.querySelectorAll('.tab-btn');
+            
+            if (tab === 'edit') {
+                sidebar.classList.add('active');
+                preview.classList.remove('active');
+                btns[0].classList.add('active');
+                btns[1].classList.remove('active');
+            } else {
+                sidebar.classList.remove('active');
+                preview.classList.add('active');
+                btns[0].classList.remove('active');
+                btns[1].classList.add('active');
+                updatePreview();
+            }
+        }
+
         // Preset settings per type
         const templatesData = {
             request: {
@@ -235,6 +366,7 @@
             const preset = templatesData[typeVar];
             activeData = {
                 type: typeVar,
+                id: urlParams.get('id') || '',
                 name: decodeURIComponent(urlParams.get('name') || 'Familie Voorbeeld'),
                 email: decodeURIComponent(urlParams.get('email') || 'gast@email.nl'),
                 checkin: decodeURIComponent(urlParams.get('checkin') || '12 Dec 2026'),
@@ -446,6 +578,16 @@
             emailjs.send(serviceId, templateId, params)
                 .then(function() {
                     showStatus("Succes! De e-mail is direct verzonden naar " + activeData.email, true);
+                    
+                    // Notify parent to check off the step in the mailchain
+                    if (window.parent && activeData.id) {
+                        window.parent.postMessage({
+                            type: 'emailSent',
+                            id: activeData.id,
+                            emailType: activeData.type
+                        }, '*');
+                    }
+
                     sendBtn.style.display = 'none';
                     document.getElementById('closeBtn').style.display = 'block';
                 }, function(error) {

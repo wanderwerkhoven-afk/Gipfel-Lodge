@@ -360,6 +360,102 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Email Tester Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 40, 48, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-container {
+            background: #fff;
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+        }
+
+        @media (max-width: 600px) {
+            .modal-overlay {
+                padding: 10px;
+            }
+            .modal-container {
+                height: 95vh;
+                border-radius: 12px;
+            }
+        }
+
+        .modal-header {
+            padding: 15px 25px;
+            background: var(--color-slate);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-family: var(--font-primary);
+            font-size: 1.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .close-modal {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background 0.2s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-body {
+            flex: 1;
+            position: relative;
+        }
+
+        #tester-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
         .dashboard-view { display: none; }
         .dashboard-view.active { display: block; animation: fadeIn 0.4s ease-out; }
@@ -1280,7 +1376,7 @@
                     const bAmt = rawP ? fmtP(rawP * 0.7) : '€ [BEDRAG]';
 
                     // Pre-build tester url
-                    const testerBaseUrl = `templates/email-tester.html?name=${encodeURIComponent(data.guestName||'Gast')}&email=${encodeURIComponent(data.guestEmail||'')}&checkin=${encodeURIComponent(dIn.toLocaleDateString('nl-NL', fmtOpts))}&checkout=${encodeURIComponent(dOut.toLocaleDateString('nl-NL', fmtOpts))}&guests=${encodeURIComponent(data.totalGuests||'-')}&message=${encodeURIComponent(data.message||'')}&tot=${encodeURIComponent(tAmt)}&dep=${encodeURIComponent(dAmt)}&bal=${encodeURIComponent(bAmt)}`;
+                    const testerBaseUrl = `templates/email-tester.html?id=${data.id}&name=${encodeURIComponent(data.guestName||'Gast')}&email=${encodeURIComponent(data.guestEmail||'')}&checkin=${encodeURIComponent(dIn.toLocaleDateString('nl-NL', fmtOpts))}&checkout=${encodeURIComponent(dOut.toLocaleDateString('nl-NL', fmtOpts))}&guests=${encodeURIComponent(data.totalGuests||'-')}&message=${encodeURIComponent(data.message||'')}&tot=${encodeURIComponent(tAmt)}&dep=${encodeURIComponent(dAmt)}&bal=${encodeURIComponent(bAmt)}`;
 
                     const mc = data.mailChain || {};
                     const isPending = data.status === 'pending';
@@ -1316,7 +1412,7 @@
                                 <div class="payment-toggle" style="padding-bottom:10px;">
                                     <div>
                                         <span style="opacity: 0.6; display:block;">1. Boeking ontvangen</span>
-                                        <a href="${testerBaseUrl}&type=request" target="_blank" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=request')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
                                     </div>
                                     <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">✔ VOLTOOID</span>
                                 </div>
@@ -1326,8 +1422,8 @@
                                     <div>
                                         <span style="opacity: ${isPending ? '1' : '0.6'}; display:block;">2. Accepteren / Weigeren</span>
                                         <div style="display:flex; gap:8px; margin-top:5px;">
-                                            <a href="${testerBaseUrl}&type=acceptance" target="_blank" style="background:#28a745; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ TESTER (ACCEPTEREN)</a>
-                                            <a href="${testerBaseUrl}&type=rejection" target="_blank" style="background:#dc3545; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ TESTER (WEIGEREN)</a>
+                                            <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=acceptance')" style="background:#28a745; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ TESTER (ACCEPTEREN)</a>
+                                            <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=rejection')" style="background:#dc3545; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ TESTER (WEIGEREN)</a>
                                         </div>
                                     </div>
                                     <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">${!isPending ? '✔ VOLTOOID' : 'ACTIE VEREIST'}</span>
@@ -1337,11 +1433,11 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>3. Betalingsherinnering (Deposit)</span>
-                                        <a href="${testerBaseUrl}&type=deposit_request" target="_blank" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=deposit_request')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${s3_depRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReminder', this.checked)">
+                                            <input type="checkbox" data-step="depositReminder" ${s3_depRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReminder', this.checked)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1351,11 +1447,11 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>4. Deposit ontvangen mail</span>
-                                        <a href="${testerBaseUrl}&type=deposit_received" target="_blank" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=deposit_received')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${s4_depRec ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReceived', this.checked)">
+                                            <input type="checkbox" data-step="depositReceived" ${s4_depRec ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReceived', this.checked)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1365,11 +1461,11 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>5. Balance reminder mail</span>
-                                        <a href="${testerBaseUrl}&type=balance_reminder" target="_blank" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=balance_reminder')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${s5_balRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'balanceReminder', this.checked)">
+                                            <input type="checkbox" data-step="balanceReminder" ${s5_balRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'balanceReminder', this.checked)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1379,11 +1475,11 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>6. Restbetaling ontvangen mail</span>
-                                        <a href="${testerBaseUrl}&type=balance_received" target="_blank" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=balance_received')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${s6_balRec ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'balanceReceived', this.checked)">
+                                            <input type="checkbox" data-step="balanceReceived" ${s6_balRec ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'balanceReceived', this.checked)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1393,11 +1489,11 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>7. Regels & wachtwoorden</span>
-                                        <a href="${testerBaseUrl}&type=rules_info" target="_blank" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=rules_info')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${s7_preStay ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'preStayInfo', this.checked)">
+                                            <input type="checkbox" data-step="preStayInfo" ${s7_preStay ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'preStayInfo', this.checked)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1407,11 +1503,11 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>8. Bedankje & Review (Post-stay)</span>
-                                        <a href="${testerBaseUrl}&type=post_stay" target="_blank" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=post_stay')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${s8_postStay ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'postStay', this.checked)">
+                                            <input type="checkbox" data-step="postStay" ${s8_postStay ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'postStay', this.checked)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1422,8 +1518,8 @@
                             <div style="margin-top:20px; padding-top:15px; border-top: 1px solid rgba(0,0,0,0.05);">
                                 <span style="font-size:0.75rem; font-weight:bold; color:var(--color-slate); text-transform:uppercase; margin-bottom:10px; display:block;">Overige Communicatie</span>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                    <a href="${testerBaseUrl}&type=general" target="_blank" class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid var(--color-slate); color: var(--color-slate); text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✉ ALGEMEEN BERICHT</a>
-                                    <a href="${testerBaseUrl}&type=cancellation" target="_blank" class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid #dc3545; color: #dc3545; text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✕ ANNULERINGSBEVESTIGING</a>
+                                                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=general')" class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid var(--color-slate); color: var(--color-slate); text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✉ ALGEMEEN BERICHT</a>
+                                                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=cancellation')" class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid #dc3545; color: #dc3545; text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✕ ANNULERINGSBEVESTIGING</a>
                                 </div>
                             </div>
                         </div>
@@ -1446,6 +1542,14 @@
             try {
                 const { db, doc, updateDoc } = await import('./js/core/firebase.js');
                 
+                // 1. Sync Logic (UI -> DB is already handled by checkbox)
+                // 2. Sync Logic (Tester -> DB calls this function, so we need DB -> UI)
+                const card = document.getElementById(`mc-card-${bookingId}`);
+                if (card) {
+                    const checkbox = card.querySelector(`input[data-step="${stepKey}"]`);
+                    if (checkbox) checkbox.checked = value;
+                }
+
                 // Nested update in Firestore object
                 await updateDoc(doc(db, "bookings", bookingId), {
                     [`mailChain.${stepKey}`]: value
@@ -1717,6 +1821,71 @@
                 resultDiv.style.display = 'block';
             }
         }
+    </script>
+
+    <!-- Email Tester Modal -->
+    <div id="emailTesterModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>E-mail Tester & Verzender</h3>
+                <button class="close-modal" onclick="closeEmailTester()">✕</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="tester-iframe" src="about:blank"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEmailTester(url) {
+            const modal = document.getElementById('emailTesterModal');
+            const iframe = document.getElementById('tester-iframe');
+            
+            iframe.src = url;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        }
+
+        function closeEmailTester() {
+            const modal = document.getElementById('emailTesterModal');
+            const iframe = document.getElementById('tester-iframe');
+            
+            modal.classList.remove('active');
+            setTimeout(() => {
+                iframe.src = 'about:blank';
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // Listen for messages from the Email Tester iframe
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'emailSent') {
+                const { id, emailType } = event.data;
+                console.log("Email sent confirmed from tester:", emailType, "for booking:", id);
+                
+                // Map emailType to field name
+                const mapping = {
+                    'deposit_request': 'depositReminder',
+                    'deposit_received': 'depositReceived',
+                    'balance_reminder': 'balanceReminder',
+                    'balance_received': 'balanceReceived',
+                    'rules_info': 'preStayInfo',
+                    'post_stay': 'postStay'
+                };
+
+                const fieldName = mapping[emailType];
+                if (fieldName) {
+                    toggleMailStep(id, fieldName, true);
+                }
+            }
+        });
+
+        // Handle escape key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('emailTesterModal').classList.contains('active')) {
+                closeEmailTester();
+            }
+        });
     </script>
 </body>
 </html>
