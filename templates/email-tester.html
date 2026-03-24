@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gipfel Lodge - Mail Verzender (Locked)</title>
+    <title>Gipfel Lodge - Mail Verzender (Beveiligd)</title>
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
@@ -294,7 +294,7 @@
                 email_visit_website: 'Meer over de Lodge', format: 'standard'
             },
             acceptance: {
-                themeColor: '#C5A059', email_tagline: 'Alpine Elegance', email_heading: 'Uw verblijf is gereserveerd',
+                themeColor: '#C5A059', email_tagline: 'Alpiner Luxus & Raum', email_heading: 'Uw verblijf is gereserveerd',
                 defaultIntro: 'Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.',
                 defaultClosing: 'We sturen u binnenkort de toegangscode en tips voor uw verblijf.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
                 email_visit_website: 'Bereid uw reis voor', format: 'acceptance'
@@ -385,7 +385,7 @@
                 <div class="readonly-row"><strong>Ontvanger:</strong> <span>${activeData.email}</span></div>
                 <div class="readonly-row"><strong>Gast:</strong> <span>${activeData.name}</span></div>
                 <div class="readonly-row"><strong>Data:</strong> <span>${activeData.checkin} t/m ${activeData.checkout}</span></div>
-                <div class="readonly-row"><strong>Aantal info:</strong> <span>${activeData.guests}</span></div>
+                <div class="readonly-row"><strong>Reisgezelschap:</strong> <span>${activeData.guests}</span></div>
             `;
 
             // Populate Textareas
@@ -410,7 +410,7 @@
 
         function generateDetailsHtml(format) {
             let baseDetails = `
-                <div class="detail-row"><div class="label">Reisdata</div><div class="value">${activeData.checkin} &mdash; ${activeData.checkout}</div></div>
+                <div class="detail-row"><div class="label">Aankomst & Vertrek</div><div class="value">${activeData.checkin} &mdash; ${activeData.checkout}</div></div>
                 <div class="detail-row"><div class="label">Reisgezelschap</div><div class="value">${activeData.guests}</div></div>
             `;
             

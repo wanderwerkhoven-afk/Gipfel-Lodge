@@ -5,6 +5,11 @@
 window.navigateTo = function(pageId) {
     console.log('Navigating to:', pageId);
 
+    // Save to local storage
+    if (pageId) {
+        localStorage.setItem('gipfel_last_page', pageId);
+    }
+
     // 1. Update active page classes
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => {
@@ -68,7 +73,10 @@ function reInitPageContent(pageId) {
 
 // Global initialization
 document.addEventListener('DOMContentLoaded', () => {
-    const initialPage = window.location.hash.replace('#', '') || 'home';
+    const hashPage = window.location.hash.replace('#', '');
+    const savedPage = localStorage.getItem('gipfel_last_page');
+    const initialPage = hashPage || savedPage || 'home';
+    
     window.navigateTo(initialPage);
 
     // Intercept clicks on links with hashes

@@ -790,6 +790,147 @@
             .page-header h1 { font-size: 1.8rem; }
             .nav-item { flex: 1 1 100%; min-width: auto; }
         }
+
+        /* --- Email Composer Modal --- */
+        #email-composer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        #email-composer-modal.active { display: flex; }
+        .modal-container {
+            background: #fff;
+            width: 100%;
+            max-width: 1000px;
+            height: 90vh;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fcfcfc;
+        }
+        .modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f4f4f4;
+            display: flex;
+            gap: 20px;
+        }
+        .composer-preview-container {
+            background: #fff;
+            flex: 1;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 4px;
+            overflow: auto;
+            position: relative;
+        }
+        #composer-preview-area {
+            min-height: 100%;
+            outline: none;
+            padding: 0;
+        }
+        #composer-preview-area [contenteditable="true"]:hover {
+            background: rgba(197, 160, 89, 0.05);
+            box-shadow: 0 0 0 1px #C5A059;
+            cursor: text;
+        }
+        #composer-preview-area [contenteditable="true"]:focus {
+            background: rgba(197, 160, 89, 0.1);
+            box-shadow: 0 0 0 2px #C5A059;
+        }
+        .composer-sidebar {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .composer-control-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .composer-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #78868A;
+            margin-bottom: 8px;
+            display: block;
+            letter-spacing: 0.05em;
+        }
+        .modal-footer {
+            padding: 15px 30px;
+            border-top: 1px solid #eee;
+            background: #fcfcfc;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        .btn-composer-copy {
+            background: #2ecc71;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-composer-copy:hover { transform: translateY(-1px); background: #27ae60; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3); }
+        .btn-composer-close {
+            background: #eee;
+            color: #333;
+            padding: 12px 25px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-composer-close:hover { background: #ddd; }
+        .btn-composer-send {
+            background: var(--color-gold);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-composer-send:hover { 
+            background: var(--color-gold-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
+        }
+        .btn-composer-send:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -821,7 +962,7 @@
                 </ul>
 
                 <div style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
-                    <strong style="display: block; margin-bottom: 10px; color: var(--gold);">System Status</strong>
+                    <strong style="display: block; margin-bottom: 10px; color: var(--gold);">Systeem Status</strong>
                     <div id="db-status-tag" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; opacity: 0.7;">
                         <span style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></span>
                         Firebase Status: Onbekend
@@ -897,10 +1038,10 @@
                         
                         <div class="filter-bar">
                             <button class="filter-btn active" onclick="filterBookings('all', this)">Alle</button>
-                            <button class="filter-btn" onclick="filterBookings('pending', this)">Pending</button>
-                            <button class="filter-btn confirmed" onclick="filterBookings('confirmed', this)">Confirmed</button>
-                            <button class="filter-btn declined" onclick="filterBookings('declined', this)">Declined</button>
-                            <button class="filter-btn" onclick="filterBookings('completed', this)">Completed</button>
+                            <button class="filter-btn" onclick="filterBookings('pending', this)">In Afwachting</button>
+                            <button class="filter-btn confirmed" onclick="filterBookings('confirmed', this)">Bevestigd</button>
+                            <button class="filter-btn declined" onclick="filterBookings('declined', this)">Geweigerd</button>
+                            <button class="filter-btn" onclick="filterBookings('completed', this)">Voltooid</button>
                         </div>
                     </div>
 
@@ -1234,7 +1375,7 @@
                                 <p style="font-size: 0.85rem;">${data.guestPhone || '-'}</p>
                             </div>
                             <span class="status-badge status-${data.status || 'pending'}">
-                                ${data.status || 'pending'}
+                                ${data.status === 'pending' ? 'In Afwachting' : (data.status === 'confirmed' ? 'Bevestigd' : (data.status === 'declined' ? 'Geweigerd' : data.status))}
                             </span>
                         </div>
                         <div class="booking-card-body">
@@ -1250,7 +1391,11 @@
                             
                             <div class="tile-data-row">
                                 <span class="tile-section-label">Gasten:</span>
-                                <strong>volw: ${data.adults || 0} | kind: ${data.children || 0} | baby: ${data.babies || 0}</strong>
+                                <strong>${[
+                                    data.adults > 0 ? `volw: ${data.adults}` : null,
+                                    data.children > 0 ? `kind: ${data.children}` : null,
+                                    data.babies > 0 ? `baby: ${data.babies}` : null
+                                ].filter(x => x).join(' | ') || 'Niet gespecificeerd'}</strong>
                             </div>
                             
                             <div class="tile-data-row">
@@ -1296,6 +1441,16 @@
                             ` : `
                                 <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${doc.id}')" style="background:var(--color-gold); border-color:var(--color-gold); color:#fff;">
                                     ✉ Beheer Communicatie
+                                </button>
+                                <button class="btn btn-secondary action-btn" 
+                                    style="background:#fff; border-color:var(--color-slate); color:var(--color-slate); margin-top:0;"
+                                    data-id="${doc.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                    data-in="${data.checkIn}" data-out="${data.checkOut}" data-guests="${data.totalGuests}" 
+                                    data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                    data-tot="${totalAmount}" data-dep="${depositAmount}" data-bal="${balanceAmount}" 
+                                    data-message="${data.message || ''}" data-type="acceptance"
+                                    onclick="openEmailComposer(this)">
+                                    ⎘ Bewerk & Kopieer HTML
                                 </button>
                                 <button class="btn-decline" onclick="declineBooking('${doc.id}', this)">
                                     ✕ Boeking Weigeren (Snel)
@@ -1391,7 +1546,7 @@
                     let statusHtml = '';
                     if (isPending) statusHtml = '<span class="status-badge status-pending">In Afwachting</span>';
                     else if (isDeclined) statusHtml = '<span class="status-badge status-declined">Geweigerd</span>';
-                    else statusHtml = '<span class="status-badge status-confirmed">Confirmed</span>';
+                    else statusHtml = '<span class="status-badge status-confirmed">Bevestigd</span>';
 
                     card.innerHTML = `
                         <div class="booking-card-header">
@@ -1412,7 +1567,15 @@
                                 <div class="payment-toggle" style="padding-bottom:10px;">
                                     <div>
                                         <span style="opacity: 0.6; display:block;">1. Boeking ontvangen</span>
-                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=request')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-type="general" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">✔ VOLTOOID</span>
                                 </div>
@@ -1422,8 +1585,24 @@
                                     <div>
                                         <span style="opacity: ${isPending ? '1' : '0.6'}; display:block;">2. Accepteren / Weigeren</span>
                                         <div style="display:flex; gap:8px; margin-top:5px;">
-                                            <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=acceptance')" style="background:#28a745; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ TESTER (ACCEPTEREN)</a>
-                                            <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=rejection')" style="background:#dc3545; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ TESTER (WEIGEREN)</a>
+                                            <a href="javascript:void(0)" 
+                                                data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                                data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                                data-guests="${data.totalGuests||'-'}" 
+                                                data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                                data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                                data-message="${data.message || ''}" data-type="acceptance" 
+                                                onclick="openEmailComposer(this)" 
+                                                style="background:#28a745; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ BEWERK (ACCEPTEER)</a>
+                                            <a href="javascript:void(0)" 
+                                                data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                                data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                                data-guests="${data.totalGuests||'-'}" 
+                                                data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                                data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                                data-message="${data.message || ''}" data-type="rejection" 
+                                                onclick="openEmailComposer(this)" 
+                                                style="background:#dc3545; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ BEWERK (WEIGER)</a>
                                         </div>
                                     </div>
                                     <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">${!isPending ? '✔ VOLTOOID' : 'ACTIE VEREIST'}</span>
@@ -1432,8 +1611,16 @@
                                 <!-- Step 3 -->
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>3. Betalingsherinnering (Deposit)</span>
-                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=deposit_request')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <span>3. Betalingsherinnering (Aanbetaling)</span>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-type="deposit_request" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
@@ -1446,8 +1633,16 @@
                                 <!-- Step 4 -->
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>4. Deposit ontvangen mail</span>
-                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=deposit_received')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <span>4. Aanbetaling ontvangen mail</span>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-type="deposit_received" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
@@ -1460,8 +1655,16 @@
                                 <!-- Step 5 -->
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>5. Balance reminder mail</span>
-                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=balance_reminder')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <span>5. Restbetaling herinnering mail</span>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-type="balance_reminder" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
@@ -1475,7 +1678,15 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>6. Restbetaling ontvangen mail</span>
-                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=balance_received')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-type="balance_received" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
@@ -1489,7 +1700,15 @@
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>7. Regels & wachtwoorden</span>
-                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=rules_info')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-type="rules_info" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
@@ -1502,8 +1721,16 @@
                                 <!-- Step 8 -->
                                 <div class="payment-toggle">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>8. Bedankje & Review (Post-stay)</span>
-                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=post_stay')" style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ OPEN IN TESTER</a>
+                                        <span>8. Bedankje & Review (Na verblijf)</span>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-type="post_stay" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
@@ -1518,8 +1745,24 @@
                             <div style="margin-top:20px; padding-top:15px; border-top: 1px solid rgba(0,0,0,0.05);">
                                 <span style="font-size:0.75rem; font-weight:bold; color:var(--color-slate); text-transform:uppercase; margin-bottom:10px; display:block;">Overige Communicatie</span>
                                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=general')" class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid var(--color-slate); color: var(--color-slate); text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✉ ALGEMEEN BERICHT</a>
-                                                                        <a href="javascript:void(0)" onclick="openEmailTester('${testerBaseUrl}&type=cancellation')" class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid #dc3545; color: #dc3545; text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✕ ANNULERINGSBEVESTIGING</a>
+                                    <button 
+                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                        data-guests="${data.totalGuests||'-'}" 
+                                        data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                        data-message="${data.message || ''}" data-type="general" 
+                                        onclick="openEmailComposer(this)" 
+                                        class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid var(--color-slate); color: var(--color-slate); text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✉ ALGEMEEN BERICHT</button>
+                                    <button 
+                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                        data-guests="${data.totalGuests||'-'}" 
+                                        data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
+                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                        data-message="${data.message || ''}" data-type="rejection" 
+                                        onclick="openEmailComposer(this)" 
+                                        class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid #dc3545; color: #dc3545; text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✕ ANNULERING / WEIGERING</button>
                                 </div>
                             </div>
                         </div>
@@ -1807,7 +2050,7 @@
             } catch (err) {
                 console.error("Firebase Test Error:", err);
                 dot.style.background = '#e74c3c'; // rood: fout
-                statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #e74c3c;"></span> Firebase: Error`;
+                statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #e74c3c;"></span> Firebase: Fout`;
                 
                 let msg = "Fout: " + err.message;
                 if (err.message.includes("permission-denied")) {
@@ -1835,57 +2078,453 @@
             </div>
         </div>
     </div>
-
     <script>
-        function openEmailTester(url) {
-            const modal = document.getElementById('emailTesterModal');
-            const iframe = document.getElementById('tester-iframe');
-            
-            iframe.src = url;
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling background
-        }
+        let currentComposerData = {};
 
-        function closeEmailTester() {
-            const modal = document.getElementById('emailTesterModal');
-            const iframe = document.getElementById('tester-iframe');
-            
-            modal.classList.remove('active');
-            setTimeout(() => {
-                iframe.src = 'about:blank';
-                document.body.style.overflow = '';
-            }, 300);
-        }
-
-        // Listen for messages from the Email Tester iframe
-        window.addEventListener('message', function(event) {
-            if (event.data.type === 'emailSent') {
-                const { id, emailType } = event.data;
-                console.log("Email sent confirmed from tester:", emailType, "for booking:", id);
-                
-                // Map emailType to field name
-                const mapping = {
-                    'deposit_request': 'depositReminder',
-                    'deposit_received': 'depositReceived',
-                    'balance_reminder': 'balanceReminder',
-                    'balance_received': 'balanceReceived',
-                    'rules_info': 'preStayInfo',
-                    'post_stay': 'postStay'
-                };
-
-                const fieldName = mapping[emailType];
-                if (fieldName) {
-                    toggleMailStep(id, fieldName, true);
-                }
+        const composerTemplates = {
+            general: {
+                tagline: 'Bericht van Gipfel Lodge', heading: 'Update rondom je verblijf',
+                intro: 'Bedankt voor je bericht. We voorzien je graag van de gevraagde informatie.',
+                closing: 'We hopen je hiermee voldoende te hebben geïnformeerd. Heb je nog andere vragen? Aarzel dan niet om contact op te nemen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#20303D', buttonText: 'Naar de website', format: 'standard'
+            },
+            acceptance: {
+                tagline: 'Alpiner Luxus & Raum', heading: 'Uw verblijf is gereserveerd',
+                intro: 'Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.',
+                closing: 'Heeft u in de tussentijd nog vragen of speciale wensen? Reageer dan gerust op deze e-mail.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#C5A059', buttonText: 'Bereid uw reis voor', format: 'acceptance'
+            },
+            rejection: {
+                tagline: 'Update Boekingsaanvraag', heading: 'Helaas, geen beschikbaarheid',
+                intro: 'Bedankt voor je interesse in Gipfel Lodge. Helaas moeten we je mededelen dat we op de door jou geselecteerde data geen verblijf meer vrij hebben dat past bij jullie reisgezelschap.',
+                closing: 'Bekijk onze kalender op de website voor andere beschikbare periodes. We hopen je in de toekomst alsnog te mogen ontvangen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#E53935', buttonText: 'Zoek andere data', format: 'standard'
+            },
+            deposit_request: {
+                tagline: 'Actie Vereist', heading: 'Aanbetaling & Bevestiging',
+                intro: 'Bedankt voor uw boeking bij Gipfel Lodge. We hebben de details van jullie naderende reis in goede orde ontvangen voor de volgende verblijfsperiode:',
+                closing: 'Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. Zodra de betaling goed en wel bij ons binnen is gekomen op de rekening sturen wij u een definitieve bevestiging met alle overige details.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#F59E0B', buttonText: 'Naar Website', format: 'deposit_request'
+            },
+            deposit_received: {
+                tagline: 'Boeking Definitief Bevestigd', heading: 'Aanbetaling succesvol verwerkt',
+                intro: 'We hebben je aanbetaling in goede orde ontvangen! Hiermee is je boeking bij Gipfel Lodge officieel en definitief bevestigd voor onderstaande reisgegevens:',
+                closing: 'Mochten er tussentijds vragen zijn over je verblijf of de omgeving, laat het ons dan gerust weten door deze e-mail te beantwoorden. We helpen je graag!\n\nWe kijken ernaar uit je te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#C5A059', buttonText: 'Bekijk Gipfel Lodge', format: 'deposit_received'
+            },
+            balance_reminder: {
+                tagline: 'Restbetaling Verblijf', heading: 'Betalingsherinnering',
+                intro: 'We kijken ernaar uit je binnenkort te mogen verwelkomen in de Gipfel Lodge! Graag herinneren we je eraan dat er nog een openstaand saldo is voor je naderende reservering.',
+                closing: 'Heb je de betaling toevallig in de afgelopen dagen al voldaan? Dan heeft deze e-mail je betaling gekruist en mag je dit bericht als niet verzonden beschouwen. Bedankt!\n\nWe sturen de reisinformatie toe zodra de reis dichterbij komt.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#F59E0B', buttonText: 'Naar Website', format: 'balance_reminder'
+            },
+            balance_received: {
+                tagline: 'Betaling Volledig Voldaan', heading: 'Uw restbetaling is binnen',
+                intro: 'Goed nieuws! We hebben de restbetaling zojuist in goede orde ontvangen. Hiermee is de volledige reissom voldaan en is financieel gezien alles definitief in orde voor je verblijf bij Gipfel Lodge.',
+                closing: 'Namens de hele familie en staf willen we je bedanken voor het vertrouwen en de vlotte afhandeling van de betaling.\n\nDe bergen roepen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#C5A059', buttonText: 'Naar Website', format: 'balance_received'
+            },
+            rules_info: {
+                tagline: 'Voorbereiding op uw verblijf', heading: 'Tijd om in te pakken!',
+                intro: 'De aankomst in de Gipfel Lodge komt nu écht dichterbij! Om ervoor te zorgen dat je verblijf vanaf het eerste moment soepel en zorgeloos verloopt, delen we alvast de belangrijkste praktische informatie en huisregels met jullie.',
+                closing: 'Let op: op de dag (of vlak voor de dag) van aankomst ontvangt u van ons een kort bericht met de unieke pincode voor de sleutelkluis van uw appartement.\n\nWe wensen je alvast een veilige reis!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#C5A059', buttonText: 'Naar Website', format: 'rules_info'
+            },
+            post_stay: {
+                tagline: 'Alpine Memories', heading: 'Bedankt voor je verblijf',
+                intro: 'We hopen dat jullie een fantastisch verblijf hebben gehad in Gipfel Lodge en veilig zijn thuisgekomen! Het was een waar genoegen om jullie als gasten te mogen ontvangen.',
+                closing: 'Zou je zo vriendelijk willen zijn om een korte review achter te laten over je verblijf? Dit is erg waardevol voor ons. We hopen jullie in de toekomst nog eens te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                themeColor: '#C5A059', buttonText: 'Laat een review achter', format: 'standard'
             }
-        });
+        };
+
+        function openEmailComposer(btn) {
+            const ds = btn.dataset;
+            
+            // Build guests string: "2 Volw. | 1 Kind."
+            let guestsStr = ds.guests || '';
+            if (ds.adults !== undefined) {
+                const parts = [];
+                const ad = parseInt(ds.adults) || 0;
+                const ch = parseInt(ds.children) || 0;
+                const ba = parseInt(ds.babies) || 0;
+                if (ad > 0) parts.push(`${ad} Volw.`);
+                if (ch > 0) parts.push(`${ch} Kind`);
+                if (ba > 0) parts.push(`${ba} Baby`);
+                if (parts.length > 0) guestsStr = parts.join(' | ');
+            }
+
+            currentComposerData = {
+                id: ds.id || '',
+                name: ds.name || 'Gast',
+                email: ds.email || '',
+                in: ds.in || '',
+                out: ds.out || '',
+                guests: guestsStr,
+                tot: ds.tot || '€ [BEDRAG]',
+                dep: ds.dep || '€ [BEDRAG]',
+                bal: ds.bal || '€ [BEDRAG]',
+                message: ds.message || ''
+            };
+            
+            // Set initial template in dropdown based on button context if any (default to general)
+            const type = ds.type || 'general';
+            document.getElementById('composer-template-select').value = type;
+            
+            document.getElementById('email-composer-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            loadSelectedTemplateIntoComposer();
+        }
+
+        function closeEmailComposer() {
+            document.getElementById('email-composer-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function loadSelectedTemplateIntoComposer() {
+            const type = document.getElementById('composer-template-select').value;
+            const template = composerTemplates[type] || composerTemplates.general;
+            const previewArea = document.getElementById('composer-preview-area');
+            
+            // Re-map common fields
+            const introHtml = (template.intro || '').replace(/\n/g, '<br>');
+            const closingHtml = (template.closing || '').replace(/\n/g, '<br>');
+
+            let detailsHtml = `
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">Aankomst & Vertrek</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.in} &mdash; ${currentComposerData.out}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">Reisgezelschap</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.guests}</div>
+                        </td>
+                    </tr>
+                </table>
+            `;
+
+            if (template.format === 'deposit_request') {
+                detailsHtml = `
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">Aankomst & Vertrek</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.in} &mdash; ${currentComposerData.out}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">Totaalprijs</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.tot}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: none;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">Aanbetaling (30%)</div>
+                            <div style="font-size: 15px; color: #c47e09; font-weight: 700;">${currentComposerData.dep}</div>
+                        </td>
+                    </tr>
+                </table>`;
+            } else if (template.format === 'rules_info') {
+                detailsHtml = `
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">Inchecken</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">Vanaf 15:00 uur</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">Uitchecken</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">Uiterlijk 10:00 uur</div>
+                        </td>
+                    </tr>
+                </table>`;
+            }
+
+            let extraHtml = '';
+            if (template.format === 'acceptance') {
+                extraHtml = `
+                    <p style="font-size: 15px; font-weight: 600; margin-bottom: 20px; color: #20303D;">Belangrijke informatie voor uw verblijf:</p>
+                    <div style="border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background: #f9f9f9;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px;">1. Betaling</div>
+                        <p style="font-size: 14px; color: #56686d; margin: 0 0 12px 0;">Om uw reservering definitief te maken, vragen wij een aanbetaling van 30%. Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan.</p>
+                        <div style="background: #ffffff; border: 1px solid #e0e4e8; padding: 15px; border-radius: 4px; font-size: 13px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="color: #20303D;">
+                                <tr><td style="padding-bottom: 8px; font-weight: 600;">Aanbetaling:</td><td style="text-align: right; padding-bottom: 8px; font-weight: 700; color: #c47e09;">${currentComposerData.dep}</td></tr>
+                                <tr><td style="padding-bottom: 5px; color: #78868A; font-size: 11px;">IBAN:</td><td style="text-align: right; padding-bottom: 5px; font-weight: 500;">[ NL00 BANK 0000 0000 00 ]</td></tr>
+                                <tr><td style="padding-bottom: 5px; color: #78868A; font-size: 11px;">BIC/SWIFT:</td><td style="text-align: right; padding-bottom: 5px; font-weight: 500;">[ BIC CODE ]</td></tr>
+                                <tr><td style="color: #78868A; font-size: 11px;">Omschrijving:</td><td style="text-align: right; font-weight: 500;">Boeking ${currentComposerData.id} - ${currentComposerData.name}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background: #f9f9f9;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px;">2. Aankomst & Vertrek</div>
+                        <p style="font-size: 14px; color: #56686d; margin: 0;">Inchecken is mogelijk vanaf <strong>15:00 uur</strong> op de dag van aankomst. Op de dag van vertrek vragen we u de lodge uiterlijk om <strong>10:00 uur</strong> vrij te maken.</p>
+                    </div>
+                    <div style="border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background: #f9f9f9;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px;">3. Huisregels</div>
+                        <p style="font-size: 14px; color: #56686d; margin: 0;">Gipfel Lodge is een rookvrij verblijf en huisdieren zijn in overleg toegestaan. Voor aankomst ontvangt u van ons de toegangscode en uitgebreide huisinformatie.</p>
+                    </div>
+                `;
+            } else if (template.format === 'rules_info') {
+                extraHtml = `
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #20303D; margin: 25px 0 15px;">Onze Huisregels</h3>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px; font-size: 13px; line-height: 1.5; color: #20303D;">
+                        <tr><td style="width: 25px; color: #C5A059; font-weight: bold; vertical-align: top;">&bull;</td><td style="padding-bottom: 10px;"><strong>Schoeisel:</strong> In de lodge dragen we graag pantoffels. Skischoenen graag in de skiruimte.</td></tr>
+                        <tr><td style="width: 25px; color: #C5A059; font-weight: bold; vertical-align: top;">&bull;</td><td style="padding-bottom: 10px;"><strong>Rookvrij:</strong> De lodge is strikt rookvrij. Roken kan buiten op het terras.</td></tr>
+                    </table>
+                `;
+            }
+
+            const alertHtml = type !== 'general' ? `
+                <tr>
+                    <td style="background-color: #f7f9fa; padding: 12px 30px; text-align: center; border-bottom: 1px solid #e0e4e8;">
+                        <p style="margin: 0; color: #78868A; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">${template.tagline}</p>
+                    </td>
+                </tr>
+            ` : '';
+
+            const fullHtml = `
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF9F6; margin: 0; padding: 20px 0 40px; font-family: 'Inter', Arial, sans-serif;">
+                <tr>
+                    <td align="center">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border: 1px solid #e0e4e8;">
+                            <!-- Header -->
+                            <tr>
+                                <td style="background-color: #20303D; padding: 30px 20px; text-align: center;">
+                                    <table align="center" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="vertical-align: middle; color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">GIPFEL</td>
+                                            <td style="vertical-align: middle; padding: 0 10px;"><img src="https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/assets/images/logo-Topbar.png" alt="Logo" style="height: 30px; display: block; border: 0;"></td>
+                                            <td style="vertical-align: middle; color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">LODGE</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            ${alertHtml}
+                            <!-- Body -->
+                            <tr>
+                                <td style="padding: 40px 30px;">
+                                    <p style="color: ${template.themeColor}; font-size: 13px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 10px;">${template.tagline}</p>
+                                    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #20303D; margin-bottom: 20px; font-weight: 600; line-height: 1.2;">${template.heading}</h2>
+                                    
+                                    <div id="editable-composer-content">
+                                        <p style="font-size: 15px; margin-bottom: 25px; color: #20303D;">
+                                            Beste <strong>${currentComposerData.name}</strong>,<br><br>
+                                            ${introHtml}
+                                        </p>
+                                        
+                                        <table width="100%" cellpadding="20" cellspacing="0" style="background-color: #fcfbf8; border: 1px solid #f0ecdf; border-radius: 8px; margin-bottom: 25px;">
+                                            <tr>
+                                                <td>
+                                                    ${detailsHtml}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        ${extraHtml}
+                                        
+                                        <p style="font-size: 15px; margin-top: 25px; margin-bottom: 30px; color: #20303D;">
+                                            ${closingHtml}
+                                        </p>
+                                    </div>
+
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="center">
+                                                <a href="https://gipfellodge.at" style="background-color: ${template.themeColor}; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 13px;">${template.buttonText}</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- Footer -->
+                            <tr>
+                                <td style="background-color: #f4f4f4; padding: 25px; text-align: center; font-size: 11px; color: #78868A;">
+                                    <p style="margin: 0;">&copy; 2026 Gipfel Lodge &mdash; Alpiner Luxus & Raum<br>Eben im Pongau, Austria | hello@gipfellodge.at</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            `;
+            
+            previewArea.innerHTML = fullHtml;
+            
+            // Re-apply contenteditable only to the inner content area
+            const editableArea = document.getElementById('editable-composer-content');
+            if (editableArea) {
+                editableArea.setAttribute('contenteditable', 'true');
+                editableArea.style.outline = 'none';
+            }
+        }
+
+        async function sendComposerEmailDirectly() {
+            const previewArea = document.getElementById('composer-preview-area');
+            const btn = document.getElementById('btn-composer-send-email');
+            const originalText = btn.innerHTML;
+            
+            // 1. Get the HTML content - Remove contenteditable first
+            let html = previewArea.innerHTML;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const editable = tempDiv.querySelector('[contenteditable]');
+            if (editable) editable.removeAttribute('contenteditable');
+            
+            // Wrap in a clean document structure for EmailJS
+            const finalHtml = `\x3C!DOCTYPE html>
+\x3Chtml lang="nl">
+\x3Chead>
+    \x3Cmeta charset="UTF-8">
+\x3C/head>
+\x3Cbody style="margin:0; padding:0; background-color: #FAF9F6;">
+    ${tempDiv.innerHTML}
+\x3C/body>
+\x3C/html>`;
+
+            // DEBUG: Show first bit of HTML to user
+            console.log("FULL HTML TO SEND:", finalHtml);
+            // alert("DEBUG - E-mail grootte: " + finalHtml.length + " tekens. Controleer console voor volledige HTML.");
+
+            // 2. Prepare params
+            const params = {
+                to_email: currentComposerData.email,
+                user_name: currentComposerData.name,
+                email_html: finalHtml,
+                subject: `Gipfel Lodge - ${document.getElementById('composer-template-select').options[document.getElementById('composer-template-select').selectedIndex].text}`
+            };
+
+            console.log("Email Payload Prepared:", params);
+
+            if (!params.to_email) {
+                alert("Geen e-mailadres bekend voor deze gast.");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '\x3Cdiv class="spinner" style="display:block; margin:0 auto; width:18px; height:18px; border-top-color:white;">\x3C/div>';
+                
+                // Use the configured EmailJS dynamic template or fallback
+                const templateId = localStorage.getItem('emailjs_dynamic_template_id') || 'template_si14pan';
+                const serviceId = localStorage.getItem('emailjs_service_id') || 'service_rl6qzmr';
+                const publicKey = localStorage.getItem('emailjs_public_key') || 'WC62OFB5MXpryYO1u';
+
+                console.log("Sending via EmailJS...", { serviceId, templateId });
+                await emailjs.send(serviceId, templateId, params, publicKey);
+                
+                btn.innerHTML = '✔ Verzonden!';
+                btn.style.background = '#27ae60';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (err) {
+                console.error("Sending failed:", err);
+                alert("Verzenden mislukt: " + (err.text || err.message || "Onbekende fout"));
+                btn.innerHTML = '❌ Fout';
+                btn.style.background = '#e74c3c';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        async function copyComposerHtmlCode() {
+            const previewArea = document.getElementById('composer-preview-area');
+            const btn = document.getElementById('btn-composer-copy-code');
+            
+            // Clean up the HTML slightly (remove contenteditable if it leaked in, etc)
+            let html = previewArea.innerHTML;
+            
+            // Wrap in basic boilerplate if not present
+            if (!html.includes('\x3C!DOCTYPE html>')) {
+                html = `\x3C!DOCTYPE html>\x3Chtml lang="nl">\x3Chead>\x3Cmeta charset="UTF-8">\x3Clink href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">\x3C/head>\x3Cbody style="margin:0; background:#FAF9F6;">${html}\x3C/body>\x3C/html>`;
+            }
+
+            try {
+                await navigator.clipboard.writeText(html);
+                btn.innerHTML = '✔ HTML Gekopieerd!';
+                btn.style.background = '#27ae60';
+                setTimeout(() => {
+                    btn.innerHTML = '⎘ Kopieer HTML-Code';
+                    btn.style.background = '';
+                }, 2000);
+            } catch (err) {
+                console.error("Copy failed:", err);
+                alert("Kopiëren mislukt. Selecteer de tekst in het voorbeeld en kopieer handmatig.");
+            }
+        }
 
         // Handle escape key to close modal
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('emailTesterModal').classList.contains('active')) {
-                closeEmailTester();
+            if (e.key === 'Escape') {
+                if (document.getElementById('email-composer-modal').classList.contains('active')) closeEmailComposer();
+                if (document.getElementById('emailTesterModal').classList.contains('active')) closeEmailTester();
             }
         });
     </script>
+    <!-- EMAIL COMPOSER MODAL -->
+    <div id="email-composer-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div>
+                    <h2 style="margin:0; font-family:'Cormorant Garamond', serif; color:var(--color-slate); font-size: 1.5rem;">Live E-mail Composer</h2>
+                    <p style="margin:5px 0 0; font-size:0.85rem; color:#78868A;">Klik op de tekst in het voorbeeld om deze direct aan te passen.</p>
+                </div>
+                <button class="btn-composer-close" onclick="closeEmailComposer()">✕</button>
+            </div>
+            <div class="modal-content">
+                <div class="composer-preview-container">
+                    <div id="composer-preview-area">
+                        <!-- Preview content here -->
+                    </div>
+                </div>
+                <div class="composer-sidebar">
+                    <div class="composer-control-box">
+                        <span class="composer-label">Sjabloon Voorladen</span>
+                        <select id="composer-template-select" style="width:100%; padding:10px; border-radius:4px; border:1px solid #ddd; font-family:inherit; font-size:0.9rem;" onchange="loadSelectedTemplateIntoComposer()">
+                            <option value="acceptance">✓ Boeking Geaccepteerd</option>
+                            <option value="deposit_request">€ Aanbetaling Vereist</option>
+                            <option value="rules_info">ⓘ Regels & Info</option>
+                            <option value="general">✉ Vrij Bericht / Algemeen</option>
+                            <option value="deposit_received">✓ Aanbetaling Ontvangen</option>
+                            <option value="balance_reminder">⚠ Restbetaling Herinnering</option>
+                            <option value="balance_received">✓ Volledig Voldaan</option>
+                            <option value="post_stay">☆ Bedankt & Review</option>
+                            <option value="rejection">✕ Helaas Geen Plek</option>
+                        </select>
+                    </div>
+                    <div class="composer-control-box">
+                        <span class="composer-label">Instructies</span>
+                        <ul style="font-size:0.75rem; color:#56686D; padding-left:18px; margin:0; line-height:1.5;">
+                            <li><strong>Bewerken:</strong> Klik op een tekstgedeelte om het aan te passen.</li>
+                            <li><strong>Automatisch:</strong> Namen en data zijn al voor je ingevuld.</li>
+                            <li><strong>Versturen:</strong> Kopieer de code en plak deze in de 'Source' of 'HTML' mode van je mail-app.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-composer-send-email" class="btn-composer-send" onclick="sendComposerEmailDirectly()">✉ Verzenden via EmailJS</button>
+                <button id="btn-composer-copy-code" class="btn-composer-copy" onclick="copyComposerHtmlCode()">⎘ Kopieer HTML-Code</button>
+                <button class="btn-composer-close" onclick="closeEmailComposer()">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

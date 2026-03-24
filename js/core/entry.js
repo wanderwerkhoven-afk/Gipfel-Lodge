@@ -13,9 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start fade out/slide up transition
         splash.classList.add('hidden');
         
-        // Redirect to homepage after transition starts
+        // Optionally remove the splash screen from DOM entirely after hiding
         setTimeout(() => {
-            window.location.hash = 'home';
-        }, 1000); 
+            splash.remove();
+        }, 1000);
     }, animationDuration);
 });

@@ -1,7 +1,5 @@
-/**
- * Booking Page Calendar Logic (Redesign for Double Month View)
- */
 import { db, collection, addDoc, serverTimestamp } from '../core/firebase.js';
+import { countries } from '../data/countries.js';
 
 const GipfelBooking = {
     currentDate: new Date(),
@@ -26,6 +24,14 @@ const GipfelBooking = {
     BED_LINEN_FEE: 20.95,
     TOURIST_TAX_FEE: 2.50,
     MOBILITY_FEE: 0.50,
+    
+    formatDateLocal(date) {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    },
 
     currentStep: 1,
 
@@ -55,6 +61,9 @@ const GipfelBooking = {
             console.error("Failed to load pricing data", err);
             this.renderAll(); // Render anyway without prices
         });
+
+        // Initialize Phone Country Selector
+        this.initCountrySelector();
 
         // Listen for language changes
         document.addEventListener('languageChanged', () => {
@@ -93,6 +102,10 @@ const GipfelBooking = {
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 if (!data.checkIn || !data.checkOut) return;
+                
+                // ONLY process confirmed or pending bookings. 
+                // Skip 'rejected', 'cancelled', etc.
+                if (data.status !== 'confirmed' && data.status !== 'pending' && data.status) return;
 
                 const startStr = data.checkIn;
                 const endStr = data.checkOut;
@@ -100,11 +113,12 @@ const GipfelBooking = {
                 const start = new Date(startStr);
                 const end = new Date(endStr);
                 
-                // Track start/end for confirmed bookings
+                // Track start/end for confirmed vs pending bookings
                 if (data.status === 'confirmed') {
                     if (!this.confirmedCheckIns.includes(startStr)) this.confirmedCheckIns.push(startStr);
                     if (!this.confirmedCheckOuts.includes(endStr)) this.confirmedCheckOuts.push(endStr);
                 } else {
+                    // This catches 'pending' or missing status
                     if (!this.pendingCheckIns.includes(startStr)) this.pendingCheckIns.push(startStr);
                     if (!this.pendingCheckOuts.includes(endStr)) this.pendingCheckOuts.push(endStr);
                 }
@@ -112,10 +126,11 @@ const GipfelBooking = {
                 // Internal nights (nights actually stayed)
                 let current = new Date(start);
                 while (current < end) { 
-                    const dateStr = current.toISOString().split('T')[0];
+                    const dateStr = this.formatDateLocal(current);
                     if (data.status === 'confirmed') {
                         if (!this.bookedDates.includes(dateStr)) this.bookedDates.push(dateStr);
-                    } else if (data.status === 'pending' || !data.status) {
+                    } else {
+                        // This catches 'pending' or missing status
                         if (!this.onRequestDates.includes(dateStr)) this.onRequestDates.push(dateStr);
                     }
                     current.setDate(current.getDate() + 1);
@@ -283,7 +298,14 @@ const GipfelBooking = {
                     // --- Gather raw form values ---
                     const userName   = document.getElementById('b-name').value;
                     const userEmail  = document.getElementById('b-email').value;
-                    const userPhone  = document.getElementById('b-phone').value || '-';
+                    const phoneRaw   = document.getElementById('b-phone').value || '-';
+                    const userPhone  = phoneRaw !== '-' ? `${this.selectedCountryPrefix} ${phoneRaw}` : '-';
+                    
+                    const userAddress = document.getElementById('b-address').value;
+                    const userZipcode = document.getElementById('b-zipcode').value;
+                    const userCity    = document.getElementById('b-city').value;
+                    const userCountry = document.getElementById('b-country').value;
+
                     const checkIn    = document.getElementById('b-checkin').value;
                     const checkOut   = document.getElementById('b-checkout').value;
                     const adults     = document.getElementById('b-adults').value;
@@ -305,6 +327,10 @@ const GipfelBooking = {
                         user_name:           userName,
                         user_email:          userEmail,
                         user_phone:          userPhone,
+                        user_address:        userAddress,
+                        user_zipcode:        userZipcode,
+                        user_city:           userCity,
+                        user_country:        userCountry,
                         check_in:            checkIn,
                         check_out:           checkOut,
                         guests:              `${adults} ${t('form-adults')}, ${children} ${t('form-children')}, ${babies} ${t('form-babies')}`,
@@ -329,6 +355,10 @@ const GipfelBooking = {
                         user_name:      userName,
                         user_email:     userEmail,
                         user_phone:     userPhone,
+                        user_address:   userAddress,
+                        user_zipcode:   userZipcode,
+                        user_city:      userCity,
+                        user_country:   userCountry,
                         check_in:       checkIn,
                         check_out:      checkOut,
                         nights:         nights,
@@ -388,6 +418,10 @@ const GipfelBooking = {
                                 guestName: ownerParams.user_name || 'Anoniem',
                                 guestEmail: ownerParams.user_email || '',
                                 guestPhone: ownerParams.user_phone || '-',
+                                guestAddress: ownerParams.user_address || '',
+                                guestZipcode: ownerParams.user_zipcode || '',
+                                guestCity: ownerParams.user_city || '',
+                                guestCountry: ownerParams.user_country || '',
                                 checkIn: ownerParams.check_in || '',
                                 checkOut: ownerParams.check_out || '',
                                 nights: ownerParams.nights || 0,
@@ -442,6 +476,103 @@ const GipfelBooking = {
             });
         }
     },
+    initCountrySelector() {
+        const selector = document.getElementById('country-code-select');
+        const dropdown = document.getElementById('code-dropdown');
+        const countrySelect = document.getElementById('b-country');
+        if (!selector || !dropdown) return;
+
+        // --- 1. Populate b-country Dropdown ---
+        if (countrySelect) {
+            // Keep the initial "Kies een land" option
+            const initialOption = countrySelect.options[0];
+            countrySelect.innerHTML = '';
+            countrySelect.appendChild(initialOption);
+            
+            countries.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.name;
+                opt.textContent = c.name;
+                countrySelect.appendChild(opt);
+            });
+        }
+
+        // --- 2. Render Phone Code Dropdown Structure with Search ---
+        dropdown.innerHTML = `
+            <div class="code-search-wrapper">
+                <input type="text" id="code-search" placeholder="Search country..." autocomplete="off">
+            </div>
+            <div class="code-list-items" id="code-list-items"></div>
+        `;
+
+        const listContainer = document.getElementById('code-list-items');
+        const searchInput = document.getElementById('code-search');
+
+        const renderList = (filter = '') => {
+            const filtered = countries.filter(c => 
+                c.name.toLowerCase().includes(filter.toLowerCase()) || 
+                c.dial.includes(filter)
+            );
+
+            listContainer.innerHTML = filtered.map(c => `
+                <div class="code-item" data-prefix="${c.dial}" data-code="${c.code.toLowerCase()}" data-name="${c.name}">
+                    <span class="fi fi-${c.code.toLowerCase()}"></span>
+                    <span class="country-name">${c.name}</span>
+                    <span class="country-prefix">${c.dial}</span>
+                </div>
+            `).join('');
+
+            // Re-attach selection listeners
+            listContainer.querySelectorAll('.code-item').forEach(item => {
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    const prefix = item.getAttribute('data-prefix');
+                    const code = item.getAttribute('data-code');
+                    
+                    this.selectedCountryPrefix = prefix;
+                    selector.querySelector('.prefix').innerText = prefix;
+                    selector.querySelector('.flag-container').innerHTML = `<span class="fi fi-${code}"></span>`;
+                    
+                    dropdown.classList.remove('is-open');
+                };
+            });
+        };
+
+        // Initial render
+        renderList();
+
+        // Search logic
+        searchInput.oninput = (e) => {
+            renderList(e.target.value);
+        };
+
+        // Prevent dropdown close when clicking search
+        searchInput.onclick = (e) => e.stopPropagation();
+
+        // Default selection (Netherlands)
+        this.selectedCountryPrefix = '+31';
+        if (selector.querySelector('.flag-container')) {
+            selector.querySelector('.flag-container').innerHTML = `<span class="fi fi-nl"></span>`;
+        }
+        selector.querySelector('.prefix').innerText = '+31';
+
+        // Toggle dropdown
+        selector.onclick = (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('is-open');
+            if (dropdown.classList.contains('is-open')) {
+                searchInput.value = '';
+                renderList();
+                setTimeout(() => searchInput.focus(), 100);
+            }
+        };
+
+        // Close on outside click
+        document.addEventListener('click', () => {
+            dropdown.classList.remove('is-open');
+        });
+    },
+
 
     goToStep(n) {
         if (!this.slider) return;
@@ -483,7 +614,15 @@ const GipfelBooking = {
 
         const name = document.getElementById('b-name').value;
         const email = document.getElementById('b-email').value;
-        const phone = document.getElementById('b-phone').value || '-';
+        
+        const phoneRaw = document.getElementById('b-phone').value || '';
+        const phone = phoneRaw ? `${this.selectedCountryPrefix} ${phoneRaw}` : '-';
+
+        const address = document.getElementById('b-address').value;
+        const zipcode = document.getElementById('b-zipcode').value;
+        const city = document.getElementById('b-city').value;
+        const country = document.getElementById('b-country').value;
+
         const checkin = document.getElementById('b-checkin').value;
         const checkout = document.getElementById('b-checkout').value;
         const adults = document.getElementById('b-adults').value;
@@ -501,6 +640,10 @@ const GipfelBooking = {
             <div class="summary-item">
                 <span class="summary-label">${t('form-email')} / ${t('form-phone')}</span>
                 <span class="summary-value">${email} <br> ${phone}</span>
+            </div>
+            <div class="summary-item summary-full">
+                <span class="summary-label">${t('form-address')} & ${t('form-country')}</span>
+                <span class="summary-value">${address}, ${zipcode} ${city} — ${country}</span>
             </div>
             <div class="summary-item">
                 <span class="summary-label">${t('step-date')}</span>
@@ -590,7 +733,7 @@ const GipfelBooking = {
         let rent = 0;
         let tempDate = new Date(checkIn);
         for (let i = 0; i < nights; i++) {
-            const dateStr = tempDate.toISOString().split('T')[0];
+            const dateStr = this.formatDateLocal(tempDate);
             const dayPrice = this.pricingData[dateStr]?.dagprijs || 0;
             rent += dayPrice;
             tempDate.setDate(tempDate.getDate() + 1);
@@ -754,28 +897,24 @@ const GipfelBooking = {
             const isOverlap = (isConfirmedIn && isConfirmedOut) || (isPendingIn && isPendingOut);
 
             if (isOverlap) {
-                // If it's both Check-In and Check-Out, it's completely's full for a 3rd party
                 el.style.cursor = 'not-allowed';
                 el.onclick = null;
             } else if (isConfirmedIn || isPendingIn) {
-                // Already a check-in? New guest can ONLY end here (DEPART in the morning).
+                // Checkout day for existing booking: user can END their stay here
                 el.onclick = () => {
-                    // Only call selectDate if we already have an arrival date, 
-                    // because we cannot START a booking on an arrival day of someone else.
                     if (this.selectedCheckIn) {
                         this.selectDate(dateStr);
                     }
                 };
                 el.style.cursor = 'pointer'; 
             } else if (isConfirmedOut || isPendingOut) {
-                // Already a check-out? New guest can ARRIVE here in the afternoon (START booking).
+                // Check-in day for existing booking: user can START their stay here
                 el.onclick = () => {
-                    // Always allow selectDate here. 
-                    // If we have a selection, selectDate will try to end here (which is invalid and will reset it to START here).
                     this.selectDate(dateStr);
                 };
                 el.style.cursor = 'pointer';
-            } else if (isBooked || el.classList.contains('past')) {
+            } else if (isBooked || isOnRequest || el.classList.contains('past')) {
+                // Fully booked internal night: NO selection allowed
                 el.style.cursor = 'not-allowed';
                 el.onclick = null;
             } else {
@@ -820,8 +959,8 @@ const GipfelBooking = {
         
         // Loop through all nights [start, end)
         while (current < end) {
-            const str = current.toISOString().split('T')[0];
-            if (this.bookedDates.includes(str)) return false; 
+            const str = this.formatDateLocal(current);
+            if (this.bookedDates.includes(str) || this.onRequestDates.includes(str)) return false; 
             current.setDate(current.getDate() + 1);
         }
         return true;
@@ -829,7 +968,12 @@ const GipfelBooking = {
 
     updateContinueButton() {
         if (!this.continueBtn) return;
-        if (this.selectedCheckIn && this.selectedCheckOut) {
+        
+        const isValid = this.selectedCheckIn && 
+                        this.selectedCheckOut && 
+                        this.isRangeValid(this.selectedCheckIn, this.selectedCheckOut);
+
+        if (isValid) {
             this.continueBtn.classList.remove('disabled');
         } else {
             this.continueBtn.classList.add('disabled');
