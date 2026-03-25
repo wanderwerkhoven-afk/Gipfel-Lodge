@@ -96,8 +96,8 @@
     </div>
 
     <div class="sidebar active">
-        <h2>Gipfel Lodge - Snel E-mailen</h2>
-        <p style="font-size: 0.85rem; color: #666; margin-top: -10px; margin-bottom: 5px;">
+        <h2 id="sidebar-title">Gipfel Lodge - Snel E-mailen</h2>
+        <p id="sidebar-subtitle" style="font-size: 0.85rem; color: #666; margin-top: -10px; margin-bottom: 5px;">
             Controleer de teksten en klik op verzenden.
         </p>
 
@@ -105,15 +105,15 @@
             <!-- Populated by JS -->
         </div>
 
-        <h3 style="margin-bottom: 5px; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Aanpasbare Teksten</h3>
+        <h3 id="custom-texts-header" style="margin-bottom: 5px; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Aanpasbare Teksten</h3>
         
         <div class="control-group">
-            <label>Introductie (Bovenste bericht)</label>
+            <label id="intro-label">Introductie (Bovenste bericht)</label>
             <textarea id="email_intro"></textarea>
         </div>
 
         <div class="control-group">
-            <label>Afsluiting (Onderste bericht)</label>
+            <label id="closing-label">Afsluiting (Onderste bericht)</label>
             <textarea id="email_closing"></textarea>
         </div>
 
@@ -121,7 +121,7 @@
         <div id="statusMessage"></div>
         <button class="btn-primary" id="closeBtn" style="background: #e2e6ea; color: #333; display: none;" onclick="window.close()">Sluit Venster</button>
 
-        <span class="config-toggle" onclick="document.getElementById('configPanel').style.display = document.getElementById('configPanel').style.display === 'none' ? 'block' : 'none'">⚙️ API Instellingen Beheren</span>
+        <span id="config-toggle" class="config-toggle" onclick="document.getElementById('configPanel').style.display = document.getElementById('configPanel').style.display === 'none' ? 'block' : 'none'">⚙️ API Instellingen Beheren</span>
         <div id="configPanel" class="config-box">
             <label style="font-size: 0.8rem;">Public Key</label><input type="text" id="emailjs_public_key">
             <label style="font-size: 0.8rem;">Service ID</label><input type="text" id="emailjs_service_id">
@@ -217,7 +217,7 @@
                             <p class="tagline" style="color: {{themeColor}};">{{email_tagline}}</p>
                             <h2 class="heading">{{email_heading}}</h2>
                             <div class="intro-text">
-                                Beste <strong>{{user_name}}</strong>,<br><br>
+                                {{{greeting}}} <{{{greetingStrong}}}>{{user_name}}</{{{greetingStrong}}}>,<br><br>
                                 <div id="editable-intro" contenteditable="true" style="white-space: pre-wrap;">{{{email_intro}}}</div>
                             </div>
                             <div class="details-box">
@@ -232,7 +232,7 @@
                             </div>
                         </td>
                     </tr>
-                    <tr><td class="email-footer"><p>&copy; 2026 Gipfel Lodge &mdash; Alpiner Luxus & Raum<br>Eben im Pongau, Austria | hello@gipfellodge.com</p></td></tr>
+                    <tr><td class="email-footer"><p>{{{copyright}}}</p></td></tr>
                 </table>
             </td>
         </tr>
@@ -285,85 +285,426 @@
             }
         }
 
-        // Preset settings per type
-        const templatesData = {
-            request: {
-                themeColor: '#C5A059', email_tagline: 'Nieuwe Aanvraag', email_heading: 'Aanvraag in behandeling',
-                defaultIntro: 'We hebben je boekingsaanvraag in goede orde ontvangen. We gaan de beschikbaarheid voor je controleren en komen zo snel mogelijk bij je terug met een definitieve bevestiging of alternatief.',
-                defaultClosing: 'Heb je in de tussentijd vragen? Neem gerust contact met ons op door deze mail te beantwoorden.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Meer over de Lodge', format: 'standard'
+        // Preset settings per type & language
+        const allTemplatesData = {
+            nl: {
+                request: {
+                    themeColor: '#C5A059', email_tagline: 'Nieuwe Aanvraag', email_heading: 'Aanvraag in behandeling',
+                    defaultIntro: 'We hebben je boekingsaanvraag in goede orde ontvangen. We gaan de beschikbaarheid voor je controleren en komen zo snel mogelijk bij je terug met een definitieve bevestiging of alternatief.',
+                    defaultClosing: 'Heb je in de tussentijd vragen? Neem gerust contact met ons op door deze mail te beantwoorden.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Meer over de Lodge', format: 'standard'
+                },
+                acceptance: {
+                    themeColor: '#C5A059', email_tagline: 'Alpiner Luxus & Raum', email_heading: 'Uw verblijf is gereserveerd',
+                    defaultIntro: 'Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.',
+                    defaultClosing: 'We sturen u binnenkort de toegangscode en tips voor uw verblijf.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Bereid uw reis voor', format: 'acceptance'
+                },
+                rejection: {
+                    themeColor: '#E53935', email_tagline: 'Update Boekingsaanvraag', email_heading: 'Helaas, geen beschikbaarheid',
+                    defaultIntro: 'Bedankt voor je interesse in Gipfel Lodge. Helaas moeten we je mededelen dat we op de door jou geselecteerde data geen verblijf meer vrij hebben dat past bij jullie reisgezelschap.',
+                    defaultClosing: 'Bekijk onze kalender op de website voor andere beschikbare periodes. We hopen je in de toekomst alsnog te mogen ontvangen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Zoek andere data', format: 'standard'
+                },
+                deposit_request: {
+                    themeColor: '#F59E0B', email_tagline: 'Actie Vereist', email_heading: 'Aanbetaling & Bevestiging',
+                    defaultIntro: 'Bedankt voor uw boeking bij Gipfel Lodge. We hebben de details van jullie naderende reis in goede orde ontvangen voor de volgende verblijfsperiode:',
+                    defaultClosing: 'Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. Zodra de betaling goed en wel bij ons binnen is gekomen op de rekening sturen wij u een definitieve bevestiging met alle overige details.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Naar Website', format: 'deposit_request'
+                },
+                deposit_received: {
+                    themeColor: '#C5A059', email_tagline: 'Boeking Definitief Bevestigd', email_heading: 'Aanbetaling succesvol verwerkt',
+                    defaultIntro: 'We hebben je aanbetaling in goede orde ontvangen! Hiermee is je boeking bij Gipfel Lodge officieel en definitief bevestigd voor onderstaande reisgegevens:',
+                    defaultClosing: 'Mochten er tussentijds vragen zijn over je verblijf of de omgeving, laat het ons dan gerust weten door deze e-mail te beantwoorden. We helpen je graag!\n\nWe kijken ernaar uit je te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Bekijk Gipfel Lodge', format: 'deposit_received'
+                },
+                balance_reminder: {
+                    themeColor: '#F59E0B', email_tagline: 'Restbetaling Verblijf', email_heading: 'Betalingsherinnering',
+                    defaultIntro: 'We kijken ernaar uit je binnenkort te mogen verwelkomen in de Gipfel Lodge! Graag herinneren we je eraan dat er nog een openstaand saldo is voor je naderende reservering.',
+                    defaultClosing: 'Heb je de betaling toevallig in de afgelopen dagen al voldaan? Dan heeft deze e-mail je betaling gekruist en mag je dit bericht als niet verzonden beschouwen. Bedankt!\n\nWe sturen de reisinformatie toe zodra de reis dichterbij komt.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Naar Website', format: 'balance_reminder'
+                },
+                balance_received: {
+                    themeColor: '#C5A059', email_tagline: 'Betaling Volledig Voldaan', email_heading: 'Uw restbetaling is binnen',
+                    defaultIntro: 'Goed nieuws! We hebben de restbetaling zojuist in goede orde ontvangen. Hiermee is de volledige reissom voldaan en is financieel gezien alles definitief in orde voor je verblijf bij Gipfel Lodge.',
+                    defaultClosing: 'Namens de hele familie en staf willen we je bedanken voor het vertrouwen en de vlotte afhandeling van de betaling.\n\nDe bergen roepen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Naar Website', format: 'balance_received'
+                },
+                rules_info: {
+                    themeColor: '#C5A059', email_tagline: 'Voorbereiding op uw verblijf', email_heading: 'Tijd om in te pakken!',
+                    defaultIntro: 'De aankomst in de Gipfel Lodge komt nu écht dichterbij! Om ervoor te zorgen dat je verblijf vanaf het eerste moment soepel en zorgeloos verloopt, delen we alvast de belangrijkste praktische informatie en huisregels met jullie.',
+                    defaultClosing: 'Let op: op de dag (of vlak voor de dag) van aankomst ontvangt u van ons een kort bericht met de unieke pincode voor de sleutelkluis van uw appartement.\n\nWe wensen je alvast een veilige reis!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Naar Website', format: 'rules_info'
+                },
+                post_stay: {
+                    themeColor: '#C5A059', email_tagline: 'Alpine Memories', email_heading: 'Bedankt voor je verblijf',
+                    defaultIntro: 'We hopen dat jullie een fantastisch verblijf hebben gehad in Gipfel Lodge en veilig zijn thuisgekomen! Het was een waar genoegen om jullie als gasten te mogen ontvangen.',
+                    defaultClosing: 'Zou je zo vriendelijk willen zijn om een korte review achter te laten over je verblijf? Dit is erg waardevol voor ons. We hopen jullie in de toekomst nog eens te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Laat een review achter', format: 'standard'
+                },
+                cancellation: {
+                    themeColor: '#E53935', email_tagline: 'Status Update', email_heading: 'Boeking Geannuleerd',
+                    defaultIntro: 'Zoals besproken sturen we hierbij de bevestiging dat je boeking bij Gipfel Lodge is geannuleerd.',
+                    defaultClosing: 'We vinden het ontzettend jammer dat je verblijf niet kan doorgaan. Mocht je in de toekomst toch weer de bergen in willen, dan ben je uiteraard meer dan welkom.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Plan een nieuwe reis', format: 'standard'
+                },
+                general: {
+                    themeColor: '#20303D', email_tagline: 'Bericht van Gipfel Lodge', email_heading: 'Update rondom je verblijf',
+                    defaultIntro: 'Bedankt voor je bericht. We voorzien je graag van de gevraagde informatie.',
+                    defaultClosing: 'We hopen je hiermee voldoende te hebben geïnformeerd. Heb je nog andere vragen? Aarzel dan niet om contact op te nemen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Naar de website', format: 'standard'
+                }
             },
-            acceptance: {
-                themeColor: '#C5A059', email_tagline: 'Alpiner Luxus & Raum', email_heading: 'Uw verblijf is gereserveerd',
-                defaultIntro: 'Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.',
-                defaultClosing: 'We sturen u binnenkort de toegangscode en tips voor uw verblijf.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Bereid uw reis voor', format: 'acceptance'
+            de: {
+                request: {
+                    themeColor: '#C5A059', email_tagline: 'Anfrage erhalten', email_heading: 'Ihre Buchung wird geprüft',
+                    defaultIntro: 'Wir haben Ihre Buchungsanfrage im guten Zustand erhalten. Wir prüfen die Verfügbarkeit und melden uns so schnell wie möglich bei Ihnen mit einer Bestätigung oder einem Alternativangebot.',
+                    defaultClosing: 'Haben Sie in der Zwischenzeit Fragen? Kontaktieren Sie uns gerne, indem Sie auf diese E-Mail antworten.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Mehr über die Lodge', format: 'standard'
+                },
+                acceptance: {
+                    themeColor: '#C5A059', email_tagline: 'Alpiner Luxus & Raum', email_heading: 'Ihr Aufenthalt ist reserviert',
+                    defaultIntro: 'Gute Neuigkeiten! Ihre Buchung in der Gipfel Lodge Eben wurde angenommen und ist für Sie reserviert! Wir freuen uns darauf, Sie in unserem alpinen Refugium willkommen zu heißen.',
+                    defaultClosing: 'In Kürze senden wir Ihnen den Zugangscode und wertvolle Tipps für Ihren Aufenthalt.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Bereiten Sie Ihre Reise vor', format: 'acceptance'
+                },
+                rejection: {
+                    themeColor: '#E53935', email_tagline: 'Update Buchungsanfrage', heading: 'Leider keine Verfügbarkeit',
+                    defaultIntro: 'Vielen Dank für Ihr Interesse an der Gipfel Lodge. Leider müssen wir Ihnen mitteilen, dass für den gewählten Zeitraum keine passende Unterkunft mehr verfügbar ist.',
+                    defaultClosing: 'Schauen Sie gerne in unseren Kalender auf der Website für alternative Zeiträume. Wir hoffen, Sie in Zukunft dennoch willkommen heißen zu dürfen.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Andere Termine suchen', format: 'standard'
+                },
+                deposit_request: {
+                    themeColor: '#F59E0B', email_tagline: 'Aktion Erforderlich', email_heading: 'Anzahlung & Bestätigung',
+                    defaultIntro: 'Vielen Dank für Ihre Buchung in der Gipfel Lodge. Wir haben die Details Ihrer bevorstehenden Reise erhalten für den folgenden Aufenthaltszeitraum:',
+                    defaultClosing: 'Der Restbetrag ist spätestens 6 Wochen vor Anreise fällig. Sobald die Zahlung bei uns eingegangen ist, senden wir Ihnen eine endgültige Bestätigung mit allen weiteren Details.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Zur Website', format: 'deposit_request'
+                },
+                deposit_received: {
+                    themeColor: '#C5A059', email_tagline: 'Buchung Endgültig Bestätigt', email_heading: 'Anzahlung успешно verarbeitet',
+                    defaultIntro: 'Wir haben Ihre Anzahlung erhalten! Damit ist Ihre Buchung in der Gipfel Lodge offiziell und endgültig für den folgenden Zeitraum bestätigt:',
+                    defaultClosing: 'Sollten Sie in der Zwischenzeit Fragen zu Ihrem Aufenthalt oder der Umgebung haben, antworten Sie gerne auf diese E-Mail. Wir helfen Ihnen gerne!\n\nWir freuen uns, Sie bald willkommen zu heißen!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Gipfel Lodge entdecken', format: 'deposit_received'
+                },
+                balance_reminder: {
+                    themeColor: '#F59E0B', email_tagline: 'Restzahlung Aufenthalt', email_heading: 'Zahlungserinnerung',
+                    defaultIntro: 'Wir freuen uns, Sie bald in der Gipfel Lodge willkommen zu heißen! Gerne erinnern wir Sie daran, dass noch ein offener Betrag für Ihre bevorstehende Reservierung besteht.',
+                    defaultClosing: 'Haben Sie die Zahlung in den letzten Tagen bereits getätigt? Dann hat sich diese E-Mail mit Ihrer Zahlung gekreuzt und Sie können diese Nachricht ignorieren. Vielen Dank!\n\nDie Reiseinformationen senden wir Ihnen, sobald Ihre Reise näher rückt.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Zur Website', format: 'balance_reminder'
+                },
+                balance_received: {
+                    themeColor: '#C5A059', email_tagline: 'Zahlung Vollständig Beglichen', email_heading: 'Ihre Restzahlung ist eingegangen',
+                    defaultIntro: 'Gute Neuigkeiten! Wir haben die Restzahlung erhalten. Damit ist der gesamte Reisepreis beglichen und alles ist bereit für Ihren Aufenthalt in der Gipfel Lodge.',
+                    defaultClosing: 'Im Namen der gesamten Familie und unseres Teams möchten wir uns für Ihr Vertrauen und die reibungslose Abwicklung bedanken.\n\nDie Berge rufen!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Zur Website', format: 'balance_received'
+                },
+                rules_info: {
+                    themeColor: '#C5A059', email_tagline: 'Vorbereitung auf Ihren Aufenthalt', email_heading: 'Zeit zum Kofferpacken!',
+                    defaultIntro: 'Die Anreise zur Gipfel Lodge rückt näher! Damit Ihr Aufenthalt von Anfang an reibungslos und sorgenfrei verläuft, teilen wir vorab die wichtigsten praktischen Informationen und Hausregels mit Ihnen.',
+                    defaultClosing: 'Bitte beachten Sie: Am Anreisetag (oder kurz davor) erhalten Sie von uns eine Nachricht mit dem einmaligen PIN-Code für den Schlüsseltresor Ihrer Wohnung.\n\nWir wünschen Ihnen eine sichere Anreise!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Zur Website', format: 'rules_info'
+                },
+                post_stay: {
+                    themeColor: '#C5A059', email_tagline: 'Alpine Erinnerungen', email_heading: 'Bedankt für Ihren Aufenthalt',
+                    defaultIntro: 'Wir hoffen, dass Sie einen fantastischen Aufenthalt in der Gipfel Lodge hatten und sicher nach Hause gekommen sind! Es war uns eine große Freude, Sie als Gäste empfangen zu dürfen.',
+                    defaultClosing: 'Würden Sie uns eine kurze Bewertung zu Ihrem Aufenthalt hinterlassen? Das wäre sehr wertvoll für uns. Wir hoffen, Sie in Zukunft wieder willkommen heißen zu dürfen!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Bewertung hinterlassen', format: 'standard'
+                },
+                cancellation: {
+                    themeColor: '#E53935', email_tagline: 'Status Update', email_heading: 'Buchung Storniert',
+                    defaultIntro: 'Wie besprochen senden wir hiermit die Bestätigung, dass Ihre Buchung in der Gipfel Lodge storniert wurde.',
+                    defaultClosing: 'Wir finden es sehr schade, dass Ihr Aufenthalt nicht stattfinden kann. Wenn Sie in Zukunft wieder in die Berge kommen möchten, sind Sie natürlich mehr als willkommen.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Neue Reise planen', format: 'standard'
+                },
+                general: {
+                    themeColor: '#20303D', email_tagline: 'Nachricht von Gipfel Lodge', email_heading: 'Update zu Ihrem Aufenthalt',
+                    defaultIntro: 'Vielen Dank für Ihre Nachricht. Gerne informieren wir Sie über die gewünschten Details.',
+                    defaultClosing: 'Wir hoffen, Ihnen damit weitergeholfen zu hebben. Bei weiteren Fragen stehen wir Ihnen jederzeit gerne zur Verfügung.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Zur Website', format: 'standard'
+                }
             },
-            rejection: {
-                themeColor: '#E53935', email_tagline: 'Update Boekingsaanvraag', email_heading: 'Helaas, geen beschikbaarheid',
-                defaultIntro: 'Bedankt voor je interesse in Gipfel Lodge. Helaas moeten we je mededelen dat we op de door jou geselecteerde data geen verblijf meer vrij hebben dat past bij jullie reisgezelschap.',
-                defaultClosing: 'Bekijk onze kalender op de website voor andere beschikbare periodes. We hopen je in de toekomst alsnog te mogen ontvangen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Zoek andere data', format: 'standard'
+            en: {
+                request: {
+                    themeColor: '#C5A059', email_tagline: 'Request Received', email_heading: 'Your booking is under review',
+                    defaultIntro: 'We have received your booking request in good order. We will check the availability and will get back to you as soon as possible with a final confirmation or alternative.',
+                    defaultClosing: 'Do you have any questions in the meantime? Feel free to contact us by replying to this email.\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'More about the Lodge', format: 'standard'
+                },
+                acceptance: {
+                    themeColor: '#C5A059', email_tagline: 'Alpine Luxury & Space', email_heading: 'Your stay is confirmed',
+                    defaultIntro: 'Great news! Your booking at Gipfel Lodge Eben has been accepted and is reserved for you! We look forward to welcoming you to our alpine retreat.',
+                    defaultClosing: 'We will send you the access code and tips for your stay shortly.\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Prepare your trip', format: 'acceptance'
+                },
+                rejection: {
+                    themeColor: '#E53935', email_tagline: 'Booking Request Update', email_heading: 'Unfortunately, no availability',
+                    defaultIntro: 'Thank you for your interest in Gipfel Lodge. Unfortunately, we must inform you that the selected dates are no longer available for your travel party.',
+                    defaultClosing: 'Please check our calendar on the website for alternative dates. We hope to welcome you in the future.\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Find other dates', format: 'standard'
+                },
+                deposit_request: {
+                    themeColor: '#F59E0B', email_tagline: 'Action Required', email_heading: 'Deposit & Confirmation',
+                    defaultIntro: 'Thank you for your booking at Gipfel Lodge. We have received the details of your upcoming trip for the following stay period:',
+                    defaultClosing: 'The remaining balance is due at least 6 weeks before arrival. Once the payment has been received, we will send you a final confirmation with all further details.\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Visit Website', format: 'deposit_request'
+                },
+                deposit_received: {
+                    themeColor: '#C5A059', email_tagline: 'Booking Confirmed', email_heading: 'Deposit successfully processed',
+                    defaultIntro: 'We have received your deposit! Your booking at Gipfel Lodge is now officially confirmed for the following period:',
+                    defaultClosing: 'If you have any questions about your stay or the area, feel free to reply to this email. We\'re happy to help!\n\nWe look forward to welcoming you!\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Discover Gipfel Lodge', format: 'deposit_received'
+                },
+                balance_reminder: {
+                    themeColor: '#F59E0B', email_tagline: 'Rest Payment Stay', email_heading: 'Payment Reminder',
+                    defaultIntro: 'We look forward to welcoming you to Gipfel Lodge soon! We would like to remind you that there is still an outstanding balance for your upcoming reservation.',
+                    defaultClosing: 'Have you happened to make the payment in the past few days? Then this email has crossed your payment and you can consider this message as not sent. Thank you!\n\nWe will send the travel information as soon as the trip approaches.\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Visit Website', format: 'balance_reminder'
+                },
+                balance_received: {
+                    themeColor: '#C5A059', email_tagline: 'Payment Fully Completed', email_heading: 'Your final payment has been received',
+                    defaultIntro: 'Great news! We have just received the final payment in good order. This means that the total travel price has been paid and everything is officially ready for your stay at Gipfel Lodge.',
+                    defaultClosing: 'On behalf of the entire family and staff, we would like to thank you for your trust and the smooth handling of the payment.\n\nThe mountains are calling!\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Visit Website', format: 'balance_received'
+                },
+                rules_info: {
+                    themeColor: '#C5A059', email_tagline: 'Preparing for your stay', email_heading: 'Time to pack!',
+                    defaultIntro: 'Your arrival at Gipfel Lodge is getting close! To ensure that your stay is smooth and carefree from the start, we are sharing the most important practical information and house rules with you.',
+                    defaultClosing: 'Please note: On the day of (or just before) arrival, you will receive a short message from us with the unique PIN code for the key safe of your apartment.\n\nWe wish you a safe journey!\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Visit Website', format: 'rules_info'
+                },
+                post_stay: {
+                    themeColor: '#C5A059', email_tagline: 'Alpine Memories', email_heading: 'Thank you for your stay',
+                    defaultIntro: 'We hope you had a fantastic stay at Gipfel Lodge and have returned home safely! It was an absolute pleasure having you as our guests.',
+                    defaultClosing: 'Would you be so kind as to leave a short review about your stay? This is very valuable to us. We hope to welcome you again in the future!\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Leave a review', format: 'standard'
+                },
+                cancellation: {
+                    themeColor: '#E53935', email_tagline: 'Status Update', email_heading: 'Booking Cancelled',
+                    defaultIntro: 'As discussed, we hereby send the confirmation that your booking at Gipfel Lodge has been cancelled.',
+                    defaultClosing: 'We are very sorry that your stay cannot take place. If you would like to come to the mountains again in the future, you are of course more than welcome.\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Plan a new trip', format: 'standard'
+                },
+                general: {
+                    themeColor: '#20303D', email_tagline: 'Message from Gipfel Lodge', heading: 'Update regarding your stay',
+                    defaultIntro: 'Thank you for your message. We are happy to provide you with the requested information.',
+                    defaultClosing: 'We hope this answers your questions. If you have any further enquiries, please don\'t hesitate to get in touch.\n\nKind regards,\nTeam Gipfel Lodge',
+                    email_visit_website: 'Visit our website', format: 'standard'
+                }
+            }
+        };
+
+        const testerLabels = {
+            nl: {
+                sidebarTitle: 'Gipfel Lodge - Snel E-mailen',
+                sidebarSubtitle: 'Controleer de teksten en klik op verzenden.',
+                sjabloon: 'Sjabloon:',
+                ontvanger: 'Ontvanger:',
+                gast: 'Gast:',
+                data: 'Data:',
+                reisgezelschap: 'Reisgezelschap:',
+                aanpasbareTeksten: 'Aanpasbare Teksten',
+                introLabel: 'Introductie (Bovenste bericht)',
+                closingLabel: 'Afsluiting (Onderste bericht)',
+                sendBtn: 'Verstuur E-mail Nu',
+                closeBtn: 'Sluit Venster',
+                configToggle: '⚙️ API Instellingen Beheren',
+                arrivalDeparture: 'Aankomst & Vertrek',
+                travelGroup: 'Reisgezelschap',
+                totalPrice: 'Totaalprijs',
+                deposit30: 'Aanbetaling (30%)',
+                receivedDeposit: 'Ontvangen Aanbetaling',
+                alreadyPaid: 'Reeds Voldaan (Aanbetaling)',
+                stillToPay: 'Nog te voldoen (Restbedrag)',
+                paymentStatus: 'Betalingsstatus',
+                fullyPaid: 'VOLLEDIG VOLDAAN',
+                checkIn: 'Inchecken',
+                checkOut: 'Uitchecken',
+                from15: 'Vanaf 15:00 uur',
+                until10: 'Uiterlijk 10:00 uur',
+                arrivalDate: 'Aankomstdatum',
+                wifiNetwork: 'Wifi Netwerk',
+                wifiPassword: 'WACHTWOORD: AlpinerLuxus2026',
+                importantInfo: 'Belangrijke informatie voor uw verblijf:',
+                paymentTitle: '1. Betaling',
+                paymentDesc: 'Om uw reservering definitief te maken, vragen wij een aanbetaling van 30%. Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. De factuur volgt.',
+                arrivalDepartureTitle: '2. Aankomst & Vertrek',
+                arrivalDepartureDesc: 'Inchecken vanaf 15:00 uur. Uitchecken uiterlijk 10:00 uur.',
+                houseRulesTitle: '3. Huisregels',
+                houseRulesDesc: 'Gipfel Lodge is rookvrij. Voor aankomst ontvangt u de toegangscode en huisinformatie.',
+                depositInstruct: 'Betaalinstructies',
+                depositDesc: 'Om uw reservering definitief te bevestigen, verzoeken we u vriendelijk om de aanbetaling uiterlijk binnen 7 dagen over te maken op het opgegeven rekeningnummer.',
+                balanceInstruct: 'Restbetaling',
+                balanceDesc: 'Het resterende bedrag ontvangen we graag uiterlijk 6 weken voor aankomst op dezelfde rekening. We sturen ruim op tijd nog een vriendelijke herinnering hiervoor!',
+                balanceReminderInstruct: 'Betaalinstructies',
+                balanceReminderDesc: 'Om alles in orde te maken voor je aankomst verzoeken we je het restbedrag uiterlijk te voldoen middels een bankoverschrijving naar onze rekening.',
+                balanceReceivedInstruct: 'Voorpret!',
+                balanceReceivedDesc: 'Het grote aftellen is inmiddels natuurlijk al begonnen. Binnenkort sturen we je nog de laatste "Pre-Stay" details zodat je soepel kunt arriveren.',
+                etiquette: 'Lodge Etiquette',
+                rulesHeading: 'Onze Huisregels',
+                ruleShoes: '<strong>Schoeisel:</strong> In de lodge dragen we graag pantoffels. Natte of vieze bergschoenen en skischoenen kun je veilig achterlaten in de skiruimte.',
+                rulesRespect: '<strong>Rust en Respect:</strong> Uit respect voor de andere gasten en de omwonenden, hanteren we een rustige nachtrust tussen 22:00 uur en 07:00 uur.',
+                ruleSmoke: '<strong>Rookvrij:</strong> De binnenkant van Gipfel Lodge is strikt rookvrij. Roken kan buiten op de balkons of het terras bij de asbakken.',
+                ruleWaste: '<strong>Afval Scheiden:</strong> Oostenrijk is streng op afval scheiden. Onder de gootsteen vind je verschillende bakken. Containers staan buiten.',
+                bannerAccepted: '&#10003;&nbsp; Boeking Geaccepteerd',
+                bannerDepositReq: '€&nbsp; Aanbetaling Vereist',
+                bannerDepositRec: '&#10003;&nbsp; Aanbetaling Ontvangen',
+                bannerBalanceReq: '€&nbsp; Laatste Actie Vereist',
+                bannerBalanceRec: '&#10003;&nbsp; Restbetaling Ontvangen',
+                bannerRules: '&#10548;&nbsp; Pre-Stay Informatie & Huisregels',
+                greeting: 'Beste',
+                greetingStrong: 'strong',
+                copyright: '&copy; 2026 Gipfel Lodge &mdash; Alpiner Luxus & Raum<br>Eben im Pongau, Austria | hello@gipfellodge.com'
             },
-            deposit_request: {
-                themeColor: '#F59E0B', email_tagline: 'Actie Vereist', email_heading: 'Aanbetaling & Bevestiging',
-                defaultIntro: 'Bedankt voor uw boeking bij Gipfel Lodge. We hebben de details van jullie naderende reis in goede orde ontvangen voor de volgende verblijfsperiode:',
-                defaultClosing: 'Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. Zodra de betaling goed en wel bij ons binnen is gekomen op de rekening sturen wij u een definitieve bevestiging met alle overige details.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Naar Website', format: 'deposit_request'
+            de: {
+                sidebarTitle: 'Gipfel Lodge - Schnell-Mail',
+                sidebarSubtitle: 'Texte prüfen und auf Senden klicken.',
+                sjabloon: 'Vorlage:',
+                ontvanger: 'Empfänger:',
+                gast: 'Gast:',
+                data: 'Daten:',
+                reisgezelschap: 'Personen:',
+                aanpasbareTeksten: 'Anpassbare Texte',
+                introLabel: 'Einleitung (Obere Nachricht)',
+                closingLabel: 'Abschluss (Untere Nachricht)',
+                sendBtn: 'E-Mail jetzt senden',
+                closeBtn: 'Fenster schließen',
+                configToggle: '⚙️ API-Einstellungen verwalten',
+                arrivalDeparture: 'Anreise & Abreise',
+                travelGroup: 'Reisegruppe',
+                totalPrice: 'Gesamtpreis',
+                deposit30: 'Anzahlung (30%)',
+                receivedDeposit: 'Erhaltene Anzahlung',
+                alreadyPaid: 'Bereits bezahlt (Anzahlung)',
+                stillToPay: 'Noch zu zahlen (Restbetrag)',
+                paymentStatus: 'Zahlungsstatus',
+                fullyPaid: 'VOLLSTÄNDIG BEZAHLT',
+                checkIn: 'Check-in',
+                checkOut: 'Check-out',
+                from15: 'Ab 15:00 Uhr',
+                until10: 'Bis 10:00 Uhr',
+                arrivalDate: 'Anreisedatum',
+                wifiNetwork: 'WLAN-Netzwerk',
+                wifiPassword: 'PASSWORT: AlpinerLuxus2026',
+                importantInfo: 'Wichtige Informationen für Ihren Aufenthalt:',
+                paymentTitle: '1. Zahlung',
+                paymentDesc: 'Um Ihre Reservierung endgültig zu machen, bitten wir um eine Anzahlung von 30%. Der Restbetrag ist spätestens 6 Wochen vor Anreise fällig. Die Rechnung folgt.',
+                arrivalDepartureTitle: '2. Anreise & Abreise',
+                arrivalDepartureDesc: 'Check-in ab 15:00 Uhr. Check-out bis spätestens 10:00 Uhr.',
+                houseRulesTitle: '3. Hausregeln',
+                houseRulesDesc: 'Die Gipfel Lodge ist ein Nichtraucherhaus. Vor der Anreise erhalten Sie den Zugangscode und Hausinformationen.',
+                depositInstruct: 'Zahlungsanweisungen',
+                depositDesc: 'Um Ihre Reservierung endgültig zu bestätigen, bitten wir Sie höflich, die Anzahlung innerhalb von 7 Tagen auf das angegebene Konto zu überweisen.',
+                balanceInstruct: 'Restzahlung',
+                balanceDesc: 'Den verbleibenden Betrag erwarten wir bis spätestens 6 Wochen vor Anreise auf demselben Konto. Wir senden Ihnen rechtzeitig eine freundliche Erinnerung!',
+                balanceReminderInstruct: 'Zahlungsanweisungen',
+                balanceReminderDesc: 'Um alles für Ihre Ankunft vorzubereiten, bitten wir Sie, den Restbetrag per Banküberweisung auf unser Konto zu begleichen.',
+                balanceReceivedInstruct: 'Vorfreude!',
+                balanceReceivedDesc: 'Der Countdown läuft! In Kürze senden wir Ihnen die letzten "Pre-Stay"-Details für eine reibungslose Ankunft.',
+                etiquette: 'Lodge-Etikette',
+                rulesHeading: 'Unsere Hausregeln',
+                ruleShoes: '<strong>Schuhwerk:</strong> In der Lodge tragen wir gerne Hausschuhe. Nasse oder schmutzige Berg- und Skischuhe können Sie sicher im Skiraum lassen.',
+                rulesRespect: '<strong>Ruhe und Respekt:</strong> Aus Respekt gegenüber anderen Gästen und Anwohnern gilt von 22:00 bis 07:00 Uhr Nachtruhe.',
+                ruleSmoke: '<strong>Nichtraucher:</strong> Das Innere der Gipfel Lodge ist strikt rauchfrei. Rauchen ist im Freien auf den Balkonen oder der Terrasse möglich.',
+                ruleWaste: '<strong>Mülltrennung:</strong> In Österreich wird Müll streng getrennt. Unter der Spüle finden Sie verschiedene Behälter. Container stehen draußen.',
+                bannerAccepted: '&#10003;&nbsp; Buchung Akzeptiert',
+                bannerDepositReq: '€&nbsp; Anzahlung Erforderlich',
+                bannerDepositRec: '&#10003;&nbsp; Anzahlung Erhalten',
+                bannerBalanceReq: '€&nbsp; Letzte Aktion Erforderlich',
+                bannerBalanceRec: '&#10003;&nbsp; Restzahlung Erhalten',
+                bannerRules: '&#10548;&nbsp; Pre-Stay Infos & Hausregeln',
+                greeting: 'Sehr geehrte(r)',
+                greetingStrong: 'strong',
+                copyright: '&copy; 2026 Gipfel Lodge &mdash; Alpiner Luxus & Raum<br>Eben im Pongau, Austria | hello@gipfellodge.com'
             },
-            deposit_received: {
-                themeColor: '#C5A059', email_tagline: 'Boeking Definitief Bevestigd', email_heading: 'Aanbetaling succesvol verwerkt',
-                defaultIntro: 'We hebben je aanbetaling in goede orde ontvangen! Hiermee is je boeking bij Gipfel Lodge officieel en definitief bevestigd voor onderstaande reisgegevens:',
-                defaultClosing: 'Mochten er tussentijds vragen zijn over je verblijf of de omgeving, laat het ons dan gerust weten door deze e-mail te beantwoorden. We helpen je graag!\n\nWe kijken ernaar uit je te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Bekijk Gipfel Lodge', format: 'deposit_received'
-            },
-            balance_reminder: {
-                themeColor: '#F59E0B', email_tagline: 'Restbetaling Verblijf', email_heading: 'Betalingsherinnering',
-                defaultIntro: 'We kijken ernaar uit je binnenkort te mogen verwelkomen in de Gipfel Lodge! Graag herinneren we je eraan dat er nog een openstaand saldo is voor je naderende reservering.',
-                defaultClosing: 'Heb je de betaling toevallig in de afgelopen dagen al voldaan? Dan heeft deze e-mail je betaling gekruist en mag je dit bericht als niet verzonden beschouwen. Bedankt!\n\nWe sturen de reisinformatie toe zodra de reis dichterbij komt.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Naar Website', format: 'balance_reminder'
-            },
-            balance_received: {
-                themeColor: '#C5A059', email_tagline: 'Betaling Volledig Voldaan', email_heading: 'Uw restbetaling is binnen',
-                defaultIntro: 'Goed nieuws! We hebben de restbetaling zojuist in goede orde ontvangen. Hiermee is de volledige reissom voldaan en is financieel gezien alles definitief in orde voor je verblijf bij Gipfel Lodge.',
-                defaultClosing: 'Namens de hele familie en staf willen we je bedanken voor het vertrouwen en de vlotte afhandeling van de betaling.\n\nDe bergen roepen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Naar Website', format: 'balance_received'
-            },
-            rules_info: {
-                themeColor: '#C5A059', email_tagline: 'Voorbereiding op uw verblijf', email_heading: 'Tijd om in te pakken!',
-                defaultIntro: 'De aankomst in de Gipfel Lodge komt nu écht dichterbij! Om ervoor te zorgen dat je verblijf vanaf het eerste moment soepel en zorgeloos verloopt, delen we alvast de belangrijkste praktische informatie en huisregels met jullie.',
-                defaultClosing: 'Let op: op de dag (of vlak voor de dag) van aankomst ontvangt u van ons een kort bericht met de unieke pincode voor de sleutelkluis van uw appartement.\n\nWe wensen je alvast een veilige reis!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Naar Website', format: 'rules_info'
-            },
-            post_stay: {
-                themeColor: '#C5A059', email_tagline: 'Alpine Memories', email_heading: 'Bedankt voor je verblijf',
-                defaultIntro: 'We hopen dat jullie een fantastisch verblijf hebben gehad in Gipfel Lodge en veilig zijn thuisgekomen! Het was een waar genoegen om jullie als gasten te mogen ontvangen.',
-                defaultClosing: 'Zou je zo vriendelijk willen zijn om een korte review achter te laten over je verblijf? Dit is erg waardevol voor ons. We hopen jullie in de toekomst nog eens te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Laat een review achter', format: 'standard'
-            },
-            cancellation: {
-                themeColor: '#E53935', email_tagline: 'Status Update', email_heading: 'Boeking Geannuleerd',
-                defaultIntro: 'Zoals besproken sturen we hierbij de bevestiging dat je boeking bij Gipfel Lodge is geannuleerd.',
-                defaultClosing: 'We vinden het ontzettend jammer dat je verblijf niet kan doorgaan. Mocht je in de toekomst toch weer de bergen in willen, dan ben je uiteraard meer dan welkom.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Plan een nieuwe reis', format: 'standard'
-            },
-            general: {
-                themeColor: '#20303D', email_tagline: 'Bericht van Gipfel Lodge', email_heading: 'Update rondom je verblijf',
-                defaultIntro: 'Bedankt voor je bericht. We voorzien je graag van de gevraagde informatie.',
-                defaultClosing: 'We hopen je hiermee voldoende te hebben geïnformeerd. Heb je nog andere vragen? Aarzel dan niet om contact op te nemen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
-                email_visit_website: 'Naar de website', format: 'standard'
+            en: {
+                sidebarTitle: 'Gipfel Lodge - Quick Mail',
+                sidebarSubtitle: 'Check the texts and click send.',
+                sjabloon: 'Template:',
+                ontvanger: 'Recipient:',
+                gast: 'Guest:',
+                data: 'Dates:',
+                reisgezelschap: 'Travel Party:',
+                aanpasbareTeksten: 'Customizable Texts',
+                introLabel: 'Introduction (Top message)',
+                closingLabel: 'Closing (Bottom message)',
+                sendBtn: 'Send Email Now',
+                closeBtn: 'Close Window',
+                configToggle: '⚙️ Manage API Settings',
+                arrivalDeparture: 'Arrival & Departure',
+                travelGroup: 'Travel Group',
+                totalPrice: 'Total Price',
+                deposit30: 'Deposit (30%)',
+                receivedDeposit: 'Deposit Received',
+                alreadyPaid: 'Already Paid (Deposit)',
+                stillToPay: 'Balance Due',
+                paymentStatus: 'Payment Status',
+                fullyPaid: 'FULLY PAID',
+                checkIn: 'Check-in',
+                checkOut: 'Check-out',
+                from15: 'From 3:00 PM',
+                until10: 'By 10:00 AM',
+                arrivalDate: 'Arrival Date',
+                wifiNetwork: 'Wifi Network',
+                wifiPassword: 'PASSWORD: AlpinerLuxus2026',
+                importantInfo: 'Important info for your stay:',
+                paymentTitle: '1. Payment',
+                paymentDesc: 'To finalize your reservation, we request a 30% deposit. The remaining balance is due at least 6 weeks before arrival. Invoice will follow.',
+                arrivalDepartureTitle: '2. Arrival & Departure',
+                arrivalDepartureDesc: 'Check-in from 3:00 PM. Check-out by 10:00 AM at the latest.',
+                houseRulesTitle: '3. House Rules',
+                houseRulesDesc: 'Gipfel Lodge is a non-smoking property. You will receive the access code and house info before arrival.',
+                depositInstruct: 'Payment Instructions',
+                depositDesc: 'To officially confirm your reservation, we kindly ask you to transfer the deposit to the specified account within 7 days.',
+                balanceInstruct: 'Final Payment',
+                balanceDesc: 'We expect the remaining balance at least 6 weeks before arrival on the same account. We will send a friendly reminder in time!',
+                balanceReminderInstruct: 'Payment Instructions',
+                balanceReminderDesc: 'To prepare everything for your arrival, we request you to pay the remaining balance via bank transfer to our account.',
+                balanceReceivedInstruct: 'Excitement!',
+                balanceReceivedDesc: 'The countdown has begun! We will soon send you the final "Pre-Stay" details to ensure a smooth arrival.',
+                etiquette: 'Lodge Etiquette',
+                rulesHeading: 'Our House Rules',
+                ruleShoes: '<strong>Footwear:</strong> We like to wear slippers inside the lodge. Please leave wet or dirty boots and ski boots in the ski room.',
+                rulesRespect: '<strong>Peace and Respect:</strong> Out of respect for other guests and neighbors, we maintain quiet hours between 10:00 PM and 07:00 AM.',
+                ruleSmoke: '<strong>Non-smoking:</strong> The interior of Gipfel Lodge is strictly non-smoking. Smoking is permitted outside on the balconies or terrace.',
+                ruleWaste: '<strong>Waste Separation:</strong> Austria is strict about waste separation. You will find different bins under the sink. Containers are outside.',
+                bannerAccepted: '&#10003;&nbsp; Booking Accepted',
+                bannerDepositReq: '€&nbsp; Deposit Required',
+                bannerDepositRec: '&#10003;&nbsp; Deposit Received',
+                bannerBalanceReq: '€&nbsp; Final Action Required',
+                bannerBalanceRec: '&#10003;&nbsp; Final Payment Received',
+                bannerRules: '&#10548;&nbsp; Pre-Stay Info & House Rules',
+                greeting: 'Dear',
+                greetingStrong: 'strong',
+                copyright: '&copy; 2026 Gipfel Lodge &mdash; Alpiner Luxus & Raum<br>Eben im Pongau, Austria | hello@gipfellodge.com'
             }
         };
 
         const configIds = ['emailjs_public_key', 'emailjs_service_id', 'emailjs_template_id'];
         let activeData = {};
+        let currentLang = 'nl';
 
         function init() {
             // Load URL Params
             const urlParams = new URLSearchParams(window.location.search);
-            const typeVar = urlParams.get('type') || 'acceptance';
+            currentLang = urlParams.get('lang') || 'nl';
+            if (!['nl', 'de', 'en'].includes(currentLang)) currentLang = 'nl';
             
-            const preset = templatesData[typeVar];
+            const typeVar = urlParams.get('type') || 'acceptance';
+            const labels = testerLabels[currentLang];
+            
+            // Localization UI
+            document.getElementById('sidebar-title').innerText = labels.sidebarTitle;
+            document.getElementById('sidebar-subtitle').innerText = labels.sidebarSubtitle;
+            document.getElementById('custom-texts-header').innerText = labels.aanpasbareTeksten;
+            document.getElementById('intro-label').innerText = labels.introLabel;
+            document.getElementById('closing-label').innerText = labels.closingLabel;
+            document.getElementById('sendBtn').innerText = labels.sendBtn;
+            document.getElementById('closeBtn').innerText = labels.closeBtn;
+            document.getElementById('config-toggle').innerText = labels.configToggle;
+            document.querySelectorAll('.tab-btn')[0].innerText = currentLang === 'de' ? 'Anpassen' : (currentLang === 'en' ? 'Edit' : 'Aanpassen');
+            document.querySelectorAll('.tab-btn')[1].innerText = currentLang === 'de' ? 'Vorschau' : (currentLang === 'en' ? 'Preview' : 'Voorbeeld');
+
+            const preset = allTemplatesData[currentLang][typeVar] || allTemplatesData[currentLang]['general'];
             activeData = {
                 type: typeVar,
                 id: urlParams.get('id') || '',
@@ -381,11 +722,11 @@
 
             // Populate locked data view
             document.getElementById('readonlyData').innerHTML = `
-                <div class="readonly-row"><strong>Sjabloon:</strong> <span>${typeVar.toUpperCase()}</span></div>
-                <div class="readonly-row"><strong>Ontvanger:</strong> <span>${activeData.email}</span></div>
-                <div class="readonly-row"><strong>Gast:</strong> <span>${activeData.name}</span></div>
-                <div class="readonly-row"><strong>Data:</strong> <span>${activeData.checkin} t/m ${activeData.checkout}</span></div>
-                <div class="readonly-row"><strong>Reisgezelschap:</strong> <span>${activeData.guests}</span></div>
+                <div class="readonly-row"><strong>${labels.sjabloon}</strong> <span>${typeVar.toUpperCase()}</span></div>
+                <div class="readonly-row"><strong>${labels.ontvanger}</strong> <span>${activeData.email}</span></div>
+                <div class="readonly-row"><strong>${labels.gast}</strong> <span>${activeData.name}</span></div>
+                <div class="readonly-row"><strong>${labels.data}</strong> <span>${activeData.checkin} t/m ${activeData.checkout}</span></div>
+                <div class="readonly-row"><strong>${labels.reisgezelschap}</strong> <span>${activeData.guests}</span></div>
             `;
 
             // Populate Textareas
@@ -409,46 +750,47 @@
         }
 
         function generateDetailsHtml(format) {
+            const labels = testerLabels[currentLang];
             let baseDetails = `
-                <div class="detail-row"><div class="label">Aankomst & Vertrek</div><div class="value">${activeData.checkin} &mdash; ${activeData.checkout}</div></div>
-                <div class="detail-row"><div class="label">Reisgezelschap</div><div class="value">${activeData.guests}</div></div>
+                <div class="detail-row"><div class="label">${labels.arrivalDeparture}</div><div class="value">${activeData.checkin} &mdash; ${activeData.checkout}</div></div>
+                <div class="detail-row"><div class="label">${labels.travelGroup}</div><div class="value">${activeData.guests}</div></div>
             `;
             
             if (format === 'deposit_request') {
                 return baseDetails + `
-                    <div class="detail-row"><div class="label">Totaalprijs</div><div class="value">${activeData.tot}</div></div>
-                    <div class="detail-row"><div class="label">Aanbetaling (30%)</div><div class="value" style="color: #c47e09; font-weight: 700;">${activeData.dep}</div></div>
+                    <div class="detail-row"><div class="label">${labels.totalPrice}</div><div class="value">${activeData.tot}</div></div>
+                    <div class="detail-row"><div class="label">${labels.deposit30}</div><div class="value" style="color: #c47e09; font-weight: 700;">${activeData.dep}</div></div>
                 `;
             } else if (format === 'deposit_received') {
                 return baseDetails + `
-                    <div class="detail-row"><div class="label">Ontvangen Aanbetaling</div><div class="value" style="color: #295e1e; font-weight: 700;">${activeData.dep}</div></div>
+                    <div class="detail-row"><div class="label">${labels.receivedDeposit}</div><div class="value" style="color: #295e1e; font-weight: 700;">${activeData.dep}</div></div>
                 `;
             } else if (format === 'balance_reminder') {
                 return baseDetails + `
-                    <div class="detail-row"><div class="label" style="opacity: 0.6;">Totaalprijs</div><div class="value" style="font-size: 14px; opacity: 0.6;">${activeData.tot}</div></div>
-                    <div class="detail-row"><div class="label" style="opacity: 0.6;">Reeds Voldoen (Aanbetaling)</div><div class="value" style="font-size: 14px; opacity: 0.6;">${activeData.dep}</div></div>
+                    <div class="detail-row"><div class="label" style="opacity: 0.6;">${labels.totalPrice}</div><div class="value" style="font-size: 14px; opacity: 0.6;">${activeData.tot}</div></div>
+                    <div class="detail-row"><div class="label" style="opacity: 0.6;">${labels.alreadyPaid}</div><div class="value" style="font-size: 14px; opacity: 0.6;">${activeData.dep}</div></div>
                     <div class="detail-row" style="background-color: #fef0d9; margin: 10px -25px -25px -25px; padding: 25px; border-radius: 0 0 8px 8px; border-top: 1px solid #fae4c1;">
-                        <div class="label" style="color: #a56100;">Nog te voldoen (Restbedrag)</div>
+                        <div class="label" style="color: #a56100;">${labels.stillToPay}</div>
                         <div class="value" style="color: #c47e09; font-weight: 700; font-size: 18px;">${activeData.bal}</div>
                     </div>
                 `;
             } else if (format === 'balance_received') {
                 return baseDetails + `
-                    <div class="detail-row"><div class="label" style="opacity: 0.6;">Totaalprijs</div><div class="value" style="font-size: 14px; opacity: 0.6;">${activeData.tot}</div></div>
+                    <div class="detail-row"><div class="label" style="opacity: 0.6;">${labels.totalPrice}</div><div class="value" style="font-size: 14px; opacity: 0.6;">${activeData.tot}</div></div>
                     <div class="detail-row" style="background-color: #eef3eb; margin: 10px -25px -25px -25px; padding: 25px; border-radius: 0 0 8px 8px; border-top: 1px solid #d5e9cc;">
-                        <div class="label" style="color: #295e1e;">Betalingsstatus</div>
-                        <div class="value" style="color: #295e1e; font-weight: 700; font-size: 18px;">VOLLEDIG VOLDAAN</div>
+                        <div class="label" style="color: #295e1e;">${labels.paymentStatus}</div>
+                        <div class="value" style="color: #295e1e; font-weight: 700; font-size: 18px;">${labels.fullyPaid}</div>
                     </div>
                 `;
             } else if (format === 'rules_info') {
                 return `
-                    <div class="detail-row"><div class="label">Inchecken</div><div class="value">Vanaf 15:00 uur</div></div>
-                    <div class="detail-row"><div class="label">Uitchecken</div><div class="value">Uiterlijk 10:00 uur</div></div>
-                    <div class="detail-row"><div class="label" style="opacity: 0.8;">Aankomstdatum</div><div class="value" style="font-size: 14px;">${activeData.checkin}</div></div>
+                    <div class="detail-row"><div class="label">${labels.checkIn}</div><div class="value">${labels.from15}</div></div>
+                    <div class="detail-row"><div class="label">${labels.checkOut}</div><div class="value">${labels.until10}</div></div>
+                    <div class="detail-row"><div class="label" style="opacity: 0.8;">${labels.arrivalDate}</div><div class="value" style="font-size: 14px;">${activeData.checkin}</div></div>
                     <div class="detail-row" style="background-color: #faf9f6; margin: 10px -25px -25px -25px; padding: 25px; border-radius: 0 0 8px 8px; border-top: 1px solid #e0e4e8;">
-                        <div class="label" style="color: #78868A;">Wifi Netwerk</div>
+                        <div class="label" style="color: #78868A;">${labels.wifiNetwork}</div>
                         <div class="value" style="color: #20303D; font-weight: 700;">GipfelLodge_Guest<br>
-                        <span style="font-size: 13px; font-weight: 500; opacity: 0.8; letter-spacing: 1px;">WACHTWOORD: AlpinerLuxus2026</span></div>
+                        <span style="font-size: 13px; font-weight: 500; opacity: 0.8; letter-spacing: 1px;">${labels.wifiPassword}</span></div>
                     </div>
                 `;
             } else if (format === 'acceptance') {
@@ -459,38 +801,39 @@
         }
 
         function generateExtraContent(format) {
+            const labels = testerLabels[currentLang];
             if (format === 'acceptance') {
                 return `
-                    <p class="intro-text" style="font-weight: 600; margin-bottom: 20px;">Belangrijke informatie voor uw verblijf:</p>
-                    <div class="info-card"><div class="info-title">1. Betaling</div><p class="info-desc">Om uw reservering definitief te maken, vragen wij een aanbetaling van 30%. Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. De factuur volgt.</p></div>
-                    <div class="info-card"><div class="info-title">2. Aankomst & Vertrek</div><p class="info-desc">Inchecken vanaf <strong>15:00 uur</strong>. Uitchecken uiterlijk <strong>10:00 uur</strong>.</p></div>
-                    <div class="info-card"><div class="info-title">3. Huisregels</div><p class="info-desc">Gipfel Lodge is rookvrij. Voor aankomst ontvangt u de toegangscode en huisinformatie.</p></div>
+                    <p class="intro-text" style="font-weight: 600; margin-bottom: 20px;">${labels.importantInfo}</p>
+                    <div class="info-card"><div class="info-title">${labels.paymentTitle}</div><p class="info-desc">${labels.paymentDesc}</p></div>
+                    <div class="info-card"><div class="info-title">${labels.arrivalDepartureTitle}</div><p class="info-desc">${labels.arrivalDepartureDesc}</p></div>
+                    <div class="info-card"><div class="info-title">${labels.houseRulesTitle}</div><p class="info-desc">${labels.houseRulesDesc}</p></div>
                 `;
             } else if (format === 'deposit_request') {
                 return `
-                    <div class="info-card"><div class="info-title">Betaalinstructies</div><p class="info-desc">Om uw reservering definitief te bevestigen, verzoeken we u vriendelijk om de aanbetaling uiterlijk binnen 7 dagen over te maken op het opgegeven rekeningnummer.</p></div>
+                    <div class="info-card"><div class="info-title">${labels.depositInstruct}</div><p class="info-desc">${labels.depositDesc}</p></div>
                 `;
             } else if (format === 'deposit_received') {
                 return `
-                    <div class="info-card"><div class="info-title">Restbetaling</div><p class="info-desc">Het resterende bedrag ontvangen we graag uiterlijk 6 weken voor aankomst op dezelfde rekening. We sturen ruim op tijd nog een vriendelijke herinnering hiervoor!</p></div>
+                    <div class="info-card"><div class="info-title">${labels.balanceInstruct}</div><p class="info-desc">${labels.balanceDesc}</p></div>
                 `;
             } else if (format === 'balance_reminder') {
                 return `
-                    <div class="info-card"><div class="info-title">Betaalinstructies</div><p class="info-desc">Om alles in orde te maken voor je aankomst verzoeken we je het restbedrag uiterlijk te voldoen middels een bankoverschrijving naar onze rekening.</p></div>
+                    <div class="info-card"><div class="info-title">${labels.balanceReminderInstruct}</div><p class="info-desc">${labels.balanceReminderDesc}</p></div>
                 `;
             } else if (format === 'balance_received') {
                 return `
-                    <div class="info-card"><div class="info-title">Voorpret!</div><p class="info-desc">Het grote aftellen is inmiddels natuurlijk al begonnen. Binnenkort sturen we je nog de laatste "Pre-Stay" details zodat je soepel kunt arriveren.</p></div>
+                    <div class="info-card"><div class="info-title">${labels.balanceReceivedInstruct}</div><p class="info-desc">${labels.balanceReceivedDesc}</p></div>
                 `;
             } else if (format === 'rules_info') {
                 return `
-                    <p class="tagline" style="font-size: 11px; color: #78868A; margin-top: 35px; color: #C5A059;">Lodge Etiquette</p>
-                    <h2 class="heading" style="font-size: 22px;">Onze Huisregels</h2>
+                    <p class="tagline" style="font-size: 11px; color: #78868A; margin-top: 35px; color: #C5A059;">${labels.etiquette}</p>
+                    <h2 class="heading" style="font-size: 22px;">${labels.rulesHeading}</h2>
                     <table class="rule-table" cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 25px;">
-                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;"><strong>Schoeisel:</strong> In de lodge dragen we graag pantoffels. Natte of vieze bergschoenen en skischoenen kun je veilig achterlaten in de skiruimte.</td></tr>
-                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;"><strong>Rust en Respect:</strong> Uit respect voor de andere gasten en de omwonenden, hanteren we een rustige nachtrust tussen 22:00 uur en 07:00 uur.</td></tr>
-                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;"><strong>Rookvrij:</strong> De binnenkant van Gipfel Lodge is strikt rookvrij. Roken kan buiten op de balkons of het terras bij de asbakken.</td></tr>
-                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;"><strong>Afval Scheiden:</strong> Oostenrijk is streng op afval scheiden. Onder de gootsteen vind je verschillende bakken. Containers staan buiten.</td></tr>
+                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;">${labels.ruleShoes}</td></tr>
+                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;">${labels.rulesRespect}</td></tr>
+                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;">${labels.ruleSmoke}</td></tr>
+                        <tr><td style="color: #C5A059; padding-right: 10px; font-weight: bold; vertical-align:top;">&bull;</td><td style="padding-bottom: 15px; font-size: 14px; line-height: 1.5; color: #20303D;">${labels.ruleWaste}</td></tr>
                     </table>
                 `;
             }
@@ -498,18 +841,19 @@
         }
 
         function generateAlertBanner(format) {
+            const labels = testerLabels[currentLang];
             if (format === 'acceptance') {
-                return `<tr><td class="alert-banner" style="background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc;"><p style="margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">&#10003;&nbsp; Boeking Geaccepteerd</p></td></tr>`;
+                return `<tr><td class="alert-banner" style="background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc;"><p style="margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">${labels.bannerAccepted}</p></td></tr>`;
             } else if (format === 'deposit_request') {
-                return `<tr><td class="alert-banner" style="background-color: #fef0d9; padding: 14px 30px; text-align: center; border-bottom: 1px solid #fae4c1;"><p style="margin: 0; color: #a56100; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">€&nbsp; Aanbetaling Vereist</p></td></tr>`;
+                return `<tr><td class="alert-banner" style="background-color: #fef0d9; padding: 14px 30px; text-align: center; border-bottom: 1px solid #fae4c1;"><p style="margin: 0; color: #a56100; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">${labels.bannerDepositReq}</p></td></tr>`;
             } else if (format === 'deposit_received') {
-                return `<tr><td class="alert-banner" style="background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc;"><p style="margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">&#10003;&nbsp; Aanbetaling Ontvangen</p></td></tr>`;
+                return `<tr><td class="alert-banner" style="background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc;"><p style="margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">${labels.bannerDepositRec}</p></td></tr>`;
             } else if (format === 'balance_reminder') {
-                return `<tr><td class="alert-banner" style="background-color: #fef0d9; padding: 14px 30px; text-align: center; border-bottom: 1px solid #fae4c1;"><p style="margin: 0; color: #a56100; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">€&nbsp; Laatste Actie Vereist</p></td></tr>`;
+                return `<tr><td class="alert-banner" style="background-color: #fef0d9; padding: 14px 30px; text-align: center; border-bottom: 1px solid #fae4c1;"><p style="margin: 0; color: #a56100; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">${labels.bannerBalanceReq}</p></td></tr>`;
             } else if (format === 'balance_received') {
-                return `<tr><td class="alert-banner" style="background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc;"><p style="margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">&#10003;&nbsp; Restbetaling Ontvangen</p></td></tr>`;
+                return `<tr><td class="alert-banner" style="background-color: #eef3eb; padding: 14px 30px; text-align: center; border-bottom: 1px solid #d5e9cc;"><p style="margin: 0; color: #295e1e; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">${labels.bannerBalanceRec}</p></td></tr>`;
             } else if (format === 'rules_info') {
-                return `<tr><td class="alert-banner" style="background-color: #f7f9fa; padding: 14px 30px; text-align: center; border-bottom: 1px solid #e0e4e8;"><p style="margin: 0; color: #78868A; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">&#10548;&nbsp; Pre-Stay Informatie & Huisregels</p></td></tr>`;
+                return `<tr><td class="alert-banner" style="background-color: #f7f9fa; padding: 14px 30px; text-align: center; border-bottom: 1px solid #e0e4e8;"><p style="margin: 0; color: #78868A; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">${labels.bannerRules}</p></td></tr>`;
             }
             return '';
         }
@@ -521,12 +865,16 @@
             const introHtml = introRaw.replace(/\n/g, '<br>');
             const closingHtml = closingRaw.replace(/\n/g, '<br>');
 
+            const labels = testerLabels[currentLang];
             return {
                 themeColor: activeData.themeColor,
                 email_tagline: activeData.email_tagline,
                 email_heading: activeData.email_heading,
                 email_intro: introHtml,
                 user_name: activeData.name,
+                greeting: labels.greeting,
+                greetingStrong: labels.greetingStrong,
+                copyright: labels.copyright,
                 check_in: activeData.checkin,
                 check_out: activeData.checkout,
                 guests: activeData.guests,
@@ -561,15 +909,16 @@
             const serviceId = document.getElementById('emailjs_service_id').value;
             const templateId = document.getElementById('emailjs_template_id').value;
 
+            const labels = testerLabels[currentLang];
             if (!publicKey || !serviceId || !templateId) {
-                showStatus("Fout: Vul eerst de API Keys in (klik onderaan op ⚙️ API Instellingen)", false);
+                showStatus(currentLang === 'de' ? "Fehler: Bitte geben Sie zuerst die API-Schlüssel ein (unten auf ⚙️ klicken)" : (currentLang === 'en' ? "Error: Please enter API keys first (click ⚙️ at the bottom)" : "Fout: Vul eerst de API Keys in (klik onderaan op ⚙️ API Instellingen)"), false);
                 document.getElementById('configPanel').style.display = 'block';
                 return;
             }
 
             const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
-            sendBtn.innerText = "Bezig met verzenden...";
+            sendBtn.innerText = currentLang === 'de' ? "Wird gesendet..." : (currentLang === 'en' ? "Sending..." : "Bezig met verzenden...");
             showStatus("");
 
             emailjs.init({ publicKey: publicKey });
@@ -577,7 +926,8 @@
 
             emailjs.send(serviceId, templateId, params)
                 .then(function() {
-                    showStatus("Succes! De e-mail is direct verzonden naar " + activeData.email, true);
+                    const successMsg = currentLang === 'de' ? "Erfolg! Die E-Mail wurde direkt an " : (currentLang === 'en' ? "Success! The email has been sent directly to " : "Succes! De e-mail is direct verzonden naar ");
+                    showStatus(successMsg + activeData.email, true);
                     
                     // Notify parent to check off the step in the mailchain
                     if (window.parent && activeData.id) {
@@ -592,9 +942,10 @@
                     document.getElementById('closeBtn').style.display = 'block';
                 }, function(error) {
                     console.error("FAILED...", error);
-                    showStatus("Fout bij verzenden: Controleer console en API keys.", false);
+                    const errorMsg = currentLang === 'de' ? "Fehler beim Senden: Prüfen Sie die Konsole und API-Schlüssel." : (currentLang === 'en' ? "Error sending: Check console and API keys." : "Fout bij verzenden: Controleer console en API keys.");
+                    showStatus(errorMsg, false);
                     sendBtn.disabled = false;
-                    sendBtn.innerText = "Probeer Opnieuw";
+                    sendBtn.innerText = currentLang === 'de' ? "Erneut versuchen" : (currentLang === 'en' ? "Try Again" : "Probeer Opnieuw");
                 });
         }
 
