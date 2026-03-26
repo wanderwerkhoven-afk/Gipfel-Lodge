@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Gipfel Lodge — Firebase Seed</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 40px; max-width: 900px; margin: 0 auto; }
+        h1 { color: #c5a059; }
+        button { background: #c5a059; color: white; border: none; padding: 16px 32px; font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        button:hover { background: #a8853a; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        #log { margin-top: 30px; background: #1e293b; border-radius: 8px; padding: 20px; font-family: monospace; font-size: 0.85rem; max-height: 500px; overflow-y: auto; line-height: 1.8; }
+        .ok { color: #4ade80; }
+        .err { color: #f87171; }
+        .info { color: #94a3b8; }
+        .warn { color: #fbbf24; }
+        .progress { margin-top: 16px; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: #c5a059; width: 0%; transition: width 0.3s; border-radius: 4px; }
+        .summary { background: #1e3a5f; border: 1px solid #2563eb; border-radius: 8px; padding: 16px; margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+
+<h1>🏔 Gipfel Lodge — Firebase Seed</h1>
+<p>Dit script importeert <strong>32 boekingen</strong> in Firebase Firestore.</p>
+<ul>
+    <li>Villa for You → <code>Gipfel-XXXXXX</code></li>
+    <li>Huiseigenaar → <code>Owner-XXXXXX</code></li>
+</ul>
+<p style="color:#f87171;"><strong>⚠ Verwijder eerst de bestaande boekingen in Firebase!</strong></p>
+
+<button id="btn-seed">▶ Importeer alle boekingen</button>
+<div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+<div id="log"><span class="info">Wachten op start...</span></div>
+<div class="summary" id="summary">
+    <strong>✅ Import voltooid!</strong><br>
+    <span id="summary-text"></span>
+</div>
+
+<script>
+const BOOKINGS = [
+    { id:"Gipfel-300852", type:"guest", guestName:"Spazierer", guestEmail:"p.spazierer@gmail.com", guestPhone:"436642265983", country:"AT", checkIn:"2026-01-13", checkOut:"2026-01-18", nights:5, adults:10, children:0, babies:0, totalAmount:1153.60, status:"confirmed", source:"260300852", message:"" },
+    { id:"Gipfel-401128", type:"guest", guestName:"Wozniak", guestEmail:"drugiekonto2005@gmail.com", guestPhone:"48887777037", country:"PL", checkIn:"2026-01-21", checkOut:"2026-01-25", nights:4, adults:8, children:0, babies:0, totalAmount:1221.45, status:"confirmed", source:"260401128", message:"" },
+    { id:"Gipfel-501240", type:"guest", guestName:"Alte", guestEmail:"dr.alte@gmx.de", guestPhone:"491713000004", country:"DE", checkIn:"2026-02-01", checkOut:"2026-02-08", nights:7, adults:4, children:5, babies:0, totalAmount:3100.05, status:"confirmed", source:"260501240", message:"" },
+    { id:"Gipfel-701395", type:"guest", guestName:"Majoor", guestEmail:"sanderpuijk@hotmail.com", guestPhone:"31611870865", country:"NL", checkIn:"2026-02-14", checkOut:"2026-02-21", nights:7, adults:8, children:2, babies:0, totalAmount:3850.03, status:"confirmed", source:"260701395", message:"" },
+    { id:"Gipfel-800963", type:"guest", guestName:"Kucharski", guestEmail:"kucharski.tom@gmail.com", guestPhone:"48691282100", country:"PL", checkIn:"2026-02-21", checkOut:"2026-02-28", nights:7, adults:10, children:0, babies:0, totalAmount:3850.03, status:"confirmed", source:"260800963", message:"" },
+    { id:"Gipfel-100600", type:"guest", guestName:"De Nijs", guestEmail:"veerledenijs@hotmail.com", guestPhone:"31655944978", country:"NL", checkIn:"2026-03-07", checkOut:"2026-03-14", nights:7, adults:6, children:2, babies:0, totalAmount:1800.03, status:"confirmed", source:"261000600", message:"" },
+    { id:"Gipfel-400329", type:"guest", guestName:"Demuynck", guestEmail:"dirk.demuynck@kdg.be", guestPhone:"32497245427", country:"BE", checkIn:"2026-04-04", checkOut:"2026-04-09", nights:5, adults:6, children:0, babies:2, totalAmount:1285.76, status:"confirmed", source:"261400329", message:"" },
+    { id:"Gipfel-800425", type:"guest", guestName:"Stohr", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-04-30", checkOut:"2026-05-03", nights:3, adults:7, children:1, babies:1, totalAmount:714.33, status:"confirmed", source:"261800425", message:"" },
+    { id:"Gipfel-900237", type:"guest", guestName:"Frohlich-Krammer", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-05-07", checkOut:"2026-05-10", nights:3, adults:9, children:0, babies:0, totalAmount:714.31, status:"confirmed", source:"261900237", message:"" },
+    { id:"Gipfel-200341", type:"guest", guestName:"Oshri", guestEmail:"", guestPhone:"", country:"IL", checkIn:"2026-05-11", checkOut:"2026-05-15", nights:4, adults:4, children:4, babies:1, totalAmount:714.31, status:"confirmed", source:"262000341", message:"" },
+    { id:"Gipfel-200441", type:"guest", guestName:"Samina", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-05-15", checkOut:"2026-05-18", nights:3, adults:6, children:4, babies:1, totalAmount:714.31, status:"confirmed", source:"262000441", message:"" },
+    { id:"Gipfel-100525", type:"guest", guestName:"Hackl", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-05-22", checkOut:"2026-05-26", nights:4, adults:8, children:2, babies:0, totalAmount:714.31, status:"confirmed", source:"262100525", message:"" },
+    { id:"Gipfel-200407", type:"guest", guestName:"Hartman", guestEmail:"", guestPhone:"", country:"US", checkIn:"2026-05-30", checkOut:"2026-06-04", nights:5, adults:6, children:0, babies:0, totalAmount:714.31, status:"confirmed", source:"262200407", message:"" },
+    { id:"Gipfel-300639", type:"guest", guestName:"Giesen", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-06-06", checkOut:"2026-06-20", nights:14, adults:4, children:2, babies:0, totalAmount:2000.04, status:"confirmed", source:"262300639", message:"" },
+    { id:"Gipfel-700413", type:"guest", guestName:"Laut", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-07-04", checkOut:"2026-07-11", nights:7, adults:8, children:0, babies:0, totalAmount:1300.08, status:"confirmed", source:"262700413", message:"" },
+    { id:"Gipfel-900518", type:"guest", guestName:"Gerken", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-07-18", checkOut:"2026-07-25", nights:7, adults:5, children:2, babies:0, totalAmount:1600.07, status:"confirmed", source:"262900518", message:"" },
+    { id:"Gipfel-000616", type:"guest", guestName:"Derix", guestEmail:"", guestPhone:"", country:"NL", checkIn:"2026-07-25", checkOut:"2026-08-01", nights:7, adults:6, children:3, babies:0, totalAmount:1600.07, status:"confirmed", source:"263000616", message:"" },
+    { id:"Gipfel-100470", type:"guest", guestName:"Bachar", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-08-01", checkOut:"2026-08-08", nights:7, adults:6, children:2, babies:0, totalAmount:1600.07, status:"confirmed", source:"263100470", message:"" },
+    { id:"Gipfel-200372", type:"guest", guestName:"Talmann", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-08-08", checkOut:"2026-08-22", nights:14, adults:5, children:2, babies:0, totalAmount:3200.13, status:"confirmed", source:"263200372", message:"" },
+    { id:"Gipfel-400339", type:"guest", guestName:"De Pater", guestEmail:"", guestPhone:"", country:"NL", checkIn:"2026-08-22", checkOut:"2026-08-29", nights:7, adults:10, children:0, babies:0, totalAmount:1300.08, status:"confirmed", source:"263400339", message:"" },
+    { id:"Gipfel-700202", type:"guest", guestName:"Kochling", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-09-13", checkOut:"2026-09-20", nights:7, adults:6, children:0, babies:0, totalAmount:999.99, status:"confirmed", source:"263700202", message:"" },
+    { id:"Gipfel-800170", type:"guest", guestName:"Vahl", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-09-20", checkOut:"2026-10-11", nights:21, adults:3, children:0, babies:0, totalAmount:2999.98, status:"confirmed", source:"263800170", message:"" },
+    { id:"Gipfel-200112", type:"guest", guestName:"Schellevis", guestEmail:"", guestPhone:"", country:"NL", checkIn:"2026-10-16", checkOut:"2026-10-21", nights:5, adults:7, children:3, babies:0, totalAmount:714.31, status:"confirmed", source:"264200112", message:"" },
+    { id:"Gipfel-300126", type:"guest", guestName:"Knust", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-10-24", checkOut:"2026-10-31", nights:7, adults:4, children:4, babies:0, totalAmount:1200.01, status:"confirmed", source:"264300126", message:"" },
+    { id:"Gipfel-200606", type:"guest", guestName:"Pape", guestEmail:"", guestPhone:"", country:"DE", checkIn:"2026-12-26", checkOut:"2027-01-02", nights:7, adults:4, children:5, babies:0, totalAmount:5000.07, status:"confirmed", source:"265200606", message:"" },
+    { id:"Gipfel-300436", type:"guest", guestName:"Radulic", guestEmail:"", guestPhone:"", country:"HR", checkIn:"2027-01-02", checkOut:"2027-01-09", nights:7, adults:9, children:1, babies:0, totalAmount:2500.03, status:"confirmed", source:"265300436", message:"" },
+    { id:"Owner-176352", type:"owner", guestName:"Fjodor Werkhoven", guestEmail:"f.werkhoven@gipfelgroup.nl", guestPhone:"", country:"NL", checkIn:"2026-01-25", checkOut:"2026-01-29", nights:4, adults:4, children:0, babies:0, totalAmount:0, status:"owner", source:"176352", message:"Maken het huis zelf schoon 29-01" },
+    { id:"Owner-177258", type:"owner", guestName:"Fjodor Werkhoven", guestEmail:"fl.werkhoven@quicknet.nl", guestPhone:"", country:"NL", checkIn:"2026-02-28", checkOut:"2026-03-07", nights:7, adults:2, children:0, babies:0, totalAmount:0, status:"owner", source:"177258", message:"Maken het huis zelf schoon na eigen verblijf" },
+    { id:"Owner-175837", type:"owner", guestName:"Fjodor Werkhoven", guestEmail:"", guestPhone:"", country:"NL", checkIn:"2026-08-29", checkOut:"2026-09-05", nights:7, adults:2, children:0, babies:0, totalAmount:0, status:"owner", source:"175837", message:"" },
+    { id:"Owner-176908", type:"owner", guestName:"Fjodor Werkhoven", guestEmail:"fl.werkhoven@quicknet.nl", guestPhone:"", country:"NL", checkIn:"2026-09-05", checkOut:"2026-09-12", nights:7, adults:2, children:0, babies:0, totalAmount:0, status:"owner", source:"176908", message:"" },
+    { id:"Owner-175767", type:"owner", guestName:"Fjodor Werkhoven", guestEmail:"", guestPhone:"", country:"NL", checkIn:"2026-12-17", checkOut:"2026-12-26", nights:9, adults:2, children:0, babies:0, totalAmount:0, status:"owner", source:"175767", message:"" },
+    { id:"Owner-178630", type:"owner", guestName:"Fjodor Werkhoven", guestEmail:"", guestPhone:"", country:"NL", checkIn:"2027-02-27", checkOut:"2027-03-06", nights:7, adults:2, children:0, babies:0, totalAmount:0, status:"owner", source:"178630", message:"Hebben eigen beddengoed en handdoeken en maken zelf schoon" },
+];
+
+function log(msg, cls) {
+    var el = document.getElementById('log');
+    el.innerHTML += '<div class="'+(cls||'info')+'">'+msg+'</div>';
+    el.scrollTop = el.scrollHeight;
+}
+
+document.getElementById('btn-seed').addEventListener('click', async function() {
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Bezig...';
+    document.getElementById('log').innerHTML = '';
+
+    log('🔌 Firebase laden...');
+    var db, docFn, setDocFn, serverTs;
+    try {
+        var fbApp = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js');
+        var fbStore = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+        var app = fbApp.initializeApp({
+            apiKey: "AIzaSyDDmNAnEIGOsScRJiCQKSfY-DDHu5gKYb8",
+            authDomain: "gipfel-lodge.firebaseapp.com",
+            projectId: "gipfel-lodge",
+            storageBucket: "gipfel-lodge.firebasestorage.app",
+            messagingSenderId: "388067449391",
+            appId: "1:388067449391:web:687304a8403e3d79aa84da"
+        });
+        db = fbStore.getFirestore(app);
+        docFn = fbStore.doc;
+        setDocFn = fbStore.setDoc;
+        serverTs = fbStore.serverTimestamp;
+        log('✅ Firebase verbonden!', 'ok');
+    } catch(e) {
+        log('❌ Firebase fout: ' + e.message, 'err');
+        btn.disabled = false;
+        btn.textContent = '▶ Opnieuw proberen';
+        return;
+    }
+
+    log('🚀 Importeren ' + BOOKINGS.length + ' boekingen...');
+    var success = 0, failed = 0;
+
+    for (var i = 0; i < BOOKINGS.length; i++) {
+        var b = BOOKINGS[i];
+        try {
+            var record = {
+                bookingId: b.id, type: b.type, status: "confirmed",
+                guestName: b.guestName, guestEmail: b.guestEmail, guestPhone: b.guestPhone,
+                country: b.country, checkIn: b.checkIn, checkOut: b.checkOut,
+                nights: b.nights, adults: b.adults, children: b.children, babies: b.babies,
+                totalGuests: b.adults + b.children + b.babies,
+                totalAmount: b.totalAmount, depositPaid: false, balancePaid: false,
+                message: b.message, source: b.source, importedAt: new Date().toISOString(),
+                createdAt: serverTs(),
+                mailChain: { depositReminder:false, depositReceived:false, balanceReminder:false, balanceReceived:false, preStayInfo:false, postStay:false }
+            };
+            await setDocFn(docFn(db, "bookings", b.id), record);
+            success++;
+            log('✅ ' + b.id + ' — ' + b.guestName + ' (' + b.checkIn + ' → ' + b.checkOut + ')', 'ok');
+        } catch(err) {
+            failed++;
+            log('❌ ' + b.id + ' — ' + err.message, 'err');
+        }
+        document.getElementById('progress-bar').style.width = Math.round(((i+1)/BOOKINGS.length)*100) + '%';
+    }
+
+    log('📊 Klaar! ' + success + ' succesvol' + (failed ? ', ' + failed + ' mislukt' : '') + '.', failed ? 'warn' : 'ok');
+    btn.textContent = '✔ Import voltooid';
+    document.getElementById('summary').style.display = 'block';
+    document.getElementById('summary-text').textContent = success + '/' + BOOKINGS.length + ' boekingen geïmporteerd.' + (failed ? ' ' + failed + ' mislukt.' : '');
+});
+</script>
+</body>
+</html>

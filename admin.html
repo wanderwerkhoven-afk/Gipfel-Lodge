@@ -802,8 +802,8 @@
             .nav-item { flex: 1 1 100%; min-width: auto; }
         }
 
-        /* --- Email Composer Modal: Premium Overhaul --- */
-        #email-composer-modal {
+        /* --- Communication Hub Modal --- */
+        #comm-hub-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -817,10 +817,10 @@
             z-index: 10000;
             padding: 20px;
         }
-        #email-composer-modal.active { display: flex; }
+        #comm-hub-modal.active { display: flex; }
 
-        #email-composer-modal .modal-container {
-            background: #f8fafc;
+        #comm-hub-modal .modal-container {
+            background: #ffffff;
             width: 100%;
             max-width: 1100px;
             height: 92vh;
@@ -831,49 +831,215 @@
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
         }
 
-        #email-composer-modal .modal-header {
-            padding: 24px 32px;
+        #comm-hub-modal .modal-header {
+            padding: 24px 32px 10px 32px;
             background: #fff;
-            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             flex: 0 0 auto;
         }
 
-        #email-composer-modal .modal-content {
-            flex: 1;
-            overflow-y: auto;
-            background: #f1f5f9;
+        .hub-title-container {
             display: flex;
-            flex-direction: column;
-            gap: 24px;
-            padding: 24px;
-            -webkit-overflow-scrolling: touch;
+            align-items: center;
+            gap: 15px;
         }
 
-        /* Sticky Control Bar */
-        #email-composer-modal .composer-sidebar {
-            width: 100%;
+        .hub-title-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(197, 160, 89, 0.1);
+            color: var(--color-gold);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        #comm-hub-modal h2 {
+            margin: 0;
+            font-family: var(--font-primary);
+            color: var(--color-slate);
+            font-size: 1.8rem;
+        }
+
+        #comm-hub-modal .subtitle {
+            margin: 2px 0 0 0;
+            font-size: 0.85rem;
+            color: #78868A;
+            font-weight: 500;
+        }
+
+        #comm-hub-modal .hub-tabs {
+            display: flex;
+            padding: 0 32px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fff;
+            gap: 24px;
+        }
+
+        .hub-tab {
+            padding: 12px 4px;
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hub-tab:hover { color: var(--color-slate); }
+        .hub-tab.active {
+            color: var(--color-gold);
+            border-bottom-color: var(--color-gold);
+        }
+
+        #comm-hub-modal .modal-content {
+            flex: 1;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .tab-pane { display: none; height: 100%; padding: 32px; }
+        .tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
+
+        /* Status Tab Styles */
+        .status-overview-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px 32px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03);
+            margin-bottom: 30px;
+        }
+
+        .status-overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .status-overview-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--color-slate);
+            font-family: var(--font-secondary);
+        }
+
+        .status-badge-hub {
+            background: #fdf8f0;
+            color: #c47e09;
+            border: 1px solid #fbebd0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .hub-step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .hub-step {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        
+        .hub-step:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .hub-step.completed {
+            background-color: #f8fafc;
+            border-color: #f1f5f9;
+            box-shadow: none;
+        }
+
+        .hub-step.completed .hub-step-text {
+            color: #94a3b8;
+        }
+
+        .hub-step-next {
+            border: 1.5px solid var(--color-gold);
+            background: #fcfbf8;
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .hub-step-next:hover {
+            border-color: var(--color-gold) !important;
+            background: #fffdf7 !important;
+            box-shadow: 0 6px 20px rgba(197, 160, 89, 0.3) !important;
+            transform: translateY(-2px);
+        }
+
+        .badge-next-step {
+            background: var(--color-gold);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hub-step-title {
+            font-size: 0.95rem;
+            color: var(--color-slate);
+            font-weight: 600;
+        }
+
+        .hub-step-icon {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-check { color: #6b21a8; font-weight: bold; }
+        .icon-wait { color: #c47e09; }
+
+        /* Email Editor Tab Styles */
+        #comm-hub-modal .composer-wrapper {
+            display: flex;
+            gap: 24px;
+            height: 100%;
+        }
+
+        #comm-hub-modal .composer-sidebar {
+            width: 280px;
             background: #fff;
             padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 24px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            flex: 0 0 auto;
         }
 
-        #email-composer-modal .composer-control-box {
-            flex: 1;
-            min-width: 280px;
-        }
-
-        #email-composer-modal .composer-label {
+        #comm-hub-modal .composer-control-box { margin-bottom: 24px; }
+        #comm-hub-modal .composer-label {
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -883,129 +1049,64 @@
             letter-spacing: 0.1em;
         }
 
-        #email-composer-modal .composer-preview-container {
+        #comm-hub-modal .composer-preview-container {
             background: #fff;
-            width: 100%;
             border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
-            flex: 0 0 auto;
-            min-height: 700px;
-            overflow: hidden; /* Prevent table from breaking container */
+            flex: 1;
+            overflow-y: auto;
         }
 
-        #email-composer-modal #composer-preview-area {
+        #comm-hub-modal #composer-preview-area {
             padding: 0;
             background: #FAF9F6;
-            min-height: 600px;
+            min-height: 100%;
             outline: none;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        #email-composer-modal #composer-preview-area .composer-main-table {
-            max-width: 100% !important;
-            width: 100% !important;
-            display: table !important;
-        }
+        #comm-hub-modal #composer-preview-area .composer-main-table { width: 100% !important; }
+        #email-composer-modal [contenteditable="true"]:hover { background: rgba(197, 160, 89, 0.05); box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.2); }
+        #email-composer-modal [contenteditable="true"]:focus { outline: none; box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.4); }
 
-        #email-composer-modal [contenteditable="true"]:hover {
-            background: rgba(197, 160, 89, 0.05);
-            box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.2);
+        #comm-hub-modal .btn-composer-close {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
             transition: all 0.2s;
         }
+        #comm-hub-modal .btn-composer-close:hover { background: #e2e8f0; color: #1e293b; }
 
-        #email-composer-modal [contenteditable="true"]:focus {
-            background: rgba(197, 160, 89, 0.1);
-            box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.4);
-            outline: none;
-        }
-
-        #email-composer-modal .modal-footer {
-            padding: 20px 32px;
-            background: #fff;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 16px;
-            flex: 0 0 auto;
-        }
-
-        #email-composer-modal .btn-composer-send,
-        #email-composer-modal .btn-composer-copy,
-        #email-composer-modal .btn-composer-close {
-            padding: 14px 28px;
-            border-radius: 10px;
+        .btn-hub-action {
+            padding: 12px 24px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             border: none;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            transition: all 0.2s;
         }
+        .btn-hub-send { background: var(--color-gold); color: white; }
+        .btn-hub-send:hover { background: var(--color-gold-hover); }
+        .btn-hub-copy { background: #10b981; color: white; }
+        .btn-hub-copy:hover { background: #059669; }
 
-        #email-composer-modal .btn-composer-send { background: var(--color-gold); color: white; }
-        #email-composer-modal .btn-composer-send:hover { background: var(--color-gold-hover); transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(197, 160, 89, 0.4); }
-        
-        #email-composer-modal .btn-composer-copy { background: #10b981; color: white; }
-        #email-composer-modal .btn-composer-copy:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4); }
-        
-        #email-composer-modal .btn-composer-close { background: #f1f5f9; color: #475569; }
-        #email-composer-modal .btn-composer-close:hover { background: #e2e8f0; color: #1e293b; }
-
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            #email-composer-modal { padding: 0; }
-            #email-composer-modal .modal-container { height: 100vh; border-radius: 0; }
-            #email-composer-modal .modal-content { padding: 12px; gap: 12px; }
-            #email-composer-modal .modal-header { padding: 12px 16px; }
-            #email-composer-modal .modal-header h2 { font-size: 1.1rem; }
-            
-            #email-composer-modal .composer-sidebar { 
-                position: relative; 
-                padding: 12px; 
-                border-radius: 0;
-                margin: -12px -12px 0 -12px;
-                border-bottom: 1px solid #e2e8f0;
-                gap: 12px;
-            }
-            
-            /* Hide instructions on mobile to save space */
-            #email-composer-modal .composer-sidebar .composer-control-box:last-child { 
-                display: none; 
-            }
-            
-            #email-composer-modal .composer-control-box { min-width: 100%; }
-            
-            #email-composer-modal .modal-footer { 
-                padding: 12px; 
-                gap: 8px;
-                background: #fff;
-                box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-            }
-            
-            #email-composer-modal .btn-composer-send,
-            #email-composer-modal .btn-composer-copy,
-            #email-composer-modal .btn-composer-close { 
-                padding: 12px;
-                font-size: 0.9rem;
-                border-radius: 8px;
-            }
-            
-            /* Make secondary buttons side-by-side on mobile if possible */
-            #email-composer-modal .modal-footer {
-                display: grid;
-                grid-template-areas: 
-                    "send send"
-                    "copy close";
-            }
-            #email-composer-modal .btn-composer-send { grid-area: send; }
-            #email-composer-modal .btn-composer-copy { grid-area: copy; }
-            #email-composer-modal .btn-composer-close { grid-area: close; }
+            #comm-hub-modal { padding: 0; }
+            #comm-hub-modal .modal-container { height: 100vh; border-radius: 0; }
+            .composer-wrapper { flex-direction: column; }
+            #comm-hub-modal .composer-sidebar { width: 100%; }
+            .hub-tabs { overflow-x: auto; padding: 0 16px !important; }
+            .tab-pane { padding: 16px; }
         }
     </style>
 </head>
@@ -1034,7 +1135,6 @@
                 
                 <ul class="nav-menu">
                     <li class="nav-item active" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Alle Aanvragen</li>
-                    <li class="nav-item" onclick="switchView('confirm-view', this)">&#10003;&nbsp; Bevestigen</li>
                 </ul>
 
                 <div style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
@@ -1058,54 +1158,6 @@
             </aside>
             
             <main class="dashboard-main">
-                <!-- Confirm Booking View -->
-                <div id="confirm-view" class="dashboard-view">
-                    <div class="page-header">
-                        <h1>Aanvraag Bevestigen</h1>
-                        <p>Genereer en verstuur automatisch de bevestigings-e-mail naar de hoofdboeker.</p>
-                    </div>
-                    
-                    <form id="accept-booking-form">
-                        <div class="admin-form-grid">
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="guest-name">Naam Gast</label>
-                                <input type="text" id="guest-name" class="form-input" required placeholder="Bijvoorbeeld Familie Jansen">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label" for="guest-email">E-mailadres Gast</label>
-                                <input type="email" id="guest-email" class="form-input" required placeholder="gast@email.com">
-                            </div>
-    
-                            <div class="form-group">
-                                <label class="form-label" for="check-in">Aankomstdatum</label>
-                                <input type="date" id="check-in" class="form-input" required>
-                            </div>
-    
-                            <div class="form-group">
-                                <label class="form-label" for="check-out">Vertrekdatum</label>
-                                <input type="date" id="check-out" class="form-input" required>
-                            </div>
-    
-                            <div class="form-group full-width">
-                                <label class="form-label" for="guest-count">Reisgezelschap / Omschrijving</label>
-                                <input type="text" id="guest-count" class="form-input" required placeholder="Bijvoorbeeld: 2 Volwassenen, 1 Kind (3 personen totaal)">
-                            </div>
-    
-                        </div>
-    
-                        <div style="margin-top: 35px;">
-                            <button type="submit" id="submit-btn" class="action-btn">
-                                <span id="btn-text">Verstuur Acceptatie E-mail</span>
-                                <div id="btn-spinner" class="spinner"></div>
-                            </button>
-                        </div>
-    
-                        <div id="form-status" class="status-message"></div>
-                    </form>
-                </div>
-
                 <!-- Bookings List View -->
                 <div id="bookings-view" class="dashboard-view active">
                     <div class="page-header">
@@ -1145,21 +1197,7 @@
     </div>
 
     <script>
-        function prefillFormFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            if (urlParams.has('name')) document.getElementById('guest-name').value = urlParams.get('name');
-            if (urlParams.has('email')) document.getElementById('guest-email').value = urlParams.get('email');
-            if (urlParams.has('checkin')) {
-                // Ensure date format is correct for input type="date" (YYYY-MM-DD)
-                // If it comes from EmailJS it might be formatted differently, but we try anyway.
-                document.getElementById('check-in').value = urlParams.get('checkin'); 
-            }
-            if (urlParams.has('checkout')) {
-                document.getElementById('check-out').value = urlParams.get('checkout');
-            }
-            if (urlParams.has('guests')) document.getElementById('guest-count').value = urlParams.get('guests');
-        }
+
 
         // --- 1. LOGIN LOGICA (Simpele client-side checks) ---
         // LET OP: Omdat dit een statische HTML file is, is "alpine2026" hardcoded.
@@ -1218,30 +1256,14 @@
                  document.body.style.display = 'block'; // beter voor scrolling p mobiel
             }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const hasUrlData = urlParams.has('name') || urlParams.has('email');
-            
-            if (hasUrlData) {
-                // We kwamen binnen via een email link. Vul form in en switch naar confirm-view.
-                prefillFormFromUrl();
-                // We hebben mogelijk de nav nog niet bijgewerkt:
-                const confirmNav = document.querySelector('.nav-item[onclick*="confirm-view"]');
-                if (confirmNav) {
-                    switchView('confirm-view', confirmNav);
-                } else {
-                    document.getElementById('bookings-view').classList.remove('active');
-                    document.getElementById('confirm-view').classList.add('active');
-                }
-            } else {
-                // Zorg dat de juiste view geladen wordt (default Alle Aanvragen)
-                const activeNav = document.querySelector('.nav-item.active');
-                if (activeNav) {
-                    const clickAttr = activeNav.getAttribute('onclick');
-                    if (clickAttr.includes('bookings-view')) {
-                        loadBookings('all');
-                    } else if (clickAttr.includes('mailchain-view')) {
-                        loadMailChain();
-                    }
+            // Zorg dat de juiste view geladen wordt (default Alle Aanvragen)
+            const activeNav = document.querySelector('.nav-item.active');
+            if (activeNav) {
+                const clickAttr = activeNav.getAttribute('onclick');
+                if (clickAttr.includes('bookings-view')) {
+                    loadBookings('all');
+                } else if (clickAttr.includes('mailchain-view')) {
+                    loadMailChain();
                 }
             }
         }
@@ -1355,6 +1377,37 @@
         });
 
         // --- 3. VIEW SWITCHING ---
+        async function copyComposerHtmlCode() {
+            const previewArea = document.getElementById('composer-preview-area');
+            const btn = document.getElementById('btn-composer-copy-code');
+            
+            // Clean up the HTML slightly (remove contenteditable if it leaked in, etc)
+            let html = previewArea.innerHTML;
+            
+            // Wrap in basic boilerplate if not present
+            if (!html.includes('\x3C!DOCTYPE html>')) {
+                html = `\x3C!DOCTYPE html>\x3Chtml lang="nl">\x3Chead>\x3Cmeta charset="UTF-8">\x3Clink href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">\x3C/head>\x3Cbody style="margin:0; background:#FAF9F6;">${html}\x3C/body>\x3C/html>`;
+            }
+
+            try {
+                await navigator.clipboard.writeText(html);
+                
+                // Auto-check step in the hub
+                const uiTemplateId = document.getElementById('composer-template-select').value;
+                autoCheckMailStep(uiTemplateId);
+                
+                btn.innerHTML = '✔ HTML Gekopieerd!';
+                btn.style.background = '#27ae60';
+                setTimeout(() => {
+                    btn.innerHTML = '⎘ Kopieer HTML-Code';
+                    btn.style.background = '';
+                }, 2000);
+            } catch (err) {
+                console.error("Copy failed:", err);
+                alert("Kopiëren mislukt. Selecteer de tekst in het voorbeeld en kopieer handmatig.");
+            }
+        }
+
         function switchView(viewId, navEl) {
             // Update nav items
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -1518,16 +1571,6 @@
                                 <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${doc.id}')" style="background:var(--color-gold); border-color:var(--color-gold); color:#fff;">
                                     ✉ Beheer Communicatie
                                 </button>
-                                <button class="btn btn-secondary action-btn" 
-                                    style="background:#fff; border-color:var(--color-slate); color:var(--color-slate); margin-top:0;"
-                                    data-id="${doc.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                    data-in="${data.checkIn}" data-out="${data.checkOut}" data-guests="${data.totalGuests}" 
-                                    data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                    data-tot="${totalAmount}" data-dep="${depositAmount}" data-bal="${balanceAmount}" 
-                                    data-message="${data.message || ''}" data-type="acceptance"
-                                    onclick="openEmailComposer(this)">
-                                    ⎘ Bewerk & Kopieer HTML
-                                </button>
                                 <button class="btn-decline" onclick="declineBooking('${doc.id}', this)">
                                     ✕ Boeking Weigeren (Snel)
                                 </button>
@@ -1548,19 +1591,187 @@
             }
         }
 
-        function openCommunicationHub(bookingId) {
-            window.sessionStorage.setItem('focusBookingId', bookingId);
+        function switchCommHubTab(tabId) {
+            // Update tabs
+            document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-btn-' + tabId).classList.add('active');
             
-            // Verberg alle views
-            document.querySelectorAll('.dashboard-view').forEach(v => v.classList.remove('active'));
-            // Maak alle nav-items inactief
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            // Update panes
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+        
+        function openPreloadedComposer(templateId) {
+            switchCommHubTab('editor');
+            const select = document.getElementById('composer-template-select');
+            if (select) {
+                select.value = templateId;
+                loadSelectedTemplateIntoComposer();
+            }
+        }
+
+        function closeCommHub() {
+            document.getElementById('comm-hub-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function renderHubSteps(data) {
+            const mc = data.mailChain || {};
+            const isPending = data.status === 'pending';
             
-            // Toon de mailchain-view
-            const mailchainView = document.getElementById('mailchain-view');
-            if(mailchainView) {
-                mailchainView.classList.add('active');
-                loadMailChain();
+            const list = document.getElementById('hub-step-list-container');
+            if(!list) return;
+            
+            const steps = [
+                { key: 'received', title: '1. Boeking ontvangen', tmpl: '', done: true },
+                { key: 'accepted', title: '2. Accepteren / Weigeren', tmpl: 'acceptance', done: !isPending },
+                { key: 'depositReminder', title: '3. Aanbetaling Herinnering', tmpl: 'deposit_request', done: !!mc.depositReminder },
+                { key: 'depositReceived', title: '4. Aanbetaling Ontvangen', tmpl: 'deposit_received', done: !!mc.depositReceived },
+                { key: 'balanceReminder', title: '5. Restbetaling Herinnering', tmpl: 'balance_reminder', done: !!mc.balanceReminder },
+                { key: 'balanceReceived', title: '6. Restbetaling Ontvangen', tmpl: 'balance_received', done: !!mc.balanceReceived },
+                { key: 'preStayInfo', title: '7. Regels & Wachtwoorden', tmpl: 'rules_info', done: !!mc.preStayInfo },
+                { key: 'postStay', title: '8. Bedankje & Review', tmpl: 'post_stay', done: !!mc.postStay }
+            ];
+
+            // Find first uncompleted step (next step)
+            let nextStepIndex = steps.findIndex(s => !s.done);
+
+            let html = '';
+            steps.forEach((s, idx) => {
+                const isNext = (idx === nextStepIndex);
+                const clickAttr = s.tmpl ? `onclick="openPreloadedComposer('${s.tmpl}')"` : '';
+                const pointerStyle = s.tmpl ? 'cursor: pointer;' : '';
+                
+                let iconHtml = s.done 
+                    ? `<span class="hub-step-icon icon-check" style="color: #6b21a8; font-size: 1.2rem; font-weight: bold;">✓</span>`
+                    : `<span class="hub-step-icon icon-wait" style="font-size: 1.2rem;">⏳</span>`;
+
+                let badgeHtml = isNext ? `<span class="badge-next-step">VOLGENDE STAP</span>` : '';
+
+                // Extra styling for "next step"
+                let extraClasses = isNext ? 'hub-step-next' : '';
+                if(s.done) extraClasses += ' completed';
+
+                html += `
+                    <div class="hub-step ${extraClasses}" style="${pointerStyle}" ${clickAttr}>
+                        <div class="hub-step-title" style="display: flex; align-items: center;">
+                            <span class="hub-step-text">
+                                ${s.title}
+                            </span>
+                            ${badgeHtml}
+                        </div>
+                        ${iconHtml}
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+        }
+
+        function copyHubEmail() {
+            const email = document.getElementById('hub-guest-email').innerText;
+            if (email && email !== '-') {
+                navigator.clipboard.writeText(email)
+                    .then(() => {
+                        const btn = document.querySelector('.btn-copy-email');
+                        const origHtml = btn.innerHTML;
+                        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                        setTimeout(() => btn.innerHTML = origHtml, 2000);
+                    })
+                    .catch(err => console.error("Kopiëren mislukt", err));
+            }
+        }
+
+        async function openCommunicationHub(bookingId) {
+            try {
+                const { db } = await import('./js/core/firebase.js');
+                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+                const snap = await getDoc(doc(db, "bookings", bookingId));
+                
+                if (!snap.exists()) {
+                    alert('Boeking niet gevonden!');
+                    return;
+                }
+                
+                const data = { id: snap.id, ...snap.data() };
+                
+                // Set Modal Labels
+                document.getElementById('hub-guest-name').innerText = data.guestName || 'Gast';
+                document.getElementById('hub-guest-email').innerText = data.guestEmail || '-';
+                
+                const statusBadge = document.getElementById('hub-guest-status');
+                if (data.status === 'pending') {
+                    statusBadge.innerText = 'WACHT OP ACTIE';
+                    statusBadge.style.color = '#c47e09';
+                    statusBadge.style.background = '#fdf8f0';
+                    statusBadge.style.borderColor = '#fbebd0';
+                } else if (data.status === 'declined') {
+                    statusBadge.innerText = 'GEWEIGERD';
+                    statusBadge.style.color = '#c62828';
+                    statusBadge.style.background = 'rgba(211, 47, 47, 0.08)';
+                    statusBadge.style.borderColor = 'rgba(211, 47, 47, 0.2)';
+                } else {
+                    statusBadge.innerText = 'BEVESTIGD';
+                    statusBadge.style.color = '#2e7d32';
+                    statusBadge.style.background = 'rgba(46, 125, 50, 0.1)';
+                    statusBadge.style.borderColor = 'rgba(46, 125, 50, 0.2)';
+                }
+
+                renderHubSteps(data);
+
+                // Setup the Email Editor state
+                const dIn = new Date(data.checkIn);
+                const dOut = new Date(data.checkOut);
+                const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+                
+                const rawVal = data.totalAmount || data.total_amount || 0;
+                const raw = (typeof rawVal === 'string') ? parseFloat(rawVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawVal;
+                const fmt = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
+                const tAmt = raw ? fmt(raw) : '€ [BEDRAG]';
+                const dAmt = raw ? fmt(raw * 0.3) : '€ [BEDRAG]';
+                const bAmt = raw ? fmt(raw * 0.7) : '€ [BEDRAG]';
+                
+                const phone = data.guestPhone || '';
+                currentLang = detectLanguage(phone);
+                const labels = composerLabels[currentLang];
+
+                let guestsStr = data.totalGuests || '';
+                if (data.adults !== undefined) {
+                    const parts = [];
+                    const ad = parseInt(data.adults) || 0;
+                    const ch = parseInt(data.children) || 0;
+                    const ba = parseInt(data.babies) || 0;
+                    if (ad > 0) parts.push(`${ad} ${labels.adults}`);
+                    if (ch > 0) parts.push(`${ch} ${labels.children}`);
+                    if (ba > 0) parts.push(`${ba} ${labels.baby}`);
+                    if (parts.length > 0) guestsStr = parts.join(' | ');
+                }
+
+                currentComposerData = {
+                    id: data.id || '',
+                    name: data.guestName || 'Gast',
+                    email: data.guestEmail || '',
+                    phone: phone,
+                    in: dIn.toLocaleDateString('nl-NL', fmtOpts),
+                    out: dOut.toLocaleDateString('nl-NL', fmtOpts),
+                    guests: guestsStr,
+                    tot: tAmt,
+                    dep: dAmt,
+                    bal: bAmt,
+                    message: data.message || ''
+                };
+                
+                switchCommHubTab('status');
+                
+                document.getElementById('comm-hub-modal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                document.getElementById('composer-template-select').value = 'general';
+                loadSelectedTemplateIntoComposer();
+                
+            } catch(e) {
+                console.error("Error opening comm hub:", e);
+                alert("Kon boeking niet openen in Hub.");
             }
         }
 
@@ -1874,6 +2085,13 @@
                 await updateDoc(doc(db, "bookings", bookingId), {
                     [`mailChain.${stepKey}`]: value
                 });
+                
+                // 3. Live-update Status Overview (Hub Modal)
+                if (window.currentComposerData && window.currentComposerData.id === bookingId) {
+                    if (!window.currentComposerData.mailChain) window.currentComposerData.mailChain = {};
+                    window.currentComposerData.mailChain[stepKey] = value;
+                    renderHubSteps(window.currentComposerData);
+                }
                 
             } catch (err) {
                 console.error(`Fout bij updaten mail-chain stap ${stepKey}:`, err);
@@ -2392,49 +2610,24 @@
             }
         };
 
-        function openEmailComposer(btn) {
+        async function openEmailComposer(btn) {
             const ds = btn.dataset;
+            const bookingId = ds.id;
             
-            // Detect language
-            const phone = ds.phone || '';
-            currentLang = detectLanguage(phone);
-            const labels = composerLabels[currentLang];
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Laden...';
+            btn.disabled = true;
 
-            // Build guests string localized
-            let guestsStr = ds.guests || '';
-            if (ds.adults !== undefined) {
-                const parts = [];
-                const ad = parseInt(ds.adults) || 0;
-                const ch = parseInt(ds.children) || 0;
-                const ba = parseInt(ds.babies) || 0;
-                if (ad > 0) parts.push(`${ad} ${labels.adults}`);
-                if (ch > 0) parts.push(`${ch} ${labels.children}`);
-                if (ba > 0) parts.push(`${ba} ${labels.baby}`);
-                if (parts.length > 0) guestsStr = parts.join(' | ');
-            }
-
-            currentComposerData = {
-                id: ds.id || '',
-                name: ds.name || 'Gast',
-                email: ds.email || '',
-                phone: phone,
-                in: ds.in || '',
-                out: ds.out || '',
-                guests: guestsStr,
-                tot: ds.tot || '€ [BEDRAG]',
-                dep: ds.dep || '€ [BEDRAG]',
-                bal: ds.bal || '€ [BEDRAG]',
-                message: ds.message || ''
-            };
+            await openCommunicationHub(bookingId);
             
-            // Set initial template in dropdown based on button context if any (default to general)
+            // After loading, switch to the requested template and tab
             const type = ds.type || 'general';
             document.getElementById('composer-template-select').value = type;
-            
-            document.getElementById('email-composer-modal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
             loadSelectedTemplateIntoComposer();
+            switchCommHubTab('editor');
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
 
             function loadSelectedTemplateIntoComposer() {
@@ -2624,6 +2817,52 @@
             }
         }
 
+        async function autoCheckMailStep(uiTemplateId) {
+            if (!window.currentComposerData) return;
+            const bookingId = window.currentComposerData.id;
+            
+            if (uiTemplateId === 'acceptance') {
+                const { db, doc, updateDoc } = await import('./js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), { status: 'confirmed' });
+                window.currentComposerData.status = 'confirmed';
+                renderHubSteps(window.currentComposerData);
+                
+                const sb = document.getElementById('hub-guest-status');
+                if (sb) {
+                    sb.innerText = 'BEVESTIGD';
+                    sb.style.color = '#1e8e3e';
+                    sb.style.background = '#e6f4ea';
+                    sb.style.borderColor = '#ceead6';
+                }
+            } else if (uiTemplateId === 'rejection') {
+                const { db, doc, updateDoc } = await import('./js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), { status: 'declined' });
+                window.currentComposerData.status = 'declined';
+                renderHubSteps(window.currentComposerData);
+                
+                const sb = document.getElementById('hub-guest-status');
+                if (sb) {
+                    sb.innerText = 'GEWEIGERD';
+                    sb.style.color = '#c62828';
+                    sb.style.background = 'rgba(211, 47, 47, 0.08)';
+                    sb.style.borderColor = 'rgba(211, 47, 47, 0.2)';
+                }
+            } else {
+                const map = {
+                    'deposit_request': 'depositReminder',
+                    'deposit_received': 'depositReceived',
+                    'balance_reminder': 'balanceReminder',
+                    'balance_received': 'balanceReceived',
+                    'rules_info': 'preStayInfo',
+                    'post_stay': 'postStay'
+                };
+                const stepKey = map[uiTemplateId];
+                if (stepKey) {
+                    toggleMailStep(bookingId, stepKey, true);
+                }
+            }
+        }
+
         async function sendComposerEmailDirectly() {
             const previewArea = document.getElementById('composer-preview-area');
             const btn = document.getElementById('btn-composer-send-email');
@@ -2652,11 +2891,27 @@
             // alert("DEBUG - E-mail grootte: " + finalHtml.length + " tekens. Controleer console voor volledige HTML.");
 
             // 2. Prepare params
+            const uiTemplateId = document.getElementById('composer-template-select').value;
+            const subjectMap = {
+                'acceptance': 'Boekingsbevestiging - Gipfel Lodge',
+                'rejection': 'Uw aanvraag voor Gipfel Lodge',
+                'deposit_request': 'Verzoek tot aanbetaling - Gipfel Lodge',
+                'deposit_received': 'Aanbetaling in goede orde ontvangen - Gipfel Lodge',
+                'balance_reminder': 'Herinnering openstaand saldo - Gipfel Lodge',
+                'balance_received': 'Betaling volledig ontvangen - Gipfel Lodge',
+                'rules_info': 'Belangrijke informatie voor uw verblijf - Gipfel Lodge',
+                'post_stay': 'Bedankt voor uw verblijf bij Gipfel Lodge',
+                'general': 'Bericht van Gipfel Lodge'
+            };
+            
+            const mailSubject = subjectMap[uiTemplateId] || 'Bericht van Gipfel Lodge';
+
             const params = {
                 to_email: currentComposerData.email,
                 user_name: currentComposerData.name,
                 email_html: finalHtml,
-                subject: `Gipfel Lodge - ${document.getElementById('composer-template-select').options[document.getElementById('composer-template-select').selectedIndex].text}`
+                subject: mailSubject,
+                title: mailSubject
             };
 
             console.log("Email Payload Prepared:", params);
@@ -2677,6 +2932,10 @@
 
                 console.log("Sending via EmailJS...", { serviceId, templateId });
                 await emailjs.send(serviceId, templateId, params, publicKey);
+                
+                // Auto-check step in the hub
+                const uiTemplateId = document.getElementById('composer-template-select').value;
+                autoCheckMailStep(uiTemplateId);
                 
                 btn.innerHTML = '✔ Verzonden!';
                 btn.style.background = '#27ae60';
@@ -2700,88 +2959,102 @@
             }
         }
 
-        async function copyComposerHtmlCode() {
-            const previewArea = document.getElementById('composer-preview-area');
-            const btn = document.getElementById('btn-composer-copy-code');
-            
-            // Clean up the HTML slightly (remove contenteditable if it leaked in, etc)
-            let html = previewArea.innerHTML;
-            
-            // Wrap in basic boilerplate if not present
-            if (!html.includes('\x3C!DOCTYPE html>')) {
-                html = `\x3C!DOCTYPE html>\x3Chtml lang="nl">\x3Chead>\x3Cmeta charset="UTF-8">\x3Clink href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">\x3C/head>\x3Cbody style="margin:0; background:#FAF9F6;">${html}\x3C/body>\x3C/html>`;
-            }
-
-            try {
-                await navigator.clipboard.writeText(html);
-                btn.innerHTML = '✔ HTML Gekopieerd!';
-                btn.style.background = '#27ae60';
-                setTimeout(() => {
-                    btn.innerHTML = '⎘ Kopieer HTML-Code';
-                    btn.style.background = '';
-                }, 2000);
-            } catch (err) {
-                console.error("Copy failed:", err);
-                alert("Kopiëren mislukt. Selecteer de tekst in het voorbeeld en kopieer handmatig.");
-            }
-        }
-
         // Handle escape key to close modal
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (document.getElementById('email-composer-modal').classList.contains('active')) closeEmailComposer();
+                if (document.getElementById('comm-hub-modal').classList.contains('active')) closeCommHub();
                 if (document.getElementById('emailTesterModal').classList.contains('active')) closeEmailTester();
             }
         });
     </script>
-    <!-- EMAIL COMPOSER MODAL -->
-    <div id="email-composer-modal" class="modal-overlay">
+    <!-- COMMUNICATION HUB MODAL -->
+    <div id="comm-hub-modal" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
-                <div>
-                    <h2 style="margin:0; font-family:'Cormorant Garamond', serif; color:var(--color-slate); font-size: 1.5rem;">Live E-mail Composer</h2>
-                    <p style="margin:5px 0 0; font-size:0.85rem; color:#78868A;">Klik op de tekst in het voorbeeld om deze direct aan te passen.</p>
-                </div>
-                <button class="btn-composer-close" onclick="closeEmailComposer()">✕</button>
-            </div>
-            <div class="modal-content">
-                <!-- Sidebar (Selection & Instructions) now at the TOP -->
-                <div class="composer-sidebar">
-                    <div class="composer-control-box">
-                        <span class="composer-label">Sjabloon Voorladen</span>
-                        <select id="composer-template-select" style="width:100%; padding:10px; border-radius:4px; border:1px solid #ddd; font-family:inherit; font-size:0.9rem;" onchange="loadSelectedTemplateIntoComposer()">
-                            <option value="acceptance">✓ Boeking Geaccepteerd</option>
-                            <option value="deposit_request">€ Aanbetaling Vereist</option>
-                            <option value="rules_info">ⓘ Regels & Info</option>
-                            <option value="general">✉ Vrij Bericht / Algemeen</option>
-                            <option value="deposit_received">✓ Aanbetaling Ontvangen</option>
-                            <option value="balance_reminder">⚠ Restbetaling Herinnering</option>
-                            <option value="balance_received">✓ Volledig Voldaan</option>
-                            <option value="post_stay">☆ Bedankt & Review</option>
-                            <option value="rejection">✕ Helaas Geen Plek</option>
-                        </select>
+                <div class="hub-title-container">
+                    <div class="hub-title-icon">✉</div>
+                    <div>
+                        <h2>Gipfel Communication Hub</h2>
+                        <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
+                            <p class="subtitle" style="margin: 0;">Beheer e-mail & communicatie status</p>
+                            <a href="https://dashboard.emailjs.com/admin/templates" target="_blank" style="background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.2); color: var(--color-gold); padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: background 0.2s; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.background='rgba(197, 160, 89, 0.2)'" onmouseout="this.style.background='rgba(197, 160, 89, 0.1)'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                EmailJS Sjablonen
+                            </a>
+                        </div>
                     </div>
-                    <div class="composer-control-box">
-                        <span class="composer-label">Instructies</span>
-                        <ul style="font-size:0.75rem; color:#56686D; padding-left:18px; margin:0; line-height:1.5;">
-                            <li><strong>Bewerken:</strong> Klik op een tekstgedeelte om het aan te passen.</li>
-                            <li><strong>Automatisch:</strong> Namen en data zijn al voor je ingevuld.</li>
-                            <li><strong>Versturen:</strong> Kopieer de code en plak de HTML in je mail-app.</li>
-                        </ul>
+                </div>
+                <button class="btn-composer-close" onclick="closeCommHub()">✕</button>
+            </div>
+            
+            <div class="hub-tabs">
+                <div class="hub-tab" id="tab-btn-editor" onclick="switchCommHubTab('editor')">✎ E-mail Editor</div>
+                <div class="hub-tab active" id="tab-btn-status" onclick="switchCommHubTab('status')">✓ Status Overzicht</div>
+            </div>
+
+            <div class="modal-content">
+                <!-- Tab: Status Overzicht -->
+                <div id="tab-status" class="tab-pane active">
+                    <div class="status-overview-card">
+                        <div class="status-overview-header">
+                            <div>
+                                <h3 id="hub-guest-name" style="margin: 0; margin-bottom: 4px;">Gast Naam</h3>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span id="hub-guest-email" style="font-size: 0.85rem; color: #64748b; font-weight: 500;">gast@email.com</span>
+                                    <button class="btn-copy-email" onclick="copyHubEmail()" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); cursor: pointer; color: #10b981; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Kopieer e-mail">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <span id="hub-guest-status" class="status-badge-hub">WACHT OP ACTIE</span>
+                        </div>
+                        <div class="hub-step-list" id="hub-step-list-container">
+                            <!-- Steps will be injected here via JS -->
+                        </div>
                     </div>
                 </div>
 
-                <!-- Preview Container now BELOW the selection -->
-                <div class="composer-preview-container">
-                    <div id="composer-preview-area">
-                        <!-- Preview content here -->
+                <!-- Tab: E-mail Editor -->
+                <div id="tab-editor" class="tab-pane">
+                    <div class="composer-wrapper">
+                        <!-- Sidebar (Selection & Instructions) -->
+                        <div class="composer-sidebar">
+                            <div class="composer-control-box">
+                                <span class="composer-label">Sjabloon Voorladen</span>
+                                <select id="composer-template-select" style="width:100%; padding:10px; border-radius:4px; border:1px solid #ddd; font-family:inherit; font-size:0.9rem;" onchange="loadSelectedTemplateIntoComposer()">
+                                    <option value="acceptance">✓ Boeking Geaccepteerd</option>
+                                    <option value="rejection">✕ Helaas Geen Plek</option>
+                                    <option value="deposit_request">€ Aanbetaling Vereist</option>
+                                    <option value="deposit_received">✓ Aanbetaling Ontvangen</option>
+                                    <option value="balance_reminder">⚠ Restbetaling Herinnering</option>
+                                    <option value="balance_received">✓ Volledig Voldaan</option>
+                                    <option value="rules_info">ⓘ Regels & Info</option>
+                                    <option value="post_stay">☆ Bedankt & Review</option>
+                                    <option value="general">✉ Vrij Bericht / Algemeen</option>
+                                </select>
+                            </div>
+                            <div class="composer-control-box">
+                                <span class="composer-label">Instructies</span>
+                                <ul style="font-size:0.75rem; color:#56686D; padding-left:18px; margin:0; line-height:1.5;">
+                                    <li><strong>Bewerken:</strong> Klik op een tekstgedeelte om het aan te passen.</li>
+                                    <li><strong>Automatisch:</strong> Namen en data zijn al voor je ingevuld.</li>
+                                    <li><strong>Versturen:</strong> Ga via EmailJS of kopieer de code.</li>
+                                </ul>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+                                <button id="btn-composer-send-email" class="btn-hub-action btn-hub-send" onclick="sendComposerEmailDirectly()">✉ Verzenden via EmailJS</button>
+                                <button id="btn-composer-copy-code" class="btn-hub-action btn-hub-copy" onclick="copyComposerHtmlCode()">⎘ Kopieer HTML-Code</button>
+                            </div>
+                        </div>
+
+                        <!-- Preview Container -->
+                        <div class="composer-preview-container">
+                            <div id="composer-preview-area">
+                                <!-- Preview content here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-composer-send-email" class="btn-composer-send" onclick="sendComposerEmailDirectly()">✉ Verzenden via EmailJS</button>
-                <button id="btn-composer-copy-code" class="btn-composer-copy" onclick="copyComposerHtmlCode()">⎘ Kopieer HTML-Code</button>
-                <button class="btn-composer-close" onclick="closeEmailComposer()">Annuleren</button>
             </div>
         </div>
     </div>
