@@ -546,6 +546,81 @@
             border: 1px solid rgba(211, 47, 47, 0.2);
         }
 
+        .status-completed {
+            background: rgba(100, 116, 139, 0.1);
+            color: #475569;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .btn-decline.confirming:hover {
+            background: #b71c1c;
+        }
+
+        /* PRIO LIST LOGICA */
+        .prio-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .prio-header {
+            display: flex;
+            align-items: center; justify-content: space-between;
+            margin-bottom: 20px; padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .prio-header h2 { margin: 0; font-size: 1.1rem; color: var(--color-slate); display: flex; align-items: center; gap: 8px; }
+        .prio-badge { background: var(--color-gold); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; }
+        
+        .prio-list { display: flex; flex-direction: column; gap: 10px; }
+        .prio-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; border-radius: 8px;
+            background: #fafafa; border: 1px solid #eee;
+            transition: all 0.2s;
+        }
+        .prio-item:hover { transform: translateX(5px); border-color: var(--color-gold); background: #fff; }
+        .prio-item-main { display: flex; align-items: center; gap: 15px; }
+        .prio-item-guest { font-weight: 700; color: var(--color-slate); min-width: 150px; }
+        .prio-item-task { font-size: 0.9rem; color: #64748b; display: flex; align-items: center; gap: 6px; }
+        .prio-item-btn { 
+            background: var(--color-gold); color: white; border: none; padding: 6px 14px; 
+            border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .prio-item-btn:hover { background: var(--color-gold-hover); }
+
+        .country-badge {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            margin-top: 8px;
+        }
+        .country-badge img { 
+            width: 42px; height: 28px; object-fit: cover;
+            border-radius: 6px; border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            background: #fff;
+        }
+        .country-code-label {
+            font-size: 0.65rem; font-weight: 900; color: var(--color-slate);
+            letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8;
+        }
+
+        .delete-btn-trash {
+            display: inline-flex;
+            align-items: center; justify-content: center;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(198, 40, 40, 0.05); color: #c62828;
+            border: 1px solid rgba(198, 40, 40, 0.15);
+            margin-left: 10px; cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .delete-btn-trash:hover {
+            background: #c62828; color: white; transform: scale(1.1);
+        }
+
         .booking-info-row {
             display: flex;
             flex-direction: column;
@@ -597,6 +672,33 @@
         }
         .btn-decline:hover {
             background: rgba(198, 40, 40, 0.06);
+        }
+
+        /* RECOMMENDED ACTION HIGHLIGHT */
+        .recommended-step {
+            border: 2px solid var(--gold) !important;
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.25);
+            background: rgba(197, 160, 89, 0.04) !important;
+            border-radius: 8px;
+            padding: 10px !important;
+            margin: 5px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .recommended-step::after {
+            content: "NU STUREN";
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: var(--gold);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 0.05em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 2;
         }
         .btn-decline.confirming {
             background: #c62828;
@@ -1240,7 +1342,7 @@
                 </div>
                 
                 <ul class="nav-menu">
-                    <li class="nav-item active" onclick="switchView('bookings-view', this)">&#128197;&nbsp; In Afwachting</li>
+                    <li class="nav-item active" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Aanvragen</li>
                     <li class="nav-item" onclick="switchView('mailchain-view', this)">✉&nbsp; Mail Chain</li>
                 </ul>
 
@@ -1285,14 +1387,24 @@
                     </div>
                 </div>
 
-                <!-- Mail-Chain View -->
-                <div id="mailchain-view" class="dashboard-view">
-                    <div class="page-header">
-                        <h1>Communicatie & Mail-Chain</h1>
-                        <p>Beheer de status van verschillende e-mails voor alle ingekomen boekingen en aanvragen.</p>
-                    </div>
+                    <div id="mailchain-view" class="dashboard-view">
+                        <div class="page-header">
+                            <h1>Communicatie & Mail-Chain</h1>
+                            <p>Beheer de status van verschillende e-mails voor alle ingekomen boekingen en aanvragen.</p>
+                        </div>
 
-                    <div id="mailchain-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
+                        <!-- PRIORITY LIST SECTION -->
+                        <div id="prio-section" class="prio-section" style="display: none;">
+                            <div class="prio-header">
+                                <h2><span>⚡</span> Directe Actie Vereist <span id="prio-count" class="prio-badge">0</span></h2>
+                                <p style="font-size: 0.8rem; color: #64748b; margin:0;">Zaken die <strong>vandaag</strong> je aandacht nodig hebben.</p>
+                            </div>
+                            <div id="prio-list" class="prio-list">
+                                <!-- Prio items populate here -->
+                            </div>
+                        </div>
+
+                        <div id="mailchain-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
                     <div id="mailchain-list" class="bookings-grid">
                         <!-- Mail-chain cards populate here -->
                     </div>
@@ -1307,7 +1419,62 @@
     </div>
 
     <script>
+        // --- HELPER FUNCTIONS ---
+        function getCountryData(phone, bookingData = null) {
+            // Priority 1: Use specific country code if available
+            if (bookingData && bookingData.country) {
+                const code = bookingData.country.toLowerCase();
+                const names = { 
+                    'nl': 'Nederland', 'be': 'België', 'de': 'Duitsland', 'at': 'Oostenrijk', 
+                    'ch': 'Zwitserland', 'gb': 'UK', 'uk': 'UK', 'fr': 'Frankrijk', 
+                    'it': 'Italië', 'dk': 'Denemarken', 'se': 'Zweden', 'no': 'Noorwegen', 'es': 'Spanje'
+                };
+                if (names[code]) return { code: code, name: names[code] };
+                return { code: code, name: bookingData.country }; // Fallback to raw code
+            }
 
+            // Priority 2: Use guestCountry name if available
+            if (bookingData && bookingData.guestCountry) {
+                const name = bookingData.guestCountry.toLowerCase();
+                if (name.includes('nederland') || name === 'nl' || name.includes('netherlands')) return { code: 'nl', name: 'Nederland' };
+                if (name.includes('belgi') || name === 'be') return { code: 'be', name: 'België' };
+                if (name.includes('duits') || name === 'de' || name.includes('germany') || name === 'deutschland') return { code: 'de', name: 'Duitsland' };
+                if (name.includes('oostenrijk') || name === 'at' || name.includes('austria')) return { code: 'at', name: 'Oostenrijk' };
+                if (name.includes('zwitser') || name === 'ch' || name.includes('switzer')) return { code: 'ch', name: 'Zwitserland' };
+                if (name.includes('frank') || name === 'fr' || name.includes('france')) return { code: 'fr', name: 'Frankrijk' };
+                if (name.includes('itail') || name === 'it' || name.includes('italy')) return { code: 'it', name: 'Italië' };
+                if (name.includes('uk') || name.includes('united kingdom') || name.includes('engeland') || name.includes('brit')) return { code: 'gb', name: 'UK' };
+                if (name.includes('denemarken') || name === 'dk' || name.includes('denmark')) return { code: 'dk', name: 'Denemarken' };
+                if (name.includes('zweden') || name === 'se' || name.includes('sweden')) return { code: 'se', name: 'Zweden' };
+                if (name.includes('noorwegen') || name === 'no' || name.includes('norway')) return { code: 'no', name: 'Noorwegen' };
+                if (name.includes('spanje') || name === 'es' || name.includes('spain')) return { code: 'es', name: 'Spanje' };
+            }
+
+            // Priority 3: Fallback to phone number detection
+            if (!phone) return null;
+            const p = phone.replace(/[^0-9+]/g, '');
+            if (p.startsWith('+31')) return { code: 'nl', name: 'Nederland' };
+            if (p.startsWith('+32')) return { code: 'be', name: 'België' };
+            if (p.startsWith('+49')) return { code: 'de', name: 'Duitsland' };
+            if (p.startsWith('+43')) return { code: 'at', name: 'Oostenrijk' };
+            if (p.startsWith('+41')) return { code: 'ch', name: 'Zwitserland' };
+            if (p.startsWith('+44')) return { code: 'gb', name: 'UK' };
+            if (p.startsWith('+33')) return { code: 'fr', name: 'Frankrijk' };
+            if (p.startsWith('+39')) return { code: 'it', name: 'Italië' };
+            if (p.startsWith('+45')) return { code: 'dk', name: 'Denemarken' };
+            if (p.startsWith('+46')) return { code: 'se', name: 'Zweden' };
+            if (p.startsWith('+47')) return { code: 'no', name: 'Noorwegen' };
+            if (p.startsWith('+34')) return { code: 'es', name: 'Spanje' };
+            return null;
+        }
+
+        function detectLanguage(phone) {
+            if (!phone) return 'nl';
+            const p = phone.replace(/[^0-9+]/g, '');
+            if (p.startsWith('+49') || p.startsWith('+43') || p.startsWith('+41')) return 'de';
+            if (p.startsWith('+31') || p.startsWith('+32')) return 'nl';
+            return 'en';
+        }
 
         // --- 1. LOGIN LOGICA (Simpele client-side checks) ---
         // LET OP: Omdat dit een statische HTML file is, is "alpine2026" hardcoded.
@@ -1448,6 +1615,51 @@
             }
         }
 
+        async function confirmDeleteBooking(bookingId, guestName) {
+            const confirm1 = confirm(`Weet je zeker dat je de boeking van "${guestName}" permanent wilt verwijderen?`);
+            if (!confirm1) return;
+            
+            const confirm2 = confirm(`LAATSTE WAARSCHUWING: Dit kan niet ongedaan worden gemaakt. Alle gegevens van deze boeking worden definitief gewist uit de database.\n\nWil je echt doorgaan met verwijderen?`);
+            if (!confirm2) return;
+            
+            try {
+                const { db, doc, deleteDoc } = await import('./js/core/firebase.js');
+                await deleteDoc(doc(db, "bookings", bookingId));
+                
+                // 1. Remove from Bookings View
+                const bookingCards = document.querySelectorAll('.booking-card');
+                bookingCards.forEach(card => {
+                    // Search for elements referring to this ID
+                    if (card.innerHTML.includes(bookingId)) {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.9)';
+                        setTimeout(() => card.remove(), 400);
+                    }
+                });
+
+                // 2. Remove from Mail Chain View
+                const mailCards = document.querySelectorAll('.mail-card');
+                mailCards.forEach(card => {
+                    if (card.id === `mc-card-${bookingId}`) {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateX(-20px)';
+                        setTimeout(() => card.remove(), 400);
+                    }
+                });
+                
+                // 3. Close Hub Modal if open for this booking
+                if (window.currentComposerData && window.currentComposerData.id === bookingId) {
+                    closeCommHub();
+                }
+
+                alert("De boeking is definitief verwijderd.");
+                console.log("Booking deleted successfully:", bookingId);
+            } catch (err) {
+                console.error("Deletion failed:", err);
+                alert("Fout bij verwijderen: " + err.message);
+            }
+        }
+
         function confirmDirectlyFromButton(btn) {
             const ds = btn.dataset;
             console.log("Direct confirmation button dataset:", ds);
@@ -1534,6 +1746,18 @@
             }
         }
 
+        function filterBookings(status, el) {
+            // Update active state of buttons
+            const parent = el.closest('.filter-bar');
+            if (parent) {
+                parent.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            }
+            el.classList.add('active');
+            
+            // Reload list with filter
+            loadBookings(status);
+        }
+
         async function loadBookings(status = 'all') {
             const list = document.getElementById('bookings-list');
             const loader = document.getElementById('bookings-loader');
@@ -1554,13 +1778,15 @@
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
+                const matchedBookings = [];
+
                 querySnapshot.forEach((doc) => {
-                    const data = doc.data();
+                    const data = { id: doc.id, ...doc.data() };
                     
-                    // Bereken of datum verstreken is (check-out is voor vandaag)
+                    // Bereken of datum verstreken is (check-out is voor vandaag of vandaag zelf)
                     const checkOutDate = new Date(data.checkOut);
                     checkOutDate.setHours(0, 0, 0, 0);
-                    const isPassed = checkOutDate < today;
+                    const isPassed = checkOutDate <= today;
 
                     // Client-side filtering logic
                     let isMatch = false;
@@ -1576,8 +1802,16 @@
                         isMatch = data.status === 'declined';
                     }
                     
-                    if (!isMatch) return;
-                    
+                    if (isMatch) {
+                        data.isPassed = isPassed;
+                        matchedBookings.push(data);
+                    }
+                });
+
+                // Sort bookings by check-in date (closest first)
+                matchedBookings.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn));
+
+                matchedBookings.forEach(data => {
                     matchCount++;
                     const card = document.createElement('div');
                     card.className = 'booking-card';
@@ -1605,18 +1839,36 @@
                     const encodedSubject = encodeURIComponent("Bericht over uw boeking bij Gipfel Lodge");
                     const encodedBody = encodeURIComponent(emailBody);
                     const mailtoLink = `mailto:${data.guestEmail || ''}?subject=${encodedSubject}&body=${encodedBody}`;
+                    const cardIsPassed = data.isPassed;
+                    
+                    const country = getCountryData(data.guestPhone, data);
 
                     card.innerHTML = `
                         <div class="booking-card-header">
                             <div>
-                                <p style="font-size: 0.7rem; font-weight: 800; color: var(--color-gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Ref: ${data.bookingId || doc.id}</p>
+                                <p style="font-size: 0.7rem; font-weight: 800; color: var(--color-gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Ref: ${data.bookingId || data.id}</p>
                                 <h3>${data.guestName || 'Gast'}</h3>
                                 <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
                                 <p style="font-size: 0.85rem;">${data.guestPhone || '-'}</p>
                             </div>
-                            <span class="status-badge status-${data.status || 'pending'}">
-                                ${data.status === 'pending' ? 'In Afwachting' : (data.status === 'confirmed' ? 'Bevestigd' : (data.status === 'declined' ? 'Geweigerd' : data.status))}
-                            </span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="status-badge status-${cardIsPassed ? 'completed' : (data.status || 'pending')}">
+                                        ${cardIsPassed ? 'Voltooid' : (data.status === 'pending' ? 'In Afwachting' : (data.status === 'confirmed' ? 'Bevestigd' : (data.status === 'declined' ? 'Geweigerd' : data.status)))}
+                                    </span>
+                                    ${data.status === 'declined' ? `
+                                        <button class="delete-btn-trash" onclick="confirmDeleteBooking('${data.id}', '${data.guestName}')" title="Boeking permanent verwijderen">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                                ${country ? `
+                                    <div class="country-badge" style="margin-top: 0;">
+                                        <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
+                                        <span class="country-code-label">${country.code}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
                         <div class="booking-card-body">
                             <div class="tile-data-row">
@@ -1653,7 +1905,7 @@
                                     <span>30% aanbetaling: <strong style="color: var(--color-slate); margin-left: 4px;">${depositAmount}</strong></span>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${data.depositPaid ? 'checked' : ''} onchange="togglePayment('${doc.id}', 'depositPaid', this.checked, this)">
+                                            <input type="checkbox" ${data.depositPaid ? 'checked' : ''} onchange="togglePayment('${data.id}', 'depositPaid', this.checked, this)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1663,7 +1915,7 @@
                                     <span>Rest betaling: <strong style="color: var(--color-slate); margin-left: 4px;">${balanceAmount}</strong></span>
                                     <div class="payment-toggle-controls">
                                         <label class="switch">
-                                            <input type="checkbox" ${data.balancePaid ? 'checked' : ''} onchange="togglePayment('${doc.id}', 'balancePaid', this.checked, this)">
+                                            <input type="checkbox" ${data.balancePaid ? 'checked' : ''} onchange="togglePayment('${data.id}', 'balancePaid', this.checked, this)">
                                             <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
                                         </label>
                                     </div>
@@ -1672,17 +1924,17 @@
                         </div>
                         <div class="booking-card-footer" style="display:flex; flex-direction:column; gap:12px;">
                             ${data.status === 'declined' ? `
-                                <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${doc.id}')" style="background:var(--color-gold); border-color:var(--color-gold); color:#fff;">
+                                <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${data.id}')" style="background:transparent; border:1px solid var(--color-gold); color:var(--color-gold);">
                                     ✉ Beheer Communicatie
                                 </button>
-                                <button class="btn-decline confirming" style="background: rgba(198,40,40,0.06); color: #c62828; border-color: rgba(198,40,40,0.3);" onclick="undeclineBooking('${doc.id}', this)">
+                                <button class="btn-decline confirming" style="background: rgba(198,40,40,0.06); color: #c62828; border-color: rgba(198,40,40,0.3);" onclick="undeclineBooking('${data.id}', this)">
                                     ↩ Weigering ongedaan maken
                                 </button>
                             ` : `
-                                <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${doc.id}')" style="background:var(--color-gold); border-color:var(--color-gold); color:#fff;">
+                                <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${data.id}')" style="background:transparent; border:1px solid var(--color-gold); color:var(--color-gold);">
                                     ✉ Beheer Communicatie
                                 </button>
-                                <button class="btn-decline" onclick="declineBooking('${doc.id}', this)">
+                                <button class="btn-decline" onclick="declineBooking('${data.id}', this)">
                                     ✕ Boeking Weigeren (Snel)
                                 </button>
                             `}
@@ -1744,6 +1996,29 @@
                 { key: 'postStay', title: '8. Bedankje & Review', tmpl: 'post_stay', done: !!mc.postStay }
             ];
 
+            // Recommendation Logic
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const dIn = new Date(data.checkIn);
+            dIn.setHours(0, 0, 0, 0);
+            const dOut = new Date(data.checkOut);
+            dOut.setHours(0, 0, 0, 0);
+
+            const diffIn = Math.ceil((dIn - today) / (1000 * 60 * 60 * 24));
+            const diffOut = Math.ceil((today - dOut) / (1000 * 60 * 60 * 24));
+
+            let recStep = 0;
+            if (isPending) {
+                recStep = 2; 
+            } else if (data.status === 'confirmed') {
+                if (!data.depositPaid && !mc.depositReminder) recStep = 3;
+                else if (data.depositPaid && !mc.depositReceived) recStep = 4;
+                else if (!data.balancePaid && diffIn <= 45 && diffIn > 0 && !mc.balanceReminder) recStep = 5;
+                else if (data.balancePaid && !mc.balanceReceived) recStep = 6;
+                else if (diffIn <= 7 && diffIn >= -1 && !mc.preStayInfo) recStep = 7;
+                else if (diffOut >= 0 && diffOut <= 7 && !mc.postStay) recStep = 8;
+            }
+
             // Find first uncompleted step (next step)
             let nextStepIndex = steps.findIndex(s => !s.done);
 
@@ -1754,14 +2029,15 @@
                 const pointerStyle = s.tmpl ? 'cursor: pointer;' : '';
                 
                 let iconHtml = s.done 
-                    ? `<span class="hub-step-icon icon-check" style="color: #6b21a8; font-size: 1.2rem; font-weight: bold;">✓</span>`
-                    : `<span class="hub-step-icon icon-wait" style="font-size: 1.2rem;">⏳</span>`;
+                    ? `<span class="hub-step-icon icon-check" style="color: #6b21a8; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', false)">✓</span>`
+                    : `<span class="hub-step-icon icon-wait" style="font-size: 1.2rem; cursor: pointer; padding: 4px;" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', true)">⏳</span>`;
 
                 let badgeHtml = isNext ? `<span class="badge-next-step">VOLGENDE STAP</span>` : '';
 
                 // Extra styling for "next step"
                 let extraClasses = isNext ? 'hub-step-next' : '';
                 if(s.done) extraClasses += ' completed';
+                if(idx + 1 === recStep) extraClasses += ' recommended-step';
 
                 html += `
                     <div class="hub-step ${extraClasses}" style="${pointerStyle}" ${clickAttr}>
@@ -1777,6 +2053,32 @@
             });
             
             list.innerHTML = html;
+        }
+
+        async function toggleHubStepManual(event, bookingId, stepKey, value) {
+            if (event) event.stopPropagation(); // Don't trigger composer
+            if (stepKey === 'received' || stepKey === 'accepted') {
+                console.log("Stap 1 & 2 worden automatisch beheerd.");
+                return;
+            }
+            
+            try {
+                // Call existing toggle function that syncs Firestore
+                await toggleMailStep(bookingId, stepKey, value);
+                
+                // Re-fetch data and refresh Hub and Mail Chain
+                const { db } = await import('./js/core/firebase.js');
+                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+                const snap = await getDoc(doc(db, "bookings", bookingId));
+                if (snap.exists()) {
+                    renderHubSteps({ id: snap.id, ...snap.data() });
+                    // Also refresh the background mail chain page
+                    loadMailChain();
+                }
+            } catch(e) {
+                console.error("Fout bij handmatig afvinken:", e);
+                alert("Kon status niet bijwerken.");
+            }
         }
 
         function copyHubEmail() {
@@ -1826,6 +2128,24 @@
                     statusBadge.style.color = '#2e7d32';
                     statusBadge.style.background = 'rgba(46, 125, 50, 0.1)';
                     statusBadge.style.borderColor = 'rgba(46, 125, 50, 0.2)';
+                }
+
+                // Landkaartje/Flag in Hub
+                const country = getCountryData(data.guestPhone, data);
+                const hubHeaderInfo = document.querySelector('.status-overview-header > div');
+                // Check if already exists to avoid duplication if opened multiple times
+                const existingCountry = hubHeaderInfo.querySelector('.country-badge');
+                if (existingCountry) existingCountry.remove();
+                
+                if (country) {
+                    const cb = document.createElement('div');
+                    cb.className = 'country-badge';
+                    cb.style.marginTop = '12px';
+                    cb.innerHTML = `
+                        <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
+                        <span class="country-code-label">${country.code}</span>
+                    `;
+                    hubHeaderInfo.appendChild(cb);
                 }
 
                 renderHubSteps(data);
@@ -1891,9 +2211,17 @@
         async function loadMailChain() {
             const list = document.getElementById('mailchain-list');
             const loader = document.getElementById('mailchain-loader');
+            const prioList = document.getElementById('prio-list');
+            const prioSection = document.getElementById('prio-section');
+            const prioCountBadge = document.getElementById('prio-count');
             
             list.innerHTML = '';
+            prioList.innerHTML = '';
             loader.style.display = 'block';
+            prioSection.style.display = 'none';
+
+            let prioHtml = '';
+            let prioCount = 0;
 
             try {
                 const { db, collection, getDocs } = await import('./js/core/firebase.js');
@@ -1922,7 +2250,32 @@
                     const dIn = new Date(data.checkIn);
                     const dOut = new Date(data.checkOut);
                     const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+
+                    const country = getCountryData(data.guestPhone, data);
+
+                    // RECOMMENDATION LOGIC
+                    const todayRef = new Date();
+                    todayRef.setHours(0, 0, 0, 0);
+                    const checkInRef = new Date(data.checkIn);
+                    checkInRef.setHours(0, 0, 0, 0);
+                    const checkOutRef = new Date(data.checkOut);
+                    checkOutRef.setHours(0, 0, 0, 0);
                     
+                    const diffIn = Math.ceil((checkInRef - todayRef) / (1000 * 60 * 60 * 24));
+                    const diffOut = Math.ceil((todayRef - checkOutRef) / (1000 * 60 * 60 * 24));
+                    
+                    const mc = data.mailChain || {};
+                    const isPending = data.status === 'pending';
+                    const isDeclined = data.status === 'declined';
+                    const isConfirmed = data.status === 'confirmed';
+                    const s3_depRem = mc.depositReminder || false;
+                    const s4_depRec = mc.depositReceived || false;
+                    const s5_balRem = mc.balanceReminder || false;
+                    const s6_balRec = mc.balanceReceived || false;
+                    const s7_preStay = mc.preStayInfo || false;
+                    const s8_postStay = mc.postStay || false;
+
+                    // CURRENCY CALCULATIONS
                     const rawPVal = data.totalAmount || data.total_amount || 0;
                     const rawP = (typeof rawPVal === 'string') ? parseFloat(rawPVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawPVal;
                     const fmtP = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
@@ -1930,19 +2283,56 @@
                     const dAmt = rawP ? fmtP(rawP * 0.3) : '€ [BEDRAG]';
                     const bAmt = rawP ? fmtP(rawP * 0.7) : '€ [BEDRAG]';
 
-                    // Pre-build tester url
-                    const dLang = detectLanguage(data.guestPhone);
-                    const testerBaseUrl = `templates/email-tester.html?id=${data.id}&lang=${dLang}&name=${encodeURIComponent(data.guestName||'Gast')}&email=${encodeURIComponent(data.guestEmail||'')}&phone=${encodeURIComponent(data.guestPhone||'')}&checkin=${encodeURIComponent(dIn.toLocaleDateString('nl-NL', fmtOpts))}&checkout=${encodeURIComponent(dOut.toLocaleDateString('nl-NL', fmtOpts))}&guests=${encodeURIComponent(data.totalGuests||'-')}&message=${encodeURIComponent(data.message || '')}&tot=${encodeURIComponent(tAmt)}&dep=${encodeURIComponent(dAmt)}&bal=${encodeURIComponent(bAmt)}`;
+                    let recStep = 0; 
+                    if (isPending) {
+                        recStep = 2; // Accepteren / Weigeren
+                    } else if (isConfirmed) {
+                        if (!data.depositPaid && !mc.depositReminder) {
+                            recStep = 3; // Aanbetaling herinnering
+                        } else if (data.depositPaid && !mc.depositReceived) {
+                            recStep = 4; // Aanbetaling ontvangen
+                        } else if (!data.balancePaid && diffIn <= 45 && diffIn > 0 && !mc.balanceReminder) {
+                            recStep = 5; // Restbetaling herinnering
+                        } else if (data.balancePaid && !mc.balanceReceived) {
+                            recStep = 6; // Restbetaling ontvangen
+                        } else if (diffIn <= 7 && diffIn >= -1 && !mc.preStayInfo) {
+                            recStep = 7; // Regels & Wachtwoorden
+                        } else if (diffOut >= 0 && diffOut <= 7 && !mc.postStay) {
+                            recStep = 8; // Bedankje & Review
+                        }
+                    }
 
-                    const mc = data.mailChain || {};
-                    const isPending = data.status === 'pending';
-                    const isDeclined = data.status === 'declined';
-                    const s3_depRem = mc.depositReminder || false;
-                    const s4_depRec = mc.depositReceived || false;
-                    const s5_balRem = mc.balanceReminder || false;
-                    const s6_balRec = mc.balanceReceived || false;
-                    const s7_preStay = mc.preStayInfo || false;
-                    const s8_postStay = mc.postStay || false;
+                    // CHECK FOR PRIORITY TASK
+                    if (recStep > 0) {
+                        prioCount++;
+                        const stepNames = {
+                            2: "Accepteren / Weigeren",
+                            3: "Aanbetaling Herinnering",
+                            4: "Aanbetaling Ontvangen",
+                            5: "Restbetaling Herinnering",
+                            6: "Restbetaling Ontvangen",
+                            7: "Regels & Wachtwoorden",
+                            8: "Bedankje & Review"
+                        };
+                        const taskName = stepNames[recStep];
+                        
+                        prioHtml += `
+                            <div class="prio-item">
+                                <div class="prio-item-main">
+                                    <div class="prio-item-guest">
+                                        ${data.guestName || 'Gast'}
+                                    </div>
+                                    <div class="prio-item-task">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-gold);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                        ${taskName}
+                                    </div>
+                                </div>
+                                <button class="prio-item-btn" onclick="document.getElementById('mc-card-${data.id}').scrollIntoView({behavior:'smooth'}); setTimeout(()=>openCommunicationHub('${data.id}'), 500);">
+                                    BEHANDELEN
+                                </button>
+                            </div>
+                        `;
+                    }
 
                     let statusHtml = '';
                     if (isPending) statusHtml = '<span class="status-badge status-pending">In Afwachting</span>';
@@ -1955,7 +2345,17 @@
                                 <h3>${data.guestName || 'Gast'}</h3>
                                 <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
                             </div>
-                            ${statusHtml}
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    ${statusHtml}
+                                </div>
+                                ${country ? `
+                                    <div class="country-badge" style="margin-top: 0;">
+                                        <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
+                                        <span class="country-code-label">${country.code}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
                         <div class="booking-card-body">
                             <div class="booking-info-row">
@@ -1982,10 +2382,10 @@
                                 </div>
                                 
                                 <!-- Step 2 -->
-                                <div class="payment-toggle" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 5px;">
+                                <div class="payment-toggle ${recStep === 2 ? 'recommended-step' : ''}" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 5px;">
                                     <div>
-                                        <span style="opacity: ${isPending ? '1' : '0.6'}; display:block;">2. Accepteren / Weigeren</span>
-                                        <div style="display:flex; gap:8px; margin-top:5px;">
+                                        <span style="opacity: ${isPending ? '1' : '0.6'}; display:block; font-size: 0.85rem;">2. Accepteren / Weigeren</span>
+                                        <div style="display:flex; gap:8px; margin-top:8px;">
                                             <a href="javascript:void(0)" 
                                                 data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
                                                 data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
@@ -1994,7 +2394,7 @@
                                                 data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                                 data-message="${data.message || ''}" data-type="acceptance" 
                                                 onclick="openEmailComposer(this)" 
-                                                style="background:#28a745; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ BEWERK (ACCEPTEER)</a>
+                                                style="background: rgba(40, 167, 69, 0.05); border: 1px solid rgba(40, 167, 69, 0.2); color: #28a745; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ ACCEPTEER</a>
                                             <a href="javascript:void(0)" 
                                                 data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
                                                 data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
@@ -2003,14 +2403,14 @@
                                                 data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                                 data-message="${data.message || ''}" data-type="rejection" 
                                                 onclick="openEmailComposer(this)" 
-                                                style="background:#dc3545; color:#fff; padding:4px 8px; border-radius:3px; text-decoration:none; font-size:0.7rem; font-weight:700;">✉ BEWERK (WEIGER)</a>
+                                                style="background: rgba(220, 53, 69, 0.04); border: 1px solid rgba(220, 53, 69, 0.15); color: #dc3545; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ WEIGER</a>
                                         </div>
                                     </div>
                                     <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">${!isPending ? '✔ VOLTOOID' : 'ACTIE VEREIST'}</span>
                                 </div>
                                 
                                 <!-- Step 3 -->
-                                <div class="payment-toggle">
+                                <div class="payment-toggle ${recStep === 3 ? 'recommended-step' : ''}">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>3. Betalingsherinnering (Aanbetaling)</span>
                                         <a href="javascript:void(0)" 
@@ -2032,7 +2432,7 @@
                                 </div>
 
                                 <!-- Step 4 -->
-                                <div class="payment-toggle">
+                                <div class="payment-toggle ${recStep === 4 ? 'recommended-step' : ''}">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>4. Aanbetaling ontvangen mail</span>
                                         <a href="javascript:void(0)" 
@@ -2054,7 +2454,7 @@
                                 </div>
 
                                 <!-- Step 5 -->
-                                <div class="payment-toggle">
+                                <div class="payment-toggle ${recStep === 5 ? 'recommended-step' : ''}">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>5. Restbetaling herinnering mail</span>
                                         <a href="javascript:void(0)" 
@@ -2076,7 +2476,7 @@
                                 </div>
 
                                 <!-- Step 6 -->
-                                <div class="payment-toggle">
+                                <div class="payment-toggle ${recStep === 6 ? 'recommended-step' : ''}">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>6. Restbetaling ontvangen mail</span>
                                         <a href="javascript:void(0)" 
@@ -2098,7 +2498,7 @@
                                 </div>
 
                                 <!-- Step 7 -->
-                                <div class="payment-toggle">
+                                <div class="payment-toggle ${recStep === 7 ? 'recommended-step' : ''}">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>7. Regels & wachtwoorden</span>
                                         <a href="javascript:void(0)" 
@@ -2120,7 +2520,7 @@
                                 </div>
 
                                 <!-- Step 8 -->
-                                <div class="payment-toggle">
+                                <div class="payment-toggle ${recStep === 8 ? 'recommended-step' : ''}">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
                                         <span>8. Bedankje & Review (Na verblijf)</span>
                                         <a href="javascript:void(0)" 
@@ -2170,6 +2570,15 @@
                     `;
                     list.appendChild(card);
                 });
+
+                // RENDER PRIO SECTION IF TASKS EXIST
+                if (prioCount > 0) {
+                    prioList.innerHTML = prioHtml;
+                    prioCountBadge.innerText = prioCount;
+                    prioSection.style.display = 'block';
+                } else {
+                    prioSection.style.display = 'none';
+                }
 
                 if (matchCount === 0) {
                     list.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.6; padding: 40px;">Geen boekingen of aanvragen gevonden voor de mail-chain.</p>`;
