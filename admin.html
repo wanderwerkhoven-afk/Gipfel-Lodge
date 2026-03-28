@@ -258,7 +258,7 @@
         .dashboard-main {
             flex: 1;
             padding: 80px 100px; 
-            background-color: #fcfbf7; 
+            background-color: #f1f5f9;  /* Iets koeler en donkerder grijs voor meer contrast */
             overflow-y: auto; /* Makes the right side scrollable */
             height: 100%;
         }
@@ -480,14 +480,14 @@
 
         .booking-card {
             background: #ffffff;
-            border: 1px solid rgba(0,0,0,0.06);
-            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 20px;
             padding: 40px;
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             display: flex;
             flex-direction: column;
             gap: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
             position: relative;
         }
 
@@ -718,31 +718,157 @@
         }
 
         /* Responsive Breakpoints (Altijd onderaan voor juiste overschrijving) */
+        .mobile-nav { display: none; }
+
         @media (max-width: 900px) {
-            .dashboard-layout { flex-direction: column; height: auto; }
-            #dashboard-screen { height: auto; min-height: 100vh; margin: 0; border-radius: 0; }
-            .dashboard-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 30px 20px; }
-            .nav-menu { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-            .nav-item { 
-                margin-bottom: 0; 
-                padding: 12px 15px; 
-                flex: 1 1 calc(50% - 10px); 
-                min-width: 140px; 
-                text-align: center; 
-                justify-content: center; 
-                font-size: 0.85rem;
-                display: flex;
-                align-items: center;
-                gap: 5px;
+            #dashboard-screen { 
+                height: auto; 
+                min-height: 100vh; 
+                margin: 0; 
+                border-radius: 0; 
+                box-shadow: none;
+                display: block; /* Ensure it's not flex if it was */
             }
-            .sidebar-brand p { margin-bottom: 20px; }
-            .dashboard-main { padding: 40px 20px; overflow-y: visible; }
-            .page-header { margin-bottom: 30px; padding-bottom: 20px; }
-            .page-header h1 { font-size: 2rem; }
-            .bookings-grid { grid-template-columns: 1fr !important; gap: 25px; }
-            .booking-card { padding: 25px 20px; width: 100%; max-width: 100%; }
-            .booking-card-header { flex-direction: column; gap: 10px; }
-            .status-badge { align-self: flex-start; }
+            .dashboard-layout { 
+                flex-direction: column; 
+                height: auto; 
+            }
+            
+            /* Verberg de desktop sidebar op mobiel */
+            .dashboard-sidebar { 
+                display: none; 
+            }
+
+            /* Toon de mobile tab bar */
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: var(--color-slate);
+                height: 70px;
+                z-index: 1000;
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+                padding: 0 10px;
+                padding-bottom: env(safe-area-inset-bottom); /* Support voor iPhone notches */
+                box-sizing: content-box;
+            }
+            .mobile-nav-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: rgba(255,255,255,0.6);
+                text-decoration: none;
+                font-size: 0.7rem;
+                font-weight: 600;
+                gap: 4px;
+                transition: all 0.2s;
+            }
+            .mobile-nav-item span { font-size: 1.4rem; }
+            .mobile-nav-item.active {
+                color: var(--color-gold);
+            }
+
+            .dashboard-main { 
+                padding: 30px 15px 100px 15px; /* Extra padding onderaan voor de navigatie */
+                overflow-y: visible; 
+            }
+
+            .page-header { margin-bottom: 30px; padding-bottom: 15px; }
+            .page-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+            .page-header p { font-size: 0.9rem; }
+
+            /* Filter bar naar horizontaal scrollen */
+            .filter-bar {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                gap: 10px;
+                scrollbar-width: none; /* Verberg scrollbar op Firefox */
+                -ms-overflow-style: none; /* Verberg scrollbar op IE/Edge */
+                margin-top: 20px;
+                width: 100%;
+            }
+            .filter-bar::-webkit-scrollbar { display: none; } /* Verberg scrollbar op Chrome/Safari */
+            .filter-btn {
+                flex: 0 0 auto;
+                white-space: nowrap;
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+
+            .bookings-grid { 
+                display: flex !important;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 16px; 
+                margin-top: 25px;
+                padding: 10px 0 30px 0; /* Padding onder voor de schaduw */
+                scrollbar-width: none; 
+                -ms-overflow-style: none;
+                width: calc(100% + 30px); 
+                margin-left: -15px;
+                padding-left: 15px;
+                padding-right: 30px; /* Meer padding rechts zodat de laatste kaart mooi stopt */
+            }
+            .bookings-grid::-webkit-scrollbar { display: none; }
+            
+            .booking-card { 
+                flex: 0 0 88%; 
+                scroll-snap-align: center;
+                padding: 25px 20px; 
+                gap: 20px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            }
+            .booking-card-header { 
+                flex-direction: column; 
+                gap: 12px; 
+                padding-bottom: 15px;
+            }
+            .booking-card-header h3 { font-size: 1.3rem; }
+            
+            /* Align vlag en status badge beter op mobiel */
+            .booking-card-header > div:last-child {
+                display: flex;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: flex-start;
+                gap: 15px;
+                width: 100%;
+                border-top: 1px solid rgba(0,0,0,0.03);
+                padding-top: 12px;
+            }
+            .country-badge { margin-top: 0 !important; flex-direction: row !important; gap: 8px !important; }
+            .country-code-label { font-size: 0.8rem; }
+            .status-badge { align-self: center; }
+
+            .admin-form-grid { grid-template-columns: 1fr; gap: 15px; }
+
+            /* Priority List refinements for small screens */
+            @media (max-width: 600px) {
+                .prio-item {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 12px;
+                    padding: 16px;
+                }
+                .prio-item-btn {
+                    width: 100%;
+                    text-align: center;
+                }
+                .prio-item-guest {
+                    min-width: auto;
+                }
+                
+                #login-screen {
+                    padding: 40px 20px;
+                    margin: 10px;
+                }
+                .admin-logo { font-size: 2.2rem; }
+            }
         }
 
         /* --- Text-inside Toggle Switch --- */
@@ -1413,9 +1539,23 @@
                 <div id="eb-toast"></div>
 
             </main>
-
-            </main>
         </div>
+
+        <!-- Mobile Bottom Tab Bar -->
+        <nav class="mobile-nav">
+            <a href="javascript:void(0)" class="mobile-nav-item active" onclick="switchView('bookings-view', this)">
+                <span>&#128197;</span>
+                Aanvragen
+            </a>
+            <a href="javascript:void(0)" class="mobile-nav-item" onclick="switchView('mailchain-view', this)">
+                <span>✉</span>
+                Mail Chain
+            </a>
+            <a href="javascript:void(0)" class="mobile-nav-item" onclick="logout()">
+                <span>&#128274;</span>
+                Uitloggen
+            </a>
+        </nav>
     </div>
 
     <script>
@@ -1731,19 +1871,33 @@
         }
 
         function switchView(viewId, navEl) {
-            // Update nav items
+            // Update desktop nav items
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            navEl.classList.add('active');
+            // Update mobile nav items
+            document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+            
+            // Highlight the correct one based on viewId if navEl is not provided or to sync both
+            if (viewId === 'bookings-view') {
+                document.querySelectorAll('.nav-item')[0].classList.add('active'); // Aanvragen
+                document.querySelectorAll('.mobile-nav-item')[0].classList.add('active');
+            } else if (viewId === 'mailchain-view') {
+                document.querySelectorAll('.nav-item')[1].classList.add('active'); // Mail Chain
+                document.querySelectorAll('.mobile-nav-item')[1].classList.add('active');
+            }
 
             // Update views
             document.querySelectorAll('.dashboard-view').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add('active');
 
             if (viewId === 'bookings-view') {
                 loadBookings();
             } else if (viewId === 'mailchain-view') {
                 loadMailChain();
             }
+
+            // Scroll to top when switching views on mobile
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function filterBookings(status, el) {
