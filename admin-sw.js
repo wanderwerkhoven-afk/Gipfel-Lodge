@@ -1,5 +1,5 @@
 // Gipfel Lodge Admin - Service Worker
-const CACHE_NAME = 'gipfel-admin-v1';
+const CACHE_NAME = 'gipfel-admin-v2';
 
 // Bestanden die gecached moeten worden voor de app-shell
 const SHELL_FILES = [

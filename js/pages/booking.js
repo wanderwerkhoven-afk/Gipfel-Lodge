@@ -1,4 +1,4 @@
-import { db, collection, addDoc, serverTimestamp } from '../core/firebase.js';
+import { db, collection, addDoc, serverTimestamp, runTransaction, doc, setDoc } from '../core/firebase.js';
 import { countries } from '../data/countries.js';
 
 const GipfelBooking = {
@@ -413,8 +413,40 @@ const GipfelBooking = {
                     // Using a small timeout to ensure UI transition finishes first
                     setTimeout(async () => {
                         try {
-                            console.log("Attempting Firestore Archive...");
-                            await addDoc(collection(db, "bookings"), {
+                            console.log("Attempting Firestore Archive with Sequential ID...");
+                            const counterRef = doc(db, "metadata", "counters");
+
+                            // 1. Get next sequential ID via transaction
+                            const nextNumber = await runTransaction(db, async (transaction) => {
+                                const counterDoc = await transaction.get(counterRef);
+                                // If counter doesn't exist, start high (e.g., from 615)
+                                let currentNum = counterDoc.exists() ? (counterDoc.data().lastBookingNumber || 0) : 615;
+                                
+                                let uniqueFound = false;
+                                let attemptNum = currentNum + 1;
+                                
+                                // Robust logic: skip any manually created IDs or prior collisions
+                                while (!uniqueFound) {
+                                    const candidateId = `Gipfel-${String(attemptNum).padStart(6, '0')}`;
+                                    const checkDoc = await transaction.get(doc(db, "bookings", candidateId));
+                                    if (!checkDoc.exists()) {
+                                        uniqueFound = true;
+                                    } else {
+                                        console.log("Collision detected for ID: " + candidateId + ". Skipping...");
+                                        attemptNum++;
+                                    }
+                                }
+                                
+                                transaction.set(counterRef, { lastBookingNumber: attemptNum }, { merge: true });
+                                return attemptNum;
+                            });
+
+                            const bookingId = `Gipfel-${String(nextNumber).padStart(6, '0')}`;
+                            console.log("Generated Booking ID:", bookingId);
+
+                            // 2. Save booking with custom ID
+                            await setDoc(doc(db, "bookings", bookingId), {
+                                bookingId: bookingId,
                                 guestName: ownerParams.user_name || 'Anoniem',
                                 guestEmail: ownerParams.user_email || '',
                                 guestPhone: ownerParams.user_phone || '-',
@@ -438,7 +470,7 @@ const GipfelBooking = {
                                 receivedTime: ownerParams.received_time || '',
                                 createdAt: serverTimestamp() 
                             });
-                            console.log("Booking successfully archived in Firestore.");
+                            console.log("Booking successfully archived in Firestore with ID:", bookingId);
                         } catch (dbError) {
                             console.error("Firestore Archiving Error:", dbError);
                         }
