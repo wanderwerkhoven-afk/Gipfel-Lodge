@@ -1,0 +1,310 @@
+/* =========================================================================
+   ACTIVITIES PAGE STYLES - REFINED PREMIUM LOOK
+   ========================================================================= */
+
+#activities-page {
+  /* We remove padding-top here because the blue selector stretches to the top */
+  padding-bottom: 100px;
+  background-color: #FAFAFA;
+}
+
+/* Wrapping section that holds the intro and toggles with a navy background */
+.activities-season-selector {
+  background-color: var(--color-primary); /* Dark Navy / Slate */
+  padding-top: calc(var(--header-height, 80px) + 20px);
+  padding-bottom: 80px; 
+  margin-bottom: 80px; /* Space before content starts */
+}
+
+/* 0. INTRO SECTION */
+.activities-intro {
+  padding-top: 60px;
+  padding-bottom: 100px;
+  width: 92%;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.activities-intro .intro-tag {
+  color: var(--color-accent);
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 24px;
+}
+.activities-intro h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  color: #ffffff; /* Contrast on primary background */
+  margin-bottom: 24px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+.activities-intro p {
+  color: rgba(255, 255, 255, 0.75); /* Soft light grey/white */
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* 1. HERO TOGGLES (Side-by-side Cards) */
+.activities-toggles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  width: 92%;
+  max-width: 1100px; /* Don't let them become too massive */
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .activities-toggles {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.act-toggle {
+  position: relative;
+  overflow: hidden;
+  height: 420px;
+  border-radius: 4px; /* Slight rounding */
+  cursor: pointer;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15); /* Floating shadow */
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+}
+
+@media (max-width: 768px) {
+  .act-toggle {
+    height: 340px;
+  }
+}
+
+/* Subtly highlight the active card */
+.act-toggle.active {
+  box-shadow: 0 20px 40px rgba(197, 160, 89, 0.2); /* Primary gold glow */
+  transform: translateY(-8px);
+}
+
+.activities-toggles.has-active .act-toggle:not(.active) {
+  opacity: 0.5;
+  filter: grayscale(80%) contrast(0.9) brightness(0.8);
+  transform: scale(0.97);
+}
+
+.act-toggle img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.act-toggle-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.2) 65%, transparent 100%);
+  transition: opacity 0.5s ease;
+}
+
+.act-toggle:hover img {
+  transform: scale(1.05); /* Subtle zoom in */
+}
+
+.act-toggle:hover .act-toggle-overlay {
+  opacity: 0.95;
+}
+
+.act-toggle-content {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  padding: 40px 30px;
+  color: white;
+  z-index: 2;
+  text-align: center;
+}
+
+.act-toggle-title {
+  font-family: var(--font-heading);
+  font-size: 2.6rem;
+  font-weight: 400;
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.4); /* Make it legible over images */
+}
+
+.act-toggle-subtitle {
+  font-size: 1.1rem;
+  font-family: var(--font-body);
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* Button style inside toggle */
+.act-select-btn {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 12px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(0,0,0,0.25);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  border-radius: 4px; /* Matches theme */
+  transition: all 0.4s ease;
+  pointer-events: none; /* Let parent capture click */
+}
+
+/* When the card is active */
+.act-toggle.active .act-select-btn {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+/* 2. DYNAMIC SECTIONS */
+.activities-content-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.act-season-section {
+  display: none; 
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1), transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.act-season-section.active {
+  display: block;
+}
+
+.act-season-section.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* OVERLAPPING "MAGAZINE" LAYOUT FOR SPLITS */
+.act-split {
+  display: flex;
+  align-items: center;
+  width: 92%;
+  max-width: 1200px;
+  margin: 0 auto 140px auto;
+  position: relative;
+}
+
+.act-split.reverse {
+  flex-direction: row-reverse;
+}
+
+.act-split-img {
+  width: 58%;
+  aspect-ratio: 4/5; /* Portrait elegant ratio */
+  object-fit: cover;
+  border-radius: 4px; /* Sharp modern edges */
+  box-shadow: 0 30px 60px -15px rgba(0,0,0,0.15); /* Deep grounding shadow */
+  position: relative;
+  z-index: 1;
+}
+
+/* The floating text card */
+.act-split-text {
+  width: 48%;
+  background: #ffffff;
+  padding: 60px 50px;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.06); /* Float effect */
+  border-radius: 4px;
+  margin-left: -6%; /* Overlap the image to the left */
+  position: relative;
+  z-index: 2;
+}
+
+.act-split.reverse .act-split-text {
+  margin-left: 0;
+  margin-right: -6%; /* Overlap to the right on reversed */
+}
+
+@media (max-width: 991px) {
+  .act-split {
+    margin: 0 auto 80px auto;
+  }
+  .act-split, .act-split.reverse {
+    flex-direction: column;
+  }
+  .act-split-img {
+    width: 100%;
+    aspect-ratio: 16/10; /* Dynamic landscape on smaller screens */
+  }
+  .act-split-text {
+    width: 92%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: -40px; /* Overlap vertically instead of horizontally */
+    padding: 40px 30px;
+  }
+  .act-split.reverse .act-split-text {
+    margin-right: 0;
+  }
+}
+
+.act-split-text .intro-tag {
+  color: var(--color-accent);
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.act-split-text h3 {
+  font-family: var(--font-heading);
+  font-size: var(--h3-size);
+  margin-bottom: 24px;
+  color: var(--color-primary);
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.act-split-text p {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Feature list styling with SVG icon */
+.act-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 30px 0 0 0;
+  border-top: 1px solid rgba(0,0,0,0.06); /* subtle divider line to add structure */
+  padding-top: 24px;
+}
+.act-features-list li {
+  position: relative;
+  padding-left: 36px;
+  margin-bottom: 16px;
+  color: var(--color-text-main);
+  font-size: 1.1rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+.act-features-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 22px;
+  height: 22px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23c5a059" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>');
+  background-size: cover;
+}
