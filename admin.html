@@ -187,6 +187,8 @@
             display: flex;
             flex-direction: column;
             border-right: 1px solid rgba(255,255,255,0.1);
+            overflow-y: auto;
+            height: 100%;
         }
 
         .sidebar-brand h2 {
@@ -747,11 +749,11 @@
                 left: 0;
                 width: 100%;
                 background: var(--color-slate);
-                height: 70px;
+                height: 85px; /* Verhoogd van 70px voor betere klikbaarheid */
                 z-index: 1000;
-                box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
-                padding: 0 10px;
-                padding-bottom: env(safe-area-inset-bottom); /* Support voor iPhone notches */
+                box-shadow: 0 -4px 25px rgba(0,0,0,0.3);
+                padding: 5px 10px;
+                padding-bottom: env(safe-area-inset-bottom);
                 box-sizing: content-box;
             }
             .mobile-nav-item {
@@ -773,7 +775,7 @@
             }
 
             .dashboard-main { 
-                padding: 30px 15px 100px 15px; /* Extra padding onderaan voor de navigatie */
+                padding: 30px 15px 120px 15px; /* Verhoogd van 100px om de hogere nav bar te compenseren */
                 overflow-y: visible; 
             }
 
@@ -1447,13 +1449,18 @@
 <body>
 
     <!-- LOGIN SCHERM -->
+    <!-- LOGIN SCHERM -->
     <div id="login-screen">
         <h1 class="admin-logo">Gipfel Lodge</h1>
-        <p class="admin-subtitle">Beveiligd Beheer</p>
+        <p class="admin-subtitle">Team Login</p>
         
-        <input type="password" id="admin-password" class="password-input" placeholder="••••••••" onkeypress="if(event.key === 'Enter') login()">
-        <button class="login-btn" onclick="login()">Inloggen</button>
-        <div id="login-error" class="error-msg">Onjuist wachtwoord. Probeer opnieuw.</div>
+        <div style="margin-bottom: 15px;">
+            <input type="email" id="admin-email" class="form-input" placeholder="E-mailadres" style="text-align: center; margin-bottom: 15px;">
+            <input type="password" id="admin-password" class="password-input" placeholder="Wachtwoord" onkeypress="if(event.key === 'Enter') login()">
+        </div>
+        
+        <button id="login-btn-el" class="login-btn" onclick="login()">Inloggen</button>
+        <div id="login-error" class="error-msg"></div>
     </div>
 
     <!-- DASHBOARD SCHERM -->
@@ -1466,10 +1473,18 @@
                     <h2>Gipfel Lodge</h2>
                     <p>Admin Paneel</p>
                 </div>
+
+                <!-- Ingelogde Gebruiker Info -->
+                <div id="sidebar-user-info" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: none;">
+                    <p style="margin:0; font-size:0.75rem; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.08em;">Ingelogd als</p>
+                    <p id="sidebar-user-email" style="margin:4px 0 6px; font-size:0.85rem; color:#fff; font-weight:600; word-break:break-all;">-</p>
+                    <span id="sidebar-user-role-badge" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; padding:3px 8px; border-radius:4px; background: rgba(197,160,89,0.2); color: var(--color-gold);">-</span>
+                </div>
                 
                 <ul class="nav-menu">
                     <li class="nav-item active" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Aanvragen</li>
                     <li class="nav-item" onclick="switchView('mailchain-view', this)">✉&nbsp; Mail Chain</li>
+                    <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">📜&nbsp; Activiteiten</li>
                 </ul>
 
                 <div style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
@@ -1536,6 +1551,58 @@
                     </div>
                 </div>
 
+                <!-- ACTIVITY LOGS VIEW -->
+                <div id="logs-view" class="dashboard-view">
+                    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <h1>Activiteiten Logboek</h1>
+                            <p>Overzicht van acties uitgevoerd door het team.</p>
+                        </div>
+                        <button class="eb2-add-btn" onclick="loadActivityLogs()" style="margin-bottom: 10px;">Verversen</button>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8;">Filter op gebruiker</label>
+                            <select id="log-filter-user" onchange="filterLogs()" style="padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.875rem; color: #334155; background: #fff; cursor: pointer; min-width: 180px;">
+                                <option value="">Alle gebruikers</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8;">Filter op boeking</label>
+                            <select id="log-filter-booking" onchange="filterLogs()" style="padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.875rem; color: #334155; background: #fff; cursor: pointer; min-width: 200px;">
+                                <option value="">Alle boekingen</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; align-items: flex-end;">
+                            <button onclick="document.getElementById('log-filter-user').value=''; document.getElementById('log-filter-booking').value=''; filterLogs();" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; font-size: 0.875rem; color: #64748b; cursor: pointer;">✕ Wis filters</button>
+                        </div>
+                    </div>
+
+                    <div id="logs-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
+                    
+                    <div class="eb2-section-card">
+                        <div id="logs-result-count" style="padding: 12px 16px; font-size: 0.8rem; color: #94a3b8; border-bottom: 1px solid #f0f0f0;"></div>
+                        <div class="eb2-table-wrap">
+                            <table class="eb2-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tijdstip</th>
+                                        <th>Gebruiker</th>
+                                        <th>Actie</th>
+                                        <th>Boeking</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activity-logs-list">
+                                    <!-- Logs populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="eb-toast"></div>
 
             </main>
@@ -1550,6 +1617,10 @@
             <a href="javascript:void(0)" class="mobile-nav-item" onclick="switchView('mailchain-view', this)">
                 <span>✉</span>
                 Mail Chain
+            </a>
+            <a id="nav-logs-mobile" href="javascript:void(0)" class="mobile-nav-item" onclick="switchView('logs-view', this)">
+                <span>📜</span>
+                Logs
             </a>
             <a href="javascript:void(0)" class="mobile-nav-item" onclick="logout()">
                 <span>&#128274;</span>
@@ -1616,42 +1687,240 @@
             return 'en';
         }
 
-        // --- 1. LOGIN LOGICA (Simpele client-side checks) ---
-        // LET OP: Omdat dit een statische HTML file is, is "alpine2026" hardcoded.
-        // Dit is afdoende tegen bots en verdwaalde gasten, maar niet extreem veilig.
-        const SECRET_PW = "alpine2026"; 
-        
-        // Controleer of we al ingelogd zijn (sessie)
-        if (sessionStorage.getItem("gipfel_admin_logged_in") === "true") {
-            showDashboard();
-        }
+        // --- 1. LOGIN LOGICA (Firebase Auth) ---
+        let currentUser = null;
+        let currentUserRole = 'user'; // Default to least privilege
+        let currentUserName = '';    // Display name fetched from Firestore
 
-        function login() {
-            const input = document.getElementById("admin-password").value;
+        // AUTH Observer: Handle session properly
+        import('./js/core/firebase.js').then(firebase => {
+            firebase.onAuthStateChanged(firebase.auth, async (user) => {
+                if (user) {
+                    console.log("User is logged in:", user.email);
+                    currentUser = user;
+
+                    // Fetch role + displayName from Firestore 'users' collection
+                    try {
+                        const { db, doc, getDoc } = await import('./js/core/firebase.js');
+                        const userDoc = await getDoc(doc(db, 'users', user.uid));
+                        if (userDoc.exists()) {
+                            const data = userDoc.data();
+                            currentUserRole = data.role === 'superuser' ? 'superuser' : 'user';
+                            // Use stored displayName, or fall back to the part before @ in the email
+                            currentUserName = data.displayName || user.email.split('@')[0];
+                        } else {
+                            currentUserRole = 'user';
+                            currentUserName = user.email.split('@')[0];
+                        }
+                    } catch (e) {
+                        console.warn('Could not fetch user role, defaulting to regular user.', e);
+                        currentUserRole = 'user';
+                        currentUserName = user.email.split('@')[0];
+                    }
+
+                    console.log('User role:', currentUserRole);
+                    showDashboard();
+                } else {
+                    console.log("No user is logged in.");
+                    currentUser = null;
+                    currentUserRole = 'user';
+                    currentUserName = '';
+                    document.getElementById("dashboard-screen").style.display = "none";
+                    document.getElementById("login-screen").style.display = "block";
+                    document.body.style.display = 'flex';
+                }
+            });
+        });
+
+        async function login() {
+            const emailInput = document.getElementById("admin-email").value;
+            const passwordInput = document.getElementById("admin-password").value;
             const errorMsg = document.getElementById("login-error");
+            const btn = document.getElementById("login-btn-el");
             
-            if (input === SECRET_PW) {
-                // Sla op voor de sessie (wordt gewist als tabblad sluit)
-                sessionStorage.setItem("gipfel_admin_logged_in", "true");
-                showDashboard();
+            if (!emailInput || !passwordInput) {
+                errorMsg.innerText = "Vul a.u.b. alle velden in.";
+                errorMsg.classList.add('visible');
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "Bezig...";
+                
+                const { auth, signInWithEmailAndPassword } = await import('./js/core/firebase.js');
+                await signInWithEmailAndPassword(auth, emailInput, passwordInput);
+                
+                // onAuthStateChanged will handle the UI transition
                 errorMsg.classList.remove('visible');
-            } else {
+            } catch (err) {
+                console.error("Login failed:", err);
+                errorMsg.innerText = "Inloggen mislukt. Controleer gegevens.";
+                if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+                    errorMsg.innerText = "E-mail of wachtwoord onjuist.";
+                }
                 errorMsg.classList.add('visible');
                 document.getElementById("admin-password").value = "";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Inloggen";
             }
         }
 
-        function logout() {
-            sessionStorage.removeItem("gipfel_admin_logged_in");
-            document.getElementById("dashboard-screen").style.display = "none";
-            document.getElementById("login-screen").style.display = "block";
-            
-            // Verwijder URL parameters uit adresbalk voor netheid
-            window.history.replaceState({}, document.title, window.location.pathname);
-            
-            // Reset body uitlijning
-            document.body.style.display = 'flex';
-            document.getElementById("admin-password").value = "";
+        async function logout() {
+            try {
+                const { auth, signOut } = await import('./js/core/firebase.js');
+                await signOut(auth);
+                // Auth observer handles the rest
+            } catch (err) {
+                console.error("Logout failed", err);
+            }
+        }
+
+        // --- ACTIVITY LOGGING HELPER ---
+        async function logActivity(action, details = '', bookingId = '') {
+            if (!currentUser) return;
+            try {
+                const { db, collection, addDoc, serverTimestamp } = await import('./js/core/firebase.js');
+                await addDoc(collection(db, "audit_logs"), {
+                    timestamp: serverTimestamp(),
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    userName: currentUserName || currentUser.email.split('@')[0],
+                    action: action,
+                    details: details,
+                    bookingId: bookingId
+                });
+                console.log(`Activity logged: ${action}`);
+            } catch (err) {
+                console.error("Failed to log activity:", err);
+            }
+        }
+
+        // --- LOGS MANAGEMENT ---
+        let allLogEntries = []; // Store all fetched logs for client-side filtering
+
+        async function loadActivityLogs() {
+            const listEl = document.getElementById('activity-logs-list');
+            const loader = document.getElementById('logs-loader');
+            if (!listEl) return;
+
+            listEl.innerHTML = '';
+            loader.style.display = 'block';
+
+            try {
+                const { db, collection, getDocs, query, orderBy } = await import('./js/core/firebase.js');
+                const q = query(collection(db, "audit_logs"), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                allLogEntries = [];
+                querySnapshot.forEach((doc) => {
+                    allLogEntries.push(doc.data());
+                });
+
+                // Fetch ALL bookings for the booking filter dropdown
+                const bookingsSnap = await getDocs(collection(db, "bookings"));
+                const allBookings = [];
+                bookingsSnap.forEach(d => allBookings.push({ id: d.id, ...d.data() }));
+
+                // Build dropdown options
+                populateLogFilters(allLogEntries, allBookings);
+
+                // Render all entries initially
+                renderLogRows(allLogEntries);
+
+            } catch (err) {
+                console.error("Error loading logs:", err);
+                listEl.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color:#e74c3c;">Fout bij laden van logs.</td></tr>';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function populateLogFilters(entries, allBookings = []) {
+            const userSelect = document.getElementById('log-filter-user');
+            const bookingSelect = document.getElementById('log-filter-booking');
+            if (!userSelect || !bookingSelect) return;
+
+            // Collect unique users from log entries
+            const users = new Map(); // uid -> displayName
+            entries.forEach(data => {
+                if (data.userId && !users.has(data.userId)) {
+                    const name = data.userName || data.userEmail?.split('@')[0] || data.userId;
+                    users.set(data.userId, name);
+                }
+            });
+
+            // Rebuild user options
+            userSelect.innerHTML = '<option value="">Alle gebruikers</option>';
+            users.forEach((name, uid) => {
+                const opt = document.createElement('option');
+                opt.value = uid;
+                opt.textContent = name;
+                userSelect.appendChild(opt);
+            });
+
+            // Rebuild booking options from ALL bookings, sorted by check-in
+            bookingSelect.innerHTML = '<option value="">Alle boekingen</option>';
+            const sorted = [...allBookings].sort((a, b) => {
+                return new Date(a.checkIn || 0) - new Date(b.checkIn || 0);
+            });
+            sorted.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.id;
+                const ref = b.bookingId || b.id;
+                const name = b.guestName || 'Gast';
+                const checkIn = b.checkIn || '';
+                opt.textContent = `${name} — ${ref}${checkIn ? ' ('+checkIn+')' : ''}`;
+                bookingSelect.appendChild(opt);
+            });
+        }
+
+        function filterLogs() {
+            const selectedUser = document.getElementById('log-filter-user')?.value || '';
+            const selectedBooking = document.getElementById('log-filter-booking')?.value || '';
+
+            let filtered = allLogEntries;
+            if (selectedUser) {
+                filtered = filtered.filter(d => d.userId === selectedUser);
+            }
+            if (selectedBooking) {
+                filtered = filtered.filter(d => d.bookingId === selectedBooking);
+            }
+
+            renderLogRows(filtered);
+        }
+
+        function renderLogRows(entries) {
+            const listEl = document.getElementById('activity-logs-list');
+            const countEl = document.getElementById('logs-result-count');
+            if (!listEl) return;
+
+            listEl.innerHTML = '';
+
+            if (entries.length === 0) {
+                listEl.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 40px; color:#94a3b8;">Geen activiteiten gevonden voor dit filter.</td></tr>';
+                if (countEl) countEl.textContent = '0 resultaten';
+                return;
+            }
+
+            if (countEl) countEl.textContent = `${entries.length} ${entries.length === 1 ? 'activiteit' : 'activiteiten'} gevonden`;
+
+            entries.forEach((data) => {
+                const date = data.timestamp ? data.timestamp.toDate() : new Date();
+                const timeStr = date.toLocaleString('nl-NL', { day:'2-digit', month:'short', year: 'numeric', hour:'2-digit', minute:'2-digit' });
+
+                const row = document.createElement('tr');
+                const displayName = data.userName || data.userEmail?.split('@')[0] || '-';
+                row.innerHTML = `
+                    <td class="td-date">${timeStr}</td>
+                    <td><strong>${displayName}</strong><br><small style="color:#94a3b8">${data.userEmail || ''}</small></td>
+                    <td><span class="status-badge" style="background:#f1f5f9; color:#475569; border:none">${data.action}</span></td>
+                    <td><code>${data.bookingId || '-'}</code></td>
+                    <td style="font-size:0.85rem">${data.details}</td>
+                `;
+                listEl.appendChild(row);
+            });
         }
 
         // --- FILTER LOGICA ---
@@ -1663,6 +1932,35 @@
             loadBookings(status);
         }
 
+        function applyRolePermissions() {
+            const isSuperUser = currentUserRole === 'superuser';
+
+            // Show/hide current user info in sidebar
+            const userInfoEl = document.getElementById('sidebar-user-info');
+            const userEmailEl = document.getElementById('sidebar-user-email');
+            const userRoleBadge = document.getElementById('sidebar-user-role-badge');
+            if (userInfoEl && currentUser) {
+                userInfoEl.style.display = 'block';
+                // Show display name prominently, email smaller below
+                userEmailEl.innerHTML = `${currentUserName || currentUser.email.split('@')[0]}<br><span style="font-size:0.75rem; font-weight:400; opacity:0.5;">${currentUser.email}</span>`;
+                if (isSuperUser) {
+                    userRoleBadge.textContent = '⭐ Super User';
+                    userRoleBadge.style.background = 'rgba(197,160,89,0.25)';
+                    userRoleBadge.style.color = 'var(--color-gold)';
+                } else {
+                    userRoleBadge.textContent = 'Medewerker';
+                    userRoleBadge.style.background = 'rgba(255,255,255,0.1)';
+                    userRoleBadge.style.color = 'rgba(255,255,255,0.6)';
+                }
+            }
+
+            // Show/hide Activiteiten tab (desktop + mobile)
+            const logsDesktop = document.getElementById('nav-logs-desktop');
+            const logsMobile = document.getElementById('nav-logs-mobile');
+            if (logsDesktop) logsDesktop.style.display = isSuperUser ? '' : 'none';
+            if (logsMobile) logsMobile.style.display = isSuperUser ? '' : 'none';
+        }
+
         function showDashboard() {
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("dashboard-screen").style.display = "block";
@@ -1670,8 +1968,11 @@
             if(window.innerWidth > 600) {
                  document.body.style.display = 'flex';
             } else {
-                 document.body.style.display = 'block'; // beter voor scrolling p mobiel
+                 document.body.style.display = 'block';
             }
+
+            // Apply role-based UI restrictions
+            applyRolePermissions();
 
             // Zorg dat de juiste view geladen wordt (default Alle Aanvragen)
             const activeNav = document.querySelector('.nav-item.active');
@@ -1681,6 +1982,8 @@
                     loadBookings('pending');
                 } else if (clickAttr.includes('mailchain-view')) {
                     loadMailChain();
+                } else if (clickAttr.includes('logs-view') && currentUserRole === 'superuser') {
+                    loadActivityLogs();
                 }
             }
         }
@@ -1723,6 +2026,9 @@
                             confirmedAt: new Date().toISOString()
                         });
                         console.log("Firestore status updated to confirmed.");
+                        
+                        // LOG ACTIVITY
+                        logActivity('BOOKING_CONFIRMED', `Boeking handmatig bevestigd en e-mail verstuurd naar ${tmplParams.to_email}`, bookingId);
                     } catch (fsErr) {
                         console.error("Firestore update failed:", fsErr);
                     }
@@ -1793,6 +2099,7 @@
                 }
 
                 alert("De boeking is definitief verwijderd.");
+                logActivity('BOOKING_DELETED', `Boeking van ${guestName} definitief verwijderd`, bookingId);
                 console.log("Booking deleted successfully:", bookingId);
             } catch (err) {
                 console.error("Deletion failed:", err);
@@ -1871,18 +2178,29 @@
         }
 
         function switchView(viewId, navEl) {
+            // Block regular users from accessing logs
+            if (viewId === 'logs-view' && currentUserRole !== 'superuser') {
+                console.warn('Access denied: logs-view requires superuser role.');
+                return;
+            }
+
             // Update desktop nav items
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             // Update mobile nav items
             document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
-            
-            // Highlight the correct one based on viewId if navEl is not provided or to sync both
+
+            // Highlight the correct nav item
             if (viewId === 'bookings-view') {
-                document.querySelectorAll('.nav-item')[0].classList.add('active'); // Aanvragen
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
                 document.querySelectorAll('.mobile-nav-item')[0].classList.add('active');
             } else if (viewId === 'mailchain-view') {
-                document.querySelectorAll('.nav-item')[1].classList.add('active'); // Mail Chain
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
                 document.querySelectorAll('.mobile-nav-item')[1].classList.add('active');
+            } else if (viewId === 'logs-view') {
+                const logsDesktopNav = document.getElementById('nav-logs-desktop');
+                if (logsDesktopNav) logsDesktopNav.classList.add('active');
+                const logsMobileNav = document.getElementById('nav-logs-mobile');
+                if (logsMobileNav) logsMobileNav.classList.add('active');
             }
 
             // Update views
@@ -1894,6 +2212,8 @@
                 loadBookings();
             } else if (viewId === 'mailchain-view') {
                 loadMailChain();
+            } else if (viewId === 'logs-view') {
+                loadActivityLogs();
             }
 
             // Scroll to top when switching views on mobile
@@ -2010,7 +2330,7 @@
                                     <span class="status-badge status-${cardIsPassed ? 'completed' : (data.status || 'pending')}">
                                         ${cardIsPassed ? 'Voltooid' : (data.status === 'pending' ? 'In Afwachting' : (data.status === 'confirmed' ? 'Bevestigd' : (data.status === 'declined' ? 'Geweigerd' : data.status)))}
                                     </span>
-                                    ${data.status === 'declined' ? `
+                                    ${(data.status === 'declined' && currentUserRole === 'superuser') ? `
                                         <button class="delete-btn-trash" onclick="confirmDeleteBooking('${data.id}', '${data.guestName}')" title="Boeking permanent verwijderen">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                         </button>
@@ -2759,9 +3079,14 @@
 
                 // Nested update in Firestore object
                 await updateDoc(doc(db, "bookings", bookingId), {
-                    [`mailChain.${stepKey}`]: value
+                    [`mailChain.${stepKey}`]: value,
+                    updatedAt: new Date().toISOString()
                 });
                 
+                // LOG ACTIVITY
+                const actionName = value ? 'EMAIL_STEP_COMPLETED' : 'EMAIL_STEP_REVERTED';
+                logActivity(actionName, `Stap '${stepKey}' gewijzigd naar ${value ? 'voltooid' : 'openstaand'}`, bookingId);
+
                 // 3. Live-update Status Overview (Hub Modal)
                 if (currentComposerData && currentComposerData.id === bookingId) {
                     if (!currentComposerData.mailChain) currentComposerData.mailChain = {};
@@ -2779,9 +3104,13 @@
             try {
                 const { db, doc, updateDoc } = await import('./js/core/firebase.js');
                 await updateDoc(doc(db, "bookings", bookingId), {
-                    [field]: value
+                    [field]: value,
+                    updatedAt: new Date().toISOString()
                 });
                 
+                // LOG ACTIVITY
+                logActivity('PAYMENT_STATUS_UPDATED', `Betalingsveld '${field}' gewijzigd naar ${value}`, bookingId);
+
                 // Update only the adjacent status label — no page reload needed
                 const label = checkboxEl.closest('.payment-toggle-controls').querySelector('.status-label');
                 if (label) {
@@ -2823,8 +3152,12 @@
                 try {
                     const { db, doc, updateDoc } = await import('./js/core/firebase.js');
                     await updateDoc(doc(db, "bookings", bookingId), {
-                        status: 'declined'
+                        status: 'declined',
+                        declinedAt: new Date().toISOString()
                     });
+
+                    // LOG ACTIVITY
+                    logActivity('BOOKING_DECLINED', 'Boeking gemarkeerd als GEWEIGERD via snelle actie', bookingId);
 
                     // Fade out the card
                     const card = btnEl.closest('.booking-card');
@@ -2849,8 +3182,12 @@
             try {
                 const { db, doc, updateDoc } = await import('./js/core/firebase.js');
                 await updateDoc(doc(db, "bookings", bookingId), {
-                    status: 'pending' // Zet terug naar pending
+                    status: 'pending',
+                    updatedAt: new Date().toISOString()
                 });
+
+                // LOG ACTIVITY
+                logActivity('BOOKING_UNDECLINED', 'Weigering van boeking ongedaan gemaakt', bookingId);
 
                 // Fade out the card from the declined view
                 const card = btnEl.closest('.booking-card');
@@ -3499,7 +3836,13 @@
             
             if (uiTemplateId === 'acceptance') {
                 const { db, doc, updateDoc } = await import('./js/core/firebase.js');
-                await updateDoc(doc(db, "bookings", bookingId), { status: 'confirmed' });
+                await updateDoc(doc(db, "bookings", bookingId), { 
+                    status: 'confirmed',
+                    updatedAt: new Date().toISOString()
+                });
+                
+                logActivity('BOOKING_CONFIRMED', 'Boeking automatisch bevestigd via Hub', bookingId);
+                
                 currentComposerData.status = 'confirmed';
                 renderHubSteps(currentComposerData);
                 
@@ -3608,6 +3951,9 @@
 
                 console.log("Sending via EmailJS...", { serviceId, templateId });
                 await emailjs.send(serviceId, templateId, params, publicKey);
+                
+                // LOG ACTIVITY
+                logActivity('EMAIL_SENT_COMPOSER', `E-mail '${mailSubject}' verzonden via de Hub editor`, currentComposerData.id);
                 
                 // Auto-check step in the hub
                 const uiTemplateId = document.getElementById('composer-template-select').value;

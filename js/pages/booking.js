@@ -111,7 +111,9 @@ const GipfelBooking = {
                 const endStr = data.checkOut;
                 
                 const start = new Date(startStr);
+                start.setHours(12, 0, 0, 0);
                 const end = new Date(endStr);
+                end.setHours(12, 0, 0, 0);
                 
                 // Track start/end for confirmed vs pending bookings
                 if (data.status === 'confirmed') {
@@ -315,7 +317,11 @@ const GipfelBooking = {
 
                     // --- Calculate derived values ---
                     const msPerDay   = 1000 * 60 * 60 * 24;
-                    const nights     = Math.round((new Date(checkOut) - new Date(checkIn)) / msPerDay);
+                    const checkInDate = new Date(checkIn);
+                    checkInDate.setHours(12, 0, 0, 0);
+                    const checkOutDate = new Date(checkOut);
+                    checkOutDate.setHours(12, 0, 0, 0);
+                    const nights     = Math.round((checkOutDate - checkInDate) / msPerDay);
                     const totalGuests = parseInt(adults) + parseInt(children) + parseInt(babies);
 
                     const now         = new Date();
@@ -751,7 +757,9 @@ const GipfelBooking = {
         if (!this.selectedCheckIn || !this.selectedCheckOut) return null;
 
         const checkIn = new Date(this.selectedCheckIn);
+        checkIn.setHours(12, 0, 0, 0);
         const checkOut = new Date(this.selectedCheckOut);
+        checkOut.setHours(12, 0, 0, 0);
         
         const adults = parseInt(document.getElementById('b-adults').value) || 0;
         const children = parseInt(document.getElementById('b-children').value) || 0;
@@ -760,7 +768,7 @@ const GipfelBooking = {
         const chargeableGuests = adults + children;
 
         const diffTime = Math.abs(checkOut - checkIn);
-        const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const nights = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         let rent = 0;
         let tempDate = new Date(checkIn);
@@ -987,7 +995,9 @@ const GipfelBooking = {
 
     isRangeValid(startStr, endStr) {
         let current = new Date(startStr);
+        current.setHours(12, 0, 0, 0);
         const end = new Date(endStr);
+        end.setHours(12, 0, 0, 0);
         
         // Loop through all nights [start, end)
         while (current < end) {
