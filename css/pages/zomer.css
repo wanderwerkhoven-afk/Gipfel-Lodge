@@ -1,0 +1,683 @@
+/* =========================================================================
+   ZOMER IN EBEN - LANDING PAGE STYLES
+   Focus on: Warmth, Luxe, Editorial Layout, White Space
+========================================================================= */
+
+:root {
+  --zomer-bg: #FAF9F6;           /* Warm Sand/White */
+  --zomer-text: #2c3e50;         /* Slate */
+  --zomer-muted: #5D6D70;
+  --zomer-green: #2C4A3E;        /* Deep Alpine Green */
+  --zomer-gold: #C5A059;         /* Accent Gold */
+  
+  --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+  --shadow-md: 0 12px 24px -6px rgba(0,0,0,0.08);
+  --shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.12);
+}
+
+.zomer-landing {
+  background-color: var(--zomer-bg);
+  color: var(--zomer-text);
+  font-family: var(--font-body);
+}
+
+.zomer-landing .topbar {
+  background-color: var(--color-primary); /* Keep brand consistency */
+}
+
+/* ================= HERO ================= */
+.zomer-hero {
+  position: relative;
+  height: 90vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.zomer-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%; /* Parallax illusion */
+  object-fit: cover;
+  z-index: 0;
+  /* Will be handled by JS for simple parallax if needed, or static for now */
+  transform: translateY(0);
+}
+
+.zomer-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(32,48,61,0.6) 0%, rgba(32,48,61,0.2) 50%, rgba(250,249,246,0.95) 100%);
+  z-index: 1;
+}
+
+.zomer-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  padding-top: 100px; /* Offset for Header */
+  max-width: 900px;
+}
+
+.zomer-hero-tag {
+  color: var(--zomer-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.zomer-hero-content h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 400;
+  margin-bottom: 24px;
+  line-height: 1.1;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.zomer-hero-sub {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  max-width: 750px;
+  margin: 0 auto 40px auto;
+  color: rgba(255,255,255,0.9);
+}
+
+.zomer-hero-ctas {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Base button adaptations for Hero */
+.zomer-landing .btn-primary {
+  background: var(--zomer-gold);
+  color: var(--color-primary);
+  border: none;
+  border-radius: 4px;
+  padding: 14px 32px;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.zomer-landing .btn-primary:hover {
+  background: #deb666;
+  transform: translateY(-2px);
+}
+
+.act-btn-ghost {
+  display: inline-block;
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 4px;
+  padding: 14px 32px;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.act-btn-ghost:hover {
+  background: white;
+  color: var(--color-primary);
+}
+
+
+/* ================= SUBNAV (Sticky) ================= */
+.zomer-subnav {
+  position: sticky;
+  top: 80px; /* Under the main header */
+  background: var(--color-primary);
+  color: rgba(255,255,255,0.8);
+  z-index: 100;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.zomer-subnav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0;
+  height: 60px;
+  gap: 40px;
+  overflow-x: auto; /* mobile scroll */
+  white-space: nowrap;
+}
+
+.zomer-subnav a {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.zomer-subnav a:hover, .zomer-subnav a.active {
+  color: var(--zomer-gold);
+}
+
+.zomer-subnav a.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--zomer-gold);
+}
+
+
+/* ================= INTRO (WHY EBEN) ================= */
+.zomer-intro {
+  padding-top: 100px;
+  padding-bottom: 80px;
+}
+
+.zomer-intro-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+@media (max-width: 991px) {
+  .zomer-intro-split {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.section-tag {
+  color: var(--zomer-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.zomer-intro-text h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  color: var(--zomer-green);
+  margin-bottom: 24px;
+}
+
+.zomer-intro-text p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--zomer-muted);
+}
+
+.zomer-intro-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.badge-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.badge-card:hover {
+  transform: translateX(5px);
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--zomer-gold);
+}
+
+.badge-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--zomer-gold);
+  flex-shrink: 0;
+}
+
+.badge-card span {
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--color-primary);
+}
+
+
+/* ================= FILTER MODULE ================= */
+.zomer-filter-section {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+.zomer-filter-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.zomer-filter-header h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  color: var(--color-primary);
+}
+
+.zomer-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.zfilter-btn {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--zomer-muted);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.zfilter-btn:hover {
+  border-color: var(--zomer-gold);
+  color: var(--color-primary);
+}
+
+.zfilter-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+
+/* ================= ACTIVITIES GRID ================= */
+.zomer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 40px;
+  padding-bottom: 120px;
+}
+
+@media (max-width: 768px) {
+  .zomer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.zcard {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease;
+}
+
+.zcard.hide {
+  display: none;
+}
+
+.zcard:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.zcard-img-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.zcard-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.zcard:hover .zcard-img-wrap img {
+  transform: scale(1.05);
+}
+
+.zcard-chips {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: rgba(255,255,255,0.9);
+  color: var(--color-primary);
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+}
+
+.zcard-body {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 262px); /* Calc based on aspect ratio roughly */
+}
+
+.zcard-cat {
+  color: var(--zomer-gold);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.zcard-body h3 {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--color-primary);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.zcard-body p {
+  color: var(--zomer-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex-grow: 1; /* Pushes footer to bottom */
+}
+
+.zcard-footer {
+  display: flex;
+  flex-direction: column; /* Or row if single link */
+  gap: 12px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-top: 20px;
+}
+
+.zcard-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.zcard-link::after {
+  content: '→';
+  margin-left: 8px;
+  font-size: 1.2em;
+  transition: transform 0.3s ease;
+}
+
+.zcard-link:hover {
+  color: var(--zomer-gold);
+}
+
+.zcard-link:hover::after {
+  transform: translateX(4px);
+}
+
+
+/* ================= ITINERARIES ================= */
+.zomer-itineraries {
+  padding-top: 60px;
+  padding-bottom: 100px;
+  background-color: #F4F1ED; /* Very light warm sand */
+  border-radius: 12px;
+  margin-bottom: 100px;
+}
+
+.zomer-filter-header.center h2 {
+  margin-bottom: 10px;
+}
+
+.itinerary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+@media (max-width: 991px) {
+  .itinerary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.itinerary-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.itinerary-card.highlight {
+  background: var(--zomer-green);
+  color: white;
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-lg);
+}
+
+.itinerary-card.highlight h4 {
+  color: white;
+}
+
+.iti-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.itinerary-card.highlight .iti-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+}
+
+.iti-header h4 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.iti-header span {
+  font-size: 1.8rem;
+}
+
+.iti-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.iti-list li {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--zomer-muted);
+}
+
+.itinerary-card.highlight .iti-list li {
+  color: rgba(255,255,255,0.9);
+}
+
+.iti-list strong {
+  display: block;
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.itinerary-card.highlight .iti-list strong {
+  color: var(--zomer-gold);
+}
+
+
+/* ================= PRACTICAL INFO ================= */
+.zomer-practical {
+  padding-bottom: 120px;
+  display: flex;
+  justify-content: center;
+}
+
+.practical-content {
+  width: 100%;
+  max-width: 800px;
+}
+
+.practical-content h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.accordion-item {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 24px 0;
+  cursor: pointer;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.accordion-header .icon {
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform 0.3s ease;
+}
+
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.accordion-body p {
+  padding-top: 16px;
+  color: var(--zomer-muted);
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+.accordion-item.active .accordion-body {
+  max-height: 200px; /* arbitrary large number */
+}
+
+.accordion-item.active .accordion-header .icon {
+  transform: rotate(45deg); /* Plus to Cross */
+}
+
+
+/* ================= FINAL CTA ================= */
+.zomer-cta {
+  position: relative;
+  background-image: url('https://images.unsplash.com/photo-1596489397228-66afdbd065df?q=80&w=2070&auto=format&fit=crop'); /* Placeholder landscape */
+  background-size: cover;
+  background-position: center;
+  padding: 120px 0;
+  text-align: center;
+}
+
+.cta-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  opacity: 0.85;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 2;
+  color: white;
+  max-width: 800px;
+}
+
+.cta-content h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  margin-bottom: 24px;
+}
+
+.cta-content p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.8);
+}
+
+
+/* ================= CUSTOM FOOTER TWEAKS ================= */
+.zomer-footer {
+  background-color: #1a2530; /* Darker than primary */
+  color: white;
+  padding-top: 80px;
+}
+
+.footer-link-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-link-list li {
+  margin-bottom: 12px;
+}
+
+.footer-link-list a {
+  color: rgba(255,255,255,0.7);
+  transition: color 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.footer-link-list a:hover {
+  color: var(--zomer-gold);
+}

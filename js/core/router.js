@@ -61,6 +61,8 @@ function reInitPageContent(pageId) {
         window.HomePage.init();
     } else if (pageId === 'lodge' && window.LodgePage) {
         window.LodgePage.init();
+    } else if (pageId === 'activities' && window.SeasonsPage) {
+        window.SeasonsPage.init(true);
     } else if (pageId === 'booking' && window.GipfelBooking) {
         window.GipfelBooking.init();
     }

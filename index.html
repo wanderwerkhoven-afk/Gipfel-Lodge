@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="css/components/splash.css" />
   <link rel="stylesheet" href="css/pages/home.css" />
   <link rel="stylesheet" href="css/pages/lodge.css" />
-  <link rel="stylesheet" href="css/pages/activities.css" />
+  <link rel="stylesheet" href="css/pages/seizoenen.css" />
   <link rel="stylesheet" href="css/pages/booking.css" />
     <link rel="stylesheet" href="css/pages/booking.css">
     
@@ -151,7 +151,7 @@
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
     </button>
-    <a class="menu-link is-active" href="#home" data-i18n="nav-home">HOME</a>
+    <a class="menu-link" href="#home" data-i18n="nav-home">HOME</a>
     <a class="menu-link" href="#lodge" data-i18n="nav-lodge">DIE LODGE</a>
     <a class="menu-link" href="#activities" data-i18n="nav-activities">AKTIVITÄTEN</a>
     <a class="menu-link" href="#enjoyment" data-i18n="nav-enjoyment">GENUSS</a>
@@ -253,7 +253,7 @@
                     <div class="exp-overlay">
                         <h3 data-i18n="exp-winter-title">Winter Wonderland</h3>
                         <p data-i18n="exp-winter-text">Direkter Zugang zum Skigebiet...</p>
-                        <a href="#activities" class="exp-link" data-i18n="exp-link">Entdecken</a>
+                        <a href="eben.html" class="exp-link" data-i18n="exp-link">Entdecken</a>
                     </div>
                 </div>
                 <div class="reveal exp-card" style="transition-delay: 0.2s;">
@@ -263,7 +263,7 @@
                     <div class="exp-overlay">
                         <h3 data-i18n="exp-summer-title">Summer Serenity</h3>
                         <p data-i18n="exp-summer-text">Bergwandern und Alpenglück...</p>
-                        <a href="#activities" class="exp-link" data-i18n="exp-link">Entdecken</a>
+                        <a href="eben.html" class="exp-link" data-i18n="exp-link">Entdecken</a>
                     </div>
                 </div>
             </div>
@@ -590,141 +590,337 @@
     </section>
   </main>
 
-  <!-- 2.5 MAIN: ACTIVITIES PAGE -->
+  <!-- 2.5 MAIN: ACTIVITIES PAGE (SPA Integrated from eben.html) -->
   <main id="activities-page" class="page">
     
-    <div class="activities-season-selector">
-      <div class="activities-intro reveal">
-        <span class="intro-tag" data-i18n="act-intro-tag">Your Alpine Adventures</span>
-        <h2 data-i18n="act-intro-title">Choose your season to learn about the activities</h2>
-        <p data-i18n="act-intro-text">De Gipfel Lodge in Eben im Pongau ligt midden in een paradijs voor natuurliefhebbers en sporters. Selecteer uw favoriete seizoen en ontdek wat er direct voor onze deur op u wacht.</p>
-      </div>
-
-      <div class="activities-toggles">
-        <!-- Winter Toggle -->
-        <div class="act-toggle" data-season="winter">
-          <img src="assets/images/pictures/winter-outside.png" alt="Winter Wonderland">
-          <div class="act-toggle-overlay"></div>
-          <div class="act-toggle-content">
-            <h2 class="act-toggle-title" data-i18n="act-winter-title">Winter Wonderland</h2>
-            <p class="act-toggle-subtitle" data-i18n="act-winter-sub">Directe toegang tot het Ski Amadé skigebied.</p>
-            <div class="act-select-btn" data-i18n="act-btn-winter">Select Winter</div>
-          </div>
-        </div>
-
-        <!-- Summer Toggle -->
-        <div class="act-toggle" data-season="summer">
-          <img src="assets/images/pictures/summer-outside.png" alt="Zomerse Rust">
-          <div class="act-toggle-overlay"></div>
-          <div class="act-toggle-content">
-            <h2 class="act-toggle-title" data-i18n="act-summer-title">Zomerse Rust</h2>
-            <p class="act-toggle-subtitle" data-i18n="act-summer-sub">Bergwandelen en alpien geluk in de Hohe Tauern.</p>
-            <div class="act-select-btn" data-i18n="act-btn-summer">Select Summer</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="activities-content-container">
+    <!-- ================= MEGA HERO ================= -->
+    <section class="mega-hero">
+      <div class="mega-hero-bg hero-bg-summer active" style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop');"></div>
+      <div class="mega-hero-bg hero-bg-winter" style="background-image: url('https://images.unsplash.com/photo-1548777123-e216912df7d8?q=80&w=2070&auto=format&fit=crop');"></div>
+      <div class="mega-hero-overlay"></div>
       
-      <!-- WINTER CONTENT -->
-      <section id="season-winter" class="act-season-section">
-        <!-- Activity 1 -->
-        <div class="act-split">
-          <img src="assets/images/pictures/winter-outside-2.png" alt="Ski Amade" class="act-split-img">
-          <div class="act-split-text">
-            <span class="intro-tag" data-i18n="act-winter-t1-tag">Ski Amadé</span>
-            <h3 data-i18n="act-winter-t1-title">760 km Pistenplezier</h3>
-            <p data-i18n="act-winter-t1-text">Erleben Sie grenzenloses Skivergnügen im Herzen von Ski Amadé. Mit nur einem Skipass stehen Ihnen 760 Pistenkilometer und modernste Liftanlagen zur Verfügung. Die Gipfel Lodge bietet den perfekten Ausgangspunkt für Ihre täglichen Bergabenteuer.</p>
-            <ul class="act-features-list">
-              <li data-i18n="act-winter-t1-f1">Grootste skigebied van Oostenrijk</li>
-              <li data-i18n="act-winter-t1-f2">Slechts 8 minuten tot de skilift in Flachau</li>
-              <li data-i18n="act-winter-t1-f3">Extreem sneeuwzeker tot in het voorjaar</li>
-            </ul>
-          </div>
-        </div>
+      <div class="mega-hero-content container">
+        <span class="mega-hero-tag">Ontdek het Salzburger Land</span>
         
-        <!-- Activity 2 -->
-        <div class="act-split reverse">
-          <img src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Wellness" class="act-split-img">
-          <div class="act-split-text">
-            <span class="intro-tag" data-i18n="act-winter-t2-tag">Ontspannen</span>
-            <h3 data-i18n="act-winter-t2-title">Uw Eigen Private Spa</h3>
-            <p data-i18n="act-winter-t2-text">Na een koude en actieve dag in de sneeuw is er niets beter dan thuiskomen in de warmte van de lodge. Geniet van uw eigen Finse sauna, ontspan vermoeide spieren en vind rust in de sfeervolle, houtgestookte woonkamer.</p>
-            <ul class="act-features-list">
-              <li data-i18n="act-winter-t2-f1">Royale cabine-sauna met sfeerlicht</li>
-              <li data-i18n="act-winter-t2-f2">Ruime inloopregendouche</li>
-              <li data-i18n="act-winter-t2-f3">Echte open haard voor gezellige romantiek</li>
-            </ul>
+        <h1 class="mega-hero-title">
+          <div class="season-switch" id="hero-season-switch" role="button" tabindex="0" aria-label="Toggle tussen zomer en winter">
+            <div class="switch-pill"></div>
+            <span class="switch-opt opt-zomer active">Zomer</span>
+            <span class="switch-opt opt-winter">Winter</span>
           </div>
+          <br>
+          <span class="static-title-part">in Eben im Pongau</span>
+        </h1>
+        
+        <div class="mega-subtitles-wrapper">
+          <p class="mega-hero-sub sub-summer active">Van bergwandelingen en e-bike tours tot alpaca-picknicks, wellness en kristalheldere meren &mdash; ontdek de mooiste zomeractiviteiten rondom Gipfel Lodge.</p>
+          <p class="mega-hero-sub sub-winter">Skiën in Ski amadé, wandelingen door een sprookjesachtig winterlandschap en ontspannen in luxe &mdash; beleef de pure magie van de Alpen in de winter.</p>
         </div>
 
-        <!-- Activity 3 -->
-        <div class="act-split">
-          <img src="assets/images/pictures/winter-outside.png" alt="Winter Magic" class="act-split-img">
-          <div class="act-split-text">
-            <span class="intro-tag" data-i18n="act-winter-t3-tag">Off-Piste</span>
-            <h3 data-i18n="act-winter-t3-title">Winter Wonderland</h3>
-            <p data-i18n="act-winter-t3-text">Voor wie even geen ski's of snowboard onder wil hebben, biedt de regio idyllische besneeuwde wandelpaden, perfect geprepareerde langlaufloipes en spannende rodelbanen voor de hele familie in de directe nabijheid.</p>
-            <ul class="act-features-list">
-              <li data-i18n="act-winter-t3-f1">Verlichte rodelbanen in de avond</li>
-              <li data-i18n="act-winter-t3-f2">Tientallen kilometers aan langlaufloipes</li>
-              <li data-i18n="act-winter-t3-f3">Winterse koetstochten direct in Eben</li>
-            </ul>
+        <div class="mega-hero-ctas">
+          <button id="btn-jump-activities" class="btn btn-primary theme-btn">Bekijk activiteiten</button>
+          <a href="#booking" class="btn act-btn-ghost theme-ghost">Plan je verblijf</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: ZOMER -->
+    <div id="zomer-view" class="season-view active">
+      <nav class="mega-subnav zomer-subnav">
+        <ul class="container">
+          <li><a href="#intro-zomer">Waarom Eben?</a></li>
+          <li><a href="#activities-zomer">Activiteiten</a></li>
+          <li><a href="#itineraries-zomer">Dagprogramma's</a></li>
+          <li><a href="#info-zomer">Praktisch</a></li>
+        </ul>
+      </nav>
+
+      <section class="mega-intro container" id="intro-zomer">
+        <div class="intro-split">
+          <div class="intro-text">
+            <span class="theme-tag">Jouw Uitvalsbasis</span>
+            <h2>Eben als ideale basis voor de zomer</h2>
+            <p>Gelegen in het hart van de Salzburger Sportwelt biedt Eben de perfecte balans tussen rust en avontuur. Ontdek de adembenemende natuur direct vanaf de lodge. Zowel recreatieve wandelaars als actieve bergsporters beleven hier hun ultieme alpiene zomer, met uitstekende verbindingen naar iconische bestemmingen zoals Flachau, Altenmarkt en St. Johann.</p>
+          </div>
+          <div class="intro-badges theme-badges">
+            <div class="badge-card"><span>🏔️</span> Direct aan wandel- en fietsroutes</div>
+            <div class="badge-card"><span>👨‍👩‍👧‍👦</span> Uitstekende familievriendelijke regio</div>
+            <div class="badge-card"><span>💦</span> Wellness en zwemmeren in de nabijheid</div>
+            <div class="badge-card"><span>🚗</span> De ideale plek voor rust én avontuur</div>
           </div>
         </div>
       </section>
 
-      <!-- SUMMER CONTENT -->
-      <section id="season-summer" class="act-season-section">
-        <!-- Activity 1 -->
-        <div class="act-split">
-          <img src="assets/images/pictures/summer-outside-terrace.png" alt="Wandern" class="act-split-img">
-          <div class="act-split-text">
-            <span class="intro-tag" data-i18n="act-summer-t1-tag">Wandelen</span>
-            <h3 data-i18n="act-summer-t1-title">Verken de Hohe Tauern</h3>
-            <p data-i18n="act-summer-t1-text">Ontdek adembenemende wandelroutes direct vanaf de lodge. Of u nu kiest voor een ontspannen wandeling langs groene alpenweiden of een uitdagende klim naar een bergtop, het Salzburgerland biedt talloze mogelijkheden.</p>
-            <ul class="act-features-list">
-              <li data-i18n="act-summer-t1-f1">Honderden kilometers aan wandelroutes</li>
-              <li data-i18n="act-summer-t1-f2">Gezellige authentieke almhutten (Jausenstationen)</li>
-              <li data-i18n="act-summer-t1-f3">Ook in de zomer geopende skiliften</li>
-            </ul>
-          </div>
+      <section class="mega-filter container" id="activities-zomer">
+        <div class="filter-header"><span class="theme-tag">Activiteiten</span><h2>Vind jouw perfecte zomerdag</h2></div>
+        <div class="filter-bar theme-bar" id="filter-zomer">
+          <button class="tfilter-btn active" data-filter="all">Alle</button>
+          <button class="tfilter-btn" data-filter="families">Families</button>
+          <button class="tfilter-btn" data-filter="actief">Actief</button>
+          <button class="tfilter-btn" data-filter="ontspanning">Ontspanning</button>
+          <button class="tfilter-btn" data-filter="natuur">Natuur</button>
+          <button class="tfilter-btn" data-filter="romantisch">Romantisch</button>
         </div>
-        
-        <!-- Activity 2 -->
-        <div class="act-split reverse">
-          <img src="assets/images/pictures/summer-outside.png" alt="Biking" class="act-split-img">
-          <div class="act-split-text">
-            <span class="intro-tag" data-i18n="act-summer-t2-tag">Actief</span>
-            <h3 data-i18n="act-summer-t2-title">E-Biken & Meren</h3>
-            <p data-i18n="act-summer-t2-text">Verken de omliggende bergen op de fiets met perfect aangelegde mountainbike en e-bike trails. Verfris uzelf na een intensieve tocht in een van de heldere alpenmeren, zoals de nabijgelegen Erlebnisbadesee Eben.</p>
-            <ul class="act-features-list">
-              <li data-i18n="act-summer-t2-f1">Uitdagende MTB-Trails (bijv. Stoneman Taurista)</li>
-              <li data-i18n="act-summer-t2-f2">Verfrissende zwemmeren op 5 minuten rijden</li>
-              <li data-i18n="act-summer-t2-f3">Beveiligde privé-garage in de eigen lodge</li>
-            </ul>
-          </div>
-        </div>
+      </section>
 
-        <!-- Activity 3 -->
-        <div class="act-split">
-          <img src="assets/images/pictures/summer-outside-2.png" alt="Excursions" class="act-split-img">
-          <div class="act-split-text">
-            <span class="intro-tag" data-i18n="act-summer-t3-tag">Excursies</span>
-            <h3 data-i18n="act-summer-t3-title">Cultuur & Golfplezier</h3>
-            <p data-i18n="act-summer-t3-text">De perfecte vakantie bestaat uit afwisseling. Begeef u in de rijke cultuur van de historische stad Salzburg. Of verbeter uw handicap op een van de vele schitterend gelegen premium alpine golfbanen in de regio.</p>
-             <ul class="act-features-list">
-              <li data-i18n="act-summer-t3-f1">Top 18-holes kampioenschapsbanen vlakbij</li>
-              <li data-i18n="act-summer-t3-f2">Slechts 45 minuten rijden naar hartje Salzburg</li>
-              <li data-i18n="act-summer-t3-f3">Historische forten zoals Burg Hohenwerfen</li>
-            </ul>
+      <section class="mega-grid container" id="grid-zomer">
+        <article class="tcard summer" data-categories="families,actief,natuur">
+          <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/rossbrand-gross.jpg" alt="Wandelen"><div class="tcard-chips"><span class="chip">80+ km routes</span></div></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Wandelen & Bergtochten</span>
+            <h3>Wandelen met panoramisch uitzicht</h3>
+            <p>Toegankelijke familieroutes, rustieke berghutten en uitdagende tochten naar de Gerzkopf maken Eben een ideale bestemming.</p>
+            <div class="tcard-footer"><a href="https://www.eben.at/en/summer/hiking/hikingtrails.html" target="_blank" class="tcard-link theme-text">Bekijk routes</a></div>
+          </div>
+        </article>
+        <article class="tcard summer" data-categories="actief,families">
+          <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/biken-wiese-gross.jpg" alt="E-bike"><div class="tcard-chips"><span class="chip">500 km fietspaden</span></div></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">E-bike & Fietsen</span>
+            <h3>E-bike avonturen door dal en berg</h3>
+            <p>Verken de regio moeiteloos per e-bike via honderden kilometers gemarkeerde routes en huur lokaal materiaal af.</p>
+            <div class="tcard-footer"><a href="https://www.eben.at/en/summer/biking/ebiking.html" target="_blank" class="tcard-link theme-text">Over E-Biken</a></div>
+          </div>
+        </article>
+        <article class="tcard summer" data-categories="families,ontspanning">
+          <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/erlebnis-badesee-eben-rutsche.jpg" alt="Adventure Lake Eben"><div class="tcard-chips"><span class="chip">Ligweide & Speeltuin</span></div></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Waterpret</span>
+            <h3>Verkoeling bij het Adventure Lake</h3>
+            <p>Ideaal op schitterende warme zomerdagen met zonnige ligweides en glijbanen voor het hele gezin direct in Eben.</p>
+            <div class="tcard-footer"><a href="https://www.eben.at/en/summer/swimming/bathing-lake.html" target="_blank" class="tcard-link theme-text">Ontdek het Zwemmeer</a></div>
+          </div>
+        </article>
+        <article class="tcard summer" data-categories="families,natuur,romantisch,ontspanning">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1589182337358-2cb63099350c?q=80&w=1974&auto=format&fit=crop" alt="Alpacas"></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Dieren / Lokaal</span>
+            <h3>Unieke alpaca-ervaringen</h3>
+            <p>Ontspannen alpaca hikes door de ochtendglorie of romantische sunset-picnics vol regionale lekkernijen.</p>
+            <div class="tcard-footer"><a href="https://www.eben.at/en/summer/culinary/alpacapicnic.html" target="_blank" class="tcard-link theme-text">Bekijk Ervaringen</a></div>
+          </div>
+        </article>
+        <article class="tcard summer" data-categories="ontspanning,families">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop" alt="Therme Amadé Wellness"></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Wellness & Zwembad</span>
+            <h3>Wellness bij Therme Amadé</h3>
+            <p>Perfect voor een totale relaxdag of minder mooi weer: luxe wellness en actieve zwembaden in Altenmarkt.</p>
+            <div class="tcard-footer"><a href="https://www.thermeamade.at/en/" target="_blank" class="tcard-link theme-text">Bekijk de Therme</a></div>
+          </div>
+        </article>
+        <article class="tcard summer" data-categories="natuur,actief">
+          <div class="tcard-img"><img src="https://cdn.indebergen.nl/media/y2tjyggd/liechtensteinklamm-indebergen.jpeg?anchor=center&mode=crop&width=1160&height=870&format=webp&quality=80" alt="Liechtensteinklamm"></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Dagtrips (Highlights)</span>
+            <h3>Liechtensteinklamm Waterval</h3>
+            <p>Spectaculaire dagtrip excursie in een immens bekende, diep uitgeslepen rotskloof met kraakhelder water.</p>
+            <div class="tcard-footer"><a href="https://www.josalzburg.com/en/" target="_blank" class="tcard-link theme-text">Tickets Klamm</a></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="mega-itineraries container" id="itineraries-zomer">
+        <div class="filter-header"><span class="theme-tag">Inspiratie</span><h2>Voorbeeld Dagprogramma's</h2></div>
+        <div class="iti-grid">
+          <div class="iti-card summer">
+            <h4>Een heerlijke familiedag <span>🌞</span></h4>
+            <div class="iti-step"><strong>Ochtend:</strong><p>Gezamenlijk opstaan en te voet vertrekken naar de KITIWAPF kindertrail voor een interactief bosavontuur vol raadsels en plezier.</p></div>
+            <div class="iti-step"><strong>Middag:</strong><p>Heerlijk afkoelen aan de oevers van het zwemmeer in Eben. Ouders ontspannen in de zon terwijl de kinderen zich vermaken op de waterglijbanen.</p></div>
+            <div class="iti-step"><strong>Avond:</strong><p>Terugkeer naar de Gipfel Lodge! Steek de buiten-BBQ aan of geniet van een diner in een gezellige Oostenrijkse Stube in de buurt.</p></div>
+          </div>
+          <div class="iti-card summer highlight">
+            <h4>Actieve bergdag <span>🏔️</span></h4>
+            <div class="iti-step"><strong>Ochtend:</strong><p>Huur de nieuwste e-bikes of trek je wandelschoenen aan voor een uitdagende tocht naar de top van de Gerzkopf.</p></div>
+            <div class="iti-step"><strong>Middag:</strong><p>Bereik de top en trakteer jezelf op een welverdiende Kaiserschmarrn op het zonneterras, met een adembenemend panoramisch uitzicht.</p></div>
+            <div class="iti-step"><strong>Avond:</strong><p>Laat de spieren tot rust komen en geniet van een verfrissend witbier in het dal, terwijl de zon langzaam achter de bergtoppen verdwijnt.</p></div>
+          </div>
+          <div class="iti-card summer">
+            <h4>Ontspannen genietdag <span>🥂</span></h4>
+            <div class="iti-step"><strong>Ochtend:</strong><p>Begin de dag rustig met een 'slow morning'. Maak een ontspannen wandeling door de weidse velden, vergezeld door de vriendelijke alpaca's uit de streek.</p></div>
+            <div class="iti-step"><strong>Middag:</strong><p>Ontsnap aan de dagelijkse drukte en dompel jezelf onder in de warme zoutwaterbaden en sauna's van de nabijgelegen Therme Amadé.</p></div>
+            <div class="iti-step"><strong>Avond:</strong><p>Geniet van een schilderachtige picknick bij zonsondergang. Neem lokale kazen en wijnen mee het heuvelachtige landschap in.</p></div>
           </div>
         </div>
       </section>
 
+      <section class="mega-practical container" id="info-zomer">
+        <div class="practical-content">
+          <h2>Praktische Zomer Zaken</h2>
+          <div class="accordion t-acc zomer-acc">
+            <div class="accordion-item" tabindex="0">
+              <div class="accordion-header theme-text"><span>Huur van E-bikes & fietsen</span><span class="icon">+</span></div>
+              <div class="accordion-body"><p>Via Intersport in Eben kunt u modern opgeladen e-bikes en mountainbikes huren, direct aan het begin van de mooiste trails.</p></div>
+            </div>
+            <div class="accordion-item" tabindex="0">
+              <div class="accordion-header theme-text"><span>Bereikbaarheid & reistijden</span><span class="icon">+</span></div>
+              <div class="accordion-body"><p>Gipfel Lodge ligt zeer gunstig: Therme Amadé (10 min), Ebener Erlebnissee (5 min) en Flachau (15 min). Bergtrajecten en bezienswaardigheden zijn uitstekend bereikbaar.</p></div>
+            </div>
+            <div class="accordion-item" tabindex="0">
+              <div class="accordion-header theme-text"><span>Familievriendelijke regio</span><span class="icon">+</span></div>
+              <div class="accordion-body"><p>Er zijn talloze specifieke educatieve themawandelpaden voor kinderen met interactieve spelletjes (zoals Flori's Erlebnispfad in de regio).</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
+    <!-- VIEW: WINTER -->
+    <div id="winter-view" class="season-view">
+      <nav class="mega-subnav winter-subnav">
+        <ul class="container">
+          <li><a href="#intro-winter">Waarom Eben?</a></li>
+          <li><a href="#activities-winter">Activiteiten</a></li>
+          <li><a href="#itineraries-winter">Dagprogramma's</a></li>
+          <li><a href="#info-winter">Praktisch</a></li>
+        </ul>
+      </nav>
+
+      <section class="mega-intro container" id="intro-winter">
+        <div class="intro-split">
+          <div class="intro-text">
+            <span class="theme-tag">Jouw Sneeuwparadijs</span>
+            <h2>Eben als ideale winterbestemming</h2>
+            <p>Eben im Pongau is de perfecte uitvalsbasis voor een droomvakantie in de sneeuw. Rustig gelegen, maar toch midden in het indrukwekkende hart van Ski amadé. Ideaal voor ambitieuze skiërs die snelle toegang wensen tot Snow Space Salzburg, maar ook perfect voor gasten die op zoek zijn naar pure ontspanning, ver weg van de après-ski drukte.</p>
+          </div>
+          <div class="intro-badges theme-badges">
+            <div class="badge-card"><span>⛷️</span> 750 km aaneengesloten piste (Ski amadé)</div>
+            <div class="badge-card"><span>❄️</span> Rustige lodge, absolute centrale ligging</div>
+            <div class="badge-card"><span>☃️</span> Ideaal voor ambitieuze skiërs én niet-skiërs</div>
+            <div class="badge-card"><span>💦</span> Wellness & serene natuur dichtbij</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mega-filter container" id="activities-winter">
+        <div class="filter-header"><span class="theme-tag">Activiteiten</span><h2>Vind jouw perfecte winterbeleving</h2></div>
+        <div class="filter-bar theme-bar" id="filter-winter">
+          <button class="tfilter-btn active" data-filter="all">Alle</button>
+          <button class="tfilter-btn" data-filter="skiën">Skiën</button>
+          <button class="tfilter-btn" data-filter="familie">Familie</button>
+          <button class="tfilter-btn" data-filter="niet-skiërs">Niet-skiërs</button>
+          <button class="tfilter-btn" data-filter="ontspanning">Ontspanning</button>
+          <button class="tfilter-btn" data-filter="romantisch">Romantisch</button>
+        </div>
+      </section>
+
+      <section class="mega-grid container" id="grid-winter">
+        <article class="tcard winter" data-categories="skiën,familie,actief">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1605540436563-5bca919ae766?q=80&w=2069&auto=format&fit=crop" alt="Skiën"><div class="tcard-chips"><span class="chip">750 km Piste</span></div></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Pisteplezier</span>
+            <h3>Skiën in Ski amadé & Flachau</h3>
+            <p>Directe toegang tot een van de grootste skigebieden van Europa met honderden kilometers perfect geprepareerde pistes binnen handbereik.</p>
+            <div class="tcard-footer"><a href="https://www.skiamade.com/en/" target="_blank" class="tcard-link theme-text">Bekijk skigebied</a></div>
+          </div>
+        </article>
+        <article class="tcard winter" data-categories="niet-skiërs,actief,ontspanning">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1610484737754-52ff99859f7b?q=80&w=2070&auto=format&fit=crop" alt="Langlaufen"></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Noords genieten</span>
+            <h3>Langlaufen in Eben</h3>
+            <p>Rust, verkwikkende natuur en strak getrokken loipes over sneeuwvlaktes maken langlaufen prachtig hier.</p>
+            <div class="tcard-footer"><a href="https://www.skiamade.com/en/winter/cross-country-skiing" target="_blank" class="tcard-link theme-text">Loipes info</a></div>
+          </div>
+        </article>
+        <article class="tcard winter" data-categories="familie,niet-skiërs">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1546702381-424a56385df9?q=80&w=2070&auto=format&fit=crop" alt="Rodelen"><div class="tcard-chips"><span class="chip">Oók 's Avonds</span></div></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Sneeuwpret</span>
+            <h3>Rodelen (ook na diner)</h3>
+            <p>Gemoedelijke familie-afdalingen bij daglicht of sfeervol verlichte avondrodelbanen inclusief berghut stops!</p>
+            <div class="tcard-footer"><a href="https://www.skiamade.com/en/winter/tobogganing" target="_blank" class="tcard-link theme-text">Pijlsnel naar beneden</a></div>
+          </div>
+        </article>
+        <!-- W 4 -->
+        <article class="tcard winter" data-categories="niet-skiërs,ontspanning,romantisch">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1510425712217-02b4e85732ab?q=80&w=1974&auto=format&fit=crop" alt="Winterwandelen"></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Stilte van de Natuur</span>
+            <h3>Magische sneeuwwandelingen</h3>
+            <p>Verken betoverend besneeuwde bossen te voet, of wandel met speciale sneeuwschoenen door ongerepte poedersneeuw.</p>
+            <div class="tcard-footer"><a href="https://www.skiamade.com/en/winter/winter-hiking" target="_blank" class="tcard-link theme-text">Paden & routes</a></div>
+          </div>
+        </article>
+        <!-- W 5 -->
+        <article class="tcard winter" data-categories="ontspanning,niet-skiërs,familie">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1583416750470-965b2707b355?q=80&w=2070&auto=format&fit=crop" alt="Therme Amadé Winter"></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Wellness in de vrieskou</span>
+            <h3>Opwarmen bij Therme Amadé</h3>
+            <p>Volledig bijkomen van de pistesluur in de zoutwaterbaden en stoomsauna's in de sneeuw.</p>
+            <div class="tcard-footer"><a href="https://www.thermeamade.at/en/" target="_blank" class="tcard-link theme-text">Bekijk Winterbaden</a></div>
+          </div>
+        </article>
+        <!-- W 6 -->
+        <article class="tcard winter" data-categories="romantisch,niet-skiërs">
+          <div class="tcard-img"><img src="https://images.unsplash.com/photo-1517400508447-f8dd518b86e3?q=80&w=2070&auto=format&fit=crop" alt="Arrenslee winter"></div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Tradities</span>
+            <h3>Arrenslee Romantiek</h3>
+            <p>Genesteld onder een wollen deken met glühwein door de stille alpenbossen glijden mét paardenslee.</p>
+            <div class="tcard-footer"><a href="https://www.salzburgerland.com/en/winter/horse-drawn-sleigh-rides/" target="_blank" class="tcard-link theme-text">Reserveer Paardenslee</a></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="mega-itineraries container" id="itineraries-winter">
+        <div class="filter-header"><span class="theme-tag">Inspiratie</span><h2>Winter Dagprogramma's</h2></div>
+        <div class="iti-grid">
+          <div class="iti-card winter highlight">
+            <h4>Een perfecte dag op de piste <span>⛷️</span></h4>
+            <div class="iti-step"><strong>Ochtend:</strong><p>Sta als eerste bij de splinternieuwe liften in Flachau! Carve in alle rust over de vers geprepareerde 'corduroy' pistes van Ski amadé.</p></div>
+            <div class="iti-step"><strong>Middag:</strong><p>Schuif aan bij een authentieke berghut voor een huisgemaakte goulashsoep of een stevige schnitzel, terwijl je geniet van de Oostenrijkse winterzon.</p></div>
+            <div class="iti-step"><strong>Avond:</strong><p>Beleef de gezellige après-ski sfeer in het dal, om vervolgens in alle rust en luxe te ontspannen in uw eigen warme lodge.</p></div>
+          </div>
+          <div class="iti-card winter">
+            <h4>Rust & natuur dag <span>❄️</span></h4>
+            <div class="iti-step"><strong>Ochtend:</strong><p>Trek je sneeuwschoenen aan voor een verkwikkende route door de dennenbossen. Geniet van de absolute stilte en de glinsterende sneeuw.</p></div>
+            <div class="iti-step"><strong>Middag:</strong><p>Ontsnap aan de kou en geniet van de dampende buitenbaden van Therme Amadé. Pure spierontspanning op het allerhoogste niveau.</p></div>
+            <div class="iti-step"><strong>Avond:</strong><p>Dineer op culinair niveau bij kaarslicht in Eben en laat u verrassen door de verfijnde streekproducten uit het Salzburger Land.</p></div>
+          </div>
+          <div class="iti-card winter">
+            <h4>Familie-plezierdag <span>⛄</span></h4>
+            <div class="iti-step"><strong>Ochtend:</strong><p>Terwijl de kleintjes in het kinderland in Eben hun eerste bochtjes leren, kunnen de gevorderde skiërs de omliggende pistes verkennen.</p></div>
+            <div class="iti-step"><strong>Middag:</strong><p>Plezier voor het hele gezin tijdens een spannende rodelafdaling over de verlichte banen door de besneeuwde bossen.</p></div>
+            <div class="iti-step"><strong>Avond:</strong><p>Kruip gezellig samen op de bank in de lodge. Speel bordspellen bij het warme licht van de houtkachel.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mega-practical container" id="info-winter">
+        <div class="practical-content">
+          <h2>Handige Sneeuw-Zaken</h2>
+          <div class="accordion t-acc winter-acc">
+            <div class="accordion-item" tabindex="0">
+              <div class="accordion-header theme-text"><span>Skiverhuur & Opslag</span><span class="icon">+</span></div>
+              <div class="accordion-body"><p>Via de Intersport in Eben kan de hele bups razendsnel perfect geslepen board/ski sets huren zónder onnodige ballast! Skidepot in Flachau is makkelijk.</p></div>
+            </div>
+            <div class="accordion-item" tabindex="0">
+              <div class="accordion-header theme-text"><span>Skipas Voordelen</span><span class="icon">+</span></div>
+              <div class="accordion-body"><p>Schaf de "Ski amadé" giga-pas online vooraf aan, wegens forse "early bird" percentages! Hiermee stap je in 760km verbonden Oostenrijk in zodra je wenst te skiën in de regio.</p></div>
+            </div>
+            <div class="accordion-item" tabindex="0">
+              <div class="accordion-header theme-text"><span>Verbinding naar de Lift</span><span class="icon">+</span></div>
+              <div class="accordion-body"><p>Eben blinkt uit met fantastische gratis Skibussen iedere ochtend die letterlijk in minuten stoppen bij immense Snow Space skiliften zónder ijskrab-issues met auto's.</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- FINAL CTA -->
+    <section class="mega-cta">
+      <div class="cta-overlay mega-cta-overlay"></div>
+      <div class="cta-content container">
+        <h2 class="cta-dynamic-title">Welk seizoen kies jij in Eben?</h2>
+        <p>Vier je vakantie in absolute rust en alpiene luxe, rechtstreeks aan de mooiste wandelpaden en geprepareerde skipistes van heel Centraal Oostenrijk.</p>
+        <div class="mega-hero-ctas" style="justify-content: center; margin-top: 40px;">
+          <a href="#booking" class="btn btn-primary theme-btn">Beschikbaarheid controleren</a>
+          <a href="#home" class="btn act-btn-ghost theme-ghost">Terug naar homepage</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- 2.6 MAIN: ENJOYMENT PAGE -->
@@ -1035,7 +1231,7 @@
   <!-- 3.4 PAGES -->
   <script src="js/pages/home.js"></script>
   <script src="js/pages/lodge.js"></script>
-  <script src="js/pages/activities.js"></script>
+  <script src="js/pages/seizoenen.js"></script>
   
   <!-- FireBase and Booking logic as module -->
   <script type="module" src="js/pages/booking.js"></script>
