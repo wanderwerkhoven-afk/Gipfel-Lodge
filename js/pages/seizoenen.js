@@ -15,6 +15,7 @@ window.SeasonsPage = {
             this.initUniversalAccordions();
             this.initUniversalScrollSpy();
             this.initUniversalParallax();
+            this.initCarouselDots();
             this.isInitialized = true;
         }
 
@@ -22,6 +23,44 @@ window.SeasonsPage = {
         if (shouldAnimate && !this.animationRunning) {
             this.runAttentionSeekerAnimation();
         }
+    },
+
+    initCarouselDots: function() {
+        this.setupDots('dots-zomer');
+        this.setupDots('dots-winter');
+    },
+
+    setupDots: function(dotsId) {
+        const dotsContainer = document.getElementById(dotsId);
+        if (!dotsContainer) return;
+
+        // Walk backwards through siblings to find the .iti-grid
+        let grid = null;
+        let sibling = dotsContainer.previousElementSibling;
+        while (sibling) {
+            if (sibling.classList.contains('iti-grid')) { grid = sibling; break; }
+            sibling = sibling.previousElementSibling;
+        }
+        if (!grid) return;
+
+        const dots = dotsContainer.querySelectorAll('.iti-dot');
+        const cards = grid.querySelectorAll('.iti-card');
+        if (!dots.length || !cards.length) return;
+
+        // Scroll -> update active dot
+        grid.addEventListener('scroll', () => {
+            const cardWidth = cards[0].offsetWidth + 20; // width + gap
+            const index = Math.round(grid.scrollLeft / cardWidth);
+            dots.forEach((d, i) => d.classList.toggle('active', i === index));
+        }, { passive: true });
+
+        // Click dot -> scroll to that card
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => {
+                const cardWidth = cards[0].offsetWidth + 20;
+                grid.scrollTo({ left: i * cardWidth, behavior: 'smooth' });
+            });
+        });
     },
 
     setupEventListeners: function() {
