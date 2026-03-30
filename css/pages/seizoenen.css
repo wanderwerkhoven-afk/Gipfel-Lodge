@@ -478,7 +478,7 @@ body.theme-winter .switch-pill {
 .t-acc .accordion-item.active .accordion-body { max-height: 200px; }
 .t-acc .accordion-item.active .accordion-header .icon { transform: rotate(45deg); }
 
-.mega-cta { position: relative; padding: 120px 0; text-align: center; background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop'); background-size: cover; background-attachment: fixed; }
+.mega-cta { position: relative; padding: 120px 0; text-align: center; background-image: url('https://images.unsplash.com/photo-1570478128079-a30c5acd13d4?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size: cover; background-attachment: fixed; }
 .mega-cta-overlay { position: absolute; inset: 0; background: var(--theme-primary); opacity: 0.85; transition: background 0.8s ease; }
 .mega-cta .cta-content { position: relative; z-index: 2; color: white; max-width: 800px; margin: 0 auto; }
 .cta-dynamic-title { font-family: var(--font-heading); font-size: var(--h2-size); margin-bottom: 24px; }

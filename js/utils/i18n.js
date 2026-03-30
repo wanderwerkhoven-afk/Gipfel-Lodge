@@ -84,6 +84,8 @@ const translations = {
         "footer-hours-sat": "Samstag: 09:00 - 12:00 Uhr",
         "footer-follow": "Folgen Sie uns",
         "footer-rights": "Alle Rechte vorbehalten.",
+
+        /* LODGE PAGE */
         "lodge-title": "Luxus-Lodge mit privater Sauna bei Flachau",
         "lodge-highlights-title": "Ferienhaus Tauernlodge Eben E4",
         "lodge-max-guests": "Max. 10 Gäste",
@@ -118,6 +120,26 @@ const translations = {
         "gallery-title": "Galerie",
         "gallery-btn-photos": "Fotos",
         "gallery-btn-share": "Teilen",
+
+        /* ACTIVITIES PAGE */
+        "mega-hero-tag": "Entdecken Sie das Salzburger Land",
+        "mega-hero-title-static": "in Eben im Pongau",
+        "mega-hero-sub-summer": "Von Bergwanderungen und E-Bike-Touren bis hin zu Alpaka-Picknicks, Wellness und kristallklaren Seen.",
+        "mega-hero-sub-winter": "Skifahren in Ski amadé, Winterwanderungen und pure Entspannung in den Alpen.",
+        "mega-hero-btn-activities": "Aktivitäten ansehen",
+        "mega-hero-btn-book": "Aufenthalt planen",
+
+        "activities-title": "Finden Sie Ihren perfekten Tag",
+        "activities-filter-all": "Alle",
+        "activities-filter-family": "Familien",
+        "activities-filter-active": "Aktiv",
+        "activities-filter-relax": "Entspannung",
+        "activities-filter-nature": "Natur",
+        "activities-filter-romantic": "Romantisch",
+
+        "cta-season-title": "Welche Jahreszeit wählen Sie in Eben?",
+        "cta-season-text": "Erleben Sie Ihren Urlaub in alpinem Luxus, direkt an Wanderwegen und Skipisten.",
+        "cta-season-btn": "Verfügbarkeit prüfen",
 
         /* BOOKING PAGE */
         "booking-title": "Ihre Auszeit",
