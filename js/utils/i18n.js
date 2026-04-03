@@ -85,7 +85,7 @@ const translations = {
         "footer-follow": "Folgen Sie uns",
         "footer-rights": "Alle Rechte vorbehalten.",
 
-        /* LODGE PAGE */
+        /* ACTIVITIES PAGE */
         "lodge-title": "Luxus-Lodge mit privater Sauna bei Flachau",
         "lodge-highlights-title": "Ferienhaus Tauernlodge Eben E4",
         "lodge-max-guests": "Max. 10 Gäste",

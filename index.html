@@ -22,6 +22,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gipfel Lodge | Alpiner Luxus & Raum</title>
+  
+  <!-- PWA & ICON INTEGRATION -->
+  <link rel="manifest" href="site_manifest/favicon_website/site.webmanifest">
+  <meta name="theme-color" content="#C5A059">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gipfel Lodge">
+  <link rel="apple-touch-icon" href="site_manifest/favicon_website/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="site_manifest/favicon_website/favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="site_manifest/favicon_website/favicon-96x96.png">
+  <link rel="shortcut icon" href="site_manifest/favicon_website/favicon.ico">
 
   <!-- 1.1 FONTS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -251,8 +262,16 @@
     <!-- THE SUITE LIFE -->
     <section class="suite-life">
       <div class="container suite-grid">
-        <div class="reveal suite-image">
-          <img src="assets/images/pictures/livingroom.png" alt="Suite Impression">
+        <div class="reveal suite-image suite-carousel-container">
+          <div class="suite-carousel">
+            <div class="suite-slide active"><img src="assets/images/pictures/livingroom.png" alt="Suite Impression 1"></div>
+            <div class="suite-slide"><img src="assets/images/pictures/bedroom-1.png" alt="Suite Impression 2"></div>
+            <div class="suite-slide"><img src="assets/images/pictures/bathroom-1.png" alt="Suite Impression 3"></div>
+            <div class="suite-slide"><img src="assets/images/pictures/kitchen-1.png" alt="Suite Impression 4"></div>
+          </div>
+          <button class="suite-nav prev" aria-label="Vorheriges Bild">‹</button>
+          <button class="suite-nav next" aria-label="Nächstes Bild">›</button>
+          <div class="suite-dots"></div>
         </div>
         <div class="reveal suite-content">
           <span class="intro-tag" data-i18n="suite-tag">Living in Style</span>
@@ -744,6 +763,7 @@
       </section>
 
       <section class="mega-grid container" id="grid-zomer">
+<!-- Wandelen -->
         <article class="tcard summer" data-categories="families,actief,natuur">
           <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/rossbrand-gross.jpg" alt="Wandelen">
             <div class="tcard-chips"><span class="chip">80+ km routes</span></div>
@@ -757,6 +777,7 @@
                 class="tcard-link theme-text">Bekijk routes</a></div>
           </div>
         </article>
+<!-- E-bike -->
         <article class="tcard summer" data-categories="actief,families">
           <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/biken-wiese-gross.jpg" alt="E-bike">
             <div class="tcard-chips"><span class="chip">500 km fietspaden</span></div>
@@ -770,6 +791,7 @@
                 class="tcard-link theme-text">Over E-Biken</a></div>
           </div>
         </article>
+<!-- Adventure Lake Eben -->
         <article class="tcard summer" data-categories="families,ontspanning">
           <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/erlebnis-badesee-eben-rutsche.jpg"
               alt="Adventure Lake Eben">
@@ -784,6 +806,37 @@
                 class="tcard-link theme-text">Ontdek het Zwemmeer</a></div>
           </div>
         </article>
+<!-- Zoutmijnen van Hallein -->
+        <article class="tcard summer" data-categories="families,natuur,cultuur">
+          <div class="tcard-img"><img
+              src="https://www.hallstatt.net/assets/image-gallery/salzbergwerk-hallstatt/salzwelten-2021/_resampled/CroppedFocusedImageWzgwMCw0NTAsInkiLDQxXQ/hallstatt-salzwelten-c-salzwelten-005.jpg"
+              alt="Salzwelten Hallein">
+            <div class="tcard-chips"><span class="chip">Unieke ervaring</span></div>
+          </div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Dagtrip / Beleving</span>
+            <h3>Zoutmijnen van Hallein</h3>
+            <p>Ga diep de bergen in en ontdek de fascinerende wereld van zout. Met een treintje, houten glijbanen en een boottocht door ondergrondse meren is dit een unieke ervaring voor jong en oud.</p>
+            <div class="tcard-footer"><a href="https://www.salzwelten.at/en/hallein"
+                target="_blank" class="tcard-link theme-text">Bekijk ervaring</a></div>
+          </div>
+        </article>
+<!-- Go Kart Salzburg -->
+        <article class="tcard summer" data-categories="actief,families,avontuur">
+          <div class="tcard-img"><img
+              src="https://www.oostenrijktv.nl/app/uploads/2020/08/Mountaincarttirolerzugspitzarena-0010-scaled.jpg"
+              alt="Mountain Go Kart Schladming">
+            <div class="tcard-chips"><span class="chip">Outdoor</span></div>
+          </div>
+          <div class="tcard-body">
+            <span class="tcard-cat theme-text">Avontuur / Outdoor</span>
+            <h3>Go-karten in Schladming</h3>
+            <p>Zin in snelheid en actie in de bergen? Op de Hochwurzen race je met een mountain go-kart over een spectaculaire afdaling van maar liefst 7 kilometer door het alpiene landschap. Perfect voor avonturiers en gezinnen die iets anders willen dan wandelen of zwemmen.</p>
+            <div class="tcard-footer"><a href="https://www.mountain-gokart.at"
+                target="_blank" class="tcard-link theme-text">Bekijk opties</a></div>
+          </div>
+        </article>
+<!-- Alpaca Experiences -->
         <article class="tcard summer" data-categories="families,natuur,romantisch,ontspanning">
           <div class="tcard-img"><img
               src="https://images.unsplash.com/photo-1589182337358-2cb63099350c?q=80&w=1974&auto=format&fit=crop"
@@ -797,6 +850,7 @@
                 class="tcard-link theme-text">Bekijk Ervaringen</a></div>
           </div>
         </article>
+<!-- Therme Amadé -->
         <article class="tcard summer" data-categories="ontspanning,families">
           <div class="tcard-img"><img
               src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop"
@@ -810,6 +864,7 @@
                 class="tcard-link theme-text">Bekijk de Therme</a></div>
           </div>
         </article>
+<!-- Liechtensteinklamm waterval -->
         <article class="tcard summer" data-categories="natuur,actief">
           <div class="tcard-img"><img
               src="https://cdn.indebergen.nl/media/y2tjyggd/liechtensteinklamm-indebergen.jpeg?anchor=center&mode=crop&width=1160&height=870&format=webp&quality=80"
