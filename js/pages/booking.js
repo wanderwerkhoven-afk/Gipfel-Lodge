@@ -1015,10 +1015,23 @@ const GipfelBooking = {
                         this.selectedCheckOut && 
                         this.isRangeValid(this.selectedCheckIn, this.selectedCheckOut);
 
+        const pricePreview = document.getElementById('step1-price-preview');
+
         if (isValid) {
             this.continueBtn.classList.remove('disabled');
+            
+            // Calculate base cost and show preview
+            const costs = this.calculateCosts();
+            if (costs && pricePreview) {
+                const formattedPrice = this.fmtEUR(costs.total);
+                pricePreview.innerHTML = `Vanaf <span style="font-size: 1.25rem;">${formattedPrice}</span><br><span style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">o.b.v. 2 personen</span>`;
+                pricePreview.style.display = 'block';
+            }
         } else {
             this.continueBtn.classList.add('disabled');
+            if (pricePreview) {
+                pricePreview.style.display = 'none';
+            }
         }
     }
 };

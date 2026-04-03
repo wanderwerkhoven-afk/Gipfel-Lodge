@@ -14,6 +14,103 @@
   transform: translateY(0);
 }
 
+/* ========== GIPFEL REFINEMENT UTILITIES ========== */
+/* Standardized design tokens inspired by the activities page */
+
+.ref-tag {
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 20px; /* Standardized to match Activities editorial flow */
+}
+
+.ref-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--color-white);
+  padding: 24px 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.ref-badge-card:hover {
+  transform: translateX(8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.07);
+  border-color: var(--color-accent);
+}
+
+.badge-icon-circle {
+  width: 54px;
+  height: 54px;
+  background: #F9F9F4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.4s ease, background 0.4s ease;
+}
+
+.badge-icon-circle i {
+  font-size: 26px;
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.ref-badge-card:hover .badge-icon-circle {
+  background: white;
+  transform: scale(1.1);
+}
+
+.ref-badge-card:hover .badge-icon-circle i {
+  transform: scale(1.15);
+}
+
+.highlight-badge {
+  background: var(--color-background);
+  border-left: 3px solid var(--color-accent);
+}
+
+.ref-badge-card span {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+  letter-spacing: 0.02em;
+}
+
+.ref-luxury-card {
+  background: var(--color-white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+}
+
+.ref-luxury-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(32, 48, 61, 0.12);
+}
+
+p {
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+
 /* ========== HERO SYSTEM ========== */
 .hero {
   height: 100vh;
@@ -993,7 +1090,7 @@ header.topbar .topbar-book:hover {
   margin-right: 8px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
 
   .suite-grid,
   .location-grid {
@@ -1064,7 +1161,7 @@ header.topbar .topbar-book:hover {
   color: hsla(0, 0%, 100%, 0.7);
 }
 
-@media (min-width: 992px) {
+@media (min-width: 769px) {
   .highlights-grid {
     grid-template-columns: repeat(3, 1fr);
   }

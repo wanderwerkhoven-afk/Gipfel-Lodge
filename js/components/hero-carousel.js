@@ -4,12 +4,14 @@ const HeroCarousel = {
     dots: [],
     timer: null,
     current: 0,
-    intervalMs: 6000,
+    intervalMs: 8000, // Slightly slower for cinematic feel
     isInitialized: false,
 
     init() {
-        this.carousel = document.querySelector('.hero-carousel');
-        this.slides = document.querySelectorAll('.hero-slide');
+        // Try V3 first, then fallback to old hero
+        this.carousel = document.querySelector('.hero-v3-carousel') || document.querySelector('.hero-carousel');
+        this.slides = document.querySelectorAll(this.carousel?.classList.contains('hero-v3-carousel') ? '.hero-v3-slide' : '.hero-slide');
+        
         if (!this.slides.length) return;
 
         // Reset if already initialized
@@ -19,21 +21,21 @@ const HeroCarousel = {
 
         const prevBtn = document.querySelector('.hero-nav.prev');
         const nextBtn = document.querySelector('.hero-nav.next');
-        const dotsContainer = document.querySelector('.hero-dots');
+        const dotsContainer = document.querySelector('.hero-dots') || document.querySelector('.hero-v3-dots');
 
-        // Create dots
+        // Create dots if container exists
         if (dotsContainer) {
             dotsContainer.innerHTML = '';
             this.slides.forEach((_, index) => {
                 const dot = document.createElement('div');
-                dot.classList.add('hero-dot');
+                dot.classList.add(dotsContainer.classList.contains('hero-v3-dots') ? 'hero-v3-dot' : 'hero-dot');
                 if (index === 0) dot.classList.add('active');
                 dot.addEventListener('click', () => this.goToSlide(index));
                 dotsContainer.appendChild(dot);
             });
         }
 
-        this.dots = document.querySelectorAll('.hero-dot');
+        this.dots = document.querySelectorAll('.hero-dot, .hero-v3-dot');
 
         // Event Listeners
         if (nextBtn) {
@@ -97,4 +99,3 @@ const HeroCarousel = {
 };
 
 window.HeroCarousel = HeroCarousel;
-// Initialization is handled by HomePage.init() in js/pages/home.js

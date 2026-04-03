@@ -1094,7 +1094,7 @@ html, body{ margin:0; padding:0; }
 }
 
 /* Responsive */
-@media (max-width: 900px){
+@media (max-width: 768px){
   .gallery-carousel{
     height: min(60vh, 520px);
   }
@@ -1188,7 +1188,7 @@ html, body{ margin:0; padding:0; }
   }
 }
 
-@media (max-width: 900px){
+@media (max-width: 768px){
   /* Home */
   .lang{ display:none; }
   .topbar{ height: 68px; }
@@ -1220,7 +1220,7 @@ html, body{ margin:0; padding:0; }
   .soon-text{ font-size: 16px; }
 }
 
-@media (max-width: 980px){
+@media (max-width: 768px){
   /* Lodge */
   .highlights-grid{ grid-template-columns: repeat(3, 1fr); }
   .gallery-grid{ grid-template-columns: 1fr 1fr; grid-auto-rows: 170px; }

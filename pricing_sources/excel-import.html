@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Gipfel Lodge — Excel → Firebase Importer</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 40px; max-width: 960px; margin: 0 auto; }
+        h1 { color: #c5a059; margin-bottom: 8px; }
+        p { color: #94a3b8; margin-bottom: 20px; line-height: 1.6; }
+        .card { background: #1e293b; border-radius: 12px; padding: 28px; margin-bottom: 24px; border: 1px solid #334155; }
+        .drop-zone {
+            border: 2px dashed #c5a059;
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #0f172a;
+        }
+        .drop-zone:hover, .drop-zone.dragover { background: #1e3a5f; border-color: #f0c060; }
+        .drop-zone svg { width: 48px; height: 48px; color: #c5a059; margin-bottom: 12px; }
+        .drop-zone p { margin: 0; font-size: 1rem; }
+        .drop-zone small { color: #64748b; font-size: 0.8rem; }
+        input[type="file"] { display: none; }
+        button {
+            background: #c5a059; color: white; border: none; padding: 14px 28px;
+            font-size: 1rem; font-weight: 700; border-radius: 8px; cursor: pointer;
+            transition: background 0.2s; margin-right: 10px; margin-top: 10px;
+        }
+        button:hover { background: #a8853a; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        button.secondary { background: #334155; }
+        button.secondary:hover { background: #475569; }
+        button.danger { background: #dc2626; }
+        button.danger:hover { background: #b91c1c; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .badge.guest { background: #1e3a5f; color: #60a5fa; }
+        .badge.owner { background: #3b1f1f; color: #f87171; }
+        .badge.new { background: #14532d; color: #4ade80; }
+        .badge.exists { background: #422006; color: #fb923c; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 16px; }
+        th { background: #0f172a; color: #94a3b8; text-align: left; padding: 8px 10px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; position: sticky; top: 0; }
+        td { padding: 8px 10px; border-bottom: 1px solid #1e293b; vertical-align: middle; }
+        tr:hover td { background: #1e293b; }
+        .table-wrapper { max-height: 400px; overflow-y: auto; border-radius: 8px; border: 1px solid #334155; }
+        #log { margin-top: 16px; background: #0f172a; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 0.82rem; max-height: 350px; overflow-y: auto; line-height: 1.9; border: 1px solid #334155; }
+        .ok { color: #4ade80; }
+        .err { color: #f87171; }
+        .info { color: #94a3b8; }
+        .warn { color: #fbbf24; }
+        .progress { margin-top: 16px; height: 6px; background: #334155; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #c5a059, #f0c060); width: 0%; transition: width 0.3s; border-radius: 4px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }
+        .stat { background: #0f172a; border-radius: 8px; padding: 16px; text-align: center; border: 1px solid #334155; }
+        .stat-num { font-size: 2rem; font-weight: 700; color: #c5a059; }
+        .stat-lbl { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-top: 4px; }
+        .col-skip { color: #475569; }
+        .hidden { display: none; }
+        .section-title { font-size: 1rem; font-weight: 700; color: #c5a059; margin-bottom: 12px; }
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.85rem; }
+        .alert.info { background: #1e3a5f; border: 1px solid #2563eb; color: #93c5fd; }
+        .alert.warn { background: #422006; border: 1px solid #d97706; color: #fcd34d; }
+    </style>
+</head>
+<body>
+
+<h1>🏔 Gipfel Lodge — Excel → Firebase Importer</h1>
+<p>Upload de <strong>23mrt_GipfelLodge_Booked.xlsx</strong> (of een bijgewerkte versie) om boekingen direct naar Firebase te importeren. Bestaande boekingen worden overgeslagen (geen overschrijving) tenzij je dat aanvinkt.</p>
+
+<div class="card">
+    <div class="section-title">📂 Stap 1: Selecteer het Excel-bestand</div>
+    <div class="drop-zone" id="drop-zone">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#c5a059" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-4m0 0V8m0 4H8m4 0h4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 12V6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v6" />
+        </svg>
+        <p>Sleep het Excel-bestand hierheen of <strong>klik om te bladeren</strong></p>
+        <small>Ondersteunt .xlsx bestanden van Villa for You / Gipfel Lodge formaat</small>
+    </div>
+    <input type="file" id="file-input" accept=".xlsx">
+</div>
+
+<div class="card hidden" id="preview-section">
+    <div class="section-title">👁 Stap 2: Controleer de geïmporteerde gegevens</div>
+
+    <div class="stats">
+        <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Totaal rijen</div></div>
+        <div class="stat"><div class="stat-num" id="stat-new" style="color:#4ade80">0</div><div class="stat-lbl">Nieuw</div></div>
+        <div class="stat"><div class="stat-num" id="stat-exists" style="color:#fb923c">0</div><div class="stat-lbl">Al aanwezig</div></div>
+        <div class="stat"><div class="stat-num" id="stat-errors" style="color:#f87171">0</div><div class="stat-lbl">Fouten</div></div>
+    </div>
+
+    <div class="table-wrapper" style="margin-top:16px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Status</th>
+                    <th>Firebase ID</th>
+                    <th>Bron</th>
+                    <th>Gast</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Nacht</th>
+                    <th>Gasten</th>
+                    <th>Bedrag</th>
+                    <th>Land</th>
+                </tr>
+            </thead>
+            <tbody id="preview-body"></tbody>
+        </table>
+    </div>
+
+    <div style="margin-top:16px;">
+        <label style="font-size:0.85rem; color:#94a3b8; cursor:pointer;">
+            <input type="checkbox" id="chk-overwrite" style="margin-right:8px;">
+            Overschrijf ook al bestaande boekingen
+        </label>
+    </div>
+
+    <div style="margin-top:16px;">
+        <button id="btn-import">▶ Importeer naar Firebase</button>
+        <button class="secondary" id="btn-reset">↺ Ander bestand kiezen</button>
+    </div>
+</div>
+
+<div class="card hidden" id="log-section">
+    <div class="section-title">📋 Import log</div>
+    <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+    <div id="log"><span class="info">Wachten op start...</span></div>
+</div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+// ─── Firebase config ───────────────────────────────────────────────────────────
+const FB_CONFIG = {
+    apiKey: "AIzaSyDDmNAnEIGOsScRJiCQKSfY-DDHu5gKYb8",
+    authDomain: "gipfel-lodge.firebaseapp.com",
+    projectId: "gipfel-lodge",
+    storageBucket: "gipfel-lodge.firebasestorage.app",
+    messagingSenderId: "388067449391",
+    appId: "1:388067449391:web:687304a8403e3d79aa84da"
+};
+
+let parsedBookings = [];
+let db, docFn, setDocFn, serverTs, getDocFn;
+
+// ─── Drag & drop ─────────────────────────────────────────────────────────────
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+});
+fileInput.addEventListener('change', e => {
+    if (e.target.files[0]) processFile(e.target.files[0]);
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+    parsedBookings = [];
+    document.getElementById('preview-section').classList.add('hidden');
+    document.getElementById('log-section').classList.add('hidden');
+    fileInput.value = '';
+});
+
+// ─── Excel parsing ─────────────────────────────────────────────────────────────
+function parseDate(str) {
+    if (!str) return null;
+    // Format: "20-04-2026 16:00 - 18:00" or Date object
+    if (str instanceof Date) {
+        return str.toISOString().split('T')[0];
+    }
+    const s = String(str).trim();
+    const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
+    if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+    return null;
+}
+
+function parseSource(bookingCell) {
+    if (!bookingCell) return { sourceId: '', platform: '' };
+    const s = String(bookingCell).trim();
+    const parts = s.split('|');
+    return {
+        sourceId: parts[0].trim(),
+        platform: (parts[1] || '').trim()
+    };
+}
+
+function buildFirebaseId(sourceId, platform) {
+    // "261700433 | Villa for You" → "Gipfel-700433"
+    // Owner blocks → "Owner-XXXXXX"
+    if (!sourceId) return null;
+    const digits = sourceId.replace(/\D/g, '');
+    const suffix = digits.slice(-6).replace(/^0+/, '').padStart(6, '0');
+    const isOwner = !platform || platform.toLowerCase().includes('eigenaar') || platform.toLowerCase().includes('owner') || platform === '';
+    return (isOwner ? 'Owner-' : 'Gipfel-') + suffix;
+}
+
+async function processFile(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const wb = XLSX.read(arrayBuffer, { type: 'array', cellDates: true });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
+
+    const headers = rows[0];
+    // Map column names to indexes
+    const col = {};
+    headers.forEach((h, i) => { if (h) col[String(h).trim()] = i; });
+
+    parsedBookings = [];
+
+    for (let r = 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || row.every(c => c === null || c === '')) continue;
+
+        const bookingCell = row[col['Boeking']] || '';
+        const { sourceId, platform } = parseSource(bookingCell);
+        if (!sourceId) continue;
+
+        const firebaseId = buildFirebaseId(sourceId, platform);
+        if (!firebaseId) continue;
+
+        const isOwner = firebaseId.startsWith('Owner-');
+
+        const checkInRaw = row[col['Aankomst']];
+        const checkOutRaw = row[col['Vertrek']];
+        const checkIn = parseDate(checkInRaw);
+        const checkOut = parseDate(checkOutRaw);
+
+        if (!checkIn || !checkOut) continue;
+
+        const nights = Number(row[col['Nachten']] || 0);
+        const adults = Number(row[col['Volw.']] || 0);
+        const children = Number(row[col['Knd.']] || 0);
+        const babies = Number(row[col['Bab.']] || 0);
+        const guestName = String(row[col['Gast']] || '').trim();
+        const guestEmail = String(row[col['E-mailadres']] || '').trim();
+        const guestPhone = String(row[col['Telefoon']] || '').trim();
+        const country = String(row[col['Land']] || '').trim();
+        const totalAmount = isOwner ? 0 : Number(String(row[col['Inkomsten']] || '0').replace(',', '.')) || 0;
+        const message = String(row[col['Opmerking']] || '').trim();
+
+        parsedBookings.push({
+            id: firebaseId,
+            sourceId,
+            platform,
+            type: isOwner ? 'owner' : 'guest',
+            guestName,
+            guestEmail,
+            guestPhone: guestPhone.replace(/[^0-9]/g, ''),
+            country,
+            checkIn,
+            checkOut,
+            nights,
+            adults,
+            children,
+            babies,
+            totalAmount,
+            message,
+            _rowIdx: r
+        });
+    }
+
+    await renderPreview();
+}
+
+async function renderPreview() {
+    // Connect to Firebase to check existing docs
+    let existingIds = new Set();
+    try {
+        const fbApp = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js');
+        const fbStore = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+        const app = fbApp.initializeApp(FB_CONFIG);
+        db = fbStore.getFirestore(app);
+        docFn = fbStore.doc;
+        setDocFn = fbStore.setDoc;
+        serverTs = fbStore.serverTimestamp;
+        getDocFn = fbStore.getDoc;
+
+        // Check which IDs already exist
+        for (const b of parsedBookings) {
+            const snap = await getDocFn(docFn(db, 'bookings', b.id));
+            if (snap.exists()) existingIds.add(b.id);
+        }
+    } catch(e) {
+        console.warn('Firebase check failed:', e.message);
+    }
+
+    const tbody = document.getElementById('preview-body');
+    tbody.innerHTML = '';
+    let newCount = 0, existsCount = 0, errCount = 0;
+
+    parsedBookings.forEach((b, i) => {
+        const exists = existingIds.has(b.id);
+        if (exists) existsCount++; else newCount++;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="col-skip">${b._rowIdx}</td>
+            <td><span class="badge ${exists ? 'exists' : 'new'}">${exists ? 'Bestaat' : 'Nieuw'}</span></td>
+            <td style="font-family:monospace;font-size:0.75rem">${b.id}</td>
+            <td style="font-size:0.75rem;color:#64748b">${b.sourceId}</td>
+            <td>${b.guestName}</td>
+            <td>${b.checkIn}</td>
+            <td>${b.checkOut}</td>
+            <td style="text-align:center">${b.nights}</td>
+            <td style="text-align:center">${b.adults + b.children + b.babies}</td>
+            <td style="color:#c5a059">€${b.totalAmount.toFixed(2)}</td>
+            <td>${b.country}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('stat-total').textContent = parsedBookings.length;
+    document.getElementById('stat-new').textContent = newCount;
+    document.getElementById('stat-exists').textContent = existsCount;
+    document.getElementById('stat-errors').textContent = errCount;
+
+    document.getElementById('preview-section').classList.remove('hidden');
+}
+
+// ─── Import to Firebase ────────────────────────────────────────────────────────
+document.getElementById('btn-import').addEventListener('click', async () => {
+    const overwrite = document.getElementById('chk-overwrite').checked;
+    const btn = document.getElementById('btn-import');
+    btn.disabled = true;
+    btn.textContent = 'Bezig...';
+
+    const logSection = document.getElementById('log-section');
+    logSection.classList.remove('hidden');
+    const logEl = document.getElementById('log');
+    logEl.innerHTML = '';
+
+    function log(msg, cls) {
+        logEl.innerHTML += `<div class="${cls || 'info'}">${msg}</div>`;
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    if (!db) {
+        log('❌ Firebase niet verbonden. Herlaad de pagina en probeer opnieuw.', 'err');
+        btn.disabled = false;
+        return;
+    }
+
+    let success = 0, skipped = 0, failed = 0;
+    const toImport = parsedBookings.filter(b => {
+        // Skip if exists and overwrite is off
+        return true; // We'll handle inside loop
+    });
+
+    log(`🚀 Start import van ${toImport.length} boekingen...`);
+
+    for (let i = 0; i < toImport.length; i++) {
+        const b = toImport[i];
+
+        // Check existence
+        const snap = await getDocFn(docFn(db, 'bookings', b.id));
+        if (snap.exists() && !overwrite) {
+            skipped++;
+            log(`⏭ ${b.id} — overgeslagen (bestaat al)`, 'info');
+            document.getElementById('progress-bar').style.width = Math.round(((i+1)/toImport.length)*100) + '%';
+            continue;
+        }
+
+        try {
+            const record = {
+                bookingId: b.id,
+                type: b.type,
+                status: b.type === 'owner' ? 'owner' : 'confirmed',
+                guestName: b.guestName,
+                guestEmail: b.guestEmail,
+                guestPhone: b.guestPhone,
+                country: b.country,
+                checkIn: b.checkIn,
+                checkOut: b.checkOut,
+                nights: b.nights,
+                adults: b.adults,
+                children: b.children,
+                babies: b.babies,
+                totalGuests: b.adults + b.children + b.babies,
+                totalAmount: b.totalAmount,
+                depositPaid: false,
+                balancePaid: false,
+                message: b.message,
+                source: b.sourceId,
+                platform: b.platform,
+                importedAt: new Date().toISOString(),
+                createdAt: serverTs(),
+                mailChain: {
+                    depositReminder: false,
+                    depositReceived: false,
+                    balanceReminder: false,
+                    balanceReceived: false,
+                    preStayInfo: false,
+                    postStay: false
+                }
+            };
+
+            await setDocFn(docFn(db, 'bookings', b.id), record);
+            success++;
+            log(`✅ ${b.id} — ${b.guestName} (${b.checkIn} → ${b.checkOut})`, 'ok');
+        } catch(err) {
+            failed++;
+            log(`❌ ${b.id} — ${err.message}`, 'err');
+        }
+
+        document.getElementById('progress-bar').style.width = Math.round(((i+1)/toImport.length)*100) + '%';
+    }
+
+    log(`📊 Klaar! ✅ ${success} geïmporteerd · ⏭ ${skipped} overgeslagen · ❌ ${failed} mislukt.`, failed ? 'warn' : 'ok');
+    btn.textContent = '✔ Import voltooid';
+    btn.disabled = false;
+});
+</script>
+</body>
+</html>
