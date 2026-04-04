@@ -122,22 +122,24 @@
 .hero-v3-title {
   font-family: var(--font-heading);
   font-size: clamp(3rem, 8vw, 6.5rem);
-  /* Reduced from 10rem for better balance */
   line-height: 1.0;
-  /* Slightly more air */
   margin-bottom: 15px;
   letter-spacing: -0.02em;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
 .hero-v3-subtitle {
   font-family: var(--font-heading);
   font-size: clamp(1.6rem, 4.5vw, 3.2rem);
-  /* Slightly smaller for hierarchy */
   font-weight: 300;
   opacity: 1;
   margin-bottom: 30px;
-  /* Reduced from 40px */
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.7),
+    0 6px 20px rgba(0, 0, 0, 0.45);
 }
 
 .hero-v3-tagline {
@@ -146,8 +148,10 @@
   margin: 0 auto 40px;
   font-weight: 300;
   line-height: 1.8;
-  /* Increased from 1.6 */
   opacity: 0.95;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .hero-v3-ctas {
@@ -346,7 +350,8 @@
 }
 
 /* ========== INTRO V3 ========== */
-.intro-large {
+.intro-large,
+.location-v3-text h2 {
   font-family: var(--font-heading);
   font-size: clamp(2rem, 3.5vw, 2.8rem);
   line-height: 1.2;

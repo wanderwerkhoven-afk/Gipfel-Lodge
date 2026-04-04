@@ -158,6 +158,21 @@
     right: 40px;
 }
 
+/* RTL Overrides for Arrows: Prevent flipping as per user request */
+[dir="rtl"] .gallery-nav-btn {
+    direction: ltr !important; /* Lock icons to point correctly */
+}
+
+[dir="rtl"] .gallery-nav-btn.prev {
+    left: 40px;
+    right: auto;
+}
+
+[dir="rtl"] .gallery-nav-btn.next {
+    right: 40px;
+    left: auto;
+}
+
 @media (max-width: 768px) {
     .property-gallery {
         height: 500px;
@@ -185,64 +200,50 @@
 .quick-facts-bar {
     background-color: var(--color-primary);
     padding: 60px 0;
-    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
 }
 
-.ref-badge-row {
+.lodge-facts-row {
     display: flex;
     justify-content: center;
     align-items: stretch;
     flex-wrap: wrap;
-    gap: 24px;
-    max-width: 1200px;
+    gap: 40px 60px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
-.ref-badge-row .ref-badge-card {
+.lodge-fact-item {
     flex: 1;
-    min-width: 220px;
-    justify-content: center;
-}
-
-.facts-grid {
-    display: none; /* Replaced by ref-badge-row */
-}
-
-.fact-item {
+    min-width: 150px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    text-align: center;
+    gap: 20px;
     transition: transform 0.3s ease;
 }
 
-.fact-item:hover {
+.lodge-fact-item:hover {
     transform: translateY(-5px);
 }
 
-.fact-icon {
-    width: 44px;
-    height: 44px;
-    fill: var(--color-accent, #C5A059);
-    filter: brightness(0) saturate(100%) invert(75%) sepia(19%) saturate(884%) hue-rotate(1deg) brightness(89%) contrast(85%);
-    transition: all 0.3s ease;
+.lodge-fact-item i {
+    font-size: 3rem;
+    color: var(--color-accent);
 }
 
-.fact-item:hover .fact-icon {
-    transform: translateY(-5px);
-    filter: brightness(0) saturate(100%) invert(85%) sepia(20%) saturate(1200%) hue-rotate(10deg) brightness(105%) contrast(100%);
-}
-
-.fact-label {
+.lodge-fact-item span {
     font-family: var(--font-body);
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--color-text-main);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-accent);
 }
 
 /* SECTION STRUCTURE */
 .section-lodge {
-    padding: clamp(60px, 8vw, 100px) 0;
+    padding: clamp(40px, 6vw, 70px) 0;
 }
 
 .section-lodge.bg-light {
@@ -294,7 +295,7 @@
     grid-template-columns: 1.2fr 1fr;
     gap: 80px;
     align-items: center;
-    padding: clamp(60px, 8vw, 100px) 0;
+    padding: 20px 0;
 }
 
 .section-split.reverse {
@@ -310,12 +311,23 @@
     overflow: hidden;
     border-radius: 4px;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.6s ease;
+}
+
+.section-split:hover .split-image {
+    transform: translateY(-10px);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
 }
 
 .split-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.split-image:hover img {
+    transform: scale(1.08);
 }
 
 .split-text h2 {
@@ -371,18 +383,86 @@
 
 .floor-card-img {
     height: 280px;
+    position: relative;
     overflow: hidden;
 }
 
-.floor-card-img img {
+.mini-carousel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.mini-carousel img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 1.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease, transform 1.2s ease;
 }
 
-.floor-card:hover .floor-card-img img {
-    transform: scale(1.1);
+.mini-carousel img.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.floor-card:hover .mini-carousel img.active {
+    transform: scale(1.05);
+}
+
+.mini-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease, background 0.3s ease;
+    z-index: 10;
+}
+
+.floor-card-img:hover .mini-nav {
+    opacity: 1;
+}
+
+.mini-nav.prev {
+    left: 8px;
+}
+
+.mini-nav.next {
+    right: 8px;
+}
+
+/* RTL Overrides for Mini-Nav */
+[dir="rtl"] .mini-nav {
+    direction: ltr !important;
+}
+
+[dir="rtl"] .mini-nav.prev {
+    left: 8px;
+    right: auto;
+}
+
+[dir="rtl"] .mini-nav.next {
+    right: 8px;
+    left: auto;
+}
+
+.mini-nav:hover {
+    background: var(--color-accent);
 }
 
 .floor-card-content {
@@ -398,14 +478,33 @@
     letter-spacing: 0.02em;
 }
 
-.floor-card-list {
+.floor-card-features {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.floor-card-features li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-size: 0.95rem;
     color: var(--color-text-main);
     opacity: 0.85;
-    line-height: 1.8;
+}
+
+.section-lodge.bg-dark .floor-card-features li {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.floor-card-features i {
+    color: var(--color-accent);
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
 }
 
 /* MASONRY GALLERY */
@@ -429,11 +528,46 @@
     width: 100%;
     height: auto;
     display: block;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
 }
 
 .masonry-item:hover img {
     transform: scale(1.05);
+    filter: brightness(0.6);
+}
+
+.masonry-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 24px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.masonry-item:hover .masonry-overlay {
+    opacity: 1;
+}
+
+.masonry-overlay span {
+    color: var(--color-white);
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: capitalize;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transform: translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.masonry-item:hover .masonry-overlay span {
+    transform: translateY(0);
 }
 
 /* BOOKING CALLOUT */
@@ -466,15 +600,6 @@
 
     .floor-layout-grid {
         grid-template-columns: 1fr;
-    }
-
-    .ref-badge-row {
-        gap: 16px;
-    }
-
-    .ref-badge-row .ref-badge-card {
-        min-width: 45%;
-        padding: 16px;
     }
 
     .masonry-gallery {

@@ -3,13 +3,40 @@
  */
 
 const LodgePage = {
+    isInitialized: false,
+    scrollContainer: null,
+    galleryGrid: null,
+    slideWidth: 0,
+    items: [],
+    cloneCount: 5,
+
     init() {
         console.log('Initializing Lodge Page...');
         
-        // Share functionality
+        // Setup features that only need one-time listeners
+        if (!this.isInitialized) {
+            this.setupShare();
+            this.setupFavorite();
+            this.setupGallery();
+            this.setupMiniCarousels();
+            
+            // Listen for language changes to recalibrate scroll position
+            document.addEventListener('languageChanged', () => {
+                this.recalibrateGallery();
+            });
+
+            this.isInitialized = true;
+        } else {
+            // Re-run on every visit to ensure position is correct
+            this.recalibrateGallery();
+        }
+    },
+
+    setupShare() {
         const shareBtn = document.getElementById('sharePage');
         if (shareBtn) {
-            shareBtn.addEventListener('click', () => {
+            shareBtn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const url = window.location.href;
                 if (navigator.share) {
                     navigator.share({ title: document.title, url }).catch(() => {});
@@ -18,8 +45,9 @@ const LodgePage = {
                 }
             });
         }
+    },
 
-        // Favorite toggle
+    setupFavorite() {
         const favBtn = document.getElementById('toggleFavorite');
         if (favBtn) {
             favBtn.addEventListener('click', () => {
@@ -32,63 +60,134 @@ const LodgePage = {
                 }
             });
         }
+    },
 
-        // Infinite Horizontal Scroll
-        const scrollContainer = document.querySelector('.gallery-scroll-container');
-        const galleryGrid = document.querySelector('.gallery-grid');
+    setupGallery() {
+        this.scrollContainer = document.querySelector('.gallery-scroll-container');
+        this.galleryGrid = document.querySelector('.gallery-grid');
         const prevBtn = document.querySelector('.gallery-nav-btn.prev');
         const nextBtn = document.querySelector('.gallery-nav-btn.next');
 
-        if (scrollContainer && galleryGrid) {
-            const items = Array.from(galleryGrid.children);
-            if (items.length > 0) {
-                // Number of items to clone (enough to fill a view)
-                const cloneCount = 5; 
-                
-                // Clone at start
-                for (let i = items.length - cloneCount; i < items.length; i++) {
-                    const clone = items[i].cloneNode(true);
-                    galleryGrid.insertBefore(clone, galleryGrid.firstChild);
+        if (!this.scrollContainer || !this.galleryGrid) return;
+
+        this.items = Array.from(this.galleryGrid.children);
+        if (this.items.length === 0) return;
+
+        // Clone at start
+        for (let i = this.items.length - this.cloneCount; i < this.items.length; i++) {
+            const clone = this.items[i].cloneNode(true);
+            this.galleryGrid.insertBefore(clone, this.galleryGrid.firstChild);
+        }
+        
+        // Clone at end
+        for (let i = 0; i < this.cloneCount; i++) {
+            const clone = this.items[i].cloneNode(true);
+            this.galleryGrid.appendChild(clone);
+        }
+
+        // Setup scroll listener for infinite loop
+        this.scrollContainer.addEventListener('scroll', () => {
+            const isRTL = document.documentElement.dir === 'rtl';
+            const scrollLeft = this.scrollContainer.scrollLeft;
+            const maxScroll = this.galleryGrid.scrollWidth - this.scrollContainer.offsetWidth;
+            const currentSlideWidth = this.items[0].offsetWidth + 12;
+
+            if (isRTL) {
+                // RTL: scrollLeft is 0 or negative
+                if (Math.abs(scrollLeft) <= 1) {
+                    this.scrollContainer.style.scrollBehavior = 'auto';
+                    this.scrollContainer.scrollLeft = -currentSlideWidth * this.items.length;
+                    setTimeout(() => this.scrollContainer.style.scrollBehavior = 'smooth', 10);
+                } else if (Math.abs(scrollLeft) >= maxScroll - 1) {
+                    this.scrollContainer.style.scrollBehavior = 'auto';
+                    this.scrollContainer.scrollLeft = -currentSlideWidth * this.cloneCount;
+                    setTimeout(() => this.scrollContainer.style.scrollBehavior = 'smooth', 10);
                 }
-                
-                // Clone at end
-                for (let i = 0; i < cloneCount; i++) {
-                    const clone = items[i].cloneNode(true);
-                    galleryGrid.appendChild(clone);
-                }
-
-                // Initial scroll position to the "real" first item
-                const slideWidth = items[0].offsetWidth + 12; // width + gap
-                scrollContainer.scrollLeft = slideWidth * cloneCount;
-
-                scrollContainer.addEventListener('scroll', () => {
-                    const scrollLeft = scrollContainer.scrollLeft;
-                    const maxScroll = galleryGrid.scrollWidth - scrollContainer.offsetWidth;
-
-                    // If we reach the start of the cloned prefix
-                    if (scrollLeft <= 0) {
-                        scrollContainer.style.scrollBehavior = 'auto';
-                        scrollContainer.scrollLeft = slideWidth * items.length;
-                        scrollContainer.style.scrollBehavior = 'smooth';
-                    } 
-                    // If we reach the end of the cloned suffix
-                    else if (scrollLeft >= maxScroll - 1) {
-                        scrollContainer.style.scrollBehavior = 'auto';
-                        scrollContainer.scrollLeft = slideWidth * cloneCount;
-                        scrollContainer.style.scrollBehavior = 'smooth';
-                    }
-                });
-
-                if (nextBtn && prevBtn) {
-                    nextBtn.onclick = () => {
-                        scrollContainer.scrollBy({ left: slideWidth, behavior: 'smooth' });
-                    };
-                    prevBtn.onclick = () => {
-                        scrollContainer.scrollBy({ left: -slideWidth, behavior: 'smooth' });
-                    };
+            } else {
+                // LTR: scrollLeft is 0 or positive
+                if (scrollLeft <= 0) {
+                    this.scrollContainer.style.scrollBehavior = 'auto';
+                    this.scrollContainer.scrollLeft = currentSlideWidth * this.items.length;
+                    setTimeout(() => this.scrollContainer.style.scrollBehavior = 'smooth', 10);
+                } else if (scrollLeft >= maxScroll - 1) {
+                    this.scrollContainer.style.scrollBehavior = 'auto';
+                    this.scrollContainer.scrollLeft = currentSlideWidth * this.cloneCount;
+                    setTimeout(() => this.scrollContainer.style.scrollBehavior = 'smooth', 10);
                 }
             }
+        });
+
+        // Setup Nav Buttons
+        if (nextBtn && prevBtn) {
+            nextBtn.onclick = (e) => {
+                e.preventDefault();
+                const isRTL = document.documentElement.dir === 'rtl';
+                const currentSlideWidth = this.items[0].offsetWidth + 12;
+                const move = isRTL ? -currentSlideWidth : currentSlideWidth;
+                this.scrollContainer.scrollBy({ left: move, behavior: 'smooth' });
+            };
+            prevBtn.onclick = (e) => {
+                e.preventDefault();
+                const isRTL = document.documentElement.dir === 'rtl';
+                const currentSlideWidth = this.items[0].offsetWidth + 12;
+                const move = isRTL ? currentSlideWidth : -currentSlideWidth;
+                this.scrollContainer.scrollBy({ left: move, behavior: 'smooth' });
+            };
         }
+
+        this.recalibrateGallery();
+    },
+
+    recalibrateGallery() {
+        if (!this.scrollContainer || !this.items.length) return;
+
+        const isRTL = document.documentElement.dir === 'rtl';
+        const currentSlideWidth = this.items[0].offsetWidth + 12;
+        
+        this.scrollContainer.style.scrollBehavior = 'auto';
+        if (isRTL) {
+            this.scrollContainer.scrollLeft = -currentSlideWidth * this.cloneCount;
+        } else {
+            this.scrollContainer.scrollLeft = currentSlideWidth * this.cloneCount;
+        }
+        
+        // Brief timeout to restore smooth behavior
+        setTimeout(() => {
+            if (this.scrollContainer) {
+                this.scrollContainer.style.scrollBehavior = 'smooth';
+            }
+        }, 50);
+    },
+
+    setupMiniCarousels() {
+        const miniCarousels = document.querySelectorAll('.mini-carousel');
+        miniCarousels.forEach(carousel => {
+            const slides = carousel.querySelectorAll('img');
+            const prev = carousel.querySelector('.mini-nav.prev');
+            const next = carousel.querySelector('.mini-nav.next');
+            let currentIndex = 0;
+
+            if (slides.length > 1 && prev && next) {
+                const showSlide = (index) => {
+                    slides.forEach(s => s.classList.remove('active'));
+                    slides[index].classList.add('active');
+                };
+
+                prev.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                    showSlide(currentIndex);
+                };
+
+                next.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    currentIndex = (currentIndex + 1) % slides.length;
+                    showSlide(currentIndex);
+                };
+            }
+        });
     }
 };
 

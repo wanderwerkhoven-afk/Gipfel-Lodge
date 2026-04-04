@@ -174,11 +174,19 @@
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
               </path>
             </svg>
+            <span class="active-flag-container">
+              <span class="fi fi-nl"></span>
+            </span>
+            <span class="active-lang">NL</span>
           </button>
           <div class="lang-menu">
-            <a href="#" class="lang-link" data-lang-switch="de">DEUTSCH</a>
-            <a href="#" class="lang-link" data-lang-switch="en">ENGLISH</a>
-            <a href="#" class="lang-link" data-lang-switch="nl">NEDERLANDS</a>
+            <a href="#" class="lang-link" data-lang-switch="de"><span class="fi fi-de"></span> DEUTSCH</a>
+            <a href="#" class="lang-link" data-lang-switch="en"><span class="fi fi-gb"></span> ENGLISH</a>
+            <a href="#" class="lang-link is-active" data-lang-switch="nl"><span class="fi fi-nl"></span> NEDERLANDS</a>
+            <a href="#" class="lang-link" data-lang-switch="fr"><span class="fi fi-fr"></span> FRANÇAIS</a>
+            <a href="#" class="lang-link" data-lang-switch="it"><span class="fi fi-it"></span> ITALIANO</a>
+            <a href="#" class="lang-link" data-lang-switch="pl"><span class="fi fi-pl"></span> POLSKI</a>
+            <a href="#" class="lang-link" data-lang-switch="he"><span class="fi fi-il"></span> עברית</a>
           </div>
         </div>
         <a class="topbar-book" href="#booking" data-i18n="nav-book-short">BOOK</a>
@@ -206,6 +214,41 @@
     <a class="menu-link" href="#activities" data-i18n="nav-activities">AKTIVITÄTEN</a>
     <a class="menu-link" href="#enjoyment" data-i18n="nav-enjoyment">GENUSS</a>
     <a class="menu-link" href="#booking" data-i18n="nav-book">JETZT BUCHEN</a>
+
+    <!-- Mobile Language Selection -->
+    <div class="mobile-lang-selection">
+      <span class="mobile-lang-label" data-i18n="lang-select">Select Language</span>
+      <div class="mobile-lang-grid">
+        <a href="#" class="mobile-lang-item" data-lang-switch="de">
+          <span class="fi fi-de"></span>
+          <span>DE</span>
+        </a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="en">
+          <span class="fi fi-gb"></span>
+          <span>EN</span>
+        </a>
+        <a href="#" class="mobile-lang-item is-active" data-lang-switch="nl">
+          <span class="fi fi-nl"></span>
+          <span>NL</span>
+        </a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="fr">
+          <span class="fi fi-fr"></span>
+          <span>FR</span>
+        </a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="it">
+          <span class="fi fi-it"></span>
+          <span>IT</span>
+        </a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="pl">
+          <span class="fi fi-pl"></span>
+          <span>PL</span>
+        </a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="he">
+          <span class="fi fi-il"></span>
+          <span>HE</span>
+        </a>
+      </div>
+    </div>
   </nav>
 
   <!-- 2.3 MAIN: HOME PAGE (EDITORIAL V3) -->
@@ -290,15 +333,14 @@
       </div>
     </section>
 
-    <div class="section-scroll-divider mt-80">
-      <div class="scroll-track">
-        <div class="scroll-line"></div>
-      </div>
-    </div>
+
 
     <!-- SECTION 3: VISUELE BELEVING (IMAGE GRID) -->
     <section class="section-v3 no-top">
       <div class="container">
+        <div class="reveal text-center" style="margin-bottom: 40px;">
+          <a href="#lodge" class="nav-link-v3" data-i18n="visual-cta">Ontdek de lodge</a>
+        </div>
         <div class="visual-grid-v3">
           <div class="reveal visual-item colspan-2 rowspan-2">
             <img src="assets/images/pictures/livingroom.png" alt="Luxe Woonkamer">
@@ -454,7 +496,7 @@
           </div>
           <div class="feature-v3">
             <i class="ph-bold ph-waves"></i>
-            <span data-i18n="feat-4">Vloerverwarming</span>
+            <span data-i18n="feat-4">Vloerverwarming</span>ks
           </div>
           <div class="feature-v3">
             <i class="ph-bold ph-fire"></i>
@@ -627,22 +669,22 @@
     <!-- QUICK FACTS BAR REFINED -->
     <section class="quick-facts-bar">
       <div class="container">
-        <div class="ref-badge-row">
-          <div class="reveal ref-badge-card">
-            <span class="badge-icon">👥</span>
-            <span class="fact-label" data-i18n="lodge-max-guests">10 Gäste</span>
+        <div class="lodge-facts-row">
+          <div class="reveal lodge-fact-item">
+            <i class="ph-bold ph-users"></i>
+            <span data-i18n="lodge-max-guests">10 Gäste</span>
           </div>
-          <div class="reveal ref-badge-card" style="transition-delay: 0.1s;">
-            <span class="badge-icon">🛏️</span>
-            <span class="fact-label" data-i18n="lodge-bedrooms">4 Suiten</span>
+          <div class="reveal lodge-fact-item" style="transition-delay: 0.1s;">
+            <i class="ph-bold ph-bed"></i>
+            <span data-i18n="lodge-bedrooms">4 Suiten</span>
           </div>
-          <div class="reveal ref-badge-card" style="transition-delay: 0.2s;">
-            <span class="badge-icon">🛁</span>
-            <span class="fact-label" data-i18n="lodge-bathrooms">3 Bäder</span>
+          <div class="reveal lodge-fact-item" style="transition-delay: 0.2s;">
+            <i class="ph-bold ph-bathtub"></i>
+            <span data-i18n="lodge-bathrooms">3 Bäder</span>
           </div>
-          <div class="reveal ref-badge-card" style="transition-delay: 0.3s;">
-            <span class="badge-icon">💎</span>
-            <span class="fact-label" data-i18n="lodge-area">135 m² Luxus</span>
+          <div class="reveal lodge-fact-item" style="transition-delay: 0.3s;">
+            <i class="ph-bold ph-squares-four"></i>
+            <span data-i18n="lodge-area">135 m² Luxus</span>
           </div>
         </div>
       </div>
@@ -651,11 +693,11 @@
     <!-- INTRO SECTION -->
     <section class="section-lodge">
       <div class="container">
-        <div class="section-split reveal">
-          <div class="split-image">
+        <div class="section-split">
+          <div class="split-image reveal">
             <img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace">
           </div>
-          <div class="split-text">
+          <div class="split-text reveal" style="transition-delay: 0.2s;">
             <span class="ref-tag" data-i18n="intro-tag">Alpine Luxury</span>
             <h2 data-i18n="lodge-title">Tradition trifft modernen Luxus</h2>
             <p data-i18n="lodge-about-text">
@@ -671,11 +713,11 @@
     <!-- WELLNESS SECTION -->
     <section class="section-lodge bg-light">
       <div class="container">
-        <div class="section-split reverse reveal">
-          <div class="split-image">
+        <div class="section-split reverse">
+          <div class="split-image reveal" style="transition-delay: 0.2s;">
             <img src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Sauna">
           </div>
-          <div class="split-text">
+          <div class="split-text reveal">
             <span class="ref-tag" data-i18n="lodge-sauna-tag">Wellness & Entspannung</span>
             <h2 data-i18n="lodge-sauna-title">Private Spa Erfahrung</h2>
             <p data-i18n="lodge-sauna-text">
@@ -700,27 +742,65 @@
 
         <div class="floor-layout-grid">
           <div class="floor-card reveal">
-            <div class="floor-card-img"><img src="assets/images/pictures/bedroom-1.png" alt="Untergeschoss"></div>
+            <div class="floor-card-img">
+              <div class="mini-carousel">
+                <img src="assets/images/pictures/bedroom-1.png" alt="Untergeschoss 1" class="active">
+                <img src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Untergeschoss Sauna">
+                <img src="assets/images/pictures/bathroom-1.png" alt="Untergeschoss Bad">
+                <button class="mini-nav prev" aria-label="Previous image"><i class="ph-bold ph-caret-left"></i></button>
+                <button class="mini-nav next" aria-label="Next image"><i class="ph-bold ph-caret-right"></i></button>
+              </div>
+            </div>
             <div class="floor-card-content">
               <span class="floor-card-title" data-i18n="lodge-ug">Entspannung (UG)</span>
-              <p class="floor-card-list" data-i18n="lodge-ug-list">Wellness-Suite mit Bad, Private Sauna, Skiraum &
-                Technik</p>
+              <ul class="floor-card-features">
+                <li><i class="ph-bold ph-bed"></i> <span data-i18n="lodge-ug-list-1">Wellness-Suite mit Bad</span></li>
+                <li><i class="ph-bold ph-thermometer-hot"></i> <span data-i18n="lodge-ug-list-2">Private Sauna</span>
+                </li>
+                <li><i class="ph-bold ph-person-simple-ski"></i> <span data-i18n="lodge-ug-list-3">Skiraum & Technik</span></li>
+              </ul>
             </div>
           </div>
           <div class="floor-card reveal" style="transition-delay: 0.1s;">
-            <div class="floor-card-img"><img src="assets/images/pictures/bedroom-2.png" alt="1. Etage"></div>
+            <div class="floor-card-img">
+              <div class="mini-carousel">
+                <img src="assets/images/pictures/bedroom-2.png" alt="1. OG Schlafzimmer 1" class="active">
+                <img src="assets/images/pictures/bedroom-3.png" alt="1. OG Schlafzimmer 2">
+                <img src="assets/images/pictures/bathroom-2.png" alt="1. OG Designer-Bad">
+                <img src="assets/images/pictures/hallways.png" alt="1. OG Flur">
+                <button class="mini-nav prev" aria-label="Previous image"><i class="ph-bold ph-caret-left"></i></button>
+                <button class="mini-nav next" aria-label="Next image"><i class="ph-bold ph-caret-right"></i></button>
+              </div>
+            </div>
             <div class="floor-card-content">
               <span class="floor-card-title" data-i18n="lodge-1og">Schlafkomfort (1. OG)</span>
-              <p class="floor-card-list" data-i18n="lodge-1og-list">3 edle Suiten, 2 Designer-Bäder, Panorama-Terrasse
-              </p>
+              <ul class="floor-card-features">
+                <li><i class="ph-bold ph-bed"></i> <span data-i18n="lodge-1og-list-1">3 edle Suiten</span></li>
+                <li><i class="ph-bold ph-bathtub"></i> <span data-i18n="lodge-1og-list-2">2 Designer-Bäder</span></li>
+                <li><i class="ph-bold ph-mountains"></i> <span data-i18n="lodge-1og-list-3">Panorama-Terrasse</span>
+                </li>
+              </ul>
             </div>
           </div>
           <div class="floor-card reveal" style="transition-delay: 0.2s;">
-            <div class="floor-card-img"><img src="assets/images/pictures/kitchen-1.png" alt="2. Etage"></div>
+            <div class="floor-card-img">
+              <div class="mini-carousel">
+                <img src="assets/images/pictures/kitchen-1.png" alt="2. OG Küche" class="active">
+                <img src="assets/images/pictures/livingroom.png" alt="2. OG Wohnbereich">
+                <img src="assets/images/pictures/dinertable.png" alt="2. OG Essbereich">
+                <img src="assets/images/pictures/summer-outside-terrace.png" alt="2. OG Panorama-Balkon">
+                <button class="mini-nav prev" aria-label="Previous image"><i class="ph-bold ph-caret-left"></i></button>
+                <button class="mini-nav next" aria-label="Next image"><i class="ph-bold ph-caret-right"></i></button>
+              </div>
+            </div>
             <div class="floor-card-content">
               <span class="floor-card-title" data-i18n="lodge-2og">Genuss & Panorama (2. OG)</span>
-              <p class="floor-card-list" data-i18n="lodge-2og-list">Offene Gourmet-Küche, Kamin-Lounge, Panorama-Balkon
-              </p>
+              <ul class="floor-card-features">
+                <li><i class="ph-bold ph-cooking-pot"></i> <span data-i18n="lodge-2og-list-1">Offene
+                    Gourmet-Küche</span></li>
+                <li><i class="ph-bold ph-fire"></i> <span data-i18n="lodge-2og-list-2">Kamin-Lounge</span></li>
+                <li><i class="ph-bold ph-mountains"></i> <span data-i18n="lodge-2og-list-3">Panorama-Balkon</span></li>
+              </ul>
             </div>
           </div>
         </div>
@@ -735,31 +815,103 @@
           <h2 data-i18n="gallery-title" style="font-size: 3rem;">Galerie</h2>
         </div>
         <div class="masonry-gallery">
-          <div class="masonry-item reveal"><img src="assets/images/pictures/winter-outside.png" alt="Winter View"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/livingroom.png" alt="Living Room"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/kitchen-1.png" alt="Kitchen"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/bedroom-1.png" alt="Bedroom 1"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/bathroom-1.png" alt="Bathroom"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/readingcorner.png" alt="Reading Corner">
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/winter-outside.png" alt="Winter View">
+            <div class="masonry-overlay"><span>Winter View</span></div>
           </div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/summer-outside.png" alt="Summer View"></div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/livingroom.png" alt="Living Room">
+            <div class="masonry-overlay"><span>Living Room</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/kitchen-1.png" alt="Kitchen">
+            <div class="masonry-overlay"><span>Kitchen</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/bedroom-1.png" alt="Bedroom 1">
+            <div class="masonry-overlay"><span>Bedroom</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/bathroom-1.png" alt="Bathroom">
+            <div class="masonry-overlay"><span>Bathroom</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/readingcorner.png" alt="Reading Corner">
+            <div class="masonry-overlay"><span>Reading Corner</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/summer-outside.png" alt="Summer View">
+            <div class="masonry-overlay"><span>Summer View</span></div>
+          </div>
 
-          <div class="masonry-item reveal"><img src="assets/images/pictures/winter-outside-2.png" alt="Winter View 2">
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/winter-outside-2.png" alt="Winter View 2">
+            <div class="masonry-overlay"><span>Winter View</span></div>
           </div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/dinertable.png" alt="Dining Table"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/bedroom-2.png" alt="Bedroom 2"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/bunkbedroom.png" alt="Bunk Bedroom"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/hallways.png" alt="Hallways"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace">
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/dinertable.png" alt="Dining Table">
+            <div class="masonry-overlay"><span>Dining Table</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/bedroom-2.png" alt="Bedroom 2">
+            <div class="masonry-overlay"><span>Bedroom</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/bunkbedroom.png" alt="Bunk Bedroom">
+            <div class="masonry-overlay"><span>Bunk Bedroom</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/hallways.png" alt="Hallways">
+            <div class="masonry-overlay"><span>Hallways</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace">
+            <div class="masonry-overlay"><span>Terrace</span></div>
           </div>
 
-          <div class="masonry-item reveal"><img src="assets/images/pictures/kitchen-2.png" alt="Kitchen Detail"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/bedroom-3.png" alt="Bedroom 3"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/bathroom-2.png" alt="Bathroom 2"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/entrancehall.png" alt="Entrance"></div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/summer-outside-2.png" alt="Summer View 2">
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/kitchen-2.png" alt="Kitchen Detail">
+            <div class="masonry-overlay"><span>Kitchen</span></div>
           </div>
-          <div class="masonry-item reveal"><img src="assets/images/pictures/garage.png" alt="Garage"></div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/bedroom-3.png" alt="Bedroom 3">
+            <div class="masonry-overlay"><span>Bedroom</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/bathroom-2.png" alt="Bathroom 2">
+            <div class="masonry-overlay"><span>Bathroom</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/entrancehall.png" alt="Entrance">
+            <div class="masonry-overlay"><span>Entrance</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/summer-outside-2.png" alt="Summer View 2">
+            <div class="masonry-overlay"><span>Summer View</span></div>
+          </div>
+          <div class="masonry-item reveal">
+            <img src="assets/images/pictures/garage.png" alt="Garage">
+            <div class="masonry-overlay"><span>Garage</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LODGE FOOTER CTA -->
+    <section class="booking-cta-v3">
+      <div class="booking-cta-bg" style="background-image: url('assets/images/pictures/summer-outside-terrace.png');">
+      </div>
+      <div class="booking-cta-overlay"></div>
+      <div class="container booking-cta-content">
+        <div class="reveal text-center">
+          <h2 class="hero-v3-title" style="font-size: clamp(2rem, 5vw, 4rem);" data-i18n="lodge-cta-title">Bereit für
+            eine Auszeit?</h2>
+          <p class="hero-v3-tagline" data-i18n="lodge-cta-subtitle">Sichern Sie sich Ihren exklusiven Aufenthalt in der
+            Gipfel Lodge und erleben Sie Urlaub auf höchstem Niveau.</p>
+          <div class="hero-v3-ctas">
+            <a href="#booking" class="btn-editorial gold" data-i18n="book-cta-v3-b1">Beschikbaarheid</a>
+            <a href="#booking" class="btn-editorial" data-i18n="book-cta-v3-b2">Boek direct</a>
+          </div>
         </div>
       </div>
     </section>
@@ -779,30 +931,30 @@
       <div class="mega-hero-overlay"></div>
 
       <div class="mega-hero-content container">
-        <span class="mega-hero-tag">Ontdek het Salzburger Land</span>
-
-        <h1 class="mega-hero-title">
-          <div class="season-switch" id="hero-season-switch" role="button" tabindex="0"
-            aria-label="Toggle tussen zomer en winter">
-            <div class="switch-pill"></div>
-            <span class="switch-opt opt-zomer active">Zomer</span>
-            <span class="switch-opt opt-winter">Winter</span>
-          </div>
-          <br>
-          <span class="static-title-part">in Eben im Pongau</span>
-        </h1>
-
-        <div class="mega-subtitles-wrapper">
-          <p class="mega-hero-sub sub-summer active">Van bergwandelingen en e-bike tours tot alpaca-picknicks, wellness
-            en kristalheldere meren &mdash; ontdek de mooiste zomeractiviteiten rondom Gipfel Lodge.</p>
-          <p class="mega-hero-sub sub-winter">Skiën in Ski amadé, wandelingen door een sprookjesachtig winterlandschap
-            en ontspannen in luxe &mdash; beleef de pure magie van de Alpen in de winter.</p>
-        </div>
-
-        <div class="mega-hero-ctas">
-          <button id="btn-jump-activities" class="btn btn-primary theme-btn">Bekijk activiteiten</button>
-          <a href="#booking" class="btn act-btn-ghost theme-ghost">Plan je verblijf</a>
-        </div>
+        <span class="mega-hero-tag" data-i18n="act-hero-tag">Ontdek het Salzburger Land</span>
+ 
+         <h1 class="mega-hero-title">
+           <div class="season-switch" id="hero-season-switch" role="button" tabindex="0"
+             aria-label="Toggle tussen zomer en winter">
+             <div class="switch-pill"></div>
+             <span class="switch-opt opt-zomer active" data-i18n="act-hero-zomer">Zomer</span>
+             <span class="switch-opt opt-winter" data-i18n="act-hero-winter">Winter</span>
+           </div>
+           <br>
+           <span class="static-title-part" data-i18n="act-hero-static">in Eben im Pongau</span>
+         </h1>
+ 
+         <div class="mega-subtitles-wrapper">
+           <p class="mega-hero-sub sub-summer active" data-i18n="act-hero-sub-zomer">Van bergwandelingen en e-bike tours tot alpaca-picknicks, wellness
+             en kristalheldere meren &mdash; ontdek de mooiste zomeractiviteiten rondom Gipfel Lodge.</p>
+           <p class="mega-hero-sub sub-winter" data-i18n="act-hero-sub-winter">Skiën in Ski amadé, wandelingen door een sprookjesachtig winterlandschap
+             en ontspannen in luxe &mdash; beleef de pure magie van de Alpen in de winter.</p>
+         </div>
+ 
+         <div class="mega-hero-ctas">
+           <button id="btn-jump-activities" class="btn btn-primary theme-btn" data-i18n="act-hero-btn-jump">Bekijk activiteiten</button>
+           <a href="#booking" class="btn act-btn-ghost theme-ghost" data-i18n="act-hero-btn-plan">Plan je verblijf</a>
+         </div>
       </div>
     </section>
 
@@ -810,43 +962,43 @@
     <div id="zomer-view" class="season-view active">
       <nav class="mega-subnav zomer-subnav">
         <ul class="container">
-          <li><a href="#intro-zomer">Waarom Eben?</a></li>
-          <li><a href="#activities-zomer">Activiteiten</a></li>
-          <li><a href="#itineraries-zomer">Dagprogramma's</a></li>
-          <li><a href="#info-zomer">Praktisch</a></li>
+          <li><a href="#intro-zomer" data-i18n="act-subnav-why">Waarom Eben?</a></li>
+          <li><a href="#activities-zomer" data-i18n="act-subnav-act">Activiteiten</a></li>
+          <li><a href="#itineraries-zomer" data-i18n="act-subnav-iti">Dagprogramma's</a></li>
+          <li><a href="#info-zomer" data-i18n="act-subnav-info">Praktisch</a></li>
         </ul>
       </nav>
 
       <section class="mega-intro container" id="intro-zomer">
         <div class="intro-split">
           <div class="intro-text">
-            <span class="theme-tag">Jouw Uitvalsbasis</span>
-            <h2>Eben als ideale basis voor de zomer</h2>
-            <p>Gelegen in het hart van de Salzburger Sportwelt biedt Eben de perfecte balans tussen rust en avontuur.
+            <span class="theme-tag" data-i18n="act-zomer-intro-tag">Jouw Uitvalsbasis</span>
+            <h2 data-i18n="act-zomer-intro-title">Eben als ideale basis voor de zomer</h2>
+            <p data-i18n="act-zomer-intro-p">Gelegen in het hart van de Salzburger Sportwelt biedt Eben de perfecte balans tussen rust en avontuur.
               Ontdek de adembenemende natuur direct vanaf de lodge. Zowel recreatieve wandelaars als actieve
               bergsporters beleven hier hun ultieme alpiene zomer, met uitstekende verbindingen naar iconische
               bestemmingen zoals Flachau, Altenmarkt en St. Johann.</p>
           </div>
           <div class="intro-badges theme-badges">
-            <div class="badge-card"><span>🏔️</span> Direct aan wandel- en fietsroutes</div>
-            <div class="badge-card"><span>👨‍👩‍👧‍👦</span> Uitstekende familievriendelijke regio</div>
-            <div class="badge-card"><span>💦</span> Wellness en zwemmeren in de nabijheid</div>
-            <div class="badge-card"><span>🚗</span> De ideale plek voor rust én avontuur</div>
+            <div class="badge-card"><span data-i18n="act-zomer-badge-1">🏔️ Direct aan wandel- en fietsroutes</span></div>
+            <div class="badge-card"><span data-i18n="act-zomer-badge-2">👨‍👩‍👧‍👦 Uitstekende familievriendelijke regio</span></div>
+            <div class="badge-card"><span data-i18n="act-zomer-badge-3">💦 Wellness en zwemmeren in de nabijheid</span></div>
+            <div class="badge-card"><span data-i18n="act-zomer-badge-4">🚗 De ideale plek voor rust én avontuur</span></div>
           </div>
         </div>
       </section>
 
       <section class="mega-filter container" id="activities-zomer">
-        <div class="filter-header"><span class="theme-tag">Activiteiten</span>
-          <h2>Vind jouw perfecte zomerdag</h2>
+        <div class="filter-header"><span class="theme-tag" data-i18n="act-filter-tag">Activiteiten</span>
+          <h2 data-i18n="act-filter-title">Vind jouw perfecte zomerdag</h2>
         </div>
         <div class="filter-bar theme-bar" id="filter-zomer">
-          <button class="tfilter-btn active" data-filter="all">Alle</button>
-          <button class="tfilter-btn" data-filter="families">Families</button>
-          <button class="tfilter-btn" data-filter="actief">Actief</button>
-          <button class="tfilter-btn" data-filter="ontspanning">Ontspanning</button>
-          <button class="tfilter-btn" data-filter="natuur">Natuur</button>
-          <button class="tfilter-btn" data-filter="romantisch">Romantisch</button>
+          <button class="tfilter-btn active" data-filter="all" data-i18n="act-filter-all">Alle</button>
+          <button class="tfilter-btn" data-filter="families" data-i18n="act-filter-families">Families</button>
+          <button class="tfilter-btn" data-filter="actief" data-i18n="act-filter-active">Actief</button>
+          <button class="tfilter-btn" data-filter="ontspanning" data-i18n="act-filter-relax">Ontspanning</button>
+          <button class="tfilter-btn" data-filter="natuur" data-i18n="act-filter-nature">Natuur</button>
+          <button class="tfilter-btn" data-filter="romantisch" data-i18n="act-filter-romantic">Romantisch</button>
         </div>
       </section>
 
@@ -854,173 +1006,173 @@
         <!-- Wandelen -->
         <article class="tcard summer" data-categories="families,actief,natuur">
           <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/rossbrand-gross.jpg" alt="Wandelen">
-            <div class="tcard-chips"><span class="chip">80+ km routes</span></div>
+            <div class="tcard-chips"><span class="chip" data-i18n="act-card-1-chip">80+ km routes</span></div>
           </div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Wandelen & Bergtochten</span>
-            <h3>Wandelen met panoramisch uitzicht</h3>
-            <p>Toegankelijke familieroutes, rustieke berghutten en uitdagende tochten naar de Gerzkopf maken Eben een
+            <span class="tcard-cat theme-text" data-i18n="act-card-1-cat">Wandelen & Bergtochten</span>
+            <h3 data-i18n="act-card-1-title">Wandelen met panoramisch uitzicht</h3>
+            <p data-i18n="act-card-1-p">Toegankelijke familieroutes, rustieke berghutten en uitdagende tochten naar de Gerzkopf maken Eben een
               ideale bestemming.</p>
             <div class="tcard-footer"><a href="https://www.eben.at/en/summer/hiking/hikingtrails.html" target="_blank"
-                class="tcard-link theme-text">Bekijk routes</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-1-link">Bekijk routes</a></div>
           </div>
         </article>
         <!-- E-bike -->
         <article class="tcard summer" data-categories="actief,families">
           <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/biken-wiese-gross.jpg" alt="E-bike">
-            <div class="tcard-chips"><span class="chip">500 km fietspaden</span></div>
+            <div class="tcard-chips"><span class="chip" data-i18n="act-card-2-chip">500 km fietspaden</span></div>
           </div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">E-bike & Fietsen</span>
-            <h3>E-bike avonturen door dal en berg</h3>
-            <p>Verken de regio moeiteloos per e-bike via honderden kilometers gemarkeerde routes en huur lokaal
+            <span class="tcard-cat theme-text" data-i18n="act-card-2-cat">E-bike & Fietsen</span>
+            <h3 data-i18n="act-card-2-title">E-bike avonturen door dal en berg</h3>
+            <p data-i18n="act-card-2-p">Verken de regio moeiteloos per e-bike via honderden kilometers gemarkeerde routes en huur lokaal
               materiaal af.</p>
             <div class="tcard-footer"><a href="https://www.eben.at/en/summer/biking/ebiking.html" target="_blank"
-                class="tcard-link theme-text">Over E-Biken</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-2-link">Over E-Biken</a></div>
           </div>
         </article>
         <!-- Adventure Lake Eben -->
         <article class="tcard summer" data-categories="families,ontspanning">
           <div class="tcard-img"><img src="https://www.eben.at/assets/images/sommer/erlebnis-badesee-eben-rutsche.jpg"
               alt="Adventure Lake Eben">
-            <div class="tcard-chips"><span class="chip">Ligweide & Speeltuin</span></div>
+            <div class="tcard-chips"><span class="chip" data-i18n="act-card-3-chip">Ligweide & Speeltuin</span></div>
           </div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Waterpret</span>
-            <h3>Verkoeling bij het Adventure Lake</h3>
-            <p>Ideaal op schitterende warme zomerdagen met zonnige ligweides en glijbanen voor het hele gezin direct in
+            <span class="tcard-cat theme-text" data-i18n="act-card-3-cat">Waterpret</span>
+            <h3 data-i18n="act-card-3-title">Verkoeling bij het Adventure Lake</h3>
+            <p data-i18n="act-card-3-p">Ideaal op schitterende warme zomerdagen met zonnige ligweides en glijbanen voor het hele gezin direct in
               Eben.</p>
             <div class="tcard-footer"><a href="https://www.eben.at/en/summer/swimming/bathing-lake.html" target="_blank"
-                class="tcard-link theme-text">Ontdek het Zwemmeer</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-3-link">Ontdek het Zwemmeer</a></div>
           </div>
         </article>
         <!-- Zoutmijnen van Hallein -->
         <article class="tcard summer" data-categories="families,natuur,cultuur">
-          <div class="tcard-img"><img
-              src="https://www.hallstatt.net/assets/image-gallery/salzbergwerk-hallstatt/salzwelten-2021/_resampled/CroppedFocusedImageWzgwMCw0NTAsInkiLDQxXQ/hallstatt-salzwelten-c-salzwelten-005.jpg"
-              alt="Salzwelten Hallein">
-            <div class="tcard-chips"><span class="chip">Unieke ervaring</span></div>
+           <div class="tcard-img"><img
+               src="https://www.hallstatt.net/assets/image-gallery/salzbergwerk-hallstatt/salzwelten-2021/_resampled/CroppedFocusedImageWzgwMCw0NTAsInkiLDQxXQ/hallstatt-salzwelten-c-salzwelten-005.jpg"
+               alt="Salzwelten Hallein">
+            <div class="tcard-chips"><span class="chip" data-i18n="act-card-4-chip">Unieke ervaring</span></div>
           </div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Dagtrip / Beleving</span>
-            <h3>Zoutmijnen van Hallein</h3>
-            <p>Ga diep de bergen in en ontdek de fascinerende wereld van zout. Met een treintje, houten glijbanen en een
-              boottocht door ondergrondse meren is dit een unieke ervaring voor jong en oud.</p>
+            <span class="tcard-cat theme-text" data-i18n="act-card-4-cat">Dagtrip / Beleving</span>
+            <h3 data-i18n="act-card-4-title">Zoutmijnen van Hallein</h3>
+            <p data-i18n="act-card-4-p">Ga diep de bergen in en ontdek de fascinerende wereld van zout. Met een treintje, houten glijbanen en een
+               boottocht door ondergrondse meren is dit een unieke ervaring voor jong en oud.</p>
             <div class="tcard-footer"><a href="https://www.salzwelten.at/en/hallein" target="_blank"
-                class="tcard-link theme-text">Bekijk ervaring</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-4-link">Bekijk ervaring</a></div>
           </div>
         </article>
         <!-- Go Kart Salzburg -->
         <article class="tcard summer" data-categories="actief,families,avontuur">
-          <div class="tcard-img"><img
-              src="https://www.oostenrijktv.nl/app/uploads/2020/08/Mountaincarttirolerzugspitzarena-0010-scaled.jpg"
-              alt="Mountain Go Kart Schladming">
-            <div class="tcard-chips"><span class="chip">Outdoor</span></div>
+           <div class="tcard-img"><img
+               src="https://www.oostenrijktv.nl/app/uploads/2020/08/Mountaincarttirolerzugspitzarena-0010-scaled.jpg"
+               alt="Mountain Go Kart Schladming">
+            <div class="tcard-chips"><span class="chip" data-i18n="act-card-5-chip">Outdoor</span></div>
           </div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Avontuur / Outdoor</span>
-            <h3>Go-karten in Schladming</h3>
-            <p>Zin in snelheid en actie in de bergen? Op de Hochwurzen race je met een mountain go-kart over een
-              spectaculaire afdaling van maar liefst 7 kilometer door het alpiene landschap. Perfect voor avonturiers en
-              gezinnen die iets anders willen dan wandelen of zwemmen.</p>
+            <span class="tcard-cat theme-text" data-i18n="act-card-5-cat">Avontuur / Outdoor</span>
+            <h3 data-i18n="act-card-5-title">Go-karten in Schladming</h3>
+            <p data-i18n="act-card-5-p">Zin in snelheid en actie in de bergen? Op de Hochwurzen race je met een mountain go-kart over een
+               spectaculaire afdaling van maar liefst 7 kilometer door het alpiene landschap. Perfect voor avonturiers en
+               gezinnen die iets anders willen dan wandelen of zwemmen.</p>
             <div class="tcard-footer"><a href="https://www.mountain-gokart.at" target="_blank"
-                class="tcard-link theme-text">Bekijk opties</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-5-link">Bekijk opties</a></div>
           </div>
         </article>
         <!-- Alpaca Experiences -->
         <article class="tcard summer" data-categories="families,natuur,romantisch,ontspanning">
-          <div class="tcard-img"><img
-              src="https://images.unsplash.com/photo-1589182337358-2cb63099350c?q=80&w=1974&auto=format&fit=crop"
-              alt="Alpacas"></div>
+           <div class="tcard-img"><img
+               src="https://images.unsplash.com/photo-1589182337358-2cb63099350c?q=80&w=1974&auto=format&fit=crop"
+               alt="Alpacas"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Dieren / Lokaal</span>
-            <h3>Unieke alpaca-ervaringen</h3>
-            <p>Ontspannen alpaca hikes door de ochtendglorie of romantische sunset-picnics vol regionale lekkernijen.
-            </p>
+            <span class="tcard-cat theme-text" data-i18n="act-card-6-cat">Dieren / Lokaal</span>
+            <h3 data-i18n="act-card-6-title">Unieke alpaca-ervaringen</h3>
+            <p data-i18n="act-card-6-p">Ontspannen alpaca hikes door de ochtendglorie of romantische sunset-picnics vol regionale lekkernijen.
+             </p>
             <div class="tcard-footer"><a href="https://www.eben.at/en/summer/culinary/alpacapicnic.html" target="_blank"
-                class="tcard-link theme-text">Bekijk Ervaringen</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-6-link">Bekijk Ervaringen</a></div>
           </div>
         </article>
         <!-- Therme Amadé -->
         <article class="tcard summer" data-categories="ontspanning,families">
-          <div class="tcard-img"><img
-              src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop"
-              alt="Therme Amadé Wellness"></div>
+           <div class="tcard-img"><img
+               src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop"
+               alt="Therme Amadé Wellness"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Wellness & Zwembad</span>
-            <h3>Wellness bij Therme Amadé</h3>
-            <p>Perfect voor een totale relaxdag of minder mooi weer: luxe wellness en actieve zwembaden in Altenmarkt.
-            </p>
+            <span class="tcard-cat theme-text" data-i18n="act-card-7-cat">Wellness & Zwembad</span>
+            <h3 data-i18n="act-card-7-title">Wellness bij Therme Amadé</h3>
+            <p data-i18n="act-card-7-p">Perfect voor een totale relaxdag of minder mooi weer: luxe wellness en actieve zwembaden in Altenmarkt.
+             </p>
             <div class="tcard-footer"><a href="https://www.thermeamade.at/en/" target="_blank"
-                class="tcard-link theme-text">Bekijk de Therme</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-7-link">Bekijk de Therme</a></div>
           </div>
         </article>
         <!-- Liechtensteinklamm waterval -->
         <article class="tcard summer" data-categories="natuur,actief">
-          <div class="tcard-img"><img
-              src="https://cdn.indebergen.nl/media/y2tjyggd/liechtensteinklamm-indebergen.jpeg?anchor=center&mode=crop&width=1160&height=870&format=webp&quality=80"
-              alt="Liechtensteinklamm"></div>
+           <div class="tcard-img"><img
+               src="https://cdn.indebergen.nl/media/y2tjyggd/liechtensteinklamm-indebergen.jpeg?anchor=center&mode=crop&width=1160&height=870&format=webp&quality=80"
+               alt="Liechtensteinklamm"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Dagtrips (Highlights)</span>
-            <h3>Liechtensteinklamm Waterval</h3>
-            <p>Spectaculaire dagtrip excursie in een immens bekende, diep uitgeslepen rotskloof met kraakhelder water.
-            </p>
+            <span class="tcard-cat theme-text" data-i18n="act-card-8-cat">Dagtrips (Highlights)</span>
+            <h3 data-i18n="act-card-8-title">Liechtensteinklamm Waterval</h3>
+            <p data-i18n="act-card-8-p">Spectaculaire dagtrip excursie in een immens bekende, diep uitgeslepen rotskloof met kraakhelder water.
+             </p>
             <div class="tcard-footer"><a href="https://www.josalzburg.com/en/" target="_blank"
-                class="tcard-link theme-text">Tickets Klamm</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-8-link">Tickets Klamm</a></div>
           </div>
         </article>
       </section>
 
       <section class="mega-itineraries" id="itineraries-zomer">
         <div class="container">
-          <div class="filter-header"><span class="theme-tag">Inspiratie</span>
-            <h2>Voorbeeld Dagprogramma's</h2>
+          <div class="filter-header"><span class="theme-tag" data-i18n="act-iti-tag">Inspiratie</span>
+            <h2 data-i18n="act-iti-title-zomer">Voorbeeld Dagprogramma's</h2>
           </div>
-          <p class="iti-swipe-hint">← Swipe voor meer →</p>
+          <p class="iti-swipe-hint" data-i18n="act-iti-swipe">← Swipe voor meer →</p>
         </div>
         <div class="iti-grid">
           <div class="iti-card summer">
-            <h4>Een heerlijke familiedag <span>🌞</span></h4>
-            <div class="iti-step"><strong>Ochtend:</strong>
-              <p>Gezamenlijk opstaan en te voet vertrekken naar de KITIWAPF kindertrail voor een interactief bosavontuur
+            <h4 data-i18n="act-z-iti-1-title">Een heerlijke familiedag <span>🌞</span></h4>
+            <div class="iti-step"><strong data-i18n="act-iti-label-morning">Ochtend:</strong>
+              <p data-i18n="act-z-iti-1-step-1">Gezamenlijk opstaan en te voet vertrekken naar de KITIWAPF kindertrail voor een interactief bosavontuur
                 vol raadsels en plezier.</p>
             </div>
-            <div class="iti-step"><strong>Middag:</strong>
-              <p>Heerlijk afkoelen aan de oevers van het zwemmeer in Eben. Ouders ontspannen in de zon terwijl de
+            <div class="iti-step"><strong data-i18n="act-iti-label-afternoon">Middag:</strong>
+              <p data-i18n="act-z-iti-1-step-2">Heerlijk afkoelen aan de oevers van het zwemmeer in Eben. Ouders ontspannen in de zon terwijl de
                 kinderen zich vermaken op de waterglijbanen.</p>
             </div>
-            <div class="iti-step"><strong>Avond:</strong>
-              <p>Terugkeer naar de Gipfel Lodge! Steek de buiten-BBQ aan of geniet van een diner in een gezellige
+            <div class="iti-step"><strong data-i18n="act-iti-label-evening">Avond:</strong>
+              <p data-i18n="act-z-iti-1-step-3">Terugkeer naar de Gipfel Lodge! Steek de buiten-BBQ aan of geniet van een diner in een gezellige
                 Oostenrijkse Stube in de buurt.</p>
             </div>
           </div>
           <div class="iti-card summer highlight">
-            <h4>Actieve bergdag <span>🏔️</span></h4>
-            <div class="iti-step"><strong>Ochtend:</strong>
-              <p>Huur de nieuwste e-bikes of trek je wandelschoenen aan voor een uitdagende tocht naar de top van de
+            <h4 data-i18n="act-z-iti-2-title">Actieve bergdag <span>🏔️</span></h4>
+            <div class="iti-step"><strong data-i18n="act-iti-label-morning">Ochtend:</strong>
+              <p data-i18n="act-z-iti-2-step-1">Huur de nieuwste e-bikes of trek je wandelschoenen aan voor een uitdagende tocht naar de top van de
                 Gerzkopf.</p>
             </div>
-            <div class="iti-step"><strong>Middag:</strong>
-              <p>Bereik de top en trakteer jezelf op een welverdiende Kaiserschmarrn op het zonneterras, met een
+            <div class="iti-step"><strong data-i18n="act-iti-label-afternoon">Middag:</strong>
+              <p data-i18n="act-z-iti-2-step-2">Bereik de top en trakteer jezelf op een welverdiende Kaiserschmarrn op het zonneterras, met een
                 adembenemend panoramisch uitzicht.</p>
             </div>
-            <div class="iti-step"><strong>Avond:</strong>
-              <p>Laat de spieren tot rust komen en geniet van een verfrissend witbier in het dal, terwijl de zon
+            <div class="iti-step"><strong data-i18n="act-iti-label-evening">Avond:</strong>
+              <p data-i18n="act-z-iti-2-step-3">Laat de spieren tot rust komen en geniet van een verfrissend witbier in het dal, terwijl de zon
                 langzaam achter de bergtoppen verdwijnt.</p>
             </div>
           </div>
           <div class="iti-card summer">
-            <h4>Ontspannen genietdag <span>🥂</span></h4>
-            <div class="iti-step"><strong>Ochtend:</strong>
-              <p>Begin de dag rustig met een 'slow morning'. Maak een ontspannen wandeling door de weidse velden,
+            <h4 data-i18n="act-z-iti-3-title">Ontspannen genietdag <span>🥂</span></h4>
+            <div class="iti-step"><strong data-i18n="act-iti-label-morning">Ochtend:</strong>
+              <p data-i18n="act-z-iti-3-step-1">Begin de dag rustig met een 'slow morning'. Maak een ontspannen wandeling door de weidse velden,
                 vergezeld door de vriendelijke alpaca's uit de streek.</p>
             </div>
-            <div class="iti-step"><strong>Middag:</strong>
-              <p>Ontsnap aan de dagelijkse drukte en dompel jezelf onder in de warme zoutwaterbaden en sauna's van de
+            <div class="iti-step"><strong data-i18n="act-iti-label-afternoon">Middag:</strong>
+              <p data-i18n="act-z-iti-3-step-2">Ontsnap aan de dagelijkse drukte en dompel jezelf onder in de warme zoutwaterbaden en sauna's van de
                 nabijgelegen Therme Amadé.</p>
             </div>
-            <div class="iti-step"><strong>Avond:</strong>
-              <p>Geniet van een schilderachtige picknick bij zonsondergang. Neem lokale kazen en wijnen mee het
+            <div class="iti-step"><strong data-i18n="act-iti-label-evening">Avond:</strong>
+              <p data-i18n="act-z-iti-3-step-3">Geniet van een schilderachtige picknick bij zonsondergang. Neem lokale kazen en wijnen mee het
                 heuvelachtige landschap in.</p>
             </div>
           </div>
@@ -1034,29 +1186,29 @@
 
       <section class="mega-practical container" id="info-zomer">
         <div class="practical-content">
-          <h2>Praktische Zomer Zaken</h2>
+          <h2 data-i18n="act-z-prac-title">Praktische Zomer Zaken</h2>
           <div class="accordion t-acc zomer-acc">
             <div class="accordion-item" tabindex="0">
-              <div class="accordion-header theme-text"><span>Huur van E-bikes & fietsen</span><span
+              <div class="accordion-header theme-text"><span data-i18n="act-z-prac-1-h">Huur van E-bikes & fietsen</span><span
                   class="icon">+</span></div>
               <div class="accordion-body">
-                <p>Via Intersport in Eben kunt u modern opgeladen e-bikes en mountainbikes huren, direct aan het begin
+                <p data-i18n="act-z-prac-1-p">Via Intersport in Eben kunt u modern opgeladen e-bikes en mountainbikes huren, direct aan het begin
                   van de mooiste trails.</p>
               </div>
             </div>
             <div class="accordion-item" tabindex="0">
-              <div class="accordion-header theme-text"><span>Bereikbaarheid & reistijden</span><span
+              <div class="accordion-header theme-text"><span data-i18n="act-z-prac-2-h">Bereikbaarheid & reistijden</span><span
                   class="icon">+</span></div>
               <div class="accordion-body">
-                <p>Gipfel Lodge ligt zeer gunstig: Therme Amadé (10 min), Ebener Erlebnissee (5 min) en Flachau (15
+                <p data-i18n="act-z-prac-2-p">Gipfel Lodge ligt zeer gunstig: Therme Amadé (10 min), Ebener Erlebnissee (5 min) en Flachau (15
                   min). Bergtrajecten en bezienswaardigheden zijn uitstekend bereikbaar.</p>
               </div>
             </div>
             <div class="accordion-item" tabindex="0">
-              <div class="accordion-header theme-text"><span>Familievriendelijke regio</span><span class="icon">+</span>
+              <div class="accordion-header theme-text"><span data-i18n="act-z-prac-3-h">Familievriendelijke regio</span><span class="icon">+</span>
               </div>
               <div class="accordion-body">
-                <p>Er zijn talloze specifieke educatieve themawandelpaden voor kinderen met interactieve spelletjes
+                <p data-i18n="act-z-prac-3-p">Er zijn talloze specifieke educatieve themawandelpaden voor kinderen met interactieve spelletjes
                   (zoals Flori's Erlebnispfad in de regio).</p>
               </div>
             </div>
@@ -1069,43 +1221,43 @@
     <div id="winter-view" class="season-view">
       <nav class="mega-subnav winter-subnav">
         <ul class="container">
-          <li><a href="#intro-winter">Waarom Eben?</a></li>
-          <li><a href="#activities-winter">Activiteiten</a></li>
-          <li><a href="#itineraries-winter">Dagprogramma's</a></li>
-          <li><a href="#info-winter">Praktisch</a></li>
+          <li><a href="#intro-winter" data-i18n="act-subnav-why">Waarom Eben?</a></li>
+          <li><a href="#activities-winter" data-i18n="act-subnav-act">Activiteiten</a></li>
+          <li><a href="#itineraries-winter" data-i18n="act-subnav-iti">Dagprogramma's</a></li>
+          <li><a href="#info-winter" data-i18n="act-subnav-info">Praktisch</a></li>
         </ul>
       </nav>
 
       <section class="mega-intro container" id="intro-winter">
         <div class="intro-split">
           <div class="intro-text">
-            <span class="theme-tag">Jouw Sneeuwparadijs</span>
-            <h2>Eben als ideale winterbestemming</h2>
-            <p>Eben im Pongau is de perfecte uitvalsbasis voor een droomvakantie in de sneeuw. Rustig gelegen, maar toch
+            <span class="theme-tag" data-i18n="act-winter-intro-tag">Jouw Sneeuwparadijs</span>
+            <h2 data-i18n="act-winter-intro-title">Eben als ideale winterbestemming</h2>
+            <p data-i18n="act-winter-intro-p">Eben im Pongau is de perfecte uitvalsbasis voor een droomvakantie in de sneeuw. Rustig gelegen, maar toch
               midden in het indrukwekkende hart van Ski amadé. Ideaal voor ambitieuze skiërs die snelle toegang wensen
               tot Snow Space Salzburg, maar ook perfect voor gasten die op zoek zijn naar pure ontspanning, ver weg van
               de après-ski drukte.</p>
           </div>
           <div class="intro-badges theme-badges">
-            <div class="badge-card"><span>⛷️</span> 750 km aaneengesloten piste (Ski amadé)</div>
-            <div class="badge-card"><span>❄️</span> Rustige lodge, absolute centrale ligging</div>
-            <div class="badge-card"><span>☃️</span> Ideaal voor ambitieuze skiërs én niet-skiërs</div>
-            <div class="badge-card"><span>💦</span> Wellness & serene natuur dichtbij</div>
+            <div class="badge-card"><span data-i18n="act-winter-badge-1">⛷️ 750 km aaneengesloten piste (Ski amadé)</span></div>
+            <div class="badge-card"><span data-i18n="act-winter-badge-2">❄️ Rustige lodge, absolute centrale ligging</span></div>
+            <div class="badge-card"><span data-i18n="act-winter-badge-3">☃️ Ideaal voor ambitieuze skiërs én niet-skiërs</span></div>
+            <div class="badge-card"><span data-i18n="act-winter-badge-4">💦 Wellness & serene natuur dichtbij</span></div>
           </div>
         </div>
       </section>
 
       <section class="mega-filter container" id="activities-winter">
-        <div class="filter-header"><span class="theme-tag">Activiteiten</span>
-          <h2>Vind jouw perfecte winterbeleving</h2>
+        <div class="filter-header"><span class="theme-tag" data-i18n="act-filter-tag">Activiteiten</span>
+          <h2 data-i18n="act-w-filter-title">Vind jouw perfecte winterbeleving</h2>
         </div>
         <div class="filter-bar theme-bar" id="filter-winter">
-          <button class="tfilter-btn active" data-filter="all">Alle</button>
-          <button class="tfilter-btn" data-filter="skiën">Skiën</button>
-          <button class="tfilter-btn" data-filter="familie">Familie</button>
-          <button class="tfilter-btn" data-filter="niet-skiërs">Niet-skiërs</button>
-          <button class="tfilter-btn" data-filter="ontspanning">Ontspanning</button>
-          <button class="tfilter-btn" data-filter="romantisch">Romantisch</button>
+          <button class="tfilter-btn active" data-filter="all" data-i18n="act-filter-all">Alle</button>
+          <button class="tfilter-btn" data-filter="skiën" data-i18n="act-filter-ski">Skiën</button>
+          <button class="tfilter-btn" data-filter="familie" data-i18n="act-filter-families">Familie</button>
+          <button class="tfilter-btn" data-filter="niet-skiërs" data-i18n="act-filter-non-ski">Niet-skiërs</button>
+          <button class="tfilter-btn" data-filter="ontspanning" data-i18n="act-filter-relax">Ontspanning</button>
+          <button class="tfilter-btn" data-filter="romantisch" data-i18n="act-filter-romantic">Romantisch</button>
         </div>
       </section>
 
@@ -1114,15 +1266,15 @@
           <div class="tcard-img"><img
               src="https://images.unsplash.com/photo-1605540436563-5bca919ae766?q=80&w=2069&auto=format&fit=crop"
               alt="Skiën">
-            <div class="tcard-chips"><span class="chip">750 km Piste</span></div>
+            <div class="tcard-chips"><span class="chip" data-i18n="act-w-card-1-chip">750 km Piste</span></div>
           </div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Pisteplezier</span>
-            <h3>Skiën in Ski amadé & Flachau</h3>
-            <p>Directe toegang tot een van de grootste skigebieden van Europa met honderden kilometers perfect
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-1-cat">Pisteplezier</span>
+            <h3 data-i18n="act-w-card-1-title">Skiën in Ski amadé & Flachau</h3>
+            <p data-i18n="act-w-card-1-p">Directe toegang tot een van de grootste skigebieden van Europa met honderden kilometers perfect
               geprepareerde pistes binnen handbereik.</p>
             <div class="tcard-footer"><a href="https://www.skiamade.com/en/" target="_blank"
-                class="tcard-link theme-text">Bekijk skigebied</a></div>
+                class="tcard-link theme-text" data-i18n="act-card-1-link-w">Bekijk skigebied</a></div>
           </div>
         </article>
         <article class="tcard winter" data-categories="niet-skiërs,actief,ontspanning">
@@ -1130,27 +1282,27 @@
               src="https://www.tyrol.com/images/ehcInNQS6Tk/cb%3A/g%3Ace/aHR0cHM6Ly91cGxvYWRzLm1hcHNlcnZpY2VzLmV1L25lZm9zX3Rpcm9sL3NpdGUtZmlsZXMvMTAxNi91cGxvYWRzL2xhbmdsYXVmZW4tc2VlbG9pcGUtb2JlcmF1dGFsLWFjaGVua2lyY2gtMS5qcGc"
               alt="Langlaufen"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Noords genieten</span>
-            <h3>Langlaufen in Eben</h3>
-            <p>Rust, verkwikkende natuur en strak getrokken loipes over sneeuwvlaktes maken langlaufen prachtig hier.
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-2-cat">Noords genieten</span>
+            <h3 data-i18n="act-w-card-2-title">Langlaufen in Eben</h3>
+            <p data-i18n="act-w-card-2-p">Rust, verkwikkende natuur en strak getrokken loipes over sneeuwvlaktes maken langlaufen prachtig hier.
             </p>
             <div class="tcard-footer"><a href="https://www.skiamade.com/en/winter/cross-country-skiing" target="_blank"
-                class="tcard-link theme-text">Loipes info</a></div>
+                class="tcard-link theme-text" data-i18n="act-w-card-2-link">Loipes info</a></div>
           </div>
         </article>
         <article class="tcard winter" data-categories="familie,niet-skiërs">
           <div class="tcard-img"><img
               src="https://www.skiamade.com/media-import-nw/website-relaunch-fotos/winter/bergbahnen/radstadt-altenmarkt/image-thumb__263837__img-slider/2019-radstadt-altenmarkt-winter-rodeln-rodelbahn-koenigslehen.jpg"
               alt="Rodelen">
-            <div class="tcard-chips"><span class="chip">Oók 's Avonds</span></div>
+            <div class="tcard-chips"><span class="chip" data-i18n="act-w-card-3-chip">Oók 's Avonds</span></div>
           </div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Sneeuwpret</span>
-            <h3>Rodelen (ook na diner)</h3>
-            <p>Gemoedelijke familie-afdalingen bij daglicht of sfeervol verlichte avondrodelbanen inclusief berghut
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-3-cat">Sneeuwpret</span>
+            <h3 data-i18n="act-w-card-3-title">Rodelen (ook na diner)</h3>
+            <p data-i18n="act-w-card-3-p">Gemoedelijke familie-afdalingen bij daglicht of sfeervol verlichte avondrodelbanen inclusief berghut
               stops!</p>
             <div class="tcard-footer"><a href="https://www.skiamade.com/en/winter/tobogganing" target="_blank"
-                class="tcard-link theme-text">Pijlsnel naar beneden</a></div>
+                class="tcard-link theme-text" data-i18n="act-w-card-3-link">Pijlsnel naar beneden</a></div>
           </div>
         </article>
         <!-- W 4 -->
@@ -1159,12 +1311,12 @@
               src="https://www.hirschen.at/fileadmin/_processed_/7/2/csm_winterwandern-schetteregg-egg-c-emanuel-sutterluety-bregenzerwald-tourismus_960450f9e8.jpg"
               alt="Winterwandelen"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Stilte van de Natuur</span>
-            <h3>Magische sneeuwwandelingen</h3>
-            <p>Verken betoverend besneeuwde bossen te voet, of wandel met speciale sneeuwschoenen door ongerepte
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-4-cat">Stilte van de Natuur</span>
+            <h3 data-i18n="act-w-card-4-title">Magische sneeuwwandelingen</h3>
+            <p data-i18n="act-w-card-4-p">Verken betoverend besneeuwde bossen te voet, of wandel met speciale sneeuwschoenen door ongerepte
               poedersneeuw.</p>
             <div class="tcard-footer"><a href="https://www.skiamade.com/en/winter/winter-hiking" target="_blank"
-                class="tcard-link theme-text">Paden & routes</a></div>
+                class="tcard-link theme-text" data-i18n="act-w-card-4-link">Paden & routes</a></div>
           </div>
         </article>
         <!-- W 5 -->
@@ -1173,11 +1325,11 @@
               src="https://images.unsplash.com/photo-1583416750470-965b2707b355?q=80&w=2070&auto=format&fit=crop"
               alt="Therme Amadé Winter"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Wellness in de vrieskou</span>
-            <h3>Opwarmen bij Therme Amadé</h3>
-            <p>Volledig bijkomen van de pistesluur in de zoutwaterbaden en stoomsauna's in de sneeuw.</p>
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-5-cat">Wellness in de vrieskou</span>
+            <h3 data-i18n="act-w-card-5-title">Opwarmen bij Therme Amadé</h3>
+            <p data-i18n="act-w-card-5-p">Volledig bijkomen van de pistesluur in de zoutwaterbaden en stoomsauna's in de sneeuw.</p>
             <div class="tcard-footer"><a href="https://www.thermeamade.at/en/" target="_blank"
-                class="tcard-link theme-text">Bekijk Winterbaden</a></div>
+                class="tcard-link theme-text" data-i18n="act-w-card-5-link">Bekijk Winterbaden</a></div>
           </div>
         </article>
         <!-- W 6 -->
@@ -1186,14 +1338,14 @@
               src="https://www.alpbachtal.at/Alpbachtal/4.%20Aktivit%C3%A4ten/Winteraktivit%C3%A4ten/Pferdekutschen/2937573/image-thumb__2937573__hero-content/Kutschenfahrt_7-1024x683~-~media--df42eb16--query@2x.webp"
               alt="Paardenslee tocht"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Traditie & Beleving</span>
-            <h3>Paardenslee tocht</h3>
-            <p>Ervaar de magie van de winter tijdens een traditionele paardenslee tocht door besneeuwde landschappen.
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-6-cat">Traditie & Beleving</span>
+            <h3 data-i18n="act-w-card-6-title">Paardenslee tocht</h3>
+            <p data-i18n="act-w-card-6-p">Ervaar de magie van de winter tijdens een traditionele paardenslee tocht door besneeuwde landschappen.
               Onder warme dekens glijd je door stille bossen en open valleien, terwijl de bergen om je heen zorgen voor
               een onvergetelijke sfeer. Perfect voor koppels en gezinnen die op zoek zijn naar een unieke
               winterervaring.</p>
             <div class="tcard-footer"><a href="https://www.salzburgerland.com/en/winter/horse-drawn-sleigh-rides/"
-                target="_blank" class="tcard-link theme-text">Boek hier</a></div>
+                target="_blank" class="tcard-link theme-text" data-i18n="act-w-card-6-link">Boek hier</a></div>
           </div>
         </article>
         <!-- W 7 -->
@@ -1202,13 +1354,13 @@
               src="https://www.zellamsee-kaprun.com/bilder/gipfelwelt-3000/11327/image-thumb__11327__lightbox/2023_Kitzsteinhorn_Top-of-Salzburg-%281%29.58d20648.jpg"
               alt="Kitzsteinhorn gletsjer"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Dagtrip · Gletsjerskiën</span>
-            <h3>Kitzsteinhorn Gletsjer</h3>
-            <p>Wil je altijd verzekerd zijn van perfecte sneeuwcondities? Maak een dagtrip naar de gletsjer van
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-7-cat">Dagtrip · Gletsjerskiën</span>
+            <h3 data-i18n="act-w-card-7-title">Kitzsteinhorn Gletsjer</h3>
+            <p data-i18n="act-w-card-7-p">Wil je altijd verzekerd zijn van perfecte sneeuwcondities? Maak een dagtrip naar de gletsjer van
               Kitzsteinhorn. Hier ski je op grote hoogte met indrukwekkende uitzichten over de Alpen. Een absolute must
               voor fanatieke wintersporters.</p>
             <div class="tcard-footer"><a href="https://www.kitzsteinhorn.at/en" target="_blank"
-                class="tcard-link theme-text">Meer info</a></div>
+                class="tcard-link theme-text" data-i18n="act-w-card-7-link">Meer info</a></div>
           </div>
         </article>
         <!-- W 8 -->
@@ -1217,12 +1369,12 @@
               src="https://www.oetztal.com/cache-buster-1/dam/web/143190/image-thumb__143190__nuiLightboxImage/laeng_eisklettern_06_21.bed8a108.png"
               alt="IJsklimmen Oostenrijk"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Avontuur · Outdoor</span>
-            <h3>IJsklimmen</h3>
-            <p>Klim langs bevroren watervallen en beleef de Alpen op een spectaculaire manier. Onder begeleiding van
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-8-cat">Avontuur · Outdoor</span>
+            <h3 data-i18n="act-w-card-8-title">IJsklimmen</h3>
+            <p data-i18n="act-w-card-8-p">Klim langs bevroren watervallen en beleef de Alpen op een spectaculaire manier. Onder begeleiding van
               ervaren gidsen ontdek je een unieke en uitdagende kant van de winter.</p>
             <div class="tcard-footer"><a href="https://www.salzburgadventures.com/en/" target="_blank"
-                class="tcard-link theme-text">Boek activiteit</a></div>
+                class="tcard-link theme-text" data-i18n="act-w-card-8-link">Boek activiteit</a></div>
           </div>
         </article>
         <!-- W 9 -->
@@ -1231,66 +1383,66 @@
               src="https://alps-resorts.com/assets/images/d/nachtrodeln_oesterreich_03-496ddj10xw86en3.jpg"
               alt="Nachtrodelen"></div>
           <div class="tcard-body">
-            <span class="tcard-cat theme-text">Familie · Avond</span>
-            <h3>Nachtrodelen</h3>
-            <p>Rodelen in het donker op verlichte banen zorgt voor extra plezier en spanning. Combineer het met een
+            <span class="tcard-cat theme-text" data-i18n="act-w-card-9-cat">Familie · Avond</span>
+            <h3 data-i18n="act-w-card-9-title">Nachtrodelen</h3>
+            <p data-i18n="act-w-card-9-p">Rodelen in het donker op verlichte banen zorgt voor extra plezier en spanning. Combineer het met een
               bezoek aan een gezellige berghut voor een complete avond.</p>
             <div class="tcard-footer"><a href="https://www.skiamade.com/en/winter/tobogganing" target="_blank"
-                class="tcard-link theme-text">Bekijk rodelbanen</a></div>
+                class="tcard-link theme-text" data-i18n="act-w-card-9-link">Bekijk rodelbanen</a></div>
           </div>
         </article>
       </section>
 
       <section class="mega-itineraries" id="itineraries-winter">
         <div class="container">
-          <div class="filter-header"><span class="theme-tag">Inspiratie</span>
-            <h2>Winter Dagprogramma's</h2>
+          <div class="filter-header"><span class="theme-tag" data-i18n="act-iti-tag">Inspiratie</span>
+            <h2 data-i18n="act-iti-title-winter">Winter Dagprogramma's</h2>
           </div>
-          <p class="iti-swipe-hint">← Swipe voor meer →</p>
+          <p class="iti-swipe-hint" data-i18n="act-iti-swipe">← Swipe voor meer →</p>
         </div>
         <div class="iti-grid">
           <div class="iti-card winter">
-            <h4>Rust & natuur dag <span>❄️</span></h4>
-            <div class="iti-step"><strong>Ochtend:</strong>
-              <p>Trek je sneeuwschoenen aan voor een verkwikkende route door de dennenbossen. Geniet van de absolute
+            <h4 data-i18n="act-w-iti-1-title">Rust & natuur dag <span>❄️</span></h4>
+            <div class="iti-step"><strong data-i18n="act-iti-label-morning">Ochtend:</strong>
+              <p data-i18n="act-w-iti-1-step-1">Trek je sneeuwschoenen aan voor een verkwikkende route door de dennenbossen. Geniet van de absolute
                 stilte en de glinsterende sneeuw.</p>
             </div>
-            <div class="iti-step"><strong>Middag:</strong>
-              <p>Ontsnap aan de kou en geniet van de dampende buitenbaden van Therme Amadé. Pure spierontspanning op het
+            <div class="iti-step"><strong data-i18n="act-iti-label-afternoon">Middag:</strong>
+              <p data-i18n="act-w-iti-1-step-2">Ontsnap aan de kou en geniet van de dampende buitenbaden van Therme Amadé. Pure spierontspanning op het
                 allerhoogste niveau.</p>
             </div>
-            <div class="iti-step"><strong>Avond:</strong>
-              <p>Dineer op culinair niveau bij kaarslicht in Eben en laat u verrassen door de verfijnde streekproducten
+            <div class="iti-step"><strong data-i18n="act-iti-label-evening">Avond:</strong>
+              <p data-i18n="act-w-iti-1-step-3">Dineer op culinair niveau bij kaarslicht in Eben en laat u verrassen door de verfijnde streekproducten
                 uit het Salzburger Land.</p>
             </div>
           </div>
           <div class="iti-card winter highlight">
-            <h4>Een perfecte dag op de piste <span>⛷️</span></h4>
-            <div class="iti-step"><strong>Ochtend:</strong>
-              <p>Sta als eerste bij de splinternieuwe liften in Flachau! Carve in alle rust over de vers geprepareerde
+            <h4 data-i18n="act-w-iti-2-title">Een perfecte dag op de piste <span>⛷️</span></h4>
+            <div class="iti-step"><strong data-i18n="act-iti-label-morning">Ochtend:</strong>
+              <p data-i18n="act-w-iti-2-step-1">Sta als eerste bij de splinternieuwe liften in Flachau! Carve in alle rust over de vers geprepareerde
                 'corduroy' pistes van Ski amadé.</p>
             </div>
-            <div class="iti-step"><strong>Middag:</strong>
-              <p>Schuif aan bij een authentieke berghut voor een huisgemaakte goulashsoep of een stevige schnitzel,
+            <div class="iti-step"><strong data-i18n="act-iti-label-afternoon">Middag:</strong>
+              <p data-i18n="act-w-iti-2-step-2">Schuif aan bij een authentieke berghut voor een huisgemaakte goulashsoep of een stevige schnitzel,
                 terwijl je geniet van de Oostenrijkse winterzon.</p>
             </div>
-            <div class="iti-step"><strong>Avond:</strong>
-              <p>Beleef de gezellige après-ski sfeer in het dal, om vervolgens in alle rust en luxe te ontspannen in uw
+            <div class="iti-step"><strong data-i18n="act-iti-label-evening">Avond:</strong>
+              <p data-i18n="act-w-iti-2-step-3">Beleef de gezellige après-ski sfeer in het dal, om vervolgens in alle rust en luxe te ontspannen in uw
                 eigen warme lodge.</p>
             </div>
           </div>
           <div class="iti-card winter">
-            <h4>Familie-plezierdag <span>⛄</span></h4>
-            <div class="iti-step"><strong>Ochtend:</strong>
-              <p>Terwijl de kleintjes in het kinderland in Eben hun eerste bochtjes leren, kunnen de gevorderde skiërs
+            <h4 data-i18n="act-w-iti-3-title">Familie-plezierdag <span>⛄</span></h4>
+            <div class="iti-step"><strong data-i18n="act-iti-label-morning">Ochtend:</strong>
+              <p data-i18n="act-w-iti-3-step-1">Terwijl de kleintjes in het kinderland in Eben hun eerste bochtjes leren, kunnen de gevorderde skiërs
                 de omliggende pistes verkennen.</p>
             </div>
-            <div class="iti-step"><strong>Middag:</strong>
-              <p>Plezier voor het hele gezin tijdens een spannende rodelafdaling over de verlichte banen door de
+            <div class="iti-step"><strong data-i18n="act-iti-label-afternoon">Middag:</strong>
+              <p data-i18n="act-w-iti-3-step-2">Plezier voor het hele gezin tijdens een spannende rodelafdaling over de verlichte banen door de
                 besneeuwde bossen.</p>
             </div>
-            <div class="iti-step"><strong>Avond:</strong>
-              <p>Kruip gezellig samen op de bank in de lodge. Speel bordspellen bij het warme licht van de houtkachel.
+            <div class="iti-step"><strong data-i18n="act-iti-label-evening">Avond:</strong>
+              <p data-i18n="act-w-iti-3-step-3">Kruip gezellig samen op de bank in de lodge. Speel bordspellen bij het warme licht van de houtkachel.
               </p>
             </div>
           </div>
@@ -1304,27 +1456,27 @@
 
       <section class="mega-practical container" id="info-winter">
         <div class="practical-content">
-          <h2>Handige Sneeuw-Zaken</h2>
+          <h2 data-i18n="act-w-prac-title">Handige Sneeuw-Zaken</h2>
           <div class="accordion t-acc winter-acc">
             <div class="accordion-item" tabindex="0">
-              <div class="accordion-header theme-text"><span>Skiverhuur & Opslag</span><span class="icon">+</span></div>
+              <div class="accordion-header theme-text"><span data-i18n="act-w-prac-1-h">Skiverhuur & Opslag</span><span class="icon">+</span></div>
               <div class="accordion-body">
-                <p>Via de Intersport in Eben kan de hele bups razendsnel perfect geslepen board/ski sets huren zónder
+                <p data-i18n="act-w-prac-1-p">Via de Intersport in Eben kan de hele bups razendsnel perfect geslepen board/ski sets huren zónder
                   onnodige ballast! Skidepot in Flachau is makkelijk.</p>
               </div>
             </div>
             <div class="accordion-item" tabindex="0">
-              <div class="accordion-header theme-text"><span>Skipas Voordelen</span><span class="icon">+</span></div>
+              <div class="accordion-header theme-text"><span data-i18n="act-w-prac-2-h">Skipas Voordelen</span><span class="icon">+</span></div>
               <div class="accordion-body">
-                <p>Schaf de "Ski amadé" giga-pas online vooraf aan, wegens forse "early bird" percentages! Hiermee stap
+                <p data-i18n="act-w-prac-2-p">Schaf de "Ski amadé" giga-pas online vooraf aan, wegens forse "early bird" percentages! Hiermee stap
                   je in 760km verbonden Oostenrijk in zodra je wenst te skiën in de regio.</p>
               </div>
             </div>
             <div class="accordion-item" tabindex="0">
-              <div class="accordion-header theme-text"><span>Verbinding naar de Lift</span><span class="icon">+</span>
+              <div class="accordion-header theme-text"><span data-i18n="act-w-prac-3-h">Verbinding naar de Lift</span><span class="icon">+</span>
               </div>
               <div class="accordion-body">
-                <p>Eben blinkt uit met fantastische gratis Skibussen iedere ochtend die letterlijk in minuten stoppen
+                <p data-i18n="act-w-prac-3-p">Eben blinkt uit met fantastische gratis Skibussen iedere ochtend die letterlijk in minuten stoppen
                   bij immense Snow Space skiliften zónder ijskrab-issues met auto's.</p>
               </div>
             </div>
@@ -1337,12 +1489,12 @@
     <section class="mega-cta">
       <div class="cta-overlay mega-cta-overlay"></div>
       <div class="cta-content container">
-        <h2 class="cta-dynamic-title">Welk seizoen kies jij in Eben?</h2>
-        <p>Vier je vakantie in absolute rust en alpiene luxe, rechtstreeks aan de mooiste wandelpaden en geprepareerde
+        <h2 class="cta-dynamic-title" data-i18n="act-final-title">Welk seizoen kies jij in Eben?</h2>
+        <p data-i18n="act-final-text">Vier je vakantie in absolute rust en alpiene luxe, rechtstreeks aan de mooiste wandelpaden en geprepareerde
           skipistes van heel Centraal Oostenrijk.</p>
         <div class="mega-hero-ctas" style="justify-content: center; margin-top: 40px;">
-          <a href="#booking" class="btn btn-primary theme-btn">Beschikbaarheid controleren</a>
-          <a href="#home" class="btn act-btn-ghost theme-ghost">Terug naar homepage</a>
+          <a href="#booking" class="btn btn-primary theme-btn" data-i18n="act-final-btn-check">Beschikbaarheid controleren</a>
+          <a href="#home" class="btn act-btn-ghost theme-ghost" data-i18n="act-final-btn-home">Terug naar homepage</a>
         </div>
       </div>
     </section>
@@ -1440,9 +1592,11 @@
                   <span class="legend-item"><span class="legend-color booked"></span> <span data-i18n="cal-booked">Reeds
                       geboekt</span></span>
                 </div>
-                
+
                 <div class="calendar-action-right" style="display: flex; align-items: center;">
-                  <div id="step1-price-preview" style="display: none; text-align: right; margin-right: 20px; font-weight: 600; color: var(--color-primary); white-space: nowrap;"></div>
+                  <div id="step1-price-preview"
+                    style="display: none; text-align: right; margin-right: 20px; font-weight: 600; color: var(--color-primary); white-space: nowrap;">
+                  </div>
                   <button id="cal-continue-btn" class="btn btn-primary btn-booking-next disabled"
                     data-i18n="btn-continue">Weiter ›</button>
                 </div>
@@ -1659,6 +1813,14 @@
 
   <!-- 3.1 UTILITIES -->
   <script src="js/utils/scroll.js"></script>
+  <!-- I18n Data -->
+  <script src="js/i18n/i18n_core.js"></script>
+  <script src="js/i18n/i18n_global.js"></script>
+  <script src="js/i18n/i18n_home.js"></script>
+  <script src="js/i18n/i18n_lodge.js"></script>
+  <script src="js/i18n/i18n_activities.js"></script>
+  <script src="js/i18n/i18n_booking.js"></script>
+  <!-- I18n Engine -->
   <script src="js/utils/i18n.js"></script>
 
   <!-- EmailJS SDK -->

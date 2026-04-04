@@ -441,8 +441,9 @@ strong, b {
 
 .lang-toggle {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: transparent;
   border: none;
   color: #fff;
@@ -453,6 +454,23 @@ strong, b {
   cursor: pointer;
   padding: 8px 0;
   transition: opacity 0.3s ease;
+}
+
+.active-flag-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 14px;
+  overflow: hidden;
+  border-radius: 2px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.active-flag-container .fi {
+  line-height: 1;
+  width: 100%;
 }
 
 .lang-toggle:hover {
@@ -482,8 +500,9 @@ strong, b {
 }
 
 .lang-link {
-  display: block;
-  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -493,6 +512,17 @@ strong, b {
   opacity: 0.6;
   white-space: nowrap;
   transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.lang-link .fi {
+  margin-right: 12px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+[dir="rtl"] .lang-link .fi {
+  margin-right: 0;
+  margin-left: 12px;
 }
 
 .lang-link:hover {
@@ -596,6 +626,91 @@ header.topbar .topbar-book:hover {
 
 .mobile-nav .menu-link {
   font-size: 1.5rem;
+}
+
+/* Mobile Language Selection */
+.mobile-lang-selection {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-lang-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 20px;
+}
+
+.mobile-lang-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mobile-lang-item {
+  width: calc(25% - 9px); /* 4 columns */
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-lang-item .fi {
+  font-size: 1.4rem;
+  line-height: 1;
+  border-radius: 2px;
+}
+
+.mobile-lang-item.is-active {
+  background: rgba(197, 160, 89, 0.15);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+@media (max-width: 480px) {
+  .mobile-lang-item {
+    width: calc(33.33% - 8px); /* 3 columns on very small screens */
+  }
+}
+
+/* RTL UTILITIES */
+[dir="rtl"] {
+  text-align: right;
+}
+
+/* Specific RTL overrides for better Hebrew layout */
+[dir="rtl"] .hero-v3-content,
+[dir="rtl"] .hero-v3-trust,
+[dir="rtl"] .section-center-v3,
+[dir="rtl"] .text-center {
+  text-align: center; /* Keep centered titles centered */
+}
+
+[dir="rtl"] .topbar-inner {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .topbar-actions {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .lang-menu {
+  right: auto;
+  left: -10px;
 }
 
 .menu-close {
