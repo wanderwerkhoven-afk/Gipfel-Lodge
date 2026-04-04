@@ -57,13 +57,12 @@ class I18n {
             nl: 'nl',
             fr: 'fr',
             it: 'it',
-            pl: 'pl',
-            he: 'il'
+            pl: 'pl'
         };
 
-        // Update document lang and dir (RTL support for Hebrew)
+        // Update document lang and dir
         document.documentElement.lang = lang;
-        document.documentElement.dir = (lang === 'he') ? 'rtl' : 'ltr';
+        document.documentElement.dir = 'ltr';
 
         // Update active labels (Desktop & Mobile)
         document.querySelectorAll('.active-lang').forEach(el => {
