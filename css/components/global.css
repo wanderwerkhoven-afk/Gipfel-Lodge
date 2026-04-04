@@ -359,6 +359,28 @@ strong, b {
     height: 38px;
     justify-self: center;
   }
+
+  /* Language-specific layout optimizations for long buttons */
+  html[lang="fr"] .logo-text-part,
+  html[lang="it"] .logo-text-part,
+  html[lang="pl"] .logo-text-part,
+  html[lang="fr"] .topbar-logo::after,
+  html[lang="it"] .topbar-logo::after,
+  html[lang="pl"] .topbar-logo::after {
+    display: none !important;
+  }
+
+  html[lang="fr"] .topbar-center,
+  html[lang="it"] .topbar-center,
+  html[lang="pl"] .topbar-center {
+    left: 40%;
+  }
+
+  html[lang="fr"] .topbar-actions,
+  html[lang="it"] .topbar-actions,
+  html[lang="pl"] .topbar-actions {
+    gap: 8px;
+  }
 }
 
 /* Very small screens polish */
