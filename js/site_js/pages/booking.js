@@ -289,8 +289,9 @@ const GipfelBooking = {
                 // Calculate total amount safely — outside the critical try block
                 // so a failure here never blocks email or Firebase submission
                 let totalAmount = 0;
+                let costs = null;
                 try {
-                    const costs = this.calculateCosts();
+                    costs = this.calculateCosts();
                     totalAmount = costs ? costs.total : 0;
                 } catch (e) {
                     console.warn('Could not calculate total amount:', e);
@@ -450,7 +451,10 @@ const GipfelBooking = {
                             const bookingId = `Gipfel-${String(nextNumber).padStart(6, '0')}`;
                             console.log("Generated Booking ID:", bookingId);
 
-                            // 2. Save booking with custom ID
+                            // 2. Generate Secret Token for hosted invoice
+                            const secretToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+
+                            // 3. Save booking with custom ID
                             await setDoc(doc(db, "bookings", bookingId), {
                                 bookingId: bookingId,
                                 guestName: ownerParams.user_name || 'Anoniem',
@@ -469,11 +473,19 @@ const GipfelBooking = {
                                 babies: ownerParams.babies || 0,
                                 message: ownerParams.message || '-',
                                 totalAmount: totalAmount,
+                                // Breakdown
+                                rent: costs ? costs.rent : 0,
+                                cleaning: costs ? costs.cleaning : 0,
+                                bedLinen: costs ? costs.bedLinen : 0,
+                                touristTax: costs ? costs.touristTax : 0,
+                                mobilityFee: costs ? costs.mobilityFee : 0,
+                                
                                 depositPaid: false,
                                 balancePaid: false,
                                 status: "pending", 
                                 receivedDate: ownerParams.received_date || '',
                                 receivedTime: ownerParams.received_time || '',
+                                secretToken: secretToken,
                                 createdAt: serverTimestamp() 
                             });
                             console.log("Booking successfully archived in Firestore with ID:", bookingId);

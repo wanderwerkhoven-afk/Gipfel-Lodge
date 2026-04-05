@@ -4,7 +4,9 @@ const CACHE_NAME = 'gipfel-admin-v2';
 // Bestanden die gecached moeten worden voor de app-shell
 const SHELL_FILES = [
     './admin.html',
-    './css/base/style.css',
+    './css/site_css/base/style.css',
+    './css/admin_css/admin-style.css',
+    './js/admin_js/admin-core.js',
     './site_manifest/favicon_admin/web-app-manifest-192x192.png',
     './site_manifest/favicon_admin/web-app-manifest-512x512.png',
     './site_manifest/favicon_admin/apple-touch-icon.png',
