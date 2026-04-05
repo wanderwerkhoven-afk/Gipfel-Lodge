@@ -70,16 +70,16 @@
             margin: 40px 0;
             background: white;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 800px; /* Standard web-to-A4 width */
+            width: 794px; /* Exact 210mm @ 96dpi */
             padding: 0;
-            min-height: 1130px; /* A4 aspect ratio */
+            min-height: 1123px; /* Exact 297mm @ 96dpi */
             overflow: hidden;
         }
 
-        /* Ensure the template inside matches our 800px */
+        /* Ensure the template inside matches our 794px */
         #invoice-viewer > div {
             width: 100% !important;
-            max-width: 800px !important;
+            max-width: 794px !important;
             margin: 0 !important;
         }
 
@@ -230,14 +230,15 @@
         window.downloadPdf = function() {
             const element = document.getElementById('invoice-viewer');
             const opt = {
-                margin:       0, // We use internal template margins now
+                margin:       0, // Internal template margins are 10mm
                 filename:     `Gipfel-Factuur-${window.currentInvoiceId || 'Lodge'}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
-                    scale: 2, 
+                    scale: 2.5, 
                     useCORS: true, 
                     logging: false,
-                    width: 794 // Exact 210mm width (96dpi)
+                    width: 794,
+                    windowWidth: 794
                 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
