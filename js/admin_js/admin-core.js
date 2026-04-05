@@ -970,7 +970,7 @@
         async function openCommunicationHub(bookingId) {
             try {
                 const { db } = await import('../site_js/core/firebase.js');
-                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+                const { getDoc, doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
                 const snap = await getDoc(doc(db, "bookings", bookingId));
 
                 if (!snap.exists()) {
@@ -979,6 +979,22 @@
                 }
 
                 const data = { id: snap.id, ...snap.data() };
+
+                // --- AUTO-HEALING: Ensure secretToken exists for old bookings ---
+                if (!data.secretToken) {
+                    console.log("Auto-healing: Generating missing secretToken for booking", bookingId);
+                    const newToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+                    try {
+                        await updateDoc(doc(db, "bookings", bookingId), {
+                            secretToken: newToken,
+                            updatedAt: new Date().toISOString()
+                        });
+                        data.secretToken = newToken; // Update local copy
+                        logActivity('DATABASE_HEALED', 'Missende secretToken automatisch gegenereerd', bookingId);
+                    } catch (healErr) {
+                        console.error("Failed to heal booking with token:", healErr);
+                    }
+                }
 
                 // Set Modal Labels
                 document.getElementById('hub-guest-name').innerText = data.guestName || 'Gast';
@@ -1788,18 +1804,32 @@
             }
 
             try {
-                const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
+                const { db, doc, getDoc, updateDoc } = await import('../site_js/core/firebase.js');
                 const { InvoiceGenerator } = await import('../utils/invoiceGenerator.js');
 
                 // 1. Data ophalen uit Firestore
-                const docRef = doc(db, "bookings", bookingId);
-                const snap = await getDoc(docRef);
+                const docSnap = await getDoc(doc(db, "bookings", bookingId));
 
-                if (!snap.exists()) {
+                if (!docSnap.exists()) {
                     throw new Error("Boeking niet gevonden in de database.");
                 }
 
-                const bookingData = { id: snap.id, ...snap.data() };
+                let bookingData = { id: docSnap.id, ...docSnap.data() };
+
+                // --- AUTO-HEALING: Ensure secretToken exists for old bookings ---
+                if (!bookingData.secretToken) {
+                    console.log("Auto-healing: Generating missing secretToken for booking", bookingId);
+                    const newToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+                    try {
+                        await updateDoc(doc(db, "bookings", bookingId), {
+                            secretToken: newToken,
+                            updatedAt: new Date().toISOString()
+                        });
+                        bookingData.secretToken = newToken; // Update local data
+                    } catch (healErr) {
+                        console.error("Failed to heal booking with token:", healErr);
+                    }
+                }
 
                 // 2. Factuur template ophalen
                 const response = await fetch('templates/invoice_template.html');

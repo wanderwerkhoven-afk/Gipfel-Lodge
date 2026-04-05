@@ -175,11 +175,23 @@
                 if (!templateResp.ok) throw new Error("Template loading failed");
                 const templateHTML = await templateResp.text();
 
-                // 4. Generate fully populated HTML
+                // 4. Generate content
                 const html = InvoiceGenerator.generateHTML(data, templateHTML);
                 
-                // 5. Update UI
-                invoiceViewer.innerHTML = html;
+                // 5. Update UI - Parse to avoid nested <html> tags
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const bodyContent = doc.body.innerHTML;
+                const headStyles = doc.querySelectorAll('style, link[rel="stylesheet"]');
+                
+                // Clear and append
+                invoiceViewer.innerHTML = '';
+                headStyles.forEach(s => invoiceViewer.appendChild(s.cloneNode(true)));
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.innerHTML = bodyContent;
+                invoiceViewer.appendChild(contentDiv);
+
                 statusArea.style.display = 'none';
                 invoiceViewer.style.display = 'block';
                 actionBar.style.display = 'flex';
@@ -202,10 +214,15 @@
         window.downloadPdf = function() {
             const element = document.getElementById('invoice-viewer');
             const opt = {
-                margin:       10,
+                margin:       0, // Use 0 margin as template has its own padding
                 filename:     `Gipfel-Factuur-${window.currentInvoiceId || 'Lodge'}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false,
+                    letterRendering: true
+                },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
