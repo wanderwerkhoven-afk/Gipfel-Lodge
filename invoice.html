@@ -7,13 +7,59 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --color-gold: #C5A059;
             --color-slate: #1e293b;
             --bg-page: #f8fafc;
         }
+
+        /* =============================================
+           PRINT RULES — These take over when Ctrl+P is pressed.
+           @page sets A4 paper with 15mm margins.
+           The invoice naturally fills the full page at 100% scale.
+        ============================================= */
+        @page {
+            size: A4 portrait;
+            margin: 15mm;
+        }
+
+        @media print {
+            html, body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+
+            /* Hide the top bar and status area when printing */
+            .action-bar { display: none !important; }
+            .status-container { display: none !important; }
+
+            /* The invoice fills the full printable area defined by @page margins */
+            #invoice-viewer {
+                width: 100% !important;     /* Fill the 180mm content area (210mm - 2x15mm) */
+                margin: 0 !important;
+                padding: 0 !important;      /* @page margins handle the spacing */
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 1 !important;         /* Reset screen zoom — @page handles real-world sizing */
+                display: block !important;
+                min-height: auto !important; /* CRITICAL: prevent blank second page */
+                height: auto !important;     /* Only as tall as the actual content */
+            }
+
+            /* Also reset body min-height */
+            body {
+                min-height: auto !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
 
         body {
             margin: 0;
@@ -26,7 +72,7 @@
             min-height: 100vh;
         }
 
-        /* HEADER / ACTION BAR */
+        /* ACTION BAR */
         .action-bar {
             width: 100%;
             background: white;
@@ -58,24 +104,59 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            text-decoration: none;
+            font-size: 14px;
             transition: all 0.2s;
         }
 
         .btn-download:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
-        }        /* CONTENT */
+        }
+
+        /* CONTENT */
         #invoice-viewer {
             margin: 40px auto;
             background: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.15); /* Stronger page shadow */
+            box-shadow: 0 4px 25px rgba(0,0,0,0.08);
             width: 794px; /* Exact 210mm @ 96dpi */
-            padding: 10mm; /* THIS defines the margins you see on screen */
-            box-sizing: border-box; /* Crucial to keep padding inside 794px */
-            min-height: 1123px; /* Exact 297mm @ 96dpi */
+            padding: 15mm; /* Premium Margins */
+            box-sizing: border-box;
+            min-height: 1123px;
             overflow: visible;
             position: relative;
+        }
+
+        .invoice-container {
+            width: 100%;
+            margin: 0;
+            position: relative;
+        }
+
+        /* HEADER */
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 50px; /* Increased from 30px */
+        }
+
+        .logo-container {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: left;
+            width: 50%;
+        }
+
+        .logo-container svg {
+            width: 110px;
+            height: auto;
+            color: var(--color-dark);
+        }
+
+        .invoice-title {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: right;
+            width: 50%;
         }
 
         /* Prevent the double HTML structure from breaking things */
@@ -131,12 +212,6 @@
             }
             .action-container { width: 100%; }
         }
-
-        @media print {
-            .action-bar { display: none; }
-            body { background: white; }
-            #invoice-viewer { margin: 0; border: none; box-shadow: none; width: 100%; }
-        }
     </style>
 </head>
 <body>
@@ -144,8 +219,8 @@
     <div class="action-bar" id="action-bar" style="display:none;">
         <div class="action-container">
             <div style="font-weight: 700; color: var(--color-slate);">GIPFEL <span style="color: var(--color-gold);">LODGE</span> — Factuur</div>
-            <button class="btn-download" onclick="downloadPdf()">
-                <i class="fa-solid fa-file-pdf"></i> Download als PDF
+            <button class="btn-download" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Afdrukken / Opslaan als PDF
             </button>
         </div>
     </div>
@@ -167,7 +242,6 @@
         const statusMsg = document.getElementById('status-msg');
         const loader = document.getElementById('main-loader');
         const invoiceViewer = document.getElementById('invoice-viewer');
-        const actionBar = document.getElementById('action-bar');
 
         async function init() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -207,8 +281,7 @@
                 invoiceViewer.innerHTML = html;
                 statusArea.style.display = 'none';
                 invoiceViewer.style.display = 'block';
-                actionBar.style.display = 'flex';
-
+                document.getElementById('action-bar').style.display = 'flex';
                 // Store ID for download filename
                 window.currentInvoiceId = id;
 
@@ -232,24 +305,6 @@
             }
         }
 
-        window.downloadPdf = function() {
-            const element = document.getElementById('invoice-viewer');
-            const opt = {
-                margin:       0, // Internal template margins are 10mm
-                filename:     `Gipfel-Factuur-${window.currentInvoiceId || 'Lodge'}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { 
-                    scale: 2.5, 
-                    useCORS: true, 
-                    logging: false,
-                    width: 794,
-                    windowWidth: 794
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opt).from(element).save();
-        };
 
         init();
     </script>
