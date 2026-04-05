@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,14 +17,20 @@
     <link rel="icon" type="image/png" sizes="96x96" href="site_manifest/favicon_admin/favicon-96x96.png">
     <link rel="shortcut icon" href="site_manifest/favicon_admin/favicon.ico">
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
     <!-- We hergebruiken een paar basis styles -->
     <link rel="stylesheet" href="css/base/style.css">
-    
+
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    
+
+    <!-- Icon Libraries -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
         /* Reset & Variables (Hergebruik van hoofdthema) */
         :root {
@@ -35,10 +42,10 @@
             --color-gold-hover: #b5924e;
             --color-text-light: #78868A;
             --color-border: #e8e2d0;
-            
+
             --font-primary: 'Cormorant Garamond', serif;
             --font-secondary: 'Inter', sans-serif;
-            
+
             --radius-md: 12px;
             --radius-sm: 6px;
         }
@@ -58,14 +65,16 @@
             box-sizing: border-box;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         /* Login Scherm */
         #login-screen {
             background: #ffffff;
             padding: 50px 40px;
             border-radius: var(--radius-md);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             text-align: center;
             max-width: 420px;
             width: 100%;
@@ -100,7 +109,8 @@
             font-family: var(--font-secondary);
             font-size: 1rem;
             text-align: center;
-            letter-spacing: 4px; /* Hide password length slightly */
+            letter-spacing: 4px;
+            /* Hide password length slightly */
             background-color: var(--color-bg-light);
             transition: border-color 0.3s, box-shadow 0.3s;
         }
@@ -111,7 +121,8 @@
             box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.15);
         }
 
-        .login-btn, .action-btn {
+        .login-btn,
+        .action-btn {
             background-color: var(--color-gold);
             color: #ffffff;
             border: none;
@@ -127,7 +138,8 @@
             position: relative;
         }
 
-        .login-btn:hover, .action-btn:hover {
+        .login-btn:hover,
+        .action-btn:hover {
             background-color: var(--color-gold-hover);
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(197, 160, 89, 0.3);
@@ -144,11 +156,13 @@
             border-radius: var(--radius-sm);
             border: 1px solid #fadbd8;
             transition: opacity 0.3s ease;
-            height: 40px; /* Reserve space so password field doesn't jump */
+            height: 40px;
+            /* Reserve space so password field doesn't jump */
             display: flex;
             align-items: center;
             justify-content: center;
         }
+
         .error-msg.visible {
             opacity: 1;
         }
@@ -158,24 +172,34 @@
             display: none;
             width: 100%;
             max-width: 1400px;
-            height: 85vh; /* Fixeer de hoogte van de 'tile' */
+            height: 85vh;
+            /* Fixeer de hoogte van de 'tile' */
             background: #ffffff;
             border-radius: 24px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.2);
-            overflow: hidden; 
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
             margin: 40px auto;
             animation: fadeIn 0.4s ease-out;
-            position: relative; /* Voor spinners etc */
+            position: relative;
+            /* Voor spinners etc */
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .dashboard-layout {
             display: flex;
-            height: 100%; /* Fill the 90vh container */
+            height: 100%;
+            /* Fill the 90vh container */
         }
 
         /* Sidebar Styling */
@@ -186,7 +210,7 @@
             color: #fff;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid rgba(255,255,255,0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             overflow-y: auto;
             height: 100%;
         }
@@ -198,11 +222,12 @@
             margin: 0;
             line-height: 1.2;
         }
+
         .sidebar-brand p {
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             margin: 5px 0 40px 0;
         }
 
@@ -216,7 +241,7 @@
             padding: 12px 15px;
             margin-bottom: 8px;
             border-radius: var(--radius-sm);
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
@@ -227,7 +252,7 @@
 
         .nav-item:hover {
             color: #fff;
-            background-color: rgba(255,255,255,0.05);
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .nav-item.active {
@@ -259,15 +284,17 @@
         /* Main Content Styling */
         .dashboard-main {
             flex: 1;
-            padding: 80px 100px; 
-            background-color: #f1f5f9;  /* Iets koeler en donkerder grijs voor meer contrast */
-            overflow-y: auto; /* Makes the right side scrollable */
+            padding: 80px 100px;
+            background-color: #f1f5f9;
+            /* Iets koeler en donkerder grijs voor meer contrast */
+            overflow-y: auto;
+            /* Makes the right side scrollable */
             height: 100%;
         }
 
         .page-header {
             margin-bottom: 60px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             padding-bottom: 30px;
         }
 
@@ -358,7 +385,7 @@
             display: none;
             width: 22px;
             height: 22px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: #ffffff;
             animation: spin 1s linear infinite;
@@ -370,7 +397,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Email Tester Modal Styles */
@@ -418,6 +447,7 @@
             .modal-overlay {
                 padding: 10px;
             }
+
             .modal-container {
                 height: 95vh;
                 border-radius: 12px;
@@ -441,7 +471,7 @@
         }
 
         .close-modal {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             color: #fff;
             width: 36px;
@@ -456,7 +486,7 @@
         }
 
         .close-modal:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .modal-body {
@@ -470,32 +500,40 @@
             border: none;
         }
 
-        .dashboard-view { display: none; }
-        .dashboard-view.active { display: block; animation: fadeIn 0.4s ease-out; }
+        .dashboard-view {
+            display: none;
+        }
+
+        .dashboard-view.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
 
         .bookings-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Precies 2 breed op desktop */
-            gap: 50px; /* Grotere gaten tussen de kaarten */
+            grid-template-columns: repeat(2, 1fr);
+            /* Precies 2 breed op desktop */
+            gap: 50px;
+            /* Grotere gaten tussen de kaarten */
             margin-top: 40px;
         }
 
         .booking-card {
             background: #ffffff;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 20px;
             padding: 40px;
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             display: flex;
             flex-direction: column;
             gap: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
             position: relative;
         }
 
         .booking-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
             border-color: rgba(197, 160, 89, 0.3);
         }
 
@@ -503,7 +541,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
             padding-bottom: 20px;
             margin-bottom: 5px;
         }
@@ -565,62 +603,141 @@
             padding: 20px;
             margin-bottom: 30px;
             border: 1px solid rgba(197, 160, 89, 0.2);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         }
+
         .prio-header {
             display: flex;
-            align-items: center; justify-content: space-between;
-            margin-bottom: 20px; padding-bottom: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #f0f0f0;
         }
-        .prio-header h2 { margin: 0; font-size: 1.1rem; color: var(--color-slate); display: flex; align-items: center; gap: 8px; }
-        .prio-badge { background: var(--color-gold); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; }
-        
-        .prio-list { display: flex; flex-direction: column; gap: 10px; }
-        .prio-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 16px; border-radius: 8px;
-            background: #fafafa; border: 1px solid #eee;
-            transition: all 0.2s;
-        }
-        .prio-item:hover { transform: translateX(5px); border-color: var(--color-gold); background: #fff; }
-        .prio-item-main { display: flex; align-items: center; gap: 15px; }
-        .prio-item-guest { font-weight: 700; color: var(--color-slate); min-width: 150px; }
-        .prio-item-task { font-size: 0.9rem; color: #64748b; display: flex; align-items: center; gap: 6px; }
-        .prio-item-btn { 
-            background: var(--color-gold); color: white; border: none; padding: 6px 14px; 
-            border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .prio-item-btn:hover { background: var(--color-gold-hover); }
 
-        .country-badge {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            margin-top: 8px;
+        .prio-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--color-slate);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .country-badge img { 
-            width: 42px; height: 28px; object-fit: cover;
-            border-radius: 6px; border: 1px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+
+        .prio-badge {
+            background: var(--color-gold);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 800;
+        }
+
+        .prio-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .prio-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #fafafa;
+            border: 1px solid #eee;
+            transition: all 0.2s;
+        }
+
+        .prio-item:hover {
+            transform: translateX(5px);
+            border-color: var(--color-gold);
             background: #fff;
         }
+
+        .prio-item-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .prio-item-guest {
+            font-weight: 700;
+            color: var(--color-slate);
+            min-width: 150px;
+        }
+
+        .prio-item-task {
+            font-size: 0.9rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .prio-item-btn {
+            background: var(--color-gold);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .prio-item-btn:hover {
+            background: var(--color-gold-hover);
+        }
+
+        .country-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .country-badge img {
+            width: 42px;
+            height: 28px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            background: #fff;
+        }
+
         .country-code-label {
-            font-size: 0.65rem; font-weight: 900; color: var(--color-slate);
-            letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8;
+            font-size: 0.65rem;
+            font-weight: 900;
+            color: var(--color-slate);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.8;
         }
 
         .delete-btn-trash {
             display: inline-flex;
-            align-items: center; justify-content: center;
-            width: 32px; height: 32px;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(198, 40, 40, 0.05); color: #c62828;
+            background: rgba(198, 40, 40, 0.05);
+            color: #c62828;
             border: 1px solid rgba(198, 40, 40, 0.15);
-            margin-left: 10px; cursor: pointer;
+            margin-left: 10px;
+            cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
+
         .delete-btn-trash:hover {
-            background: #c62828; color: white; transform: scale(1.1);
+            background: #c62828;
+            color: white;
+            transform: scale(1.1);
         }
 
         .booking-info-row {
@@ -638,7 +755,8 @@
             letter-spacing: 0.1em;
         }
 
-        .booking-info-row strong, .booking-info-row p {
+        .booking-info-row strong,
+        .booking-info-row p {
             font-size: 1.05rem;
             color: var(--color-slate);
             margin: 0;
@@ -646,7 +764,7 @@
 
         .booking-card-footer {
             margin-top: 15px;
-            border-top: 1px solid rgba(0,0,0,0.04);
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
             padding-top: 25px;
         }
 
@@ -672,6 +790,7 @@
             cursor: pointer;
             transition: all 0.25s;
         }
+
         .btn-decline:hover {
             background: rgba(198, 40, 40, 0.06);
         }
@@ -687,6 +806,7 @@
             position: relative;
             z-index: 1;
         }
+
         .recommended-step::after {
             content: "NU STUREN";
             position: absolute;
@@ -699,46 +819,71 @@
             padding: 2px 8px;
             border-radius: 10px;
             letter-spacing: 0.05em;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             z-index: 2;
         }
+
         .btn-decline.confirming {
             background: #c62828;
             border-color: #c62828;
             color: #fff;
             animation: pulse-red 0.6s ease;
         }
+
         @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(198,40,40,0.4); }
-            70% { box-shadow: 0 0 0 8px rgba(198,40,40,0); }
-            100% { box-shadow: 0 0 0 0 rgba(198,40,40,0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(198, 40, 40, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(198, 40, 40, 0);
+            }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Responsive Breakpoints (Altijd onderaan voor juiste overschrijving) */
-        .mobile-nav { display: none; }
+        .mobile-nav {
+            display: none;
+        }
 
         @media (max-width: 900px) {
-            #dashboard-screen { 
-                height: auto; 
-                min-height: 100vh; 
-                margin: 0; 
-                border-radius: 0; 
+            #dashboard-screen {
+                height: auto;
+                min-height: 100vh;
+                margin: 0;
+                border-radius: 0;
                 box-shadow: none;
-                display: block; /* Ensure it's not flex if it was */
+                display: block;
+                /* Ensure it's not flex if it was */
             }
-            .dashboard-layout { 
-                flex-direction: column; 
-                height: auto; 
+
+            .dashboard-layout {
+                flex-direction: column;
+                height: auto;
             }
-            
+
             /* Verberg de desktop sidebar op mobiel */
-            .dashboard-sidebar { 
-                display: none; 
+            .dashboard-sidebar {
+                display: none;
+            }
+
+            .dashboard-main {
+                padding: 20px 20px 120px !important; /* Extra ruimte onderaan voor de mobiele nav-balk */
             }
 
             /* Toon de mobile tab bar */
@@ -749,39 +894,64 @@
                 left: 0;
                 width: 100%;
                 background: var(--color-slate);
-                height: 85px; /* Verhoogd van 70px voor betere klikbaarheid */
+                height: 85px;
+                /* Verhoogd van 70px voor betere klikbaarheid */
                 z-index: 1000;
-                box-shadow: 0 -4px 25px rgba(0,0,0,0.3);
+                box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.3);
                 padding: 5px 10px;
                 padding-bottom: env(safe-area-inset-bottom);
                 box-sizing: content-box;
             }
+
             .mobile-nav-item {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                color: rgba(255,255,255,0.6);
+                color: rgba(255, 255, 255, 0.6);
                 text-decoration: none;
                 font-size: 0.7rem;
                 font-weight: 600;
                 gap: 4px;
                 transition: all 0.2s;
             }
-            .mobile-nav-item span { font-size: 1.4rem; }
-            .mobile-nav-item.active {
+
+            .mobile-nav-item i {
+                font-size: 26px;
+                margin-bottom: 0;
+                color: rgba(255, 255, 255, 0.4);
+                transition: all 0.2s;
+            }
+
+            .mobile-nav-item span {
+                display: none; /* Verberg namen op mobiel */
+            }
+
+            .mobile-nav-item.active i {
                 color: var(--color-gold);
+                transform: scale(1.1);
             }
 
-            .dashboard-main { 
-                padding: 30px 15px 120px 15px; /* Verhoogd van 100px om de hogere nav bar te compenseren */
-                overflow-y: visible; 
+            .dashboard-main {
+                padding: 30px 15px 120px 15px;
+                /* Verhoogd van 100px om de hogere nav bar te compenseren */
+                overflow-y: visible;
             }
 
-            .page-header { margin-bottom: 30px; padding-bottom: 15px; }
-            .page-header h1 { font-size: 1.8rem; margin-bottom: 8px; }
-            .page-header p { font-size: 0.9rem; }
+            .page-header {
+                margin-bottom: 30px;
+                padding-bottom: 15px;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+
+            .page-header p {
+                font-size: 0.9rem;
+            }
 
             /* Filter bar naar horizontaal scrollen */
             .filter-bar {
@@ -789,12 +959,19 @@
                 overflow-x: auto;
                 padding-bottom: 10px;
                 gap: 10px;
-                scrollbar-width: none; /* Verberg scrollbar op Firefox */
-                -ms-overflow-style: none; /* Verberg scrollbar op IE/Edge */
+                scrollbar-width: none;
+                /* Verberg scrollbar op Firefox */
+                -ms-overflow-style: none;
+                /* Verberg scrollbar op IE/Edge */
                 margin-top: 20px;
                 width: 100%;
             }
-            .filter-bar::-webkit-scrollbar { display: none; } /* Verberg scrollbar op Chrome/Safari */
+
+            .filter-bar::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* Verberg scrollbar op Chrome/Safari */
             .filter-btn {
                 flex: 0 0 auto;
                 white-space: nowrap;
@@ -802,52 +979,75 @@
                 font-size: 0.8rem;
             }
 
-            .bookings-grid { 
+            .bookings-grid {
                 display: flex !important;
                 overflow-x: auto;
                 scroll-snap-type: x mandatory;
-                gap: 16px; 
+                gap: 16px;
                 margin-top: 25px;
-                padding: 10px 0 30px 0; /* Padding onder voor de schaduw */
-                scrollbar-width: none; 
+                padding: 10px 0 30px 0;
+                /* Padding onder voor de schaduw */
+                scrollbar-width: none;
                 -ms-overflow-style: none;
-                width: calc(100% + 30px); 
+                width: calc(100% + 30px);
                 margin-left: -15px;
                 padding-left: 15px;
-                padding-right: 30px; /* Meer padding rechts zodat de laatste kaart mooi stopt */
+                padding-right: 30px;
+                /* Meer padding rechts zodat de laatste kaart mooi stopt */
             }
-            .bookings-grid::-webkit-scrollbar { display: none; }
-            
-            .booking-card { 
-                flex: 0 0 88%; 
+
+            .bookings-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .booking-card {
+                flex: 0 0 88%;
                 scroll-snap-align: center;
-                padding: 25px 20px; 
+                padding: 25px 20px;
                 gap: 20px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             }
-            .booking-card-header { 
-                flex-direction: column; 
-                gap: 12px; 
+
+            .booking-card-header {
+                flex-direction: column;
+                gap: 12px;
                 padding-bottom: 15px;
             }
-            .booking-card-header h3 { font-size: 1.3rem; }
-            
+
+            .booking-card-header h3 {
+                font-size: 1.3rem;
+            }
+
             /* Align vlag en status badge beter op mobiel */
-            .booking-card-header > div:last-child {
+            .booking-card-header>div:last-child {
                 display: flex;
                 flex-direction: row !important;
                 align-items: center !important;
                 justify-content: flex-start;
                 gap: 15px;
                 width: 100%;
-                border-top: 1px solid rgba(0,0,0,0.03);
+                border-top: 1px solid rgba(0, 0, 0, 0.03);
                 padding-top: 12px;
             }
-            .country-badge { margin-top: 0 !important; flex-direction: row !important; gap: 8px !important; }
-            .country-code-label { font-size: 0.8rem; }
-            .status-badge { align-self: center; }
 
-            .admin-form-grid { grid-template-columns: 1fr; gap: 15px; }
+            .country-badge {
+                margin-top: 0 !important;
+                flex-direction: row !important;
+                gap: 8px !important;
+            }
+
+            .country-code-label {
+                font-size: 0.8rem;
+            }
+
+            .status-badge {
+                align-self: center;
+            }
+
+            .admin-form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
 
             /* Priority List refinements for small screens */
             @media (max-width: 600px) {
@@ -857,19 +1057,24 @@
                     gap: 12px;
                     padding: 16px;
                 }
+
                 .prio-item-btn {
                     width: 100%;
                     text-align: center;
                 }
+
                 .prio-item-guest {
                     min-width: auto;
                 }
-                
+
                 #login-screen {
                     padding: 40px 20px;
                     margin: 10px;
                 }
-                .admin-logo { font-size: 2.2rem; }
+
+                .admin-logo {
+                    font-size: 2.2rem;
+                }
             }
         }
 
@@ -882,7 +1087,14 @@
             cursor: pointer;
             user-select: none;
         }
-        .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
         .slider {
             position: absolute;
             inset: 0;
@@ -892,6 +1104,7 @@
             display: flex;
             align-items: center;
         }
+
         /* The knob */
         .slider::before {
             content: '';
@@ -902,9 +1115,10 @@
             background: white;
             border-radius: 50%;
             transition: transform .3s;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
             z-index: 1;
         }
+
         /* OFF label (right side, visible when unchecked) */
         .slider::after {
             content: attr(data-off);
@@ -912,11 +1126,12 @@
             right: 8px;
             font-size: 0.65rem;
             font-weight: 700;
-            color: rgba(0,0,0,0.35);
+            color: rgba(0, 0, 0, 0.35);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             transition: opacity .2s;
         }
+
         /* ON label (left side, hidden when unchecked) */
         .slider-on-label {
             position: absolute;
@@ -931,29 +1146,38 @@
             z-index: 2;
             pointer-events: none;
         }
-        input:checked + .slider {
+
+        input:checked+.slider {
             background-color: var(--color-gold);
         }
-        input:checked + .slider::before {
+
+        input:checked+.slider::before {
             transform: translateX(62px);
         }
-        input:checked + .slider::after {
+
+        input:checked+.slider::after {
             opacity: 0;
         }
-        input:checked + .slider .slider-on-label {
+
+        input:checked+.slider .slider-on-label {
             opacity: 1;
         }
-        .status-label { display: none; }
+
+        .status-label {
+            display: none;
+        }
+
         .payment-info {
             margin-top: 10px;
             padding: 20px;
             background: #fafaf8;
             border-radius: 12px;
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
+
         .payment-toggle {
             display: flex;
             align-items: center;
@@ -961,11 +1185,13 @@
             font-size: 0.85rem;
             color: var(--color-slate-light);
         }
+
         .payment-toggle-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+
         .tile-section-label {
             display: block;
             font-size: 0.7rem;
@@ -976,19 +1202,24 @@
             margin-bottom: 8px;
             opacity: 0.8;
         }
+
         .tile-data-row {
             margin-bottom: 20px;
         }
-        .tile-data-row:last-child { margin-bottom: 0; }
+
+        .tile-data-row:last-child {
+            margin-bottom: 0;
+        }
 
         .filter-bar {
             display: flex;
             gap: 12px;
             margin-top: 25px;
         }
+
         .filter-btn {
             background: #f4f4f2;
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             padding: 10px 22px;
             border-radius: 30px;
             font-size: 0.8rem;
@@ -999,22 +1230,25 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
+
         .filter-btn:hover {
             background: #eee;
         }
+
         .filter-btn.active {
             background: var(--color-gold);
             color: #fff;
             border-color: var(--color-gold);
             box-shadow: 0 4px 12px rgba(197, 160, 89, 0.2);
         }
-        
+
         /* Green accent for confirmed filter */
         .filter-btn.confirmed.active {
             background: #2e7d32;
             border-color: #2e7d32;
             box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
         }
+
         /* Red accent for declined filter */
         .filter-btn.declined.active {
             background: #c62828;
@@ -1023,13 +1257,44 @@
         }
 
         @media (max-width: 600px) {
-            .admin-form-grid { grid-template-columns: 1fr; gap: 20px; }
-            body { padding: 0; }
-            #login-screen { border-radius: 0; height: 100vh; padding: 40px 25px; display: flex; flex-direction: column; justify-content: center; border-top: none; max-width: none; }
-            #dashboard-screen { border-radius: 0; min-height: 100vh; margin: 0; }
-            .dashboard-main { padding: 30px 20px; }
-            .page-header h1 { font-size: 1.8rem; }
-            .nav-item { flex: 1 1 100%; min-width: auto; }
+            .admin-form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            body {
+                padding: 0;
+            }
+
+            #login-screen {
+                border-radius: 0;
+                height: 100vh;
+                padding: 40px 25px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-top: none;
+                max-width: none;
+            }
+
+            #dashboard-screen {
+                border-radius: 0;
+                min-height: 100vh;
+                margin: 0;
+            }
+
+            .dashboard-main {
+                padding: 30px 20px;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav-item {
+                flex: 1 1 100%;
+                min-width: auto;
+            }
         }
 
         /* --- Communication Hub Modal --- */
@@ -1047,7 +1312,10 @@
             z-index: 10000;
             padding: 20px;
         }
-        #comm-hub-modal.active { display: flex; }
+
+        #comm-hub-modal.active {
+            display: flex;
+        }
 
         #comm-hub-modal .modal-container {
             background: #ffffff;
@@ -1058,7 +1326,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
 
         #comm-hub-modal .modal-header {
@@ -1123,7 +1391,10 @@
             gap: 8px;
         }
 
-        .hub-tab:hover { color: var(--color-slate); }
+        .hub-tab:hover {
+            color: var(--color-slate);
+        }
+
         .hub-tab.active {
             color: var(--color-gold);
             border-bottom-color: var(--color-gold);
@@ -1138,16 +1409,24 @@
             position: relative;
         }
 
-        .tab-pane { display: none; height: 100%; padding: 32px; }
-        .tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
+        .tab-pane {
+            display: none;
+            height: 100%;
+            padding: 32px;
+        }
+
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
 
         /* Status Tab Styles */
         .status-overview-card {
             background: #fff;
             border-radius: 16px;
             padding: 24px 32px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.03);
             margin-bottom: 30px;
         }
 
@@ -1195,10 +1474,10 @@
             align-items: center;
             transition: all 0.2s;
         }
-        
+
         .hub-step:hover {
             border-color: #cbd5e1;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
 
         .hub-step.completed {
@@ -1249,8 +1528,14 @@
             align-items: center;
         }
 
-        .icon-check { color: #6b21a8; font-weight: bold; }
-        .icon-wait { color: #c47e09; }
+        .icon-check {
+            color: #6b21a8;
+            font-weight: bold;
+        }
+
+        .icon-wait {
+            color: #c47e09;
+        }
 
         /* Email Editor Tab Styles */
         #comm-hub-modal .composer-wrapper {
@@ -1264,11 +1549,14 @@
             background: #fff;
             padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             flex: 0 0 auto;
         }
 
-        #comm-hub-modal .composer-control-box { margin-bottom: 24px; }
+        #comm-hub-modal .composer-control-box {
+            margin-bottom: 24px;
+        }
+
         #comm-hub-modal .composer-label {
             font-size: 11px;
             font-weight: 700;
@@ -1282,7 +1570,7 @@
         #comm-hub-modal .composer-preview-container {
             background: #fff;
             border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             border: 1px solid #e2e8f0;
             flex: 1;
             overflow-y: auto;
@@ -1298,9 +1586,19 @@
             align-items: center;
         }
 
-        #comm-hub-modal #composer-preview-area .composer-main-table { width: 100% !important; }
-        #email-composer-modal [contenteditable="true"]:hover { background: rgba(197, 160, 89, 0.05); box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.2); }
-        #email-composer-modal [contenteditable="true"]:focus { outline: none; box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.4); }
+        #comm-hub-modal #composer-preview-area .composer-main-table {
+            width: 100% !important;
+        }
+
+        #email-composer-modal [contenteditable="true"]:hover {
+            background: rgba(197, 160, 89, 0.05);
+            box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.2);
+        }
+
+        #email-composer-modal [contenteditable="true"]:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 2px rgba(197, 160, 89, 0.4);
+        }
 
         #comm-hub-modal .btn-composer-close {
             background: #f1f5f9;
@@ -1311,10 +1609,16 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 1.1rem;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.2s;
         }
-        #comm-hub-modal .btn-composer-close:hover { background: #e2e8f0; color: #1e293b; }
+
+        #comm-hub-modal .btn-composer-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
 
         .btn-hub-action {
             padding: 12px 24px;
@@ -1325,10 +1629,24 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-hub-send { background: var(--color-gold); color: white; }
-        .btn-hub-send:hover { background: var(--color-gold-hover); }
-        .btn-hub-copy { background: #10b981; color: white; }
-        .btn-hub-copy:hover { background: #059669; }
+
+        .btn-hub-send {
+            background: var(--color-gold);
+            color: white;
+        }
+
+        .btn-hub-send:hover {
+            background: var(--color-gold-hover);
+        }
+
+        .btn-hub-copy {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-hub-copy:hover {
+            background: #059669;
+        }
 
         /* ========================
            EMAIL BUILDER 2.0 STYLES
@@ -1336,116 +1654,742 @@
         .eb2-section-card {
             background: #fff;
             border-radius: 14px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             overflow: hidden;
         }
+
         .eb2-section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 24px;
         }
-        .eb2-section-title { margin: 0; font-size: 1rem; font-weight: 700; color: var(--color-dark); }
-        .eb2-section-subtitle { margin: 4px 0 0; font-size: 0.8rem; color: #64748b; }
+
+        .eb2-section-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-dark);
+        }
+
+        .eb2-section-subtitle {
+            margin: 4px 0 0;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
 
         .eb2-add-btn {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px; border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
             border: 1.5px solid var(--color-gold);
-            background: transparent; color: var(--color-gold);
-            font-family: inherit; font-size: 0.82rem; font-weight: 700;
-            cursor: pointer; transition: all 0.2s;
+            background: transparent;
+            color: var(--color-gold);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .eb2-add-btn:hover { background: var(--color-gold); color: #fff; }
 
-        .eb2-table-wrap { overflow-x: auto; border-top: 1px solid #f0f0f0; }
-        .eb2-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        .eb2-table thead th {
-            padding: 11px 14px; text-align: left;
-            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.05em; color: #94a3b8;
-            background: #fafafa; border-bottom: 1px solid #f0f0f0;
+        .eb2-add-btn:hover {
+            background: var(--color-gold);
+            color: #fff;
         }
-        .eb2-table tbody tr { transition: background 0.15s; }
-        .eb2-table tbody tr:hover { background: #fafefe; }
-        .eb2-table tbody tr:not(:last-child) { border-bottom: 1px solid #f6f6f6; }
-        .eb2-table tbody td { padding: 12px 14px; color: var(--color-dark); vertical-align: middle; }
-        .eb2-table .td-email { color: #64748b; font-size: 0.85rem; }
-        .eb2-table .td-date { color: #94a3b8; font-size: 0.8rem; }
+
+        .eb2-table-wrap {
+            overflow-x: auto;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .eb2-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .eb2-table thead th {
+            padding: 11px 14px;
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .eb2-table tbody tr {
+            transition: background 0.15s;
+        }
+
+        .eb2-table tbody tr:hover {
+            background: #fafefe;
+        }
+
+        .eb2-table tbody tr:not(:last-child) {
+            border-bottom: 1px solid #f6f6f6;
+        }
+
+        .eb2-table tbody td {
+            padding: 12px 14px;
+            color: var(--color-dark);
+            vertical-align: middle;
+        }
+
+        .eb2-table .td-email {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .eb2-table .td-date {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
 
         .eb2-del-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 28px; height: 28px; border-radius: 6px;
-            border: 1px solid rgba(229,57,53,0.2); background: rgba(229,57,53,0.05);
-            color: #e53935; cursor: pointer; transition: all 0.2s; float: right;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid rgba(229, 57, 53, 0.2);
+            background: rgba(229, 57, 53, 0.05);
+            color: #e53935;
+            cursor: pointer;
+            transition: all 0.2s;
+            float: right;
         }
-        .eb2-del-btn:hover { background: #e53935; color: #fff; border-color: #e53935; }
+
+        .eb2-del-btn:hover {
+            background: #e53935;
+            color: #fff;
+            border-color: #e53935;
+        }
 
         .eb2-action-btn {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 9px 16px; border-radius: 8px;
-            font-family: inherit; font-size: 0.82rem; font-weight: 700;
-            cursor: pointer; transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+
         .eb2-btn-secondary {
-            border: 1.5px solid #e2e8f0; background: #fff; color: var(--color-slate);
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            color: var(--color-slate);
         }
-        .eb2-btn-secondary:hover { border-color: var(--color-gold); color: var(--color-gold); }
+
+        .eb2-btn-secondary:hover {
+            border-color: var(--color-gold);
+            color: var(--color-gold);
+        }
+
         .eb2-btn-gold {
-            border: none; background: var(--color-gold); color: #fff;
+            border: none;
+            background: var(--color-gold);
+            color: #fff;
         }
-        .eb2-btn-gold:hover { background: #b8922f; }
+
+        .eb2-btn-gold:hover {
+            background: #b8922f;
+        }
 
         /* Template Picker Styles */
         .template-opt {
-            display: flex; align-items: center; gap: 20px;
-            padding: 24px; border-radius: 14px;
-            border: 2px solid #f1f5f9; background: #fff;
-            cursor: pointer; transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px;
+            border-radius: 14px;
+            border: 2px solid #f1f5f9;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .template-opt:hover { border-color: var(--color-gold); background: #fffdf9; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(197,160,89,0.1); }
-        .template-opt-icon { 
-            font-size: 2.2rem; 
+
+        .template-opt:hover {
+            border-color: var(--color-gold);
+            background: #fffdf9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(197, 160, 89, 0.1);
+        }
+
+        .template-opt-icon {
+            font-size: 2.2rem;
             background: #f8fafc;
-            width: 60px; height: 60px;
-            display: flex; align-items: center; justify-content: center;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 12px;
             transition: all 0.2s;
         }
-        .template-opt:hover .template-opt-icon { background: #fff; transform: scale(1.1); }
-        
+
+        .template-opt:hover .template-opt-icon {
+            background: #fff;
+            transform: scale(1.1);
+        }
+
         /* Toast Notification */
         #eb-toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: #20303d; color: #fff;
-            padding: 12px 24px; border-radius: 50px;
-            font-size: 0.9rem; font-weight: 600;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 10001; display: none;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #20303d;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 10001;
+            display: none;
             animation: toastUp 0.3s ease-out;
         }
+
         @keyframes toastUp {
-            from { transform: translate(-50%, 20px); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+            from {
+                transform: translate(-50%, 20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
         }
 
         .spinner {
-            width: 40px; height: 40px;
-            border: 4px solid #f3f3f3; border-top: 4px solid var(--color-gold);
-            border-radius: 50%; animation: spin 1s linear infinite;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--color-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
         @media (max-width: 768px) {
-            #comm-hub-modal { padding: 0; }
-            #comm-hub-modal .modal-container { height: 100vh; border-radius: 0; }
-            .composer-wrapper { flex-direction: column; }
-            #comm-hub-modal .composer-sidebar { width: 100%; }
-            .hub-tabs { overflow-x: auto; padding: 0 16px !important; }
-            .tab-pane { padding: 16px; }
+            #comm-hub-modal {
+                padding: 0;
+            }
+
+            #comm-hub-modal .modal-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .composer-wrapper {
+                flex-direction: column;
+            }
+
+            #comm-hub-modal .composer-sidebar {
+                width: 100%;
+            }
+
+            .hub-tabs {
+                overflow-x: auto;
+                padding: 0 16px !important;
+            }
+
+            .tab-pane {
+                padding: 16px;
+            }
+        }
+
+        /* ============================================================
+           BOOKING CARDS CAROUSEL PAGE
+           ============================================================ */
+
+        #carousel-view {
+            margin-top: -50px; /* Compenseert de 80px padding van de parent om op 30px uit te komen */
+            margin-bottom: -50px; /* Vermindert de ruimte onder de schuif-nav */
+        }
+
+        /* Carousel container */
+        .adm-booking-carousel {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .adm-booking-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .adm-booking-carousel__track {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 0;
+            padding: 0 calc(50% - 175px); /* Centreert de eerste en laatste kaart */
+        }
+
+        .adm-booking-slide {
+            flex: 0 0 350px;
+            width: 350px;
+            max-width: 100%;
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+            padding: 14px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
+            transform: scale(0.85); /* Standaard kleiner voor peek effect */
+            opacity: 0.6; /* Iets transparanter voor diepte */
+        }
+
+        .adm-booking-slide.is-active {
+            transform: scale(1); /* Focus card op ware grootte */
+            opacity: 1;
+        }
+
+        /* Mobiele optimalisatie: toon slechts 1 kaart */
+        @media (max-width: 600px) {
+            .adm-booking-carousel__track {
+                padding: 0;
+            }
+            .adm-booking-slide {
+                flex: 0 0 100%;
+                width: 100%;
+            }
+        }
+
+        /* Card v2 — dark glassmorphism */
+        .adm-booking-card--v2 {
+            width: 100%;
+            min-height: 460px;
+            padding: 22px;
+            border-radius: 28px;
+            background:
+                radial-gradient(1200px 500px at 20% -10%, rgba(59, 130, 246, 0.16), transparent 55%),
+                radial-gradient(900px 600px at 80% 0%, rgba(34, 197, 94, 0.10), transparent 60%),
+                linear-gradient(180deg, rgba(26, 40, 48, 0.97), rgba(16, 26, 36, 0.97));
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        .adm-bc__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .adm-bc__title {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.55);
+            margin: 0;
+        }
+
+        .adm-bc__badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .adm-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 10px;
+            border-radius: 999px;
+            line-height: 1;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .adm-badge--confirmed {
+            background: #22c55e;
+            color: #0b1225;
+        }
+
+        .adm-badge--pending {
+            background: #f59e0b;
+            color: #0b1225;
+        }
+
+        .adm-badge--declined {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .adm-badge--completed {
+            background: rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+        }
+
+        .adm-badge--now {
+            background: #22c55e;
+            color: #0b1225;
+        }
+
+        .adm-badge--next {
+            background: #60a5fa;
+            color: #0b1225;
+        }
+
+        .adm-badge--past {
+            background: rgba(255, 255, 255, 0.10);
+            color: #cbd5e1;
+        }
+
+        .adm-badge--owner {
+            background: #ff8a2a;
+            color: #0b1225;
+        }
+
+        .adm-badge--platform {
+            background: rgba(255, 255, 255, 0.10);
+            color: #cbd5e1;
+        }
+
+        .adm-bc__divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.14);
+            margin: 14px 0 18px;
+        }
+
+        .adm-bc__divider--bottom {
+            margin-top: auto;
+            margin-bottom: 14px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .adm-bc__top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 10px;
+        }
+
+        .adm-bc__guest {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.05;
+            margin: 0 0 6px 0;
+            text-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        .adm-bc__sub {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .adm-bc__country {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 50px;
+        }
+
+        .adm-bc__flag {
+            width: 42px;
+            height: 28px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45);
+        }
+
+        .adm-bc__country-code {
+            font-weight: 900;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .adm-bc__rows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .adm-bc__row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 15px;
+        }
+
+        .adm-bc__row i {
+            width: 22px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 16px;
+        }
+
+        .adm-bc__row--strong {
+            font-size: 17px;
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .adm-bc__row--strong strong {
+            font-size: 21px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .adm-bc__link {
+            color: rgba(255, 255, 255, 0.78);
+            text-decoration: none;
+        }
+
+        .adm-bc__link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .adm-bc__price {
+            display: flex;
+            justify-content: flex-end;
+            font-size: 30px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.95);
+            letter-spacing: 0.5px;
+            text-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+        }
+
+        /* 3D Flip */
+        .adm-flip-container {
+            width: 100%;
+            max-width: 320px;
+            perspective: 1200px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+        }
+
+        .adm-flipper {
+            width: 100%;
+            flex: 1;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .adm-flip-container.is-flipped .adm-flipper {
+            transform: rotateY(180deg);
+        }
+
+        .adm-card--front,
+        .adm-card--back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .adm-card--front {
+            position: relative;
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        .adm-card--back {
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .adm-flip-btn {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .adm-flip-btn:hover {
+            background: var(--color-gold);
+            border-color: var(--color-gold);
+            transform: scale(1.05);
+        }
+
+        /* Settlement (backside) */
+        .adm-settlement-table {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 10px;
+        }
+
+        .adm-settle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .adm-settle-row--commission {
+            color: #fff;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 4px;
+        }
+
+        .adm-settle-row--total {
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .adm-settle-label {
+            flex: 1;
+        }
+
+        .adm-settle-val {
+            min-width: 100px;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Knob pager */
+        .adm-scrollbar {
+            display: flex;
+            justify-content: center;
+            padding: 12px 14px 0; /* Verwijderde de 6px padding onderaan */
+        }
+
+        .adm-scrollbar__rail {
+            position: relative;
+            width: min(320px, 92vw);
+            height: 22px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.10);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.10);
+            overflow: hidden;
+            touch-action: pan-x;
+        }
+
+        .adm-scrollbar__ticks {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            pointer-events: none;
+        }
+
+        .adm-tick {
+            width: 2px;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        .adm-scrollbar__knob {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 14px;
+            width: 34px;
+            height: 14px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--color-gold), #e8c070);
+            box-shadow: 0 0 0 1px rgba(197, 160, 89, 0.3), 0 6px 16px rgba(197, 160, 89, 0.3);
+            transition: left 180ms ease;
+            cursor: grab;
+            pointer-events: auto;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .adm-scrollbar__knob:active {
+            cursor: grabbing;
+        }
+
+        @media (hover:hover) {
+            .adm-scrollbar__rail:hover .adm-scrollbar__knob {
+                height: 15px;
+                width: 36px;
+            }
+        }
+
+        /* Carousel page empty state */
+        .adm-carousel-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--color-text-light);
+        }
+
+        .adm-carousel-empty i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .adm-carousel-empty p {
+            font-size: 1rem;
+            opacity: 0.6;
+        }
+
+        /* Counter pill above carousel */
+        .adm-carousel-counter {
+            text-align: center;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-text-light);
+            letter-spacing: 0.05em;
         }
     </style>
 </head>
+
 <body>
 
     <!-- LOGIN SCHERM -->
@@ -1453,12 +2397,14 @@
     <div id="login-screen">
         <h1 class="admin-logo">Gipfel Lodge</h1>
         <p class="admin-subtitle">Team Login</p>
-        
+
         <div style="margin-bottom: 15px;">
-            <input type="email" id="admin-email" class="form-input" placeholder="E-mailadres" style="text-align: center; margin-bottom: 15px;">
-            <input type="password" id="admin-password" class="password-input" placeholder="Wachtwoord" onkeypress="if(event.key === 'Enter') login()">
+            <input type="email" id="admin-email" class="form-input" placeholder="E-mailadres"
+                style="text-align: center; margin-bottom: 15px;">
+            <input type="password" id="admin-password" class="password-input" placeholder="Wachtwoord"
+                onkeypress="if(event.key === 'Enter') login()">
         </div>
-        
+
         <button id="login-btn-el" class="login-btn" onclick="login()">Inloggen</button>
         <div id="login-error" class="error-msg"></div>
     </div>
@@ -1466,7 +2412,7 @@
     <!-- DASHBOARD SCHERM -->
     <div id="dashboard-screen">
         <div class="dashboard-layout">
-            
+
             <!-- Sidebar -->
             <aside class="dashboard-sidebar">
                 <div class="sidebar-brand">
@@ -1475,50 +2421,78 @@
                 </div>
 
                 <!-- Ingelogde Gebruiker Info -->
-                <div id="sidebar-user-info" style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: none;">
-                    <p style="margin:0; font-size:0.75rem; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.08em;">Ingelogd als</p>
-                    <p id="sidebar-user-email" style="margin:4px 0 6px; font-size:0.85rem; color:#fff; font-weight:600; word-break:break-all;">-</p>
-                    <span id="sidebar-user-role-badge" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; padding:3px 8px; border-radius:4px; background: rgba(197,160,89,0.2); color: var(--color-gold);">-</span>
+                <div id="sidebar-user-info"
+                    style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 12px 15px; margin-bottom: 20px; display: none;">
+                    <p
+                        style="margin:0; font-size:0.75rem; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.08em;">
+                        Ingelogd als</p>
+                    <p id="sidebar-user-email"
+                        style="margin:4px 0 6px; font-size:0.85rem; color:#fff; font-weight:600; word-break:break-all;">
+                        -</p>
+                    <span id="sidebar-user-role-badge"
+                        style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; padding:3px 8px; border-radius:4px; background: rgba(197,160,89,0.2); color: var(--color-gold);">-</span>
                 </div>
-                
+
                 <ul class="nav-menu">
-                    <li class="nav-item active" onclick="switchView('bookings-view', this)">&#128197;&nbsp; Aanvragen</li>
-                    <li class="nav-item" onclick="switchView('mailchain-view', this)">✉&nbsp; Mail Chain</li>
-                    <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">📜&nbsp; Activiteiten</li>
-                    <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">📥&nbsp; Excel Import</li>
+                    <li class="nav-item active" onclick="switchView('bookings-view', this)">
+                        <i class="fa-solid fa-calendar-check"></i> Aanvragen
+                    </li>
+                    <li class="nav-item" onclick="switchView('mailchain-view', this)">
+                        <i class="fa-solid fa-envelope-open-text"></i> Mail Chain
+                    </li>
+                    <li id="nav-carousel-desktop" class="nav-item" onclick="switchView('carousel-view', this)">
+                        <i class="fa-solid fa-id-card"></i> Boekingskaarten
+                    </li>
+                    <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">
+                        <i class="fa-solid fa-list-ul"></i> Activiteiten
+                    </li>
+                    <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">
+                        <i class="fa-solid fa-file-import"></i> Excel Import
+                    </li>
                 </ul>
 
-                <div style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
+                <div
+                    style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
                     <strong style="display: block; margin-bottom: 10px; color: var(--gold);">Systeem Status</strong>
-                    <div id="db-status-tag" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; opacity: 0.7;">
+                    <div id="db-status-tag"
+                        style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; opacity: 0.7;">
                         <span style="width: 8px; height: 8px; border-radius: 50%; background: #ccc;"></span>
                         Firebase Status: Onbekend
                     </div>
-                    <button onclick="testFirebaseConnection()" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 5px; cursor: pointer; transition: all 0.2s;">
+                    <button onclick="testFirebaseConnection()"
+                        style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 5px; cursor: pointer; transition: all 0.2s;">
                         Test Verbinding
                     </button>
-                    
-                    <a href="https://console.firebase.google.com/project/gipfel-lodge/firestore/databases/-default-/data" target="_blank" style="display: block; margin-top: 12px; text-align: center; color: rgba(255,255,255,0.3); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.05em; transition: all 0.2s;" onmouseover="this.style.color='var(--color-gold)'; this.style.opacity='1';" onmouseout="this.style.color='rgba(255,255,255,0.3)';">
+
+                    <a href="https://console.firebase.google.com/project/gipfel-lodge/firestore/databases/-default-/data"
+                        target="_blank"
+                        style="display: block; margin-top: 12px; text-align: center; color: rgba(255,255,255,0.3); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.05em; transition: all 0.2s;"
+                        onmouseover="this.style.color='var(--color-gold)'; this.style.opacity='1';"
+                        onmouseout="this.style.color='rgba(255,255,255,0.3)';">
                         &#x2197; BEHEER DATA IN FIREBASE
                     </a>
 
-                    <div id="db-test-result" style="margin-top: 10px; font-size: 0.75rem; color: #ff6b6b; display: none;"></div>
+                    <div id="db-test-result"
+                        style="margin-top: 10px; font-size: 0.75rem; color: #ff6b6b; display: none;"></div>
                 </div>
 
                 <button class="logout-btn" onclick="logout()" style="margin-top: 20px;">Veilig Uitloggen</button>
             </aside>
-            
+
             <main class="dashboard-main">
                 <!-- Bookings List View -->
                 <div id="bookings-view" class="dashboard-view active">
                     <div class="page-header">
                         <h1>Ingekomen Aanvragen</h1>
                         <p>Overzicht van alle boekingen die via de website zijn binnengekomen.</p>
-                        
+
                         <div class="filter-bar">
-                            <button class="filter-btn active" onclick="filterBookings('pending', this)">In Afwachting</button>
-                            <button class="filter-btn confirmed" onclick="filterBookings('confirmed', this)">Bevestigd</button>
-                            <button class="filter-btn declined" onclick="filterBookings('declined', this)">Geweigerd</button>
+                            <button class="filter-btn active" onclick="filterBookings('pending', this)">In
+                                Afwachting</button>
+                            <button class="filter-btn confirmed"
+                                onclick="filterBookings('confirmed', this)">Bevestigd</button>
+                            <button class="filter-btn declined"
+                                onclick="filterBookings('declined', this)">Geweigerd</button>
                             <button class="filter-btn" onclick="filterBookings('completed', this)">Voltooid</button>
                         </div>
                     </div>
@@ -1529,24 +2503,26 @@
                     </div>
                 </div>
 
-                    <div id="mailchain-view" class="dashboard-view">
-                        <div class="page-header">
-                            <h1>Communicatie & Mail-Chain</h1>
-                            <p>Beheer de status van verschillende e-mails voor alle ingekomen boekingen en aanvragen.</p>
-                        </div>
+                <div id="mailchain-view" class="dashboard-view">
+                    <div class="page-header">
+                        <h1>Communicatie & Mail-Chain</h1>
+                        <p>Beheer de status van verschillende e-mails voor alle ingekomen boekingen en aanvragen.</p>
+                    </div>
 
-                        <!-- PRIORITY LIST SECTION -->
-                        <div id="prio-section" class="prio-section" style="display: none;">
-                            <div class="prio-header">
-                                <h2><span>⚡</span> Directe Actie Vereist <span id="prio-count" class="prio-badge">0</span></h2>
-                                <p style="font-size: 0.8rem; color: #64748b; margin:0;">Zaken die <strong>vandaag</strong> je aandacht nodig hebben.</p>
-                            </div>
-                            <div id="prio-list" class="prio-list">
-                                <!-- Prio items populate here -->
-                            </div>
+                    <!-- PRIORITY LIST SECTION -->
+                    <div id="prio-section" class="prio-section" style="display: none;">
+                        <div class="prio-header">
+                            <h2><span>⚡</span> Directe Actie Vereist <span id="prio-count" class="prio-badge">0</span>
+                            </h2>
+                            <p style="font-size: 0.8rem; color: #64748b; margin:0;">Zaken die <strong>vandaag</strong>
+                                je aandacht nodig hebben.</p>
                         </div>
+                        <div id="prio-list" class="prio-list">
+                            <!-- Prio items populate here -->
+                        </div>
+                    </div>
 
-                        <div id="mailchain-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
+                    <div id="mailchain-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
                     <div id="mailchain-list" class="bookings-grid">
                         <!-- Mail-chain cards populate here -->
                     </div>
@@ -1554,37 +2530,50 @@
 
                 <!-- ACTIVITY LOGS VIEW -->
                 <div id="logs-view" class="dashboard-view">
-                    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="page-header"
+                        style="display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
                             <h1>Activiteiten Logboek</h1>
                             <p>Overzicht van acties uitgevoerd door het team.</p>
                         </div>
-                        <button class="eb2-add-btn" onclick="loadActivityLogs()" style="margin-bottom: 10px;">Verversen</button>
+                        <button class="eb2-add-btn" onclick="loadActivityLogs()"
+                            style="margin-bottom: 10px;">Verversen</button>
                     </div>
 
                     <!-- Filter Bar -->
                     <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
                         <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <label style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8;">Filter op gebruiker</label>
-                            <select id="log-filter-user" onchange="filterLogs()" style="padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.875rem; color: #334155; background: #fff; cursor: pointer; min-width: 180px;">
+                            <label
+                                style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8;">Filter
+                                op gebruiker</label>
+                            <select id="log-filter-user" onchange="filterLogs()"
+                                style="padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.875rem; color: #334155; background: #fff; cursor: pointer; min-width: 180px;">
                                 <option value="">Alle gebruikers</option>
                             </select>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <label style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8;">Filter op boeking</label>
-                            <select id="log-filter-booking" onchange="filterLogs()" style="padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.875rem; color: #334155; background: #fff; cursor: pointer; min-width: 200px;">
+                            <label
+                                style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8;">Filter
+                                op boeking</label>
+                            <select id="log-filter-booking" onchange="filterLogs()"
+                                style="padding: 9px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-family: inherit; font-size: 0.875rem; color: #334155; background: #fff; cursor: pointer; min-width: 200px;">
                                 <option value="">Alle boekingen</option>
                             </select>
                         </div>
                         <div style="display: flex; align-items: flex-end;">
-                            <button onclick="document.getElementById('log-filter-user').value=''; document.getElementById('log-filter-booking').value=''; filterLogs();" style="padding: 9px 16px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; font-size: 0.875rem; color: #64748b; cursor: pointer;">✕ Wis filters</button>
+                            <button
+                                onclick="document.getElementById('log-filter-user').value=''; document.getElementById('log-filter-booking').value=''; filterLogs();"
+                                style="padding: 9px 16px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; font-size: 0.875rem; color: #64748b; cursor: pointer;">✕
+                                Wis filters</button>
                         </div>
                     </div>
 
                     <div id="logs-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
-                    
+
                     <div class="eb2-section-card">
-                        <div id="logs-result-count" style="padding: 12px 16px; font-size: 0.8rem; color: #94a3b8; border-bottom: 1px solid #f0f0f0;"></div>
+                        <div id="logs-result-count"
+                            style="padding: 12px 16px; font-size: 0.8rem; color: #94a3b8; border-bottom: 1px solid #f0f0f0;">
+                        </div>
                         <div class="eb2-table-wrap">
                             <table class="eb2-table">
                                 <thead>
@@ -1609,9 +2598,12 @@
                     <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
                         <div>
                             <h1>Excel → Firebase Import</h1>
-                            <p>Upload de bijgewerkte <strong>GipfelLodge_Booked.xlsx</strong> van Villa for You om boekingen direct in Firebase te zetten.</p>
+                            <p>Upload de bijgewerkte <strong>GipfelLodge_Booked.xlsx</strong> van Villa for You om
+                                boekingen direct in Firebase te zetten.</p>
                         </div>
-                        <span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:4px 10px;border-radius:6px;background:rgba(197,160,89,0.15);color:var(--color-gold);border:1px solid rgba(197,160,89,0.3);">⭐ Superuser Only</span>
+                        <span
+                            style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:4px 10px;border-radius:6px;background:rgba(197,160,89,0.15);color:var(--color-gold);border:1px solid rgba(197,160,89,0.3);">⭐
+                            Superuser Only</span>
                     </div>
 
                     <!-- Drop Zone -->
@@ -1619,14 +2611,18 @@
                         <div class="eb2-section-header">
                             <div>
                                 <h3 class="eb2-section-title">📂 Stap 1 — Selecteer Excel-bestand</h3>
-                                <p class="eb2-section-subtitle">Sleep het .xlsx bestand hiernaartoe of klik om te bladeren</p>
+                                <p class="eb2-section-subtitle">Sleep het .xlsx bestand hiernaartoe of klik om te
+                                    bladeren</p>
                             </div>
                         </div>
                         <div style="padding:0 24px 24px;">
-                            <div id="import-drop-zone" style="border:2px dashed var(--color-gold);border-radius:10px;padding:40px 24px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fafcff;">
+                            <div id="import-drop-zone"
+                                style="border:2px dashed var(--color-gold);border-radius:10px;padding:40px 24px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fafcff;">
                                 <div style="font-size:2.5rem;margin-bottom:8px;">📊</div>
-                                <p style="margin:0;color:#334155;font-weight:600;">Sleep het Excel-bestand hierheen of <strong style="color:var(--color-gold);">klik om te bladeren</strong></p>
-                                <small style="color:#94a3b8;font-size:0.8rem;">Ondersteunt .xlsx van Villa for You (tabblad "Arrivals")</small>
+                                <p style="margin:0;color:#334155;font-weight:600;">Sleep het Excel-bestand hierheen of
+                                    <strong style="color:var(--color-gold);">klik om te bladeren</strong></p>
+                                <small style="color:#94a3b8;font-size:0.8rem;">Ondersteunt .xlsx van Villa for You
+                                    (tabblad "Arrivals")</small>
                             </div>
                             <input type="file" id="import-file-input" accept=".xlsx" style="display:none;">
                         </div>
@@ -1636,41 +2632,97 @@
                     <div id="import-preview-section" class="eb2-section-card" style="margin-bottom:20px;display:none;">
                         <div class="eb2-section-header">
                             <div>
-                              <h3 class="eb2-section-title">👁 Stap 2 — Controleer geïmporteerde gegevens</h3>
-                              <p class="eb2-section-subtitle">Groen = nieuw te importeren · Oranje = al aanwezig in Firebase</p>
+                                <h3 class="eb2-section-title">👁 Stap 2 — Controleer geïmporteerde gegevens</h3>
+                                <p class="eb2-section-subtitle">Groen = nieuw te importeren · Oranje = al aanwezig in
+                                    Firebase</p>
                             </div>
                             <div style="display:flex;gap:12px;">
-                                <div style="text-align:center;"><div id="imp-stat-total" style="font-size:1.8rem;font-weight:700;color:var(--color-gold);">0</div><div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Totaal</div></div>
-                                <div style="text-align:center;"><div id="imp-stat-new" style="font-size:1.8rem;font-weight:700;color:#16a34a;">0</div><div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Nieuw</div></div>
-                                <div style="text-align:center;"><div id="imp-stat-exists" style="font-size:1.8rem;font-weight:700;color:#f59e0b;">0</div><div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Bestaat</div></div>
+                                <div style="text-align:center;">
+                                    <div id="imp-stat-total"
+                                        style="font-size:1.8rem;font-weight:700;color:var(--color-gold);">0</div>
+                                    <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Totaal</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div id="imp-stat-new" style="font-size:1.8rem;font-weight:700;color:#16a34a;">0
+                                    </div>
+                                    <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Nieuw</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div id="imp-stat-exists" style="font-size:1.8rem;font-weight:700;color:#f59e0b;">0
+                                    </div>
+                                    <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Bestaat</div>
+                                </div>
                             </div>
                         </div>
                         <div class="eb2-table-wrap">
                             <table class="eb2-table">
-                                <thead><tr>
-                                    <th>Status</th><th>Firebase ID</th><th>Bron #</th><th>Gast</th><th>Check-in</th><th>Check-out</th><th>Nacht</th><th>Bedrag</th><th>Land</th>
-                                </tr></thead>
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Firebase ID</th>
+                                        <th>Bron #</th>
+                                        <th>Gast</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Nacht</th>
+                                        <th>Bedrag</th>
+                                        <th>Land</th>
+                                    </tr>
+                                </thead>
                                 <tbody id="import-preview-body"></tbody>
                             </table>
                         </div>
-                        <div style="padding:16px 24px;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                            <label style="font-size:0.85rem;color:#64748b;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                        <div
+                            style="padding:16px 24px;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                            <label
+                                style="font-size:0.85rem;color:#64748b;cursor:pointer;display:flex;align-items:center;gap:8px;">
                                 <input type="checkbox" id="imp-chk-overwrite"> Overschrijf ook bestaande boekingen
                             </label>
-                            <button class="eb2-action-btn eb2-btn-gold" id="imp-btn-import">▶ Importeer naar Firebase</button>
+                            <button class="eb2-action-btn eb2-btn-gold" id="imp-btn-import">▶ Importeer naar
+                                Firebase</button>
                             <button class="eb2-action-btn eb2-btn-secondary" id="imp-btn-reset">↺ Ander bestand</button>
                         </div>
                     </div>
 
                     <!-- Log Section -->
                     <div id="import-log-section" class="eb2-section-card" style="display:none;">
-                        <div class="eb2-section-header"><h3 class="eb2-section-title">📋 Import Log</h3></div>
-                        <div style="padding:0 24px 8px;">
-                            <div style="height:6px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-bottom:12px;">
-                                <div id="imp-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--color-gold),#f0c060);width:0%;transition:width 0.3s;border-radius:4px;"></div>
-                            </div>
-                            <div id="imp-log" style="font-family:monospace;font-size:0.8rem;max-height:300px;overflow-y:auto;line-height:2;"></div>
+                        <div class="eb2-section-header">
+                            <h3 class="eb2-section-title">📋 Import Log</h3>
                         </div>
+                        <div style="padding:0 24px 8px;">
+                            <div
+                                style="height:6px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-bottom:12px;">
+                                <div id="imp-progress-bar"
+                                    style="height:100%;background:linear-gradient(90deg,var(--color-gold),#f0c060);width:0%;transition:width 0.3s;border-radius:4px;">
+                                </div>
+                            </div>
+                            <div id="imp-log"
+                                style="font-family:monospace;font-size:0.8rem;max-height:300px;overflow-y:auto;line-height:2;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOOKING CARDS CAROUSEL VIEW -->
+                <div id="carousel-view" class="dashboard-view">
+                    <div id="carousel-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
+
+                    <div id="adm-carousel-wrap" style="display:none;">
+                        <div class="adm-carousel-counter" id="adm-carousel-counter"></div>
+                        <div class="adm-booking-carousel" id="adm-booking-carousel">
+                            <div class="adm-booking-carousel__track" id="adm-carousel-track"></div>
+                        </div>
+                        <div class="adm-scrollbar" id="adm-scrollbar" aria-label="Boeking pager">
+                            <div class="adm-scrollbar__rail">
+                                <div class="adm-scrollbar__ticks" id="adm-ticks"></div>
+                                <div class="adm-scrollbar__knob" id="adm-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="adm-carousel-empty" id="adm-carousel-empty" style="display:none;">
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                        <p>Geen boekingen gevonden.</p>
                     </div>
                 </div>
 
@@ -1682,24 +2734,25 @@
         <!-- Mobile Bottom Tab Bar -->
         <nav class="mobile-nav">
             <a href="javascript:void(0)" class="mobile-nav-item active" onclick="switchView('bookings-view', this)">
-                <span>&#128197;</span>
-                Aanvragen
+                <i class="ph ph-calendar-check"></i>
             </a>
             <a href="javascript:void(0)" class="mobile-nav-item" onclick="switchView('mailchain-view', this)">
-                <span>✉</span>
-                Mail Chain
+                <i class="ph ph-paper-plane-tilt"></i>
             </a>
-            <a id="nav-logs-mobile" href="javascript:void(0)" class="mobile-nav-item" onclick="switchView('logs-view', this)">
-                <span>📜</span>
-                Logs
+            <a id="nav-carousel-mobile" href="javascript:void(0)" class="mobile-nav-item"
+                onclick="switchView('carousel-view', this)">
+                <i class="ph ph-cards"></i>
             </a>
-            <a id="nav-import-mobile" href="javascript:void(0)" class="mobile-nav-item" onclick="switchView('import-view', this)">
-                <span>📥</span>
-                Import
+            <a id="nav-logs-mobile" href="javascript:void(0)" class="mobile-nav-item"
+                onclick="switchView('logs-view', this)">
+                <i class="ph ph-activity"></i>
+            </a>
+            <a id="nav-import-mobile" href="javascript:void(0)" class="mobile-nav-item"
+                onclick="switchView('import-view', this)">
+                <i class="ph ph-file-arrow-up"></i>
             </a>
             <a href="javascript:void(0)" class="mobile-nav-item" onclick="logout()">
-                <span>&#128274;</span>
-                Uitloggen
+                <i class="ph ph-sign-out"></i>
             </a>
         </nav>
     </div>
@@ -1710,9 +2763,9 @@
             // Priority 1: Use specific country code if available
             if (bookingData && bookingData.country) {
                 const code = bookingData.country.toLowerCase();
-                const names = { 
-                    'nl': 'Nederland', 'be': 'België', 'de': 'Duitsland', 'at': 'Oostenrijk', 
-                    'ch': 'Zwitserland', 'gb': 'UK', 'uk': 'UK', 'fr': 'Frankrijk', 
+                const names = {
+                    'nl': 'Nederland', 'be': 'België', 'de': 'Duitsland', 'at': 'Oostenrijk',
+                    'ch': 'Zwitserland', 'gb': 'UK', 'uk': 'UK', 'fr': 'Frankrijk',
                     'it': 'Italië', 'dk': 'Denemarken', 'se': 'Zweden', 'no': 'Noorwegen', 'es': 'Spanje'
                 };
                 if (names[code]) return { code: code, name: names[code] };
@@ -1812,7 +2865,7 @@
             const passwordInput = document.getElementById("admin-password").value;
             const errorMsg = document.getElementById("login-error");
             const btn = document.getElementById("login-btn-el");
-            
+
             if (!emailInput || !passwordInput) {
                 errorMsg.innerText = "Vul a.u.b. alle velden in.";
                 errorMsg.classList.add('visible');
@@ -1822,10 +2875,10 @@
             try {
                 btn.disabled = true;
                 btn.innerText = "Bezig...";
-                
+
                 const { auth, signInWithEmailAndPassword } = await import('./js/core/firebase.js');
                 await signInWithEmailAndPassword(auth, emailInput, passwordInput);
-                
+
                 // onAuthStateChanged will handle the UI transition
                 errorMsg.classList.remove('visible');
             } catch (err) {
@@ -1946,7 +2999,7 @@
                 const ref = b.bookingId || b.id;
                 const name = b.guestName || 'Gast';
                 const checkIn = b.checkIn || '';
-                opt.textContent = `${name} — ${ref}${checkIn ? ' ('+checkIn+')' : ''}`;
+                opt.textContent = `${name} — ${ref}${checkIn ? ' (' + checkIn + ')' : ''}`;
                 bookingSelect.appendChild(opt);
             });
         }
@@ -1983,7 +3036,7 @@
 
             entries.forEach((data) => {
                 const date = data.timestamp ? data.timestamp.toDate() : new Date();
-                const timeStr = date.toLocaleString('nl-NL', { day:'2-digit', month:'short', year: 'numeric', hour:'2-digit', minute:'2-digit' });
+                const timeStr = date.toLocaleString('nl-NL', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 const row = document.createElement('tr');
                 const displayName = data.userName || data.userEmail?.split('@')[0] || '-';
@@ -2046,10 +3099,10 @@
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("dashboard-screen").style.display = "block";
             // Pas flex toe op small screens
-            if(window.innerWidth > 600) {
-                 document.body.style.display = 'flex';
+            if (window.innerWidth > 600) {
+                document.body.style.display = 'flex';
             } else {
-                 document.body.style.display = 'block';
+                document.body.style.display = 'block';
             }
 
             // Apply role-based UI restrictions
@@ -2078,12 +3131,12 @@
         // Reusable function to send confirmation
         async function sendBookingConfirmation(tmplParams, btnElement, statusElement, bookingId) {
             const originalContent = btnElement.innerHTML;
-            
+
             try {
                 // UI State: Loading
                 btnElement.disabled = true;
                 btnElement.innerHTML = `<div class="spinner" style="display:block; margin:0 auto; width:18px; height:18px;"></div>`;
-                if(statusElement) {
+                if (statusElement) {
                     statusElement.innerHTML = "Bezig met verzenden...";
                     statusElement.classList.remove("success", "error");
                     statusElement.style.display = "block";
@@ -2092,12 +3145,12 @@
                 // Ensure to_email is present, fallback to a dash if missing (to see error clearer)
                 if (!tmplParams.to_email) {
                     console.warn("to_email was missing in tmplParams, attempting to fix...");
-                    tmplParams.to_email = tmplParams.user_email || ""; 
+                    tmplParams.to_email = tmplParams.user_email || "";
                 }
 
                 console.log("EmailJS Sending with template_oy6c1fe...", tmplParams);
                 await emailjs.send('service_rl6qzmr', 'template_oy6c1fe', tmplParams, "WC62OFB5MXpryYO1u");
-                
+
                 // Update Firestore status if we have an ID
                 if (bookingId) {
                     try {
@@ -2107,7 +3160,7 @@
                             confirmedAt: new Date().toISOString()
                         });
                         console.log("Firestore status updated to confirmed.");
-                        
+
                         // LOG ACTIVITY
                         logActivity('BOOKING_CONFIRMED', `Boeking handmatig bevestigd en e-mail verstuurd naar ${tmplParams.to_email}`, bookingId);
                     } catch (fsErr) {
@@ -2118,7 +3171,7 @@
                 // Success UI
                 btnElement.innerHTML = "✅ VERSTUURD";
                 btnElement.style.background = "#27ae60";
-                if(statusElement) {
+                if (statusElement) {
                     statusElement.innerHTML = "✅ De acceptatie-email is succesvol verstuurd naar " + tmplParams.to_email;
                     statusElement.classList.add("success");
                 }
@@ -2129,7 +3182,7 @@
                 btnElement.innerHTML = "❌ FOUT: " + errorStr.substring(0, 20);
                 btnElement.title = errorStr;
                 btnElement.style.background = "#e74c3c";
-                if(statusElement) {
+                if (statusElement) {
                     statusElement.innerHTML = "❌ Fout: " + errorStr;
                     statusElement.classList.add("error");
                 }
@@ -2145,14 +3198,14 @@
         async function confirmDeleteBooking(bookingId, guestName) {
             const confirm1 = confirm(`Weet je zeker dat je de boeking van "${guestName}" permanent wilt verwijderen?`);
             if (!confirm1) return;
-            
+
             const confirm2 = confirm(`LAATSTE WAARSCHUWING: Dit kan niet ongedaan worden gemaakt. Alle gegevens van deze boeking worden definitief gewist uit de database.\n\nWil je echt doorgaan met verwijderen?`);
             if (!confirm2) return;
-            
+
             try {
                 const { db, doc, deleteDoc } = await import('./js/core/firebase.js');
                 await deleteDoc(doc(db, "bookings", bookingId));
-                
+
                 // 1. Remove from Bookings View
                 const bookingCards = document.querySelectorAll('.booking-card');
                 bookingCards.forEach(card => {
@@ -2173,7 +3226,7 @@
                         setTimeout(() => card.remove(), 400);
                     }
                 });
-                
+
                 // 3. Close Hub Modal if open for this booking
                 if (window.currentComposerData && window.currentComposerData.id === bookingId) {
                     closeCommHub();
@@ -2194,7 +3247,7 @@
             const params = {
                 user_name: ds.name,
                 user_email: ds.email,
-                to_email: ds.email, 
+                to_email: ds.email,
                 check_in: ds.in,
                 check_out: ds.out,
                 guests: ds.guests + " personen"
@@ -2203,16 +3256,16 @@
             sendBookingConfirmation(params, btn, null, ds.id);
         }
 
-        document.getElementById("accept-booking-form").addEventListener("submit", async function(e) {
+        document.getElementById("accept-booking-form").addEventListener("submit", async function (e) {
             e.preventDefault();
-            
+
             const submitBtn = document.getElementById("submit-btn");
             const statusDiv = document.getElementById("form-status");
-            
+
             const dIn = new Date(document.getElementById("check-in").value);
             const dOut = new Date(document.getElementById("check-out").value);
             const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
-            
+
             const tmplParams = {
                 user_name: document.getElementById("guest-name").value,
                 user_email: document.getElementById("guest-email").value,
@@ -2223,17 +3276,17 @@
             };
 
             const success = await sendBookingConfirmation(tmplParams, submitBtn, statusDiv);
-            if(success) this.reset();
+            if (success) this.reset();
         });
 
         // --- 3. VIEW SWITCHING ---
         async function copyComposerHtmlCode() {
             const previewArea = document.getElementById('composer-preview-area');
             const btn = document.getElementById('btn-composer-copy-code');
-            
+
             // Clean up the HTML slightly (remove contenteditable if it leaked in, etc)
             let html = previewArea.innerHTML;
-            
+
             // Wrap in basic boilerplate if not present
             if (!html.includes('\x3C!DOCTYPE html>')) {
                 html = `\x3C!DOCTYPE html>\x3Chtml lang="nl">\x3Chead>\x3Cmeta charset="UTF-8">\x3Clink href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">\x3C/head>\x3Cbody style="margin:0; background:#FAF9F6;">${html}\x3C/body>\x3C/html>`;
@@ -2241,11 +3294,11 @@
 
             try {
                 await navigator.clipboard.writeText(html);
-                
+
                 // Auto-check step in the hub
                 const uiTemplateId = document.getElementById('composer-template-select').value;
                 autoCheckMailStep(uiTemplateId);
-                
+
                 btn.innerHTML = '✔ HTML Gekopieerd!';
                 btn.style.background = '#27ae60';
                 setTimeout(() => {
@@ -2283,6 +3336,9 @@
             } else if (viewId === 'import-view') {
                 document.getElementById('nav-import-desktop')?.classList.add('active');
                 document.getElementById('nav-import-mobile')?.classList.add('active');
+            } else if (viewId === 'carousel-view') {
+                document.getElementById('nav-carousel-desktop')?.classList.add('active');
+                document.getElementById('nav-carousel-mobile')?.classList.add('active');
             }
 
             // Update views
@@ -2298,6 +3354,8 @@
                 loadActivityLogs();
             } else if (viewId === 'import-view') {
                 initImportView();
+            } else if (viewId === 'carousel-view') {
+                loadCarouselView();
             }
 
             // Scroll to top when switching views on mobile
@@ -2311,7 +3369,7 @@
                 parent.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             }
             el.classList.add('active');
-            
+
             // Reload list with filter
             loadBookings(status);
         }
@@ -2319,13 +3377,13 @@
         async function loadBookings(status = 'all') {
             const list = document.getElementById('bookings-list');
             const loader = document.getElementById('bookings-loader');
-            
+
             list.innerHTML = '';
             loader.style.display = 'block';
 
             try {
                 const { db, collection, getDocs, query, orderBy } = await import('./js/core/firebase.js');
-                
+
                 // Fetch all initially to avoid composite index requirements in Firestore
                 const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
@@ -2340,7 +3398,7 @@
 
                 querySnapshot.forEach((doc) => {
                     const data = { id: doc.id, ...doc.data() };
-                    
+
                     // Bereken of datum verstreken is (check-out is voor vandaag of vandaag zelf)
                     const checkOutDate = new Date(data.checkOut);
                     checkOutDate.setHours(0, 0, 0, 0);
@@ -2359,7 +3417,7 @@
                     } else if (status === 'declined') {
                         isMatch = data.status === 'declined';
                     }
-                    
+
                     if (isMatch) {
                         data.isPassed = isPassed;
                         matchedBookings.push(data);
@@ -2373,18 +3431,18 @@
                     matchCount++;
                     const card = document.createElement('div');
                     card.className = 'booking-card';
-                    
+
                     const dIn = new Date(data.checkIn);
                     const dOut = new Date(data.checkOut);
                     const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
-                    
+
                     const rawVal = data.totalAmount || data.total_amount || 0;
                     const raw = (typeof rawVal === 'string') ? parseFloat(rawVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawVal;
                     const fmt = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
                     const totalAmount = raw ? fmt(raw) : 'N/A';
                     const depositAmount = raw ? fmt(raw * 0.30) : '';
                     const balanceAmount = raw ? fmt(raw * 0.70) : '';
-                    
+
                     // Construct Pre-filled Email Body
                     let emailBody = `Beste ${data.guestName || 'Gast'},\n\n`;
                     emailBody += `Hierbij sturen wij u een bericht over uw boeking:\n\n`;
@@ -2393,12 +3451,12 @@
                     emailBody += `• Reizigers: ${data.totalGuests} personen\n`;
                     if (raw) emailBody += `• Totaalbedrag: ${totalAmount}\n`;
                     emailBody += `\nMet vriendelijke groet,\nTeam Gipfel Lodge\nwww.gipfellodge.at`;
-                    
+
                     const encodedSubject = encodeURIComponent("Bericht over uw boeking bij Gipfel Lodge");
                     const encodedBody = encodeURIComponent(emailBody);
                     const mailtoLink = `mailto:${data.guestEmail || ''}?subject=${encodedSubject}&body=${encodedBody}`;
                     const cardIsPassed = data.isPassed;
-                    
+
                     const country = getCountryData(data.guestPhone, data);
 
                     card.innerHTML = `
@@ -2442,10 +3500,10 @@
                             <div class="tile-data-row">
                                 <span class="tile-section-label">Gasten:</span>
                                 <strong>${[
-                                    data.adults > 0 ? `volw: ${data.adults}` : null,
-                                    data.children > 0 ? `kind: ${data.children}` : null,
-                                    data.babies > 0 ? `baby: ${data.babies}` : null
-                                ].filter(x => x).join(' | ') || 'Niet gespecificeerd'}</strong>
+                            data.adults > 0 ? `volw: ${data.adults}` : null,
+                            data.children > 0 ? `kind: ${data.children}` : null,
+                            data.babies > 0 ? `baby: ${data.babies}` : null
+                        ].filter(x => x).join(' | ') || 'Niet gespecificeerd'}</strong>
                             </div>
                             
                             <div class="tile-data-row">
@@ -2516,12 +3574,12 @@
             // Update tabs
             document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-btn-' + tabId).classList.add('active');
-            
+
             // Update panes
             document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
         }
-        
+
         function openPreloadedComposer(templateId) {
             switchCommHubTab('editor');
             const select = document.getElementById('composer-template-select');
@@ -2539,10 +3597,10 @@
         function renderHubSteps(data) {
             const mc = data.mailChain || {};
             const isPending = data.status === 'pending';
-            
+
             const list = document.getElementById('hub-step-list-container');
-            if(!list) return;
-            
+            if (!list) return;
+
             const steps = [
                 { key: 'received', title: '1. Boeking ontvangen', tmpl: '', done: true },
                 { key: 'accepted', title: '2. Accepteren / Weigeren', tmpl: 'acceptance', done: !isPending },
@@ -2567,7 +3625,7 @@
 
             let recStep = 0;
             if (isPending) {
-                recStep = 2; 
+                recStep = 2;
             } else if (data.status === 'confirmed') {
                 if (!data.depositPaid && !mc.depositReminder) recStep = 3;
                 else if (data.depositPaid && !mc.depositReceived) recStep = 4;
@@ -2585,8 +3643,8 @@
                 const isNext = (idx === nextStepIndex);
                 const clickAttr = s.tmpl ? `onclick="openPreloadedComposer('${s.tmpl}')"` : '';
                 const pointerStyle = s.tmpl ? 'cursor: pointer;' : '';
-                
-                let iconHtml = s.done 
+
+                let iconHtml = s.done
                     ? `<span class="hub-step-icon icon-check" style="color: #6b21a8; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', false)">✓</span>`
                     : `<span class="hub-step-icon icon-wait" style="font-size: 1.2rem; cursor: pointer; padding: 4px;" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', true)">⏳</span>`;
 
@@ -2594,8 +3652,8 @@
 
                 // Extra styling for "next step"
                 let extraClasses = isNext ? 'hub-step-next' : '';
-                if(s.done) extraClasses += ' completed';
-                if(idx + 1 === recStep) extraClasses += ' recommended-step';
+                if (s.done) extraClasses += ' completed';
+                if (idx + 1 === recStep) extraClasses += ' recommended-step';
 
                 html += `
                     <div class="hub-step ${extraClasses}" style="${pointerStyle}" ${clickAttr}>
@@ -2609,7 +3667,7 @@
                     </div>
                 `;
             });
-            
+
             list.innerHTML = html;
         }
 
@@ -2619,11 +3677,11 @@
                 console.log("Stap 1 & 2 worden automatisch beheerd.");
                 return;
             }
-            
+
             try {
                 // Call existing toggle function that syncs Firestore
                 await toggleMailStep(bookingId, stepKey, value);
-                
+
                 // Re-fetch data and refresh Hub and Mail Chain
                 const { db } = await import('./js/core/firebase.js');
                 const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
@@ -2633,7 +3691,7 @@
                     // Also refresh the background mail chain page
                     loadMailChain();
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error("Fout bij handmatig afvinken:", e);
                 alert("Kon status niet bijwerken.");
             }
@@ -2658,18 +3716,18 @@
                 const { db } = await import('./js/core/firebase.js');
                 const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
                 const snap = await getDoc(doc(db, "bookings", bookingId));
-                
+
                 if (!snap.exists()) {
                     alert('Boeking niet gevonden!');
                     return;
                 }
-                
+
                 const data = { id: snap.id, ...snap.data() };
-                
+
                 // Set Modal Labels
                 document.getElementById('hub-guest-name').innerText = data.guestName || 'Gast';
                 document.getElementById('hub-guest-email').innerText = data.guestEmail || '-';
-                
+
                 const statusBadge = document.getElementById('hub-guest-status');
                 if (data.status === 'pending') {
                     statusBadge.innerText = 'WACHT OP ACTIE';
@@ -2694,7 +3752,7 @@
                 // Check if already exists to avoid duplication if opened multiple times
                 const existingCountry = hubHeaderInfo.querySelector('.country-badge');
                 if (existingCountry) existingCountry.remove();
-                
+
                 if (country) {
                     const cb = document.createElement('div');
                     cb.className = 'country-badge';
@@ -2712,14 +3770,14 @@
                 const dIn = new Date(data.checkIn);
                 const dOut = new Date(data.checkOut);
                 const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
-                
+
                 const rawVal = data.totalAmount || data.total_amount || 0;
                 const raw = (typeof rawVal === 'string') ? parseFloat(rawVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawVal;
                 const fmt = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
                 const tAmt = raw ? fmt(raw) : '€ [BEDRAG]';
                 const dAmt = raw ? fmt(raw * 0.3) : '€ [BEDRAG]';
                 const bAmt = raw ? fmt(raw * 0.7) : '€ [BEDRAG]';
-                
+
                 const phone = data.guestPhone || '';
                 currentLang = detectLanguage(phone);
                 const labels = composerLabels[currentLang];
@@ -2751,16 +3809,16 @@
                     status: data.status || 'pending',
                     mailChain: data.mailChain || {}
                 };
-                
+
                 switchCommHubTab('status');
-                
+
                 document.getElementById('comm-hub-modal').classList.add('active');
                 document.body.style.overflow = 'hidden';
 
                 document.getElementById('composer-template-select').value = 'general';
                 loadSelectedTemplateIntoComposer();
-                
-            } catch(e) {
+
+            } catch (e) {
                 console.error("Error opening comm hub:", e);
                 alert("Kon boeking niet openen in Hub.");
             }
@@ -2772,7 +3830,7 @@
             const prioList = document.getElementById('prio-list');
             const prioSection = document.getElementById('prio-section');
             const prioCountBadge = document.getElementById('prio-count');
-            
+
             list.innerHTML = '';
             prioList.innerHTML = '';
             loader.style.display = 'block';
@@ -2784,7 +3842,7 @@
             try {
                 const { db, collection, getDocs } = await import('./js/core/firebase.js');
                 const querySnapshot = await getDocs(collection(db, "bookings"));
-                
+
                 loader.style.display = 'none';
 
                 let matchCount = 0;
@@ -2799,12 +3857,12 @@
 
                 bookings.forEach(data => {
                     // Do NOT filter out unconfirmed, show all so we can send request/acceptance mails
-                    
+
                     matchCount++;
                     const card = document.createElement('div');
                     card.className = 'booking-card';
                     card.id = `mc-card-${data.id}`; // Add ID to allow anchoring
-                    
+
                     const dIn = new Date(data.checkIn);
                     const dOut = new Date(data.checkOut);
                     const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -2818,10 +3876,10 @@
                     checkInRef.setHours(0, 0, 0, 0);
                     const checkOutRef = new Date(data.checkOut);
                     checkOutRef.setHours(0, 0, 0, 0);
-                    
+
                     const diffIn = Math.ceil((checkInRef - todayRef) / (1000 * 60 * 60 * 24));
                     const diffOut = Math.ceil((todayRef - checkOutRef) / (1000 * 60 * 60 * 24));
-                    
+
                     const mc = data.mailChain || {};
                     const isPending = data.status === 'pending';
                     const isDeclined = data.status === 'declined';
@@ -2841,7 +3899,7 @@
                     const dAmt = rawP ? fmtP(rawP * 0.3) : '€ [BEDRAG]';
                     const bAmt = rawP ? fmtP(rawP * 0.7) : '€ [BEDRAG]';
 
-                    let recStep = 0; 
+                    let recStep = 0;
                     if (isPending) {
                         recStep = 2; // Accepteren / Weigeren
                     } else if (isConfirmed) {
@@ -2873,7 +3931,7 @@
                             8: "Bedankje & Review"
                         };
                         const taskName = stepNames[recStep];
-                        
+
                         prioHtml += `
                             <div class="prio-item">
                                 <div class="prio-item-main">
@@ -2929,7 +3987,7 @@
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-guests="${data.totalGuests || '-'}" 
                                             data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-type="general" 
@@ -2947,7 +4005,7 @@
                                             <a href="javascript:void(0)" 
                                                 data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
                                                 data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                                data-guests="${data.totalGuests||'-'}" 
+                                                data-guests="${data.totalGuests || '-'}" 
                                                 data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                                 data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                                 data-message="${data.message || ''}" data-type="acceptance" 
@@ -2956,7 +4014,7 @@
                                             <a href="javascript:void(0)" 
                                                 data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
                                                 data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                                data-guests="${data.totalGuests||'-'}" 
+                                                data-guests="${data.totalGuests || '-'}" 
                                                 data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                                 data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                                 data-message="${data.message || ''}" data-type="rejection" 
@@ -2974,7 +4032,7 @@
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-guests="${data.totalGuests || '-'}" 
                                             data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-type="deposit_request" 
@@ -2996,7 +4054,7 @@
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-guests="${data.totalGuests || '-'}" 
                                             data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-type="deposit_received" 
@@ -3018,7 +4076,7 @@
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-guests="${data.totalGuests || '-'}" 
                                             data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-type="balance_reminder" 
@@ -3040,7 +4098,7 @@
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-guests="${data.totalGuests || '-'}" 
                                             data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-type="balance_received" 
@@ -3062,7 +4120,7 @@
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-guests="${data.totalGuests || '-'}" 
                                             data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-type="rules_info" 
@@ -3084,7 +4142,7 @@
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests||'-'}" 
+                                            data-guests="${data.totalGuests || '-'}" 
                                             data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-type="post_stay" 
@@ -3107,7 +4165,7 @@
                                     <button 
                                         data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                         data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                        data-guests="${data.totalGuests||'-'}" 
+                                        data-guests="${data.totalGuests || '-'}" 
                                         data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                         data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                         data-message="${data.message || ''}" data-type="general" 
@@ -3116,7 +4174,7 @@
                                     <button 
                                         data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                         data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                        data-guests="${data.totalGuests||'-'}" 
+                                        data-guests="${data.totalGuests || '-'}" 
                                         data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
                                         data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                         data-message="${data.message || ''}" data-type="rejection" 
@@ -3152,7 +4210,7 @@
         async function toggleMailStep(bookingId, stepKey, value) {
             try {
                 const { db, doc, updateDoc } = await import('./js/core/firebase.js');
-                
+
                 // 1. Sync Logic (UI -> DB is already handled by checkbox)
                 // 2. Sync Logic (Tester -> DB calls this function, so we need DB -> UI)
                 const card = document.getElementById(`mc-card-${bookingId}`);
@@ -3166,7 +4224,7 @@
                     [`mailChain.${stepKey}`]: value,
                     updatedAt: new Date().toISOString()
                 });
-                
+
                 // LOG ACTIVITY
                 const actionName = value ? 'EMAIL_STEP_COMPLETED' : 'EMAIL_STEP_REVERTED';
                 logActivity(actionName, `Stap '${stepKey}' gewijzigd naar ${value ? 'voltooid' : 'openstaand'}`, bookingId);
@@ -3177,7 +4235,7 @@
                     currentComposerData.mailChain[stepKey] = value;
                     renderHubSteps(currentComposerData);
                 }
-                
+
             } catch (err) {
                 console.error(`Fout bij updaten mail-chain stap ${stepKey}:`, err);
                 alert("Kon de status niet opslaan in Database.");
@@ -3191,7 +4249,7 @@
                     [field]: value,
                     updatedAt: new Date().toISOString()
                 });
-                
+
                 // LOG ACTIVITY
                 logActivity('PAYMENT_STATUS_UPDATED', `Betalingsveld '${field}' gewijzigd naar ${value}`, bookingId);
 
@@ -3218,7 +4276,7 @@
                 // --- Step 1: Ask for confirmation ---
                 btnEl.classList.add('confirming');
                 btnEl.textContent = '⚠ Zeker weten? Klik opnieuw om te weigeren';
-                
+
                 // Auto-reset after 4 seconds if user doesn't confirm
                 clearTimeout(_declineTimer);
                 _declineTimer = setTimeout(() => {
@@ -3232,7 +4290,7 @@
                 clearTimeout(_declineTimer);
                 btnEl.textContent = 'Bezig...';
                 btnEl.disabled = true;
-                
+
                 try {
                     const { db, doc, updateDoc } = await import('./js/core/firebase.js');
                     await updateDoc(doc(db, "bookings", bookingId), {
@@ -3296,7 +4354,7 @@
             document.getElementById('check-in').value = ds.inRaw;
             document.getElementById('check-out').value = ds.outRaw;
             document.getElementById('guest-count').value = ds.guests;
-            
+
             // Switch view
             switchView('confirm-view', document.querySelector('.nav-item:first-child'));
         }
@@ -3304,7 +4362,7 @@
         async function copyRichTextEmail(btn) {
             const ds = btn.dataset;
             const originalText = btn.innerHTML;
-            
+
             btn.innerHTML = 'Kopiëren...';
             btn.disabled = true;
 
@@ -3419,14 +4477,14 @@
             const statusTag = document.getElementById('db-status-tag');
             const resultDiv = document.getElementById('db-test-result');
             const dot = statusTag.querySelector('span');
-            
+
             resultDiv.style.display = 'none';
             dot.style.background = '#f1c40f'; // geel: bezig
             statusTag.innerHTML = '\x3Cspan style="width: 8px; height: 8px; border-radius: 50%; background: #f1c40f;">\x3C/span> Verbinding testen...';
 
             try {
                 const { db, collection, addDoc, serverTimestamp } = await import('./js/core/firebase.js');
-                
+
                 // Probeer een tijdelijk test-document te schrijven
                 await addDoc(collection(db, "system_checks"), {
                     timestamp: serverTimestamp(),
@@ -3438,22 +4496,407 @@
                 resultDiv.style.color = '#2ecc71';
                 resultDiv.innerText = "Succes! De verbinding met de database werkt.";
                 resultDiv.style.display = 'block';
-                
+
             } catch (err) {
                 console.error("Firebase Test Error:", err);
                 dot.style.background = '#e74c3c'; // rood: fout
                 statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #e74c3c;"></span> Firebase: Fout`;
-                
+
                 let msg = "Fout: " + err.message;
                 if (err.message.includes("permission-denied")) {
                     msg = "Permissions Error: Controleer je 'Security Rules' in de Firebase Console.";
                 } else if (err.message.includes("network")) {
                     msg = "Netwerk Fout: Ben je online? Of blokkeert de browser de import?";
                 }
-                
+
                 resultDiv.style.color = '#ff6b6b';
                 resultDiv.innerText = msg;
                 resultDiv.style.display = 'block';
+            }
+        }
+
+        /* ============================================================
+         * BOOKING CARDS CAROUSEL — laadt Firebase data en rendert kaarten
+         * ============================================================ */
+
+        async function loadCarouselView() {
+            const loader = document.getElementById('carousel-loader');
+            const wrap = document.getElementById('adm-carousel-wrap');
+            const empty = document.getElementById('adm-carousel-empty');
+            const track = document.getElementById('adm-carousel-track');
+
+            if (!track) return;
+
+            // Reset state
+            loader.style.display = 'block';
+            wrap.style.display = 'none';
+            empty.style.display = 'none';
+            track.innerHTML = '';
+
+            try {
+                const { db, collection, getDocs, query, orderBy } =
+                    await import('./js/core/firebase.js');
+
+                const q = query(collection(db, 'bookings'), orderBy('checkIn', 'asc'));
+                const snap = await getDocs(q);
+
+                const bookings = [];
+                snap.forEach(d => bookings.push({ id: d.id, ...d.data() }));
+
+                loader.style.display = 'none';
+
+                if (!bookings.length) {
+                    empty.style.display = 'flex';
+                    return;
+                }
+
+                renderAdminBookingCarousel(bookings);
+
+            } catch (err) {
+                console.error('Carousel load error:', err);
+                loader.style.display = 'none';
+                empty.style.display = 'flex';
+                empty.querySelector('p').textContent = 'Fout bij laden: ' + err.message;
+            }
+        }
+
+        function renderAdminBookingCarousel(bookings) {
+            const carousel = document.getElementById('adm-booking-carousel');
+            const track = document.getElementById('adm-carousel-track');
+            const wrap = document.getElementById('adm-carousel-wrap');
+            const knob = document.getElementById('adm-knob');
+            const ticksWrap = document.getElementById('adm-ticks');
+            const counter = document.getElementById('adm-carousel-counter');
+
+            if (!carousel || !track) return;
+
+            // ── Helpers ──────────────────────────────────────────────
+            const parseDate = (v) => {
+                if (!v) return null;
+                if (v instanceof Date) return v;
+                // "YYYY-MM-DD"
+                const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
+                if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+                const d = new Date(v);
+                return isNaN(d.getTime()) ? null : d;
+            };
+
+            const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+            const fmtDate = (d) => d
+                ? d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+                : '—';
+
+            const fmtRange = (a, b) => {
+                const aStr = a.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+                const bStr = b.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+                return `${aStr} → ${bStr}`;
+            };
+
+            const fmtEUR = (n) => Number(n || 0).toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
+
+            const fmtSettle = (n) => Number(n || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // ── Normalize rows ────────────────────────────────────────
+            const rows = bookings
+                .map(b => ({
+                    checkIn: parseDate(b.checkIn),
+                    checkOut: parseDate(b.checkOut),
+                    nights: Number(b.nights) || 0,
+                    guest: b.guestName || 'Onbekende gast',
+                    isOwner: (b.type === 'owner'),
+                    platform: b.platform || '',
+                    bookingId: b.bookingId || b.id || '',
+                    adults: Number(b.adults) || 0,
+                    children: Number(b.children) || 0,
+                    babies: Number(b.babies) || 0,
+                    totalGuests: Number(b.totalGuests) || 0,
+                    phone: b.guestPhone || '',
+                    email: b.guestEmail || '',
+                    country: (b.country || '').trim().toUpperCase(),
+                    totalAmount: Number(b.totalAmount) || 0,
+                    status: b.status || 'pending',
+                }))
+                .filter(r => r.checkIn && r.checkOut)
+                .sort((a, b) => a.checkIn - b.checkIn);
+
+            if (!rows.length) {
+                document.getElementById('adm-carousel-empty').style.display = 'flex';
+                return;
+            }
+
+            // ── Start index (voorkeur: NU → VOLGENDE → 0) ────────────
+            const now = startOfDay(new Date());
+            const currentIdx = rows.findIndex(r => r.checkIn <= now && now < r.checkOut);
+            const nextIdx = rows.findIndex(r => r.checkIn > now);
+            const startIndex = currentIdx !== -1 ? currentIdx : (nextIdx !== -1 ? nextIdx : 0);
+
+            // ── Pager helpers ─────────────────────────────────────────
+            const updateActiveSlideClasses = (activeIdx) => {
+                const slides = track.querySelectorAll('.adm-booking-slide');
+                slides.forEach((s, i) => {
+                    if (i === activeIdx) s.classList.add('is-active');
+                    else s.classList.remove('is-active');
+                });
+            };
+
+            const updateKnob = (idx) => {
+                if (!knob) return;
+                updateActiveSlideClasses(idx);
+                const rail = knob.closest('.adm-scrollbar__rail');
+                if (!rail) return;
+                const rect = rail.getBoundingClientRect();
+                const padding = 14;
+                const usable = Math.max(0, rect.width - padding * 2);
+                const t = idx / Math.max(1, rows.length - 1);
+                knob.style.left = `${padding + usable * t}px`;
+            };
+
+            const getStep = () => track.querySelector('.adm-booking-slide')?.offsetWidth || 350;
+
+            const scrollToIndex = (idx, smooth = true) => {
+                const step = getStep();
+                carousel.scrollTo({ left: step * idx, behavior: smooth ? 'smooth' : 'instant' });
+                updateKnob(idx);
+                if (counter) counter.textContent = `${idx + 1} / ${rows.length}`;
+            };
+
+            const getClosestIndex = () => {
+                if (!carousel || !carousel.children.length) return 0;
+                const step = getStep();
+                return Math.max(0, Math.min(rows.length - 1, Math.round(carousel.scrollLeft / step)));
+            };
+
+            // ── Build ticks ───────────────────────────────────────────
+            track.innerHTML = '';
+            if (ticksWrap) {
+                ticksWrap.innerHTML = '';
+                rows.forEach(() => {
+                    const t = document.createElement('div');
+                    t.className = 'adm-tick';
+                    ticksWrap.appendChild(t);
+                });
+            }
+
+            // ── Render slides ─────────────────────────────────────────
+            rows.forEach((b, idx) => {
+                const isNow = b.checkIn <= now && now < b.checkOut;
+                const isNext = !isNow && b.checkIn > now;
+
+                // Timeline badge
+                const timelineClass = isNow ? 'adm-badge--now' : (isNext ? 'adm-badge--next' : 'adm-badge--past');
+                const timelineText = isNow ? 'NU' : (isNext ? 'VOLGENDE' : 'VERLEDEN');
+
+                // Status badge
+                const statusMap = {
+                    confirmed: 'adm-badge--confirmed',
+                    pending: 'adm-badge--pending',
+                    declined: 'adm-badge--declined',
+                    completed: 'adm-badge--completed',
+                };
+                const statusClass = statusMap[b.status] || 'adm-badge--pending';
+                const statusLabel = {
+                    confirmed: 'Bevestigd', pending: 'In afwachting',
+                    declined: 'Geweigerd', completed: 'Voltooid',
+                }[b.status] || b.status;
+
+                // Guest breakdown
+                const parts = [];
+                if (b.adults > 0) parts.push(`${b.adults} volw.`);
+                if (b.children > 0) parts.push(`${b.children} kind.`);
+                if (b.babies > 0) parts.push(`${b.babies} baby`);
+                const breakdown = parts.length ? `(${parts.join(', ')})` : '';
+
+                const guests = b.totalGuests || (b.adults + b.children + b.babies);
+                const cc = b.country;
+                const flag = cc ? `<img class="adm-bc__flag" src="https://flagcdn.com/w40/${cc.toLowerCase()}.png" alt="${cc}" />` : '';
+
+                // Settlement calc (estimate based on totalAmount as base rent)
+                const rent = b.totalAmount;
+                const cleaning = b.isOwner ? 0 : 350.00;
+                const bedLinen = b.isOwner ? 0 : (guests * 20.95);
+                const touristTax = guests * b.nights * 2.50;
+                const mobilityFee = guests * b.nights * 0.50;
+                const commission = rent * 0.24;
+                const totalSettlement = rent + cleaning + bedLinen + touristTax + mobilityFee - commission;
+
+                // Platform tag
+                const platformBadge = b.isOwner
+                    ? `<span class="adm-badge adm-badge--owner">Huiseigenaar</span>`
+                    : (b.platform ? `<span class="adm-badge adm-badge--platform">${b.platform}</span>` : '');
+
+                const slide = document.createElement('div');
+                slide.className = 'adm-booking-slide';
+                slide.innerHTML = `
+                    <div class="adm-flip-container" onclick="this.classList.toggle('is-flipped')">
+                        <div class="adm-flipper">
+
+                            <!-- FRONT -->
+                            <div class="adm-card--front adm-booking-card--v2">
+                                <div class="adm-bc__header">
+                                    <h3 class="adm-bc__title">Boeking</h3>
+                                    <div class="adm-bc__badges">
+                                        <span class="adm-badge ${timelineClass}">${timelineText}</span>
+                                        <span class="adm-badge ${statusClass}">${statusLabel}</span>
+                                        ${platformBadge}
+                                    </div>
+                                </div>
+
+                                <div class="adm-bc__divider"></div>
+
+                                <div class="adm-bc__top">
+                                    <div>
+                                        <div class="adm-bc__guest">${b.guest}</div>
+                                        <div class="adm-bc__row adm-bc__row--strong">
+                                            <i class="fa-solid fa-user"></i>
+                                            <span><strong>${guests || '—'}</strong> gasten</span>
+                                        </div>
+                                        ${breakdown ? `<div class="adm-bc__sub">${breakdown}</div>` : ''}
+                                    </div>
+                                    <div class="adm-bc__country">
+                                        ${flag}
+                                        <div class="adm-bc__country-code">${cc || '—'}</div>
+                                    </div>
+                                </div>
+
+                                <div class="adm-bc__rows">
+                                    <div class="adm-bc__row">
+                                        <i class="fa-regular fa-calendar"></i>
+                                        <span>${fmtRange(b.checkIn, b.checkOut)}</span>
+                                    </div>
+                                    <div class="adm-bc__row">
+                                        <i class="fa-regular fa-moon"></i>
+                                        <span>${b.nights} nachten</span>
+                                    </div>
+                                    ${b.bookingId ? `<div class="adm-bc__row">
+                                        <i class="fa-solid fa-hashtag"></i>
+                                        <span>${b.bookingId}</span>
+                                    </div>` : ''}
+                                    ${b.phone ? `<div class="adm-bc__row">
+                                        <i class="fa-solid fa-phone" onclick="event.stopPropagation()"></i>
+                                        <a class="adm-bc__link" href="tel:${b.phone}" onclick="event.stopPropagation()">${b.phone}</a>
+                                    </div>` : ''}
+                                    ${b.email ? `<div class="adm-bc__row">
+                                        <i class="fa-regular fa-envelope" onclick="event.stopPropagation()"></i>
+                                        <a class="adm-bc__link" href="mailto:${b.email}" onclick="event.stopPropagation()">${b.email}</a>
+                                    </div>` : ''}
+                                </div>
+
+                                <div class="adm-bc__divider adm-bc__divider--bottom"></div>
+                                <div class="adm-bc__price">${fmtEUR(b.totalAmount)}</div>
+                            </div>
+
+                            <!-- BACK (factuurspecificatie) -->
+                            <div class="adm-card--back adm-booking-card--v2">
+                                <div class="adm-bc__header">
+                                    <h3 class="adm-bc__title">Factuur specificatie</h3>
+                                </div>
+                                <div class="adm-bc__divider"></div>
+                                <div class="adm-bc__sub" style="margin-bottom:8px;">${b.guest} · ${b.nights} nachten · ${guests} gasten</div>
+
+                                <div class="adm-settlement-table">
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Huur (bruto)</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(rent)}</span>
+                                    </div>
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Schoonmaak</span>
+                                        <span class="adm-settle-val">${b.isOwner ? 'n.v.t.' : '€ ' + fmtSettle(cleaning)}</span>
+                                    </div>
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Bedlinnen (${guests}p)</span>
+                                        <span class="adm-settle-val">${b.isOwner ? 'n.v.t.' : '€ ' + fmtSettle(bedLinen)}</span>
+                                    </div>
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Toeristenbelasting</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(touristTax)}</span>
+                                    </div>
+                                    <div class="adm-settle-row adm-settle-row--commission">
+                                        <span class="adm-settle-label">Mobiliteitsheffing</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(mobilityFee)}</span>
+                                    </div>
+                                    <div class="adm-settle-row adm-settle-row--commission">
+                                        <span class="adm-settle-label">Commissie (24%)</span>
+                                        <span class="adm-settle-val">€ −${fmtSettle(commission)}</span>
+                                    </div>
+                                    <div class="adm-settle-row adm-settle-row--total">
+                                        <span class="adm-settle-label">Totaal</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(totalSettlement)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+                track.appendChild(slide);
+            });
+
+            // ── Show + scroll to start ────────────────────────────────
+            wrap.style.display = 'block';
+            if (counter) counter.textContent = `${startIndex + 1} / ${rows.length}`;
+
+            requestAnimationFrame(() => {
+                scrollToIndex(startIndex, false);
+            });
+
+            // ── Scroll → update pager ─────────────────────────────────
+            let raf = null;
+            carousel.addEventListener('scroll', () => {
+                if (raf) cancelAnimationFrame(raf);
+                raf = requestAnimationFrame(() => {
+                    const idx = getClosestIndex();
+                    updateKnob(idx);
+                    if (counter) counter.textContent = `${idx + 1} / ${rows.length}`;
+                });
+            }, { passive: true });
+
+            // ── Draggable knob ────────────────────────────────────────
+            const rail = knob ? knob.closest('.adm-scrollbar__rail') : null;
+            const clamp = (v, mn, mx) => Math.max(mn, Math.min(mx, v));
+
+            const idxFromX = (clientX) => {
+                if (!rail) return 0;
+                const rect = rail.getBoundingClientRect();
+                const padding = 14;
+                const usable = Math.max(1, rect.width - padding * 2);
+                const x = clamp(clientX - rect.left - padding, 0, usable);
+                return Math.round((x / usable) * Math.max(1, rows.length - 1));
+            };
+
+            if (knob && rail) {
+                let dragging = false;
+
+                knob.addEventListener('pointerdown', (e) => {
+                    dragging = true;
+                    knob.setPointerCapture(e.pointerId);
+                    e.preventDefault();
+                }, { passive: false });
+
+                knob.addEventListener('pointermove', (e) => {
+                    if (!dragging) return;
+                    e.preventDefault();
+                    const idx = idxFromX(e.clientX);
+                    updateKnob(idx);
+                    const step = getStep();
+                    carousel.scrollTo({ left: step * idx, behavior: 'instant' });
+                    if (counter) counter.textContent = `${idx + 1} / ${rows.length}`;
+                }, { passive: false });
+
+                const stopDrag = (e) => {
+                    if (!dragging) return;
+                    dragging = false;
+                    try { knob.releasePointerCapture(e.pointerId); } catch (_) { }
+                    scrollToIndex(idxFromX(e.clientX), true);
+                };
+
+                knob.addEventListener('pointerup', stopDrag, { passive: false });
+                knob.addEventListener('pointercancel', stopDrag, { passive: false });
+
+                rail.addEventListener('pointerdown', (e) => {
+                    if (e.target === knob || knob.contains(e.target)) return;
+                    scrollToIndex(idxFromX(e.clientX), true);
+                }, { passive: true });
             }
         }
     </script>
@@ -3710,13 +5153,13 @@
         async function openEmailComposer(btn) {
             const ds = btn.dataset;
             const bookingId = ds.id;
-            
+
             const originalText = btn.innerHTML;
             btn.innerHTML = 'Laden...';
             btn.disabled = true;
 
             await openCommunicationHub(bookingId);
-            
+
             // After loading, switch to the requested template and tab
             const type = ds.type || 'general';
             document.getElementById('composer-template-select').value = type;
@@ -3727,13 +5170,13 @@
             btn.disabled = false;
         }
 
-            function loadSelectedTemplateIntoComposer() {
+        function loadSelectedTemplateIntoComposer() {
             const type = document.getElementById('composer-template-select').value;
             const langTemplates = composerTemplates[currentLang] || composerTemplates.nl;
             const template = langTemplates[type] || langTemplates.general;
             const labels = composerLabels[currentLang];
             const previewArea = document.getElementById('composer-preview-area');
-            
+
             // Re-map common fields
             const introHtml = (template.intro || '').replace(/\n/g, '<br>');
             const closingHtml = (template.closing || '').replace(/\n/g, '<br>');
@@ -3903,9 +5346,9 @@
                 </tr>
             </table>
             `;
-            
+
             previewArea.innerHTML = fullHtml;
-            
+
             // Re-apply contenteditable only to the inner content area
             const editableArea = document.getElementById('editable-composer-content');
             if (editableArea) {
@@ -3917,19 +5360,19 @@
         async function autoCheckMailStep(uiTemplateId) {
             if (!currentComposerData) return;
             const bookingId = currentComposerData.id;
-            
+
             if (uiTemplateId === 'acceptance') {
                 const { db, doc, updateDoc } = await import('./js/core/firebase.js');
-                await updateDoc(doc(db, "bookings", bookingId), { 
+                await updateDoc(doc(db, "bookings", bookingId), {
                     status: 'confirmed',
                     updatedAt: new Date().toISOString()
                 });
-                
+
                 logActivity('BOOKING_CONFIRMED', 'Boeking automatisch bevestigd via Hub', bookingId);
-                
+
                 currentComposerData.status = 'confirmed';
                 renderHubSteps(currentComposerData);
-                
+
                 const sb = document.getElementById('hub-guest-status');
                 if (sb) {
                     sb.innerText = 'BEVESTIGD';
@@ -3942,7 +5385,7 @@
                 await updateDoc(doc(db, "bookings", bookingId), { status: 'declined' });
                 currentComposerData.status = 'declined';
                 renderHubSteps(currentComposerData);
-                
+
                 const sb = document.getElementById('hub-guest-status');
                 if (sb) {
                     sb.innerText = 'GEWEIGERD';
@@ -3970,14 +5413,14 @@
             const previewArea = document.getElementById('composer-preview-area');
             const btn = document.getElementById('btn-composer-send-email');
             const originalText = btn.innerHTML;
-            
+
             // 1. Get the HTML content - Remove contenteditable first
             let html = previewArea.innerHTML;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
             const editable = tempDiv.querySelector('[contenteditable]');
             if (editable) editable.removeAttribute('contenteditable');
-            
+
             // Wrap in a clean document structure for EmailJS
             const finalHtml = `\x3C!DOCTYPE html>
 \x3Chtml lang="nl">
@@ -4006,7 +5449,7 @@
                 'post_stay': 'Bedankt voor uw verblijf bij Gipfel Lodge',
                 'general': 'Bericht van Gipfel Lodge'
             };
-            
+
             const mailSubject = subjectMap[uiTemplateId] || 'Bericht van Gipfel Lodge';
 
             const params = {
@@ -4027,7 +5470,7 @@
             try {
                 btn.disabled = true;
                 btn.innerHTML = '\x3Cdiv class="spinner" style="display:block; margin:0 auto; width:18px; height:18px; border-top-color:white;">\x3C/div>';
-                
+
                 // Use the configured EmailJS dynamic template or fallback
                 const templateId = localStorage.getItem('emailjs_dynamic_template_id') || 'template_si14pan';
                 const serviceId = localStorage.getItem('emailjs_service_id') || 'service_rl6qzmr';
@@ -4035,17 +5478,17 @@
 
                 console.log("Sending via EmailJS...", { serviceId, templateId });
                 await emailjs.send(serviceId, templateId, params, publicKey);
-                
+
                 // LOG ACTIVITY
                 logActivity('EMAIL_SENT_COMPOSER', `E-mail '${mailSubject}' verzonden via de Hub editor`, currentComposerData.id);
-                
+
                 // Auto-check step in the hub
                 const uiTemplateId = document.getElementById('composer-template-select').value;
                 autoCheckMailStep(uiTemplateId);
-                
+
                 btn.innerHTML = '✔ Verzonden!';
                 btn.style.background = '#27ae60';
-                
+
                 setTimeout(() => {
                     btn.innerHTML = originalText;
                     btn.style.background = '';
@@ -4084,8 +5527,16 @@
                         <h2>Gipfel Communication Hub</h2>
                         <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
                             <p class="subtitle" style="margin: 0;">Beheer e-mail & communicatie status</p>
-                            <a href="https://dashboard.emailjs.com/admin/templates" target="_blank" style="background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.2); color: var(--color-gold); padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: background 0.2s; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.background='rgba(197, 160, 89, 0.2)'" onmouseout="this.style.background='rgba(197, 160, 89, 0.1)'">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            <a href="https://dashboard.emailjs.com/admin/templates" target="_blank"
+                                style="background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.2); color: var(--color-gold); padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; text-decoration: none; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; transition: background 0.2s; display: inline-flex; align-items: center; gap: 4px;"
+                                onmouseover="this.style.background='rgba(197, 160, 89, 0.2)'"
+                                onmouseout="this.style.background='rgba(197, 160, 89, 0.1)'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
                                 EmailJS Sjablonen
                             </a>
                         </div>
@@ -4093,10 +5544,11 @@
                 </div>
                 <button class="btn-composer-close" onclick="closeCommHub()">✕</button>
             </div>
-            
+
             <div class="hub-tabs">
                 <div class="hub-tab" id="tab-btn-editor" onclick="switchCommHubTab('editor')">✎ E-mail Editor</div>
-                <div class="hub-tab active" id="tab-btn-status" onclick="switchCommHubTab('status')">✓ Status Overzicht</div>
+                <div class="hub-tab active" id="tab-btn-status" onclick="switchCommHubTab('status')">✓ Status Overzicht
+                </div>
             </div>
 
             <div class="modal-content">
@@ -4107,9 +5559,17 @@
                             <div>
                                 <h3 id="hub-guest-name" style="margin: 0; margin-bottom: 4px;">Gast Naam</h3>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span id="hub-guest-email" style="font-size: 0.85rem; color: #64748b; font-weight: 500;">gast@email.com</span>
-                                    <button class="btn-copy-email" onclick="copyHubEmail()" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); cursor: pointer; color: #10b981; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;" title="Kopieer e-mail">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <span id="hub-guest-email"
+                                        style="font-size: 0.85rem; color: #64748b; font-weight: 500;">gast@email.com</span>
+                                    <button class="btn-copy-email" onclick="copyHubEmail()"
+                                        style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); cursor: pointer; color: #10b981; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: background 0.2s;"
+                                        title="Kopieer e-mail">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -4128,7 +5588,9 @@
                         <div class="composer-sidebar">
                             <div class="composer-control-box">
                                 <span class="composer-label">Sjabloon Voorladen</span>
-                                <select id="composer-template-select" style="width:100%; padding:10px; border-radius:4px; border:1px solid #ddd; font-family:inherit; font-size:0.9rem;" onchange="loadSelectedTemplateIntoComposer()">
+                                <select id="composer-template-select"
+                                    style="width:100%; padding:10px; border-radius:4px; border:1px solid #ddd; font-family:inherit; font-size:0.9rem;"
+                                    onchange="loadSelectedTemplateIntoComposer()">
                                     <option value="acceptance">✓ Boeking Geaccepteerd</option>
                                     <option value="rejection">✕ Helaas Geen Plek</option>
                                     <option value="deposit_request">€ Aanbetaling Vereist</option>
@@ -4142,15 +5604,18 @@
                             </div>
                             <div class="composer-control-box">
                                 <span class="composer-label">Instructies</span>
-                                <ul style="font-size:0.75rem; color:#56686D; padding-left:18px; margin:0; line-height:1.5;">
+                                <ul
+                                    style="font-size:0.75rem; color:#56686D; padding-left:18px; margin:0; line-height:1.5;">
                                     <li><strong>Bewerken:</strong> Klik op een tekstgedeelte om het aan te passen.</li>
                                     <li><strong>Automatisch:</strong> Namen en data zijn al voor je ingevuld.</li>
                                     <li><strong>Versturen:</strong> Ga via EmailJS of kopieer de code.</li>
                                 </ul>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
-                                <button id="btn-composer-send-email" class="btn-hub-action btn-hub-send" onclick="sendComposerEmailDirectly()">✉ Verzenden via EmailJS</button>
-                                <button id="btn-composer-copy-code" class="btn-hub-action btn-hub-copy" onclick="copyComposerHtmlCode()">⎘ Kopieer HTML-Code</button>
+                                <button id="btn-composer-send-email" class="btn-hub-action btn-hub-send"
+                                    onclick="sendComposerEmailDirectly()">✉ Verzenden via EmailJS</button>
+                                <button id="btn-composer-copy-code" class="btn-hub-action btn-hub-copy"
+                                    onclick="copyComposerHtmlCode()">⎘ Kopieer HTML-Code</button>
                             </div>
                         </div>
 
@@ -4221,7 +5686,7 @@
             if (val instanceof Date) return val.toISOString().split('T')[0];
             const s = String(val).trim();
             const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
-            if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+            if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
             return null;
         }
 
@@ -4342,7 +5807,7 @@
                 if (snap.exists() && !overwrite) {
                     skipped++;
                     impLog(`⏭ ${b.id} — overgeslagen (bestaat al)`);
-                    document.getElementById('imp-progress-bar').style.width = Math.round(((i+1)/_importParsed.length)*100) + '%';
+                    document.getElementById('imp-progress-bar').style.width = Math.round(((i + 1) / _importParsed.length) * 100) + '%';
                     continue;
                 }
 
@@ -4384,7 +5849,7 @@
                     impLog(`❌ ${b.id} — ${err.message}`, '#dc2626');
                 }
 
-                document.getElementById('imp-progress-bar').style.width = Math.round(((i+1)/_importParsed.length)*100) + '%';
+                document.getElementById('imp-progress-bar').style.width = Math.round(((i + 1) / _importParsed.length) * 100) + '%';
             }
 
             const color = failed ? '#f59e0b' : '#16a34a';
@@ -4403,4 +5868,5 @@
         }
     </script>
 </body>
+
 </html>
