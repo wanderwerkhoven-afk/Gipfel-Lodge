@@ -67,25 +67,30 @@
             box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
         }        /* CONTENT */
         #invoice-viewer {
-            margin: 40px 0;
+            margin: 40px auto;
             background: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.15); /* Stronger page shadow */
             width: 794px; /* Exact 210mm @ 96dpi */
-            padding: 0;
+            padding: 10mm; /* THIS defines the margins you see on screen */
+            box-sizing: border-box; /* Crucial to keep padding inside 794px */
             min-height: 1123px; /* Exact 297mm @ 96dpi */
-            overflow: hidden;
+            overflow: visible;
+            position: relative;
         }
 
-        /* Ensure the template inside matches our 794px */
-        #invoice-viewer > div {
-            width: 100% !important;
-            max-width: 794px !important;
-            margin: 0 !important;
+        /* Prevent the double HTML structure from breaking things */
+        #invoice-viewer div, 
+        #invoice-viewer p, 
+        #invoice-viewer h1, 
+        #invoice-viewer h3, 
+        #invoice-viewer table {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         /* LOADING & ERRORS */
         .status-container {
-            margin-top: 100px;
+            margin: 100px auto;
             text-align: center;
             width: 500px;
             padding: 40px;

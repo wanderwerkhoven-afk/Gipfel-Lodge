@@ -27,17 +27,16 @@
             color: var(--color-text);
             line-height: 1.35;
             background-color: #fff;
-            padding: 10mm; /* Internal margins handled here */
+            padding: 0; /* Margin is handled by the viewer padding */
             font-size: 10pt;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
         .invoice-container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
             position: relative;
-            /* Remove min-height to prevent forcing a second page if content is tight */
         }
 
         /* HEADER */
@@ -138,6 +137,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            table-layout: fixed; /* Force respect of container width */
         }
 
         .invoice-table th {
@@ -180,13 +180,12 @@
             padding: 8px 8px;
         }
 
-        .total-row.grand-total {
-            margin-top: 10px;
+        .grand-total td {
             background-color: var(--color-primary);
             color: white;
+            padding: 12px 10px;
             font-weight: 700;
             font-size: 15pt;
-            border-radius: 4px;
         }
 
         /* FOOTER */
