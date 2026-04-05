@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factuur — Gipfel Lodge</title>
+    <title>Invoice — Gipfel Lodge</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -332,23 +332,24 @@
                 </svg>
             </div>
             <div class="invoice-title">
-                <h1>Factuur</h1>
-                <p>#{{bookingId}}</p>
-                <p>Datum: {{receivedDate}}</p>
+                <h1>Invoice</h1>
+                <p style="font-size: 11pt; color: var(--color-primary); margin-bottom: 2px;">#{{invoiceId}}</p>
+                <p style="font-size: 8pt; color: #999; margin-bottom: 4px; letter-spacing: 0;">Ref: {{bookingId}}</p>
+                <p style="font-size: 9pt; color: var(--color-dark); letter-spacing: 0;">Date: {{receivedDate}}</p>
             </div>
         </div>
 
         <!-- ADDRESSES -->
         <div class="address-row">
             <div class="address-block">
-                <h3>Van</h3>
+                <h3>From</h3>
                 <p><strong>Gipfel Invest GmbH</strong></p>
                 <p>Fjodor Werkhoven</p>
                 <p>Ober-Reinbach 23/13</p>
                 <p>AT - 5600 St. Johann im Pongau</p>
             </div>
             <div class="address-block" style="text-align: right;">
-                <h3>Aan</h3>
+                <h3>To</h3>
                 <p><strong>{{guestName}}</strong></p>
                 <p>{{guestAddress}}</p>
                 <p>{{guestZipcode}} {{guestCity}}</p>
@@ -368,12 +369,12 @@
                 <span class="detail-value">{{checkOut}}</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Nachten</span>
+                <span class="detail-label">Nights</span>
                 <span class="detail-value">{{nights}}</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Reisgezelschap</span>
-                <span class="detail-value">{{adults}} Volw, {{children}} Kind, {{babies}} Baby</span>
+                <span class="detail-label">Guests</span>
+                <span class="detail-value">{{adults}} Adults, {{children}} Children, {{babies}} Babies</span>
             </div>
         </div>
 
@@ -381,8 +382,8 @@
         <table class="invoice-table">
             <thead>
                 <tr>
-                    <th class="desc-col">Omschrijving</th>
-                    <th class="amount-col">Bedrag (incl. btw)</th>
+                    <th class="desc-col">Description</th>
+                    <th class="amount-col">Amount (incl. VAT)</th>
                 </tr>
             </thead>
             <tbody id="invoice-items">
@@ -393,55 +394,55 @@
         <!-- TOTALS -->
         <div class="totals-container">
             <div class="total-row grand-total">
-                <span>Totaal</span>
+                <span>Total</span>
                 <span>{{totalAmount}}</span>
             </div>
         </div>
 
         <!-- PAYMENT OPTIONS -->
         <div class="payment-options">
-            <h3>Betalingsoverzicht</h3>
+            <h3>Payment Overview</h3>
             <div class="option-grid">
                 <div class="option-card">
-                    <span class="option-title">Optie 1: Aanbetaling (30%)</span>
+                    <span class="option-title">Option 1: Down Payment (30%)</span>
                     <span class="option-amount">{{depositAmount}}</span>
-                    <p class="option-note">Direct te voldoen ter bevestiging.</p>
+                    <p class="option-note">To be paid immediately to confirm.</p>
                 </div>
                 <div class="option-card highlight">
-                    <span class="option-title">Optie 2: Volledig bedrag</span>
+                    <span class="option-title">Option 2: Full Amount</span>
                     <span class="option-amount">{{totalAmount}}</span>
-                    <p class="option-note">Het volledige bedrag in één keer.</p>
+                    <p class="option-note">Pay the full amount at once.</p>
                 </div>
             </div>
-            <p class="payment-deadline">Indien u kiest voor de aanbetaling, dient het restant van <strong>{{balanceAmount}}</strong> uiterlijk 6 weken voor aankomst te zijn voldaan.</p>
+            <p class="payment-deadline">If you choose the down payment, the remaining balance of <strong>{{balanceAmount}}</strong> must be paid at least 6 weeks prior to arrival.</p>
         </div>
 
         <p class="notice">
-            Mocht u het niet eens zijn met deze factuur, dient u dit binnen 5 werkdagen bij ons te melden.
+            If you do not agree with this invoice, please notify us within 5 working days.
         </p>
 
         <!-- FOOTER -->
         <footer class="footer">
             <div>
-                <h4>Locatie</h4>
+                <h4>Location</h4>
                 <p>Tauernlodge Eben E4</p>
                 <p>Niedernfritzerstraße 24D</p>
                 <p>5531 Eben im Pongau</p>
-                <p>Oostenrijk</p>
+                <p>Austria</p>
             </div>
             <div>
-                <h4>Bedrijfsgegevens</h4>
+                <h4>Company Details</h4>
                 <p>Gipfel Invest GmbH</p>
-                <p>BTW: ATU81691901</p>
-                <p>KVK: FN 625345 b</p>
+                <p>VAT: ATU81691901</p>
+                <p>CoC: FN 625345 b</p>
                 <p>E: info@gipfellodge.at</p>
             </div>
             <div>
-                <h4>Betaalgegevens</h4>
-                <p>Bank: [Naam Bank]</p>
+                <h4>Payment Details</h4>
+                <p>Bank: [Bank Name]</p>
                 <p>IBAN: [Placeholder IBAN]</p>
                 <p>BIC: [Placeholder BIC]</p>
-                <p style="margin-top: 5px;">Vermeld a.u.b. factuurnummer #{{bookingId}}</p>
+                <p style="margin-top: 5px;">Please quote invoice number #{{invoiceId}}</p>
             </div>
         </footer>
     </div>

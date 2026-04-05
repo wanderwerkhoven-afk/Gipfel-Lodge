@@ -424,10 +424,11 @@ const GipfelBooking = {
                             const counterRef = doc(db, "metadata", "counters");
 
                             // 1. Get next sequential ID via transaction
-                            const nextNumber = await runTransaction(db, async (transaction) => {
+                            const generateData = await runTransaction(db, async (transaction) => {
                                 const counterDoc = await transaction.get(counterRef);
                                 // If counter doesn't exist, start high (e.g., from 615)
                                 let currentNum = counterDoc.exists() ? (counterDoc.data().lastBookingNumber || 0) : 615;
+                                let currentInv = counterDoc.exists() ? (counterDoc.data().lastInvoiceNumber || 1000) : 1000;
                                 
                                 let uniqueFound = false;
                                 let attemptNum = currentNum + 1;
@@ -444,19 +445,33 @@ const GipfelBooking = {
                                     }
                                 }
                                 
-                                transaction.set(counterRef, { lastBookingNumber: attemptNum }, { merge: true });
-                                return attemptNum;
+                                const nextInv = currentInv + 1;
+
+                                transaction.set(counterRef, { 
+                                    lastBookingNumber: attemptNum,
+                                    lastInvoiceNumber: nextInv 
+                                }, { merge: true });
+                                
+                                return { bookingNum: attemptNum, invoiceNum: nextInv };
                             });
 
-                            const bookingId = `Gipfel-${String(nextNumber).padStart(6, '0')}`;
-                            console.log("Generated Booking ID:", bookingId);
+                            const bookingId = `Gipfel-${String(generateData.bookingNum).padStart(6, '0')}`;
+                            const invoiceId = `F${new Date().getFullYear()}-${String(generateData.invoiceNum).padStart(4, '0')}`;
+                            console.log("Generated Booking ID:", bookingId, "Invoice ID:", invoiceId);
 
                             // 2. Generate Secret Token for hosted invoice
                             const secretToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
 
+                            const rawCountry = ownerParams.user_country || '';
+                            const mappedCountry = countries.find(c => c.name.toLowerCase() === rawCountry.toLowerCase());
+                            const finalCountryCode = mappedCountry ? mappedCountry.code : '';
+                            
+                            console.log(`[Firebase Save] Resolving country ${rawCountry} to code: ${finalCountryCode}`);
+
                             // 3. Save booking with custom ID
                             await setDoc(doc(db, "bookings", bookingId), {
                                 bookingId: bookingId,
+                                invoiceId: invoiceId,
                                 guestName: ownerParams.user_name || 'Anoniem',
                                 guestEmail: ownerParams.user_email || '',
                                 guestPhone: ownerParams.user_phone || '-',
@@ -464,6 +479,7 @@ const GipfelBooking = {
                                 guestZipcode: ownerParams.user_zipcode || '',
                                 guestCity: ownerParams.user_city || '',
                                 guestCountry: ownerParams.user_country || '',
+                                country: finalCountryCode,
                                 checkIn: ownerParams.check_in || '',
                                 checkOut: ownerParams.check_out || '',
                                 nights: ownerParams.nights || 0,

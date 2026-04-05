@@ -1795,12 +1795,11 @@
          * INVOICE GENERATION — opent de branded factuur in nieuw venster
          * ============================================================ */
         async function openInvoice(bookingId, event) {
-            if (event) event.stopPropagation(); // Voorkom dat de kaart weer flipt
-            
-            console.log("Factuur genereren voor:", bookingId);
+            if (event) event.stopPropagation();
+
             const btn = event ? event.currentTarget : null;
-            const originalText = btn ? btn.innerHTML : "";
-            
+            const originalHTML = btn ? btn.innerHTML : "";
+
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Bezig...';
@@ -1808,56 +1807,27 @@
 
             try {
                 const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
-                const { InvoiceGenerator } = await import('../utils/invoiceGenerator.js');
 
-                // 1. Data ophalen uit Firestore
-                const docRef = doc(db, "bookings", bookingId);
-                const snap = await getDoc(docRef);
+                // Haal het secretToken op uit Firestore
+                const snap = await getDoc(doc(db, "bookings", bookingId));
+                if (!snap.exists()) throw new Error("Boeking niet gevonden.");
 
-                if (!snap.exists()) {
-                    throw new Error("Boeking niet gevonden in de database.");
-                }
+                const data = snap.data();
+                const token = data.secretToken;
 
-                const bookingData = { id: snap.id, ...snap.data() };
+                if (!token) throw new Error("Geen secretToken gevonden voor deze boeking. Open de boeking eerst via de Communication Hub om het token aan te maken.");
 
-                // 2. Factuur template ophalen
-                const response = await fetch('templates/invoice_template.html');
-                const template = await response.text();
-
-                // 3. HTML genereren
-                const finalHTML = InvoiceGenerator.generateHTML(bookingData, template);
-
-                // 4. In nieuw venster openen
-                const win = window.open('', '_blank');
-                win.document.write(finalHTML);
-                win.document.close();
-                
-                // Inject PDF download logic into the new window
-                win.currentInvoiceId = bookingId;
-                win.downloadPdf = function() {
-                    const element = win.document.getElementById('invoice-viewer');
-                    const opt = {
-                        margin:       0,
-                        filename:     `Gipfel-Factuur-${win.currentInvoiceId || 'Lodge'}.pdf`,
-                        image:        { type: 'jpeg', quality: 1.0 },
-                        html2canvas:  { 
-                            scale: 2, 
-                            useCORS: true, 
-                            logging: false,
-                            width: 794 // Approx 210mm at 96 DPI
-                        },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                    };
-                    html2pdf().set(opt).from(element).save();
-                };
+                // Open invoice.html met de juiste parameters in een nieuw tabblad
+                const invoiceUrl = `invoice.html?id=${encodeURIComponent(bookingId)}&token=${encodeURIComponent(token)}`;
+                window.open(invoiceUrl, '_blank');
 
             } catch (err) {
-                console.error("Factuur genereren mislukt:", err);
-                alert("Fout bij het genereren van de factuur: " + err.message);
+                console.error("Factuur openen mislukt:", err);
+                alert("Fout bij het openen van de factuur:\n" + err.message);
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = originalText;
+                    btn.innerHTML = originalHTML;
                 }
             }
         }

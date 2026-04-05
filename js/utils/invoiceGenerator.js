@@ -27,7 +27,7 @@ export const InvoiceGenerator = {
         // Rent Row
         itemRows += `
             <tr>
-                <td>Huur (${data.nights || 0} nachten)</td>
+                <td>Rent (${data.nights || 0} nights)</td>
                 <td class="amount-col">${fmtEUR(data.rent)}</td>
             </tr>
         `;
@@ -36,7 +36,7 @@ export const InvoiceGenerator = {
         if (data.cleaning > 0) {
             itemRows += `
                 <tr>
-                    <td>Eindschoonmaak</td>
+                    <td>Final cleaning</td>
                     <td class="amount-col">${fmtEUR(data.cleaning)}</td>
                 </tr>
             `;
@@ -46,7 +46,7 @@ export const InvoiceGenerator = {
         if (data.bedLinen > 0) {
             itemRows += `
                 <tr>
-                    <td>Bedlinnen</td>
+                    <td>Bed linen</td>
                     <td class="amount-col">${fmtEUR(data.bedLinen)}</td>
                 </tr>
             `;
@@ -56,7 +56,7 @@ export const InvoiceGenerator = {
         if (data.touristTax > 0) {
             itemRows += `
                 <tr>
-                    <td>Toeristenbelasting</td>
+                    <td>Tourist tax</td>
                     <td class="amount-col">${fmtEUR(data.touristTax)}</td>
                 </tr>
             `;
@@ -66,7 +66,7 @@ export const InvoiceGenerator = {
         if (data.mobilityFee > 0) {
             itemRows += `
                 <tr>
-                    <td>Mobiliteitsheffing</td>
+                    <td>Mobility fee</td>
                     <td class="amount-col">${fmtEUR(data.mobilityFee)}</td>
                 </tr>
             `;
@@ -94,6 +94,7 @@ export const InvoiceGenerator = {
 
         // Exact mapping to match the Firestore document keys from booking.js and Excel Imports
         const mapping = {
+            "{{invoiceId}}": data.invoiceId || data.bookingId || "—",
             "{{bookingId}}": data.bookingId || "—",
             "{{receivedDate}}": data.receivedDate || new Date().toLocaleDateString('nl-NL'),
             "{{guestName}}": data.guestName || "—",
