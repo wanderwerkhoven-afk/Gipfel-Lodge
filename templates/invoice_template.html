@@ -22,17 +22,12 @@
             box-sizing: border-box;
         }
 
-        @page {
-            size: A4;
-            margin: 10mm; /* Narrower margins */
-        }
-
         body {
             font-family: var(--font-body);
             color: var(--color-text);
-            line-height: 1.4;
+            line-height: 1.35;
             background-color: #fff;
-            padding: 0;
+            padding: 10mm; /* Internal margins handled here */
             font-size: 10pt;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -50,7 +45,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .logo-container svg {
@@ -84,7 +79,7 @@
         .address-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px; /* Reduced further */
+            margin-bottom: 12px; /* Even tighter */
         }
 
         .address-block {

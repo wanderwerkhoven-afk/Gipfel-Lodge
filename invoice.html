@@ -65,26 +65,46 @@
         .btn-download:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
-        }
-
-        /* CONTENT */
+        }        /* CONTENT */
         #invoice-viewer {
             margin: 40px 0;
             background: white;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 210mm; /* A4 width */
-            padding: 0; /* Generator handles internal margins */
-            min-height: 297mm;
+            width: 800px; /* Standard web-to-A4 width */
+            padding: 0;
+            min-height: 1130px; /* A4 aspect ratio */
+            overflow: hidden;
+        }
+
+        /* Ensure the template inside matches our 800px */
+        #invoice-viewer > div {
+            width: 100% !important;
+            max-width: 800px !important;
+            margin: 0 !important;
         }
 
         /* LOADING & ERRORS */
         .status-container {
             margin-top: 100px;
             text-align: center;
+            width: 500px;
             padding: 40px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .error-technical {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 25px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            word-break: break-all;
+            text-align: left;
+            font-family: monospace;
         }
 
         .loader {
@@ -102,7 +122,7 @@
         @media (max-width: 850px) {
             #invoice-viewer {
                 width: 95vw;
-                zoom: 0.5; /* Scale for mobile mobile view */
+                zoom: 0.5;
             }
             .action-container { width: 100%; }
         }
@@ -200,12 +220,7 @@
             
             if (technicalErr) {
                 const errBox = document.createElement('div');
-                errBox.style.fontSize = '12px';
-                errBox.style.color = '#666';
-                errBox.style.marginTop = '20px';
-                errBox.style.padding = '10px';
-                errBox.style.background = '#f1f1f1';
-                errBox.style.borderRadius = '4px';
+                errBox.className = 'error-technical';
                 errBox.innerText = "Technische details: " + technicalErr;
                 statusArea.appendChild(errBox);
                 console.error("Invoice Error:", technicalErr);
@@ -215,17 +230,18 @@
         window.downloadPdf = function() {
             const element = document.getElementById('invoice-viewer');
             const opt = {
-                margin:       0,
+                margin:       0, // We use internal template margins now
                 filename:     `Gipfel-Factuur-${window.currentInvoiceId || 'Lodge'}.pdf`,
-                image:        { type: 'jpeg', quality: 1.0 },
+                image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2, 
                     useCORS: true, 
                     logging: false,
-                    width: 794 // Approx 210mm at 96 DPI
+                    width: 794 // Exact 210mm width (96dpi)
                 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
+            
             html2pdf().set(opt).from(element).save();
         };
 
