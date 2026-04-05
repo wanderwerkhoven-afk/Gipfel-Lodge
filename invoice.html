@@ -150,7 +150,7 @@
             const token = urlParams.get('token');
 
             if (!id || !token) {
-                showError("Ongeldige link. Controleer de link in uw email.");
+                showError("Ongeldige link. Controleer de link in uw email.", "URL parameters 'id' of 'token' ontbreken.");
                 return;
             }
 
@@ -158,7 +158,7 @@
                 // 1. Fetch data from Firestore
                 const snap = await getDoc(doc(db, "bookings", id));
                 if (!snap.exists()) {
-                    showError("Factuur niet gevonden.");
+                    showError("Factuur niet gevonden.", "Boeking " + id + " niet gevonden in Database.");
                     return;
                 }
 
@@ -166,32 +166,20 @@
 
                 // 2. Security Check: Token MUST match
                 if (data.secretToken !== token) {
-                    showError("Geen toegang tot deze factuur.");
+                    showError("Geen toegang tot deze factuur.", "Token onjuist of verlopen.");
                     return;
                 }
 
                 // 3. Fetch the HTML template
                 const templateResp = await fetch('templates/invoice_template.html');
-                if (!templateResp.ok) throw new Error("Template loading failed");
+                if (!templateResp.ok) throw new Error("Template bestand niet gevonden (status: " + templateResp.status + ")");
                 const templateHTML = await templateResp.text();
 
-                // 4. Generate content
+                // 4. Generate fully populated HTML
                 const html = InvoiceGenerator.generateHTML(data, templateHTML);
                 
-                // 5. Update UI - Parse to avoid nested <html> tags
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const bodyContent = doc.body.innerHTML;
-                const headStyles = doc.querySelectorAll('style, link[rel="stylesheet"]');
-                
-                // Clear and append
-                invoiceViewer.innerHTML = '';
-                headStyles.forEach(s => invoiceViewer.appendChild(s.cloneNode(true)));
-                
-                const contentDiv = document.createElement('div');
-                contentDiv.innerHTML = bodyContent;
-                invoiceViewer.appendChild(contentDiv);
-
+                // 5. Update UI
+                invoiceViewer.innerHTML = html;
                 statusArea.style.display = 'none';
                 invoiceViewer.style.display = 'block';
                 actionBar.style.display = 'flex';
@@ -201,27 +189,40 @@
 
             } catch (err) {
                 console.error("Error loading invoice:", err);
-                showError("Er is een fout opgetreden bij het laden van de gegevens.");
+                showError("Er is een fout opgetreden bij het laden van de gegevens.", err.message || err.toString());
             }
         }
 
-        function showError(msg) {
+        function showError(msg, technicalErr = "") {
             loader.style.display = 'none';
             statusMsg.innerText = msg;
             statusMsg.style.color = '#e74c3c';
+            
+            if (technicalErr) {
+                const errBox = document.createElement('div');
+                errBox.style.fontSize = '12px';
+                errBox.style.color = '#666';
+                errBox.style.marginTop = '20px';
+                errBox.style.padding = '10px';
+                errBox.style.background = '#f1f1f1';
+                errBox.style.borderRadius = '4px';
+                errBox.innerText = "Technische details: " + technicalErr;
+                statusArea.appendChild(errBox);
+                console.error("Invoice Error:", technicalErr);
+            }
         }
 
         window.downloadPdf = function() {
             const element = document.getElementById('invoice-viewer');
             const opt = {
-                margin:       0, // Use 0 margin as template has its own padding
+                margin:       0,
                 filename:     `Gipfel-Factuur-${window.currentInvoiceId || 'Lodge'}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
+                image:        { type: 'jpeg', quality: 1.0 },
                 html2canvas:  { 
                     scale: 2, 
                     useCORS: true, 
                     logging: false,
-                    letterRendering: true
+                    width: 794 // Approx 210mm at 96 DPI
                 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };

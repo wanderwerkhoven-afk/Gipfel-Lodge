@@ -970,7 +970,7 @@
         async function openCommunicationHub(bookingId) {
             try {
                 const { db } = await import('../site_js/core/firebase.js');
-                const { getDoc, doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
                 const snap = await getDoc(doc(db, "bookings", bookingId));
 
                 if (!snap.exists()) {
@@ -979,22 +979,6 @@
                 }
 
                 const data = { id: snap.id, ...snap.data() };
-
-                // --- AUTO-HEALING: Ensure secretToken exists for old bookings ---
-                if (!data.secretToken) {
-                    console.log("Auto-healing: Generating missing secretToken for booking", bookingId);
-                    const newToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
-                    try {
-                        await updateDoc(doc(db, "bookings", bookingId), {
-                            secretToken: newToken,
-                            updatedAt: new Date().toISOString()
-                        });
-                        data.secretToken = newToken; // Update local copy
-                        logActivity('DATABASE_HEALED', 'Missende secretToken automatisch gegenereerd', bookingId);
-                    } catch (healErr) {
-                        console.error("Failed to heal booking with token:", healErr);
-                    }
-                }
 
                 // Set Modal Labels
                 document.getElementById('hub-guest-name').innerText = data.guestName || 'Gast';
@@ -1066,8 +1050,25 @@
                     if (parts.length > 0) guestsStr = parts.join(' | ');
                 }
 
+                // --- HEAL DATABASE: Generate secretToken if missing ---
+                let secretToken = data.secretToken;
+                if (!secretToken) {
+                    console.log("Healing booking: Generating missing secretToken...");
+                    secretToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+                    try {
+                        const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                        await updateDoc(doc(db, "bookings", bookingId), {
+                            secretToken: secretToken,
+                            updatedAt: new Date().toISOString()
+                        });
+                        console.log("Booking healed with new token.");
+                    } catch (e) {
+                        console.error("Failed to heal booking:", e);
+                    }
+                }
+
                 currentComposerData = {
-                    id: data.id || '',
+                    id: bookingId,
                     name: data.guestName || 'Gast',
                     email: data.guestEmail || '',
                     phone: phone,
@@ -1080,8 +1081,10 @@
                     message: data.message || '',
                     status: data.status || 'pending',
                     mailChain: data.mailChain || {},
-                    token: data.secretToken || ''
+                    token: secretToken
                 };
+
+                renderHubSteps({ id: bookingId, ...data });
 
                 switchCommHubTab('status');
 
@@ -1804,32 +1807,18 @@
             }
 
             try {
-                const { db, doc, getDoc, updateDoc } = await import('../site_js/core/firebase.js');
+                const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
                 const { InvoiceGenerator } = await import('../utils/invoiceGenerator.js');
 
                 // 1. Data ophalen uit Firestore
-                const docSnap = await getDoc(doc(db, "bookings", bookingId));
+                const docRef = doc(db, "bookings", bookingId);
+                const snap = await getDoc(docRef);
 
-                if (!docSnap.exists()) {
+                if (!snap.exists()) {
                     throw new Error("Boeking niet gevonden in de database.");
                 }
 
-                let bookingData = { id: docSnap.id, ...docSnap.data() };
-
-                // --- AUTO-HEALING: Ensure secretToken exists for old bookings ---
-                if (!bookingData.secretToken) {
-                    console.log("Auto-healing: Generating missing secretToken for booking", bookingId);
-                    const newToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
-                    try {
-                        await updateDoc(doc(db, "bookings", bookingId), {
-                            secretToken: newToken,
-                            updatedAt: new Date().toISOString()
-                        });
-                        bookingData.secretToken = newToken; // Update local data
-                    } catch (healErr) {
-                        console.error("Failed to heal booking with token:", healErr);
-                    }
-                }
+                const bookingData = { id: snap.id, ...snap.data() };
 
                 // 2. Factuur template ophalen
                 const response = await fetch('templates/invoice_template.html');
@@ -1842,6 +1831,25 @@
                 const win = window.open('', '_blank');
                 win.document.write(finalHTML);
                 win.document.close();
+                
+                // Inject PDF download logic into the new window
+                win.currentInvoiceId = bookingId;
+                win.downloadPdf = function() {
+                    const element = win.document.getElementById('invoice-viewer');
+                    const opt = {
+                        margin:       0,
+                        filename:     `Gipfel-Factuur-${win.currentInvoiceId || 'Lodge'}.pdf`,
+                        image:        { type: 'jpeg', quality: 1.0 },
+                        html2canvas:  { 
+                            scale: 2, 
+                            useCORS: true, 
+                            logging: false,
+                            width: 794 // Approx 210mm at 96 DPI
+                        },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                    };
+                    html2pdf().set(opt).from(element).save();
+                };
 
             } catch (err) {
                 console.error("Factuur genereren mislukt:", err);
