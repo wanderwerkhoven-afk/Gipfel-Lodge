@@ -20,6 +20,10 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet">
+    
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <!-- We hergebruiken een paar basis styles -->
     <link rel="stylesheet" href="css/site_css/base/style.css">
@@ -53,12 +57,20 @@
         <div id="login-error" class="error-msg"></div>
     </div>
 
+    <!-- Mobile Top Bar -->
+    <header class="mobile-top-bar">
+        <div class="mobile-logo">Gipfel Lodge</div>
+        <button id="hamburger-btn" class="hamburger-btn" onclick="toggleMobileMenu()">
+            <i class="ph ph-list"></i>
+        </button>
+    </header>
+
     <!-- DASHBOARD SCHERM -->
     <div id="dashboard-screen">
         <div class="dashboard-layout">
 
             <!-- Sidebar -->
-            <aside class="dashboard-sidebar">
+            <aside class="dashboard-sidebar" id="dashboard-sidebar">
                 <div class="sidebar-brand">
                     <h2>Gipfel Lodge</h2>
                     <p>Admin Paneel</p>
@@ -78,20 +90,47 @@
                 </div>
 
                 <ul class="nav-menu">
+                    <li class="nav-group-title">COMMUNICATIE</li>
                     <li class="nav-item active" onclick="switchView('bookings-view', this)">
-                        Aanvragen
+                        <i class="ph ph-envelope-simple"></i> Aanvragen
                     </li>
                     <li class="nav-item" onclick="switchView('mailchain-view', this)">
-                        Mail Chain
+                        <i class="ph ph-paper-plane-tilt"></i> Mail Chain
+                    </li>
+
+                    <li class="nav-group-title">GUEST DATA</li>
+                    <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">
+                        <i class="ph ph-file-arrow-up"></i> Excel Import
                     </li>
                     <li id="nav-carousel-desktop" class="nav-item" onclick="switchView('carousel-view', this)">
-                        Boekingskaarten
+                        <i class="ph ph-cards"></i> Boekingskaarten
                     </li>
+
+                    <li class="nav-group-title">FINANCIEN</li>
+                    <li id="nav-bank-desktop" class="nav-item"
+                        onclick="switchView('bank-view', this)">
+                        <i class="ph ph-bank"></i> Bankoverzicht
+                    </li>
+                    <li id="nav-invoices-desktop" class="nav-item"
+                        onclick="switchView('invoices-view', this)">
+                        <i class="ph ph-file-text"></i> Facturen
+                    </li>
+                    <li id="nav-revenue-desktop" class="nav-item"
+                        onclick="switchView('revenue-view', this)">
+                        <i class="ph ph-chart-line-up"></i> Omzet & Rapportages
+                    </li>
+                    <li id="nav-tax-desktop" class="nav-item"
+                        onclick="switchView('tax-view', this)">
+                        <i class="ph ph-receipt"></i> Toeristenbelasting
+                    </li>
+                    <li id="nav-debtors-desktop" class="nav-item"
+                        onclick="switchView('debtors-view', this)">
+                        <i class="ph ph-warning-circle"></i> Openstaande Saldi
+                    </li>
+
+                    <li class="nav-group-title">SYSTEEM</li>
                     <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">
-                        Activiteiten
-                    </li>
-                    <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">
-                        Excel Import
+                        <i class="ph ph-activity"></i> Activiteiten
                     </li>
                 </ul>
 
@@ -110,9 +149,9 @@
 
                     <a href="https://console.firebase.google.com/project/gipfel-lodge/firestore/databases/-default-/data"
                         target="_blank"
-                        style="display: block; margin-top: 12px; text-align: center; color: rgba(255,255,255,0.3); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.05em; transition: all 0.2s;"
+                        style="display: block; margin-top: 12px; text-align: center; color: rgba(255, 255, 255, 0.5); text-decoration: none; font-size: 0.7rem; letter-spacing: 0.05em; transition: all 0.2s;"
                         onmouseover="this.style.color='var(--color-gold)'; this.style.opacity='1';"
-                        onmouseout="this.style.color='rgba(255,255,255,0.3)';">
+                        onmouseout="this.style.color='rgba(255,255,255,0.5)';">
                         &#x2197; BEHEER DATA IN FIREBASE
                     </a>
 
@@ -269,6 +308,17 @@
                                     (tabblad "Arrivals")</small>
                             </div>
                             <input type="file" id="import-file-input" accept=".xlsx" style="display:none;">
+                            
+                            <!-- DATA CLEANUP UTILITY -->
+                            <div style="margin-top:20px; padding:16px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <h4 style="margin:0 0 4px; font-size:0.85rem; color:#475569;">🧹 Data Opschoning</h4>
+                                    <p style="margin:0; font-size:0.75rem; color:#64748b;">Herstel ontbrekende factuurnummers voor bestaande boekingen.</p>
+                                </div>
+                                <button class="eb2-action-btn eb2-btn-secondary" onclick="backfillInvoiceIds()" id="btn-backfill-invoices">
+                                    <i class="ph ph-magic-wand"></i> Herstel Facturen
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -372,33 +422,129 @@
 
                 <div id="eb-toast"></div>
 
+                <!-- NEW FINANCE VIEWS (Placeholders) -->
+                <div id="bank-view" class="dashboard-view">
+                    <div class="page-header">
+                        <h1>Bankoverzicht</h1>
+                        <p>Overzicht van binnengekomen betalingen en banktransacties.</p>
+                    </div>
+                    <div class="eb2-section-card" style="padding: 40px; text-align: center; color: #64748b;">
+                        <i class="ph ph-bank" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--color-gold);"></i>
+                    </div>
+                </div>
+
+                <div id="invoices-view" class="dashboard-view">
+                    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div>
+                            <h1>Facturen Overzicht</h1>
+                            <p>Beheer en bekijk alle gegenereerde facturen voor Gipfel Lodge.</p>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <!-- View Toggle -->
+                            <div class="invoice-view-controls">
+                                <button class="view-toggle-btn active" id="toggle-grid-btn" onclick="switchInvoiceView('grid')">
+                                    <i class="ph ph-squares-four"></i> Raster
+                                </button>
+                                <button class="view-toggle-btn" id="toggle-list-btn" onclick="switchInvoiceView('list')">
+                                    <i class="ph ph-list"></i> Lijst
+                                </button>
+                            </div>
+                            <button class="eb2-action-btn eb2-btn-secondary" onclick="loadInvoices()">⟳</button>
+                        </div>
+                    </div>
+
+                    <!-- Search / Filters -->
+                    <div class="filter-bar" style="margin-bottom:20px; background:#fff; padding:12px 20px; border-radius:12px; border:1px solid #e2e8f0;">
+                        <input type="text" id="invoice-search" placeholder="Zoek op gast of factuurnummer..." 
+                            style="flex:1; border:none; outline:none; font-family:inherit; font-size:0.9rem;"
+                            onkeyup="filterInvoiceTable()">
+                        <div style="width:1px; height:20px; background:#e2e8f0; margin:0 15px;"></div>
+                        <select id="invoice-filter-year" onchange="filterInvoiceTable()"
+                            style="border:none; outline:none; font-family:inherit; font-size:0.85rem; color:#64748b; background:transparent; cursor:pointer;">
+                            <option value="">Alle Jaren</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                        </select>
+                    </div>
+
+                    <div class="eb2-section-card" style="background:transparent; border:none; box-shadow:none; padding:0;">
+                        <!-- GRID VIEW (Default) -->
+                        <div id="invoices-grid-container" class="invoice-view-content active">
+                            <div class="invoice-grid" id="invoices-grid-body">
+                                <!-- Cards injected here -->
+                            </div>
+                        </div>
+
+                        <!-- LIST VIEW -->
+                        <div id="invoices-list-container" class="invoice-view-content">
+                            <div class="eb2-table-wrap" style="background:#fff; border:1px solid #e2e8f0; border-radius:14px;">
+                                <table class="eb2-table" id="invoices-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Factuur #</th>
+                                            <th>Datum</th>
+                                            <th>Gast</th>
+                                            <th style="text-align:right;">Bedrag</th>
+                                            <th style="text-align:right; width: 100px;">Actie</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoices-list-body">
+                                        <!-- Rows injected here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="invoices-loader" class="spinner" style="margin: 40px auto; display: none;"></div>
+                        <div id="invoices-empty" style="text-align:center; padding:40px; color:#94a3b8; display:none;">
+                            <i class="ph ph-file-x" style="font-size:3rem; margin-bottom:10px;"></i>
+                            <p>Geen facturen gevonden die voldoen aan de criteria.</p>
+                        </div>
+                    </div>
+                </div>
+ </div>
+                </div>
+
+                <div id="revenue-view" class="dashboard-view">
+                    <div class="page-header">
+                        <h1>Omzet & Rapportages</h1>
+                        <p>Statistieken en financiële prestaties van Gipfel Lodge.</p>
+                    </div>
+                    <div class="eb2-section-card" style="padding: 40px; text-align: center; color: #64748b;">
+                        <i class="ph ph-chart-line-up" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--color-gold);"></i>
+                        <p>Interactieve rapportages en jaaroverzichten.</p>
+                    </div>
+                </div>
+
+                <div id="tax-view" class="dashboard-view">
+                    <div class="page-header">
+                        <h1>Toeristenbelasting</h1>
+                        <p>Berekening van af te dragen toeristenbelasting per periode.</p>
+                    </div>
+                    <div class="eb2-section-card" style="padding: 40px; text-align: center; color: #64748b;">
+                        <i class="ph ph-receipt" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--color-gold);"></i>
+                        <p>Geautomatiseerde belastingaangifte assistent.</p>
+                    </div>
+                </div>
+
+                <div id="debtors-view" class="dashboard-view">
+                    <div class="page-header">
+                        <h1>Openstaande Saldi</h1>
+                        <p>Overzicht van boekingen die nog een (deel)betaling vereisen.</p>
+                    </div>
+                    <div class="eb2-section-card" style="padding: 40px; text-align: center; color: #64748b;">
+                        <i class="ph ph-warning-circle" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--color-gold);"></i>
+                        <p>Debiteurenbeheer en herinnerings-dashboard.</p>
+                    </div>
+                </div>
+
+                <div id="eb-toast"></div>
+
             </main>
         </div>
 
-        <!-- Mobile Bottom Tab Bar -->
-        <nav class="mobile-nav">
-            <a href="javascript:void(0)" class="mobile-nav-item active" onclick="switchView('bookings-view', this)">
-                <i class="ph ph-calendar-check"></i>
-            </a>
-            <a href="javascript:void(0)" class="mobile-nav-item" onclick="switchView('mailchain-view', this)">
-                <i class="ph ph-paper-plane-tilt"></i>
-            </a>
-            <a id="nav-carousel-mobile" href="javascript:void(0)" class="mobile-nav-item"
-                onclick="switchView('carousel-view', this)">
-                <i class="ph ph-cards"></i>
-            </a>
-            <a id="nav-logs-mobile" href="javascript:void(0)" class="mobile-nav-item"
-                onclick="switchView('logs-view', this)">
-                <i class="ph ph-activity"></i>
-            </a>
-            <a id="nav-import-mobile" href="javascript:void(0)" class="mobile-nav-item"
-                onclick="switchView('import-view', this)">
-                <i class="ph ph-file-arrow-up"></i>
-            </a>
-            <a href="javascript:void(0)" class="mobile-nav-item" onclick="logout()">
-                <i class="ph ph-sign-out"></i>
-            </a>
-        </nav>
+        <!-- Mobile Overlay for Sidebar -->
+        <div id="mobile-sidebar-overlay" class="mobile-sidebar-overlay" onclick="toggleMobileMenu()"></div>
     </div>
 
 

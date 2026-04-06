@@ -47,12 +47,41 @@
             return null;
         }
 
-        function detectLanguage(phone) {
-            if (!phone) return 'nl';
+        function detectLanguage(phone, bookingData = null) {
+            if (bookingData) {
+                const countryData = getCountryData(phone, bookingData);
+                if (countryData && countryData.code) {
+                    const code = countryData.code.toLowerCase();
+                    if (code === 'nl') return 'nl';
+                    if (code === 'de' || code === 'at') return 'de';
+                    return 'en';
+                }
+            }
+            if (!phone) return 'en';
             const p = phone.replace(/[^0-9+]/g, '');
             if (p.startsWith('+49') || p.startsWith('+43') || p.startsWith('+41')) return 'de';
             if (p.startsWith('+31') || p.startsWith('+32')) return 'nl';
             return 'en';
+        }
+
+        // --- UI HELPERS ---
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('dashboard-sidebar');
+            const overlay = document.getElementById('mobile-sidebar-overlay');
+            const btnIcon = document.querySelector('#hamburger-btn i');
+            
+            if (!sidebar || !overlay) return;
+
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            if (sidebar.classList.contains('active')) {
+                btnIcon.className = 'ph ph-x';
+                document.body.style.overflow = 'hidden';
+            } else {
+                btnIcon.className = 'ph ph-list';
+                document.body.style.overflow = '';
+            }
         }
 
         // --- 1. LOGIN LOGICA (Firebase Auth) ---
@@ -322,13 +351,12 @@
                 }
             }
 
-            // Show/hide Activiteiten tab (desktop + mobile)
-            const logsDesktop = document.getElementById('nav-logs-desktop');
-            const logsMobile = document.getElementById('nav-logs-mobile');
-            if (logsDesktop) logsDesktop.style.display = isSuperUser ? '' : 'none';
-            if (logsMobile) logsMobile.style.display = isSuperUser ? '' : 'none';
+            // Show/hide Superuser sections
+            document.querySelectorAll('.section-superuser-only').forEach(el => {
+                el.style.display = isSuperUser ? '' : 'none';
+            });
 
-            // Show/hide Excel Import tab (desktop + mobile)
+            // Show/hide Excel Import tab
             const importDesktop = document.getElementById('nav-import-desktop');
             const importMobile = document.getElementById('nav-import-mobile');
             if (importDesktop) importDesktop.style.display = isSuperUser ? '' : 'none';
@@ -558,32 +586,30 @@
 
         function switchView(viewId, navEl) {
             // Block regular users from accessing superuser-only views
-            if ((viewId === 'logs-view' || viewId === 'import-view') && currentUserRole !== 'superuser') {
+            const superUserViews = ['logs-view', 'import-view'];
+            if (superUserViews.includes(viewId) && currentUserRole !== 'superuser') {
                 console.warn('Access denied: ' + viewId + ' requires superuser role.');
                 return;
             }
 
-            // Update desktop nav items
+            // Update nav items active state
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            // Update mobile nav items
-            document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+            
+            // If navEl is provided, use it, otherwise find the one with matching onclick
+            if (navEl) {
+                navEl.classList.add('active');
+            } else {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.getAttribute('onclick')?.includes(`'${viewId}'`)) {
+                        item.classList.add('active');
+                    }
+                });
+            }
 
-            // Highlight the correct nav item by ID (more robust than index)
-            if (viewId === 'bookings-view') {
-                document.querySelectorAll('.nav-item')[0]?.classList.add('active');
-                document.querySelectorAll('.mobile-nav-item')[0]?.classList.add('active');
-            } else if (viewId === 'mailchain-view') {
-                document.querySelectorAll('.nav-item')[1]?.classList.add('active');
-                document.querySelectorAll('.mobile-nav-item')[1]?.classList.add('active');
-            } else if (viewId === 'logs-view') {
-                document.getElementById('nav-logs-desktop')?.classList.add('active');
-                document.getElementById('nav-logs-mobile')?.classList.add('active');
-            } else if (viewId === 'import-view') {
-                document.getElementById('nav-import-desktop')?.classList.add('active');
-                document.getElementById('nav-import-mobile')?.classList.add('active');
-            } else if (viewId === 'carousel-view') {
-                document.getElementById('nav-carousel-desktop')?.classList.add('active');
-                document.getElementById('nav-carousel-mobile')?.classList.add('active');
+            // Close mobile menu if open
+            const sidebar = document.getElementById('dashboard-sidebar');
+            if (sidebar && sidebar.classList.contains('active')) {
+                toggleMobileMenu();
             }
 
             // Update views
@@ -601,6 +627,8 @@
                 initImportView();
             } else if (viewId === 'carousel-view') {
                 loadCarouselView();
+            } else if (viewId === 'invoices-view') {
+                loadInvoices();
             }
 
             // Scroll to top when switching views on mobile
@@ -674,144 +702,7 @@
 
                 matchedBookings.forEach(data => {
                     matchCount++;
-                    const card = document.createElement('div');
-                    card.className = 'booking-card';
-
-                    const dIn = new Date(data.checkIn);
-                    const dOut = new Date(data.checkOut);
-                    const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
-
-                    const rawVal = data.totalAmount || data.total_amount || 0;
-                    const raw = (typeof rawVal === 'string') ? parseFloat(rawVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawVal;
-                    const fmt = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
-                    const totalAmount = raw ? fmt(raw) : 'N/A';
-                    const depositAmount = raw ? fmt(raw * 0.30) : '';
-                    const balanceAmount = raw ? fmt(raw * 0.70) : '';
-
-                    // Construct Pre-filled Email Body
-                    let emailBody = `Beste ${data.guestName || 'Gast'},\n\n`;
-                    emailBody += `Hierbij sturen wij u een bericht over uw boeking:\n\n`;
-                    emailBody += `• Check-in:  ${dIn.toLocaleDateString('nl-NL', fmtOpts)}\n`;
-                    emailBody += `• Check-out: ${dOut.toLocaleDateString('nl-NL', fmtOpts)}\n`;
-                    emailBody += `• Reizigers: ${data.totalGuests} personen\n`;
-                    if (raw) emailBody += `• Totaalbedrag: ${totalAmount}\n`;
-                    emailBody += `\nMet vriendelijke groet,\nTeam Gipfel Lodge\nwww.gipfellodge.at`;
-
-                    const encodedSubject = encodeURIComponent("Bericht over uw boeking bij Gipfel Lodge");
-                    const encodedBody = encodeURIComponent(emailBody);
-                    const mailtoLink = `mailto:${data.guestEmail || ''}?subject=${encodedSubject}&body=${encodedBody}`;
-                    const cardIsPassed = data.isPassed;
-
-                    const country = getCountryData(data.guestPhone, data);
-
-                    card.innerHTML = `
-                        <div class="booking-card-header">
-                            <div>
-                                <p style="font-size: 0.7rem; font-weight: 800; color: var(--color-gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Ref: ${data.bookingId || data.id}</p>
-                                <h3>${data.guestName || 'Gast'}</h3>
-                                <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
-                                <p style="font-size: 0.85rem;">${data.guestPhone || '-'}</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span class="status-badge status-${cardIsPassed ? 'completed' : (data.status || 'pending')}">
-                                        ${cardIsPassed ? 'Voltooid' : (data.status === 'pending' ? 'In Afwachting' : (data.status === 'confirmed' ? 'Bevestigd' : (data.status === 'declined' ? 'Geweigerd' : data.status)))}
-                                    </span>
-                                    ${(data.status === 'declined' && currentUserRole === 'superuser') ? `
-                                        <button class="delete-btn-trash" onclick="confirmDeleteBooking('${data.id}', '${data.guestName}')" title="Boeking permanent verwijderen">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                                        </button>
-                                    ` : ''}
-                                </div>
-                                ${country ? `
-                                    <div class="country-badge" style="margin-top: 0;">
-                                        <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
-                                        <span class="country-code-label">${country.code}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                        <div class="booking-card-body">
-                            <div class="tile-data-row">
-                                <span class="tile-section-label">Boeking binnengekomen:</span>
-                                <strong>${data.receivedDate || '-'}</strong> om ${data.receivedTime || '-'}
-                            </div>
-                            
-                            <div class="tile-data-row">
-                                <span class="tile-section-label">Gewenst verblijf periode:</span>
-                                <strong>${data.checkIn} t/m ${data.checkOut}</strong>
-                            </div>
-                            
-                            <div class="tile-data-row">
-                                <span class="tile-section-label">Gasten:</span>
-                                <strong>${[
-                            data.adults > 0 ? `volw: ${data.adults}` : null,
-                            data.children > 0 ? `kind: ${data.children}` : null,
-                            data.babies > 0 ? `baby: ${data.babies}` : null
-                        ].filter(x => x).join(' | ') || 'Niet gespecificeerd'}</strong>
-                            </div>
-                            
-                            <div class="tile-data-row">
-                                <span class="tile-section-label">Bericht / opmerking:</span>
-                                <p style="font-style: italic; opacity: 0.8; font-size: 0.95rem;">"${data.message || 'Geen bericht'}"</p>
-                            </div>
-
-                            <div class="payment-info">
-                                <div class="payment-toggle" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; margin-bottom: 5px;">
-                                    <strong style="color: var(--color-slate); font-size: 1rem;">Totaal bedrag:</strong>
-                                    <strong style="color: var(--color-gold); font-size: 1.1rem;">${totalAmount}</strong>
-                                </div>
-                                
-                                <div class="payment-toggle">
-                                    <span>30% aanbetaling: <strong style="color: var(--color-slate); margin-left: 4px;">${depositAmount}</strong></span>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" ${data.depositPaid ? 'checked' : ''} onchange="togglePayment('${data.id}', 'depositPaid', this.checked, this)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="payment-toggle">
-                                    <span>Rest betaling: <strong style="color: var(--color-slate); margin-left: 4px;">${balanceAmount}</strong></span>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" ${data.balancePaid ? 'checked' : ''} onchange="togglePayment('${data.id}', 'balancePaid', this.checked, this)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="booking-card-footer" style="display:flex; flex-direction:column; gap:12px;">
-                            ${data.status === 'declined' ? `
-                                <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${data.id}')" style="background:transparent; border:1px solid var(--color-gold); color:var(--color-gold);">
-                                    ✉ Beheer Communicatie
-                                </button>
-                                <button class="btn-decline confirming" style="background: rgba(198,40,40,0.06); color: #c62828; border-color: rgba(198,40,40,0.3);" onclick="undeclineBooking('${data.id}', this)">
-                                    ↩ Weigering ongedaan maken
-                                </button>
-                            ` : `
-                                <button class="btn btn-primary action-btn" onclick="openCommunicationHub('${data.id}')" style="background:transparent; border:1px solid var(--color-gold); color:var(--color-gold);">
-                                    ✉ Beheer Communicatie
-                                </button>
-                                <button class="btn-confirm-direct" 
-                                    data-id="${data.id}" 
-                                    data-name="${data.guestName}" 
-                                    data-email="${data.guestEmail}" 
-                                    data-in="${data.checkIn}" 
-                                    data-out="${data.checkOut}" 
-                                    data-guests="${data.totalGuests}"
-                                    data-token="${data.secretToken || ''}"
-                                    onclick="confirmDirectlyFromButton(this)">
-                                    ✔ Bevestig & Mail Factuur
-                                </button>
-                                <button class="btn-decline" onclick="declineBooking('${data.id}', this)">
-                                    ✕ Boeking Weigeren (Snel)
-                                </button>
-                            `}
-                        </div>
-                    `;
+                    const card = renderBookingCardHTML(data, 'bookings', today);
                     list.appendChild(card);
                 });
 
@@ -824,6 +715,226 @@
                 loader.style.display = 'none';
                 list.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center;">Fout bij laden van gegevens.</p>';
             }
+        }
+
+        // --- SHARED UI COMPONENT: Unified Booking Card ---
+        function renderBookingCardHTML(data, context = 'default', todayRef = new Date()) {
+            const card = document.createElement('div');
+            card.className = 'booking-card';
+            if (context === 'mailchain') card.id = `mc-card-${data.id}`;
+
+            const dIn = new Date(data.checkIn);
+            const dOut = new Date(data.checkOut);
+            const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+
+            const today = new Date(todayRef);
+            today.setHours(0, 0, 0, 0);
+            const checkInRef = new Date(data.checkIn);
+            checkInRef.setHours(0, 0, 0, 0);
+            const checkOutRef = new Date(data.checkOut);
+            checkOutRef.setHours(0, 0, 0, 0);
+
+            const diffIn = Math.ceil((checkInRef - today) / (1000 * 60 * 60 * 24));
+            const diffOut = Math.ceil((today - checkOutRef) / (1000 * 60 * 60 * 24));
+
+            const mc = data.mailChain || {};
+            const isPending = data.status === 'pending';
+            const isDeclined = data.status === 'declined';
+            const isConfirmed = data.status === 'confirmed';
+            const isPassed = data.isPassed || (checkOutRef <= today);
+
+            // CURRENCY CALCULATIONS
+            const rawPVal = data.totalAmount || data.total_amount || 0;
+            const rawP = (typeof rawPVal === 'string') ? parseFloat(rawPVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawPVal;
+            const fmtP = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
+            const tAmt = rawP ? fmtP(rawP) : '€ [BEDRAG]';
+            const dAmt = rawP ? fmtP(rawP * 0.3) : '€ [BEDRAG]';
+            const bAmt = rawP ? fmtP(rawP * 0.7) : '€ [BEDRAG]';
+
+            const country = getCountryData(data.guestPhone, data);
+
+            // LOGIC FOR RECOMMENDED STEP
+            const recStep = getRecommendedStep(data, today);
+
+            let statusHtml = '';
+            if (isPassed) statusHtml = '<span class="status-badge status-completed">Voltooid</span>';
+            else if (isPending) statusHtml = '<span class="status-badge status-pending">In Afwachting</span>';
+            else if (isDeclined) statusHtml = '<span class="status-badge status-declined">Geweigerd</span>';
+            else statusHtml = '<span class="status-badge status-confirmed">Bevestigd</span>';
+
+            card.setAttribute('data-booking-id', data.id);
+            card.setAttribute('data-status', data.status || 'pending');
+            card.setAttribute('data-check-in', data.checkIn);
+            card.setAttribute('data-check-out', data.checkOut);
+
+            card.innerHTML = `
+                <div class="booking-card-header">
+                    <div>
+                        <p style="font-size: 0.7rem; font-weight: 800; color: var(--color-gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Ref: ${data.bookingId || data.id}</p>
+                        <h3>${data.guestName || 'Gast'}</h3>
+                        <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            ${statusHtml}
+                            ${(isDeclined && currentUserRole === 'superuser') ? `
+                                <button class="delete-btn-trash" onclick="confirmDeleteBooking('${data.id}', '${data.guestName}')" title="Boeking permanent verwijderen">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                            ` : ''}
+                        </div>
+                        ${country ? `
+                            <div class="country-badge" style="margin-top: 0;">
+                                <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
+                                <span class="country-code-label">${country.code}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="booking-card-body">
+                    <div class="booking-info-row">
+                        <span class="tile-section-label">Verblijf:</span>
+                        <strong>${dIn.toLocaleDateString('nl-NL', fmtOpts)} – ${dOut.toLocaleDateString('nl-NL', fmtOpts)}</strong>
+                    </div>
+
+                    <div class="tile-section-label" style="margin-top: 10px;">Details:</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 5px;">
+                        <strong>Gasten:</strong> ${Math.max(1, (data.adults || 0) + (data.children || 0) + (data.babies || 0))} 
+                        (${[data.adults > 0 ? `${data.adults} volw.` : null, data.children > 0 ? `${data.children} kind.` : null, data.babies > 0 ? `${data.babies} baby` : null].filter(Boolean).join(', ')})
+                    </div>
+                    <p style="font-style: italic; opacity: 0.8; font-size: 0.95rem; margin-bottom: 15px;">"${data.message || 'Geen bericht'}"</p>
+                    
+                    <div class="payment-info" style="margin-top: 15px;">
+                        <!-- Step 1 (Manual Check) -->
+                        <div class="payment-toggle" style="padding-bottom:10px;">
+                            <div>
+                                <span style="opacity: 0.6; display:block;">1. Boeking ontvangen</span>
+                                <a href="javascript:void(0)" 
+                                    data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
+                                    data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                    data-guests="${data.totalGuests || '-'}" 
+                                    data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                    data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="general" 
+                                    onclick="openEmailComposer(this)" 
+                                    style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
+                            </div>
+                            <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">✔ VOLTOOID</span>
+                        </div>
+                        
+                                <div class="payment-toggle ${recStep === 2 ? 'recommended-step' : ''}" data-step-index="2" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 5px;">
+                            <div>
+                                <span style="opacity: ${isPending ? '1' : '0.6'}; display:block; font-size: 0.85rem;">2. Accepteren / Weigeren</span>
+                                <div style="display:flex; gap:8px; margin-top:8px;">
+                                    <a href="javascript:void(0)" 
+                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                        data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="acceptance" 
+                                        onclick="openEmailComposer(this)" 
+                                        style="background: rgba(40, 167, 69, 0.05); border: 1px solid rgba(40, 167, 69, 0.2); color: #28a745; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ ACCEPTEER</a>
+                                    <a href="javascript:void(0)" 
+                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                        data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="rejection" 
+                                        onclick="openEmailComposer(this)" 
+                                        style="background: rgba(220, 53, 69, 0.04); border: 1px solid rgba(220, 53, 69, 0.15); color: #dc3545; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ WEIGER</a>
+                                </div>
+                            </div>
+                            <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">${!isPending ? '✔ VOLTOOID' : 'ACTIE VEREIST'}</span>
+                        </div>
+                        
+                        <!-- Steps 3-8 -->
+                        ${['depositReminder', 'depositReceived', 'balanceReminder', 'balanceReceived', 'preStayInfo', 'postStay'].map((key, i) => {
+                            const stepIdx = i + 3;
+                            const titleMap = {
+                                'depositReminder': '3. Aanbetaling herinnering',
+                                'depositReceived': '4. Aanbetaling ontvangen melding',
+                                'balanceReminder': '5. Restbetaling herinnering',
+                                'balanceReceived': '6. Restbetaling ontvangen melding',
+                                'preStayInfo': '7. Regels & wachtwoorden',
+                                'postStay': '8. Bedankje & Review'
+                            };
+                            const typeMap = {
+                                'depositReminder': 'deposit_request',
+                                'depositReceived': 'deposit_received',
+                                'balanceReminder': 'balance_reminder',
+                                'balanceReceived': 'balance_received',
+                                'preStayInfo': 'rules_info',
+                                'postStay': 'post_stay'
+                            };
+
+                            return `
+                                <div class="payment-toggle ${recStep === stepIdx ? 'recommended-step' : ''}" data-step-index="${stepIdx}">
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        <span>${titleMap[key]}</span>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests || '-'}" 
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="${typeMap[key]}" 
+                                            onclick="openEmailComposer(this)" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
+                                    </div>
+                                    <div class="payment-toggle-controls">
+                                        <span class="status-icon-toggle" 
+                                            data-step-icon="${key}" 
+                                            data-booking-id="${data.id}"
+                                            onclick="toggleMailStep('${data.id}', '${key}', ${!mc[key]})"
+                                            style="cursor: pointer; font-size: 1.25rem; transition: transform 0.1s; display: inline-block; width: 32px; text-align: center;"
+                                            onmousedown="this.style.transform='scale(0.9)'"
+                                            onmouseup="this.style.transform='scale(1)'"
+                                            title="Klik om status te wijzigen">
+                                            ${mc[key] ? '<span style="color: #6b21a8; font-weight: bold;">✓</span>' : '⏳'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Overige Acties -->
+                    <div style="margin-top:20px; padding-top:15px; border-top: 1px solid rgba(0,0,0,0.05);">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button onclick="openCommunicationHub('${data.id}')" 
+                                class="btn btn-primary action-btn" style="flex:1; background:transparent; border:1px solid var(--color-gold); color:var(--color-gold); padding: 8px; font-size: 0.8rem;">
+                                ✉ BEHEER IN HUB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function getRecommendedStep(data, todayRef = new Date()) {
+            const today = new Date(todayRef);
+            today.setHours(0, 0, 0, 0);
+            const checkInRef = new Date(data.checkIn);
+            checkInRef.setHours(0, 0, 0, 0);
+            const checkOutRef = new Date(data.checkOut);
+            checkOutRef.setHours(0, 0, 0, 0);
+
+            const diffIn = Math.ceil((checkInRef - today) / (1000 * 60 * 60 * 24));
+            const diffOut = Math.ceil((today - checkOutRef) / (1000 * 60 * 60 * 24));
+
+            const mc = data.mailChain || {};
+            const isConfirmed = data.status === 'confirmed';
+            const isPending = data.status === 'pending';
+
+            if (isPending) return 2; // Accepteren / Weigeren
+            
+            if (isConfirmed) {
+                // Return first actionable step that isn't already DONE (mc[key] is true)
+                if (!mc.depositReminder && !data.depositPaid) return 3;
+                if (!mc.depositReceived && data.depositPaid) return 4;
+                if (!mc.balanceReminder && !data.balancePaid && diffIn <= 45 && diffIn > 0) return 5;
+                if (!mc.balanceReceived && data.balancePaid) return 6;
+                if (!mc.preStayInfo && diffIn <= 7 && diffIn >= -1) return 7;
+                if (!mc.postStay && diffOut >= 0 && diffOut <= 7) return 8;
+            }
+            return 0;
         }
 
         function switchCommHubTab(tabId) {
@@ -879,17 +990,7 @@
             const diffIn = Math.ceil((dIn - today) / (1000 * 60 * 60 * 24));
             const diffOut = Math.ceil((today - dOut) / (1000 * 60 * 60 * 24));
 
-            let recStep = 0;
-            if (isPending) {
-                recStep = 2;
-            } else if (data.status === 'confirmed') {
-                if (!data.depositPaid && !mc.depositReminder) recStep = 3;
-                else if (data.depositPaid && !mc.depositReceived) recStep = 4;
-                else if (!data.balancePaid && diffIn <= 45 && diffIn > 0 && !mc.balanceReminder) recStep = 5;
-                else if (data.balancePaid && !mc.balanceReceived) recStep = 6;
-                else if (diffIn <= 7 && diffIn >= -1 && !mc.preStayInfo) recStep = 7;
-                else if (diffOut >= 0 && diffOut <= 7 && !mc.postStay) recStep = 8;
-            }
+            let recStep = getRecommendedStep(data, today);
 
             // Find first uncompleted step (next step)
             let nextStepIndex = steps.findIndex(s => !s.done);
@@ -1035,7 +1136,7 @@
                 const bAmt = raw ? fmt(raw * 0.7) : '€ [BEDRAG]';
 
                 const phone = data.guestPhone || '';
-                currentLang = detectLanguage(phone);
+                currentLang = detectLanguage(phone, data);
                 const labels = composerLabels[currentLang];
 
                 let guestsStr = data.totalGuests || '';
@@ -1112,6 +1213,7 @@
             loader.style.display = 'block';
             prioSection.style.display = 'none';
 
+            const prioItems = [];
             let prioHtml = '';
             let prioCount = 0;
 
@@ -1132,335 +1234,56 @@
                 bookings.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn));
 
                 bookings.forEach(data => {
-                    // Do NOT filter out unconfirmed, show all so we can send request/acceptance mails
-
                     matchCount++;
-                    const card = document.createElement('div');
-                    card.className = 'booking-card';
-                    card.id = `mc-card-${data.id}`; // Add ID to allow anchoring
-
-                    const dIn = new Date(data.checkIn);
-                    const dOut = new Date(data.checkOut);
-                    const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
-
-                    const country = getCountryData(data.guestPhone, data);
-
-                    // RECOMMENDATION LOGIC
-                    const todayRef = new Date();
-                    todayRef.setHours(0, 0, 0, 0);
-                    const checkInRef = new Date(data.checkIn);
-                    checkInRef.setHours(0, 0, 0, 0);
-                    const checkOutRef = new Date(data.checkOut);
-                    checkOutRef.setHours(0, 0, 0, 0);
-
-                    const diffIn = Math.ceil((checkInRef - todayRef) / (1000 * 60 * 60 * 24));
-                    const diffOut = Math.ceil((todayRef - checkOutRef) / (1000 * 60 * 60 * 24));
-
-                    const mc = data.mailChain || {};
-                    const isPending = data.status === 'pending';
-                    const isDeclined = data.status === 'declined';
-                    const isConfirmed = data.status === 'confirmed';
-                    const s3_depRem = mc.depositReminder || false;
-                    const s4_depRec = mc.depositReceived || false;
-                    const s5_balRem = mc.balanceReminder || false;
-                    const s6_balRec = mc.balanceReceived || false;
-                    const s7_preStay = mc.preStayInfo || false;
-                    const s8_postStay = mc.postStay || false;
-
-                    // CURRENCY CALCULATIONS
-                    const rawPVal = data.totalAmount || data.total_amount || 0;
-                    const rawP = (typeof rawPVal === 'string') ? parseFloat(rawPVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawPVal;
-                    const fmtP = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
-                    const tAmt = rawP ? fmtP(rawP) : '€ [BEDRAG]';
-                    const dAmt = rawP ? fmtP(rawP * 0.3) : '€ [BEDRAG]';
-                    const bAmt = rawP ? fmtP(rawP * 0.7) : '€ [BEDRAG]';
-
-                    let recStep = 0;
-                    if (isPending) {
-                        recStep = 2; // Accepteren / Weigeren
-                    } else if (isConfirmed) {
-                        if (!data.depositPaid && !mc.depositReminder) {
-                            recStep = 3; // Aanbetaling herinnering
-                        } else if (data.depositPaid && !mc.depositReceived) {
-                            recStep = 4; // Aanbetaling ontvangen
-                        } else if (!data.balancePaid && diffIn <= 45 && diffIn > 0 && !mc.balanceReminder) {
-                            recStep = 5; // Restbetaling herinnering
-                        } else if (data.balancePaid && !mc.balanceReceived) {
-                            recStep = 6; // Restbetaling ontvangen
-                        } else if (diffIn <= 7 && diffIn >= -1 && !mc.preStayInfo) {
-                            recStep = 7; // Regels & Wachtwoorden
-                        } else if (diffOut >= 0 && diffOut <= 7 && !mc.postStay) {
-                            recStep = 8; // Bedankje & Review
-                        }
-                    }
-
+                    const recStep = getRecommendedStep(data, now);
+                    
                     // CHECK FOR PRIORITY TASK
                     if (recStep > 0) {
                         prioCount++;
-                        const stepNames = {
-                            2: "Accepteren / Weigeren",
-                            3: "Aanbetaling Herinnering",
-                            4: "Aanbetaling Ontvangen",
-                            5: "Restbetaling Herinnering",
-                            6: "Restbetaling Ontvangen",
-                            7: "Regels & Wachtwoorden",
-                            8: "Bedankje & Review"
-                        };
-                        const taskName = stepNames[recStep];
-
-                        prioHtml += `
-                            <div class="prio-item">
-                                <div class="prio-item-main">
-                                    <div class="prio-item-guest">
-                                        ${data.guestName || 'Gast'}
-                                    </div>
-                                    <div class="prio-item-task">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-gold);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                        ${taskName}
-                                    </div>
-                                </div>
-                                <button class="prio-item-btn" onclick="document.getElementById('mc-card-${data.id}').scrollIntoView({behavior:'smooth'}); setTimeout(()=>openCommunicationHub('${data.id}'), 500);">
-                                    BEHANDELEN
-                                </button>
-                            </div>
-                        `;
+                        prioItems.push({ data, recStep });
                     }
 
-                    let statusHtml = '';
-                    if (isPending) statusHtml = '<span class="status-badge status-pending">In Afwachting</span>';
-                    else if (isDeclined) statusHtml = '<span class="status-badge status-declined">Geweigerd</span>';
-                    else statusHtml = '<span class="status-badge status-confirmed">Bevestigd</span>';
+                    const card = renderBookingCardHTML(data, 'mailchain', now);
+                    list.appendChild(card);
+                });
 
-                    card.innerHTML = `
-                        <div class="booking-card-header">
-                            <div>
-                                <h3>${data.guestName || 'Gast'}</h3>
-                                <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    ${statusHtml}
-                                </div>
-                                ${country ? `
-                                    <div class="country-badge" style="margin-top: 0;">
-                                        <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
-                                        <span class="country-code-label">${country.code}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                        <div class="booking-card-body">
-                            <div class="booking-info-row">
-                                <span class="tile-section-label">Verblijf:</span>
-                                <strong>${dIn.toLocaleDateString('nl-NL', fmtOpts)} – ${dOut.toLocaleDateString('nl-NL', fmtOpts)}</strong>
-                            </div>
-                            
-                            <div class="payment-info" style="margin-top: 15px;">
-                                <!-- Step 1 -->
-                                <div class="payment-toggle" style="padding-bottom:10px;">
-                                    <div>
-                                        <span style="opacity: 0.6; display:block;">1. Boeking ontvangen</span>
-                                        <a href="javascript:void(0)" 
-                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests || '-'}" 
-                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="general" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
-                                    </div>
-                                    <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">✔ VOLTOOID</span>
-                                </div>
-                                
-                                <!-- Step 2 -->
-                                <div class="payment-toggle ${recStep === 2 ? 'recommended-step' : ''}" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 5px;">
-                                    <div>
-                                        <span style="opacity: ${isPending ? '1' : '0.6'}; display:block; font-size: 0.85rem;">2. Accepteren / Weigeren</span>
-                                        <div style="display:flex; gap:8px; margin-top:8px;">
-                                            <a href="javascript:void(0)" 
-                                                data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
-                                                data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                                data-guests="${data.totalGuests || '-'}" 
-                                                data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                                data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                                data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="acceptance" 
-                                                onclick="openEmailComposer(this)" 
-                                                style="background: rgba(40, 167, 69, 0.05); border: 1px solid rgba(40, 167, 69, 0.2); color: #28a745; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ ACCEPTEER</a>
-                                            <a href="javascript:void(0)" 
-                                                data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
-                                                data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                                data-guests="${data.totalGuests || '-'}" 
-                                                data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                                data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                                data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="rejection" 
-                                                onclick="openEmailComposer(this)" 
-                                                style="background: rgba(220, 53, 69, 0.04); border: 1px solid rgba(220, 53, 69, 0.15); color: #dc3545; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ WEIGER</a>
-                                        </div>
-                                    </div>
-                                    <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">${!isPending ? '✔ VOLTOOID' : 'ACTIE VEREIST'}</span>
-                                </div>
-                                
-                                <!-- Step 3 -->
-                                <div class="payment-toggle ${recStep === 3 ? 'recommended-step' : ''}">
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>3. Betalingsherinnering (Aanbetaling)</span>
-                                        <a href="javascript:void(0)" 
-                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests || '-'}" 
-                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="deposit_request" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
-                                    </div>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" data-step="depositReminder" ${s3_depRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReminder', this.checked)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
-                                </div>
+                // SORT PRIO ITEMS: Step 2 first, then by check-in date
+                prioItems.sort((a, b) => {
+                    if (a.recStep === 2 && b.recStep !== 2) return -1;
+                    if (a.recStep !== 2 && b.recStep === 2) return 1;
+                    // Otherwise sort by check-in
+                    return new Date(a.data.checkIn) - new Date(b.data.checkIn);
+                });
 
-                                <!-- Step 4 -->
-                                <div class="payment-toggle ${recStep === 4 ? 'recommended-step' : ''}">
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>4. Aanbetaling ontvangen mail</span>
-                                        <a href="javascript:void(0)" 
-                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests || '-'}" 
-                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="deposit_received" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
-                                    </div>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" data-step="depositReceived" ${s4_depRec ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'depositReceived', this.checked)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
-                                </div>
+                const stepNames = {
+                    2: "Accepteren / Weigeren",
+                    3: "Aanbetaling Herinnering",
+                    4: "Aanbetaling Ontvangen",
+                    5: "Restbetaling Herinnering",
+                    6: "Restbetaling Ontvangen",
+                    7: "Regels & Wachtwoorden",
+                    8: "Bedankje & Review"
+                };
 
-                                <!-- Step 5 -->
-                                <div class="payment-toggle ${recStep === 5 ? 'recommended-step' : ''}">
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>5. Restbetaling herinnering mail</span>
-                                        <a href="javascript:void(0)" 
-                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests || '-'}" 
-                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="balance_reminder" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
-                                    </div>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" data-step="balanceReminder" ${s5_balRem ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'balanceReminder', this.checked)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
+                prioItems.forEach(item => {
+                    const taskName = stepNames[item.recStep];
+                    prioHtml += `
+                        <div class="prio-item ${item.recStep === 2 ? 'prio-item--urgent' : ''}">
+                            <div class="prio-item-main">
+                                <div class="prio-item-guest">
+                                    ${item.data.guestName || 'Gast'}
+                                    ${item.recStep === 2 ? '<span style="font-size:0.6rem; background:#fee2e2; color:#b91c1c; padding:2px 6px; border-radius:4px; margin-left:8px;">NIEUWE AANVRAAG</span>' : ''}
                                 </div>
-
-                                <!-- Step 6 -->
-                                <div class="payment-toggle ${recStep === 6 ? 'recommended-step' : ''}">
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>6. Restbetaling ontvangen mail</span>
-                                        <a href="javascript:void(0)" 
-                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests || '-'}" 
-                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="balance_received" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
-                                    </div>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" data-step="balanceReceived" ${s6_balRec ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'balanceReceived', this.checked)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Step 7 -->
-                                <div class="payment-toggle ${recStep === 7 ? 'recommended-step' : ''}">
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>7. Regels & wachtwoorden</span>
-                                        <a href="javascript:void(0)" 
-                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests || '-'}" 
-                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="rules_info" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
-                                    </div>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" data-step="preStayInfo" ${s7_preStay ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'preStayInfo', this.checked)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <!-- Step 8 -->
-                                <div class="payment-toggle ${recStep === 8 ? 'recommended-step' : ''}">
-                                    <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>8. Bedankje & Review (Na verblijf)</span>
-                                        <a href="javascript:void(0)" 
-                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                            data-guests="${data.totalGuests || '-'}" 
-                                            data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="post_stay" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
-                                    </div>
-                                    <div class="payment-toggle-controls">
-                                        <label class="switch">
-                                            <input type="checkbox" data-step="postStay" ${s8_postStay ? 'checked' : ''} onchange="toggleMailStep('${data.id}', 'postStay', this.checked)">
-                                            <span class="slider" data-off="Nee"><span class="slider-on-label">Ja</span></span>
-                                        </label>
-                                    </div>
+                                <div class="prio-item-task">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-gold);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    ${taskName}
                                 </div>
                             </div>
-
-                            <!-- Overige Acties -->
-                            <div style="margin-top:20px; padding-top:15px; border-top: 1px solid rgba(0,0,0,0.05);">
-                                <span style="font-size:0.75rem; font-weight:bold; color:var(--color-slate); text-transform:uppercase; margin-bottom:10px; display:block;">Overige Communicatie</span>
-                                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                                    <button 
-                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                        data-guests="${data.totalGuests || '-'}" 
-                                        data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                        data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="general" 
-                                        onclick="openEmailComposer(this)" 
-                                        class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid var(--color-slate); color: var(--color-slate); text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✉ ALGEMEEN BERICHT</button>
-                                    <button 
-                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
-                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
-                                        data-guests="${data.totalGuests || '-'}" 
-                                        data-adults="${data.adults || 0}" data-children="${data.children || 0}" data-babies="${data.babies || 0}"
-                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
-                                        data-message="${data.message || ''}" data-type="rejection" 
-                                        onclick="openEmailComposer(this)" 
-                                        class="btn btn-secondary action-btn" style="padding: 6px 12px; font-size: 0.75rem; border: 1px solid #dc3545; color: #dc3545; text-decoration: none; border-radius: 4px; font-weight: bold; background: #fff;">✕ ANNULERING / WEIGERING</button>
-                                </div>
-                            </div>
+                            <button class="prio-item-btn" onclick="document.getElementById('mc-card-${item.data.id}').scrollIntoView({behavior:'smooth'}); setTimeout(()=>openCommunicationHub('${item.data.id}'), 500);">
+                                BEHANDELEN
+                            </button>
                         </div>
                     `;
-                    list.appendChild(card);
                 });
 
                 // RENDER PRIO SECTION IF TASKS EXIST
@@ -1487,13 +1310,12 @@
             try {
                 const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
 
-                // 1. Sync Logic (UI -> DB is already handled by checkbox)
-                // 2. Sync Logic (Tester -> DB calls this function, so we need DB -> UI)
-                const card = document.getElementById(`mc-card-${bookingId}`);
-                if (card) {
-                    const checkbox = card.querySelector(`input[data-step="${stepKey}"]`);
-                    if (checkbox) checkbox.checked = value;
-                }
+                // 1. Sync Logic (Main Card Icons)
+                const icons = document.querySelectorAll(`[data-step-icon="${stepKey}"][data-booking-id="${bookingId}"]`);
+                icons.forEach(el => {
+                    el.innerHTML = value ? '<span style="color: #6b21a8; font-weight: bold;">✓</span>' : '⏳';
+                    el.setAttribute('onclick', `toggleMailStep('${bookingId}', '${stepKey}', ${!value})`);
+                });
 
                 // Nested update in Firestore object
                 await updateDoc(doc(db, "bookings", bookingId), {
@@ -1512,9 +1334,84 @@
                     renderHubSteps(currentComposerData);
                 }
 
+                // 4. Update highlights on BOTH Card and Hub
+                refreshCardHighlights(bookingId);
+
             } catch (err) {
                 console.error(`Fout bij updaten mail-chain stap ${stepKey}:`, err);
                 alert("Kon de status niet opslaan in Database.");
+            }
+        }
+
+        /**
+         * Helper to instantly update the "Recommended Step" (gold border) on the UI
+         * after a state change (mail chain or payment status).
+         */
+        async function refreshCardHighlights(bookingId) {
+            try {
+                // Find all cards for this booking (could be in multiple views)
+                const cards = document.querySelectorAll(`[data-booking-id="${bookingId}"].booking-card, #mc-card-${bookingId}`);
+                if (cards.length === 0) return;
+
+                // We need the latest data to calculate the new recommendation
+                // For performance, we'll try to find the data in our current memory or DOM
+                // But for absolute correctness, a quick fetch or passing data is better.
+                // Here, we'll look for the icon states to reconstruct the mailChain.
+                
+                const mc = {};
+                const stepIcons = document.querySelectorAll(`[data-booking-id="${bookingId}"][data-step-icon]`);
+                stepIcons.forEach(icon => {
+                    const key = icon.getAttribute('data-step-icon');
+                    mc[key] = icon.innerHTML.includes('✓');
+                });
+
+                const depositPaid = document.querySelector(`[data-payment-icon="depositPaid"][data-booking-id="${bookingId}"]`)?.innerHTML.includes('✓');
+                const balancePaid = document.querySelector(`[data-payment-icon="balancePaid"][data-booking-id="${bookingId}"]`)?.innerHTML.includes('✓');
+
+                // Get other basic info from the card itself
+                const card = cards[0];
+                const checkInStr = card.getAttribute('data-check-in'); // Assuming we add this
+                const checkOutStr = card.getAttribute('data-check-out');
+                const status = card.getAttribute('data-status');
+
+                // If attributes aren't found, we can't reliably update without data.
+                // However, the unified card should have these.
+                if (!checkInStr) return;
+
+                const dummyData = {
+                    status: status,
+                    checkIn: checkInStr,
+                    checkOut: checkOutStr,
+                    depositPaid: depositPaid,
+                    balancePaid: balancePaid,
+                    mailChain: mc
+                };
+
+                const newRec = getRecommendedStep(dummyData, new Date());
+
+                // Update all items in this booking's payment-info sections
+                const stepContainers = document.querySelectorAll(`[data-booking-id="${bookingId}"] .payment-toggle`);
+                stepContainers.forEach((el, idx) => {
+                    // Step indices in our logic: 2 (accept), 3-8 (mail steps)
+                    // The loop index matches the map: 0->3, 1->4...
+                    // Step 2 is special.
+                    const isStep2 = el.innerText.includes('2.');
+                    const currentStepIdx = isStep2 ? 2 : (idx); // This is fragile, let's use a data-attribute instead
+                });
+                
+                // BETTER APPROACH: Just re-run the loop logic on the elements
+                const containers = document.querySelectorAll(`[data-booking-id="${bookingId}"] .payment-toggle`);
+                containers.forEach(el => {
+                    // We'll look for a data-step-index attribute we'll add in the next chunk
+                    const sIdx = parseInt(el.getAttribute('data-step-index'));
+                    if (sIdx === newRec) {
+                        el.classList.add('recommended-step');
+                    } else {
+                        el.classList.remove('recommended-step');
+                    }
+                });
+            } catch (e) {
+                console.warn("Could not selectively refresh highlights:", e);
             }
         }
 
@@ -2228,9 +2125,18 @@
         let currentComposerData = {};
         let currentLang = 'nl'; // Detected language: nl, de, en
 
-        // Detect language from phone country code
-        function detectLanguage(phone) {
-            if (!phone) return 'nl'; // default
+        // Detect language from country or phone country code
+        function detectLanguage(phone, bookingData = null) {
+            if (bookingData) {
+                const countryData = getCountryData(phone, bookingData);
+                if (countryData && countryData.code) {
+                    const code = countryData.code.toLowerCase();
+                    if (code === 'nl') return 'nl';
+                    if (code === 'de' || code === 'at') return 'de';
+                    return 'en';
+                }
+            }
+            if (!phone) return 'en'; // default
             const cleaned = phone.replace(/[\s\-\(\)]/g, '');
             if (cleaned.startsWith('+31') || cleaned.startsWith('0031')) return 'nl';
             if (cleaned.startsWith('+49') || cleaned.startsWith('0049')) return 'de';
@@ -2842,6 +2748,7 @@
             }
         });
 
+        // --- IMPORT LOGIC ---
         let _xlsxLoaded = false;
         let _importParsed = [];
         let _importInitialized = false;
@@ -2934,10 +2841,8 @@
                 const platform = (parts[1] || '').trim();
                 const id = importBuildId(sourceId, platform);
                 
-                // Berekeningen
                 const isOwner = id.startsWith('Owner-');
-                const chargeableGuests = adults + children; // Babys gratis
-                
+                const chargeableGuests = adults + children;
                 const cleaning = isOwner ? 0 : 350.00;
                 const bedLinen = isOwner ? 0 : (chargeableGuests * 20.95);
                 const touristTax = isOwner ? 0 : (chargeableGuests * nights * 2.50);
@@ -2947,9 +2852,14 @@
                 const checkOut = importParseDate(row[col['Vertrek']]);
                 if (!checkIn || !checkOut) continue;
 
+                // Booking Date / Year identification
+                const rawBookingDate = row[col['Datum']] || row[col['Boekingsdatum']] || row[col['Geboekt op']];
+                const bookingDateParsed = importParseDate(rawBookingDate);
+                const bookingYear = bookingDateParsed ? new Date(bookingDateParsed).getFullYear() : new Date(checkIn).getFullYear();
+
                 _importParsed.push({
                     id, sourceId, platform,
-                    type: id.startsWith('Owner-') ? 'owner' : 'guest',
+                    type: isOwner ? 'owner' : 'guest',
                     guestName: String(row[col['Gast']] || '').trim(),
                     guestEmail: String(row[col['E-mailadres']] || '').trim(),
                     guestPhone: String(row[col['Telefoon']] || '').replace(/\D/g, ''),
@@ -2964,57 +2874,135 @@
                     babies: babies,
                     totalAmount: totalAmount,
                     message: String(row[col['Opmerking']] || '').trim(),
-                    // Berekende kostenposten
-                    rent: id.startsWith('Owner-') ? 0 : totalAmount - (cleaning + bedLinen + touristTax + mobilityFee),
+                    rent: isOwner ? 0 : totalAmount - (cleaning + bedLinen + touristTax + mobilityFee),
                     cleaning: cleaning,
                     bedLinen: bedLinen,
                     touristTax: touristTax,
                     mobilityFee: mobilityFee,
+                    bookingYear: bookingYear, // Needed for invoice ID
                     secretToken: Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8)
                 });
             }
-
-            await importRenderPreview();
+            renderImportPreview();
         }
 
-        async function importRenderPreview() {
+        async function renderImportPreview() {
             const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
-            const existingIds = new Set();
+            
+            const tbody = document.getElementById('import-preview-body');
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px;">Laden van status...</td></tr>';
+            
+            let newCount = 0, existsCount = 0;
+            const rowsHtml = [];
+
             for (const b of _importParsed) {
                 const snap = await getDoc(doc(db, 'bookings', b.id));
-                if (snap.exists()) existingIds.add(b.id);
-            }
-
-            const tbody = document.getElementById('import-preview-body');
-            tbody.innerHTML = '';
-            let newCount = 0, existsCount = 0;
-
-            _importParsed.forEach(b => {
-                const exists = existingIds.has(b.id);
+                const exists = snap.exists();
                 if (exists) existsCount++; else newCount++;
+                
                 const statusBadge = exists
                     ? `<span class="status-badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Bestaat</span>`
                     : `<span class="status-badge" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;">Nieuw</span>`;
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${statusBadge}</td>
-                    <td style="font-family:monospace;font-size:0.75rem;">${b.id}</td>
-                    <td style="font-size:0.75rem;color:#94a3b8;">${b.sourceId}</td>
-                    <td>${b.guestName || '<em style="color:#94a3b8">Eigenaar</em>'}</td>
-                    <td>${b.checkIn}</td>
-                    <td>${b.checkOut}</td>
-                    <td style="text-align:center;">${b.nights}</td>
-                    <td style="color:var(--color-gold);">€${b.totalAmount.toFixed(2)}</td>
-                    <td>${b.country}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+                
+                rowsHtml.push(`
+                    <tr>
+                        <td>${statusBadge}</td>
+                        <td style="font-family:monospace;font-size:0.75rem;">${b.id}</td>
+                        <td style="font-size:0.75rem;color:#94a3b8;">${b.sourceId}</td>
+                        <td>${b.guestName || '<em style="color:#94a3b8">Eigenaar</em>'}</td>
+                        <td>${b.checkIn}</td>
+                        <td>${b.checkOut}</td>
+                        <td style="text-align:center;">${b.nights}</td>
+                        <td style="color:var(--color-gold);">€${b.totalAmount.toFixed(2)}</td>
+                        <td>${b.guestCountry || ''}</td>
+                    </tr>
+                `);
+            }
 
+            tbody.innerHTML = rowsHtml.join('');
             document.getElementById('imp-stat-total').textContent = _importParsed.length;
             document.getElementById('imp-stat-new').textContent = newCount;
             document.getElementById('imp-stat-exists').textContent = existsCount;
             document.getElementById('import-preview-section').style.display = '';
         }
+
+        async function getSequentialInvoiceId(year) {
+            const { db, doc, runTransaction } = await import('../site_js/core/firebase.js');
+            const counterRef = doc(db, "metadata", "counters");
+            
+            const nextNum = await runTransaction(db, async (transaction) => {
+                const counterDoc = await transaction.get(counterRef);
+                const yearKey = `lastInvoiceNumber_${year}`;
+                
+                let currentNum = 1000;
+                if (counterDoc.exists()) {
+                    currentNum = counterDoc.data()[yearKey] || 1000;
+                }
+                
+                const next = currentNum + 1;
+                transaction.set(counterRef, { [yearKey]: next }, { merge: true });
+                return next;
+            });
+            
+            return `F${year}-${String(nextNum).padStart(4, '0')}`;
+        }
+
+        window.backfillInvoiceIds = async function() {
+            const btn = document.getElementById('btn-backfill-invoices');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Bezig...';
+
+            try {
+                const { db, collection, getDocs, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                const querySnapshot = await getDocs(collection(db, "bookings"));
+                
+                let toRepair = [];
+                querySnapshot.forEach(qDoc => {
+                    const data = qDoc.data();
+                    if (data.status !== 'owner' && !data.invoiceId) {
+                        toRepair.push({ id: qDoc.id, ...data });
+                    }
+                });
+
+                if (toRepair.length === 0) {
+                    alert("Alle boekingen hebben al een factuurnummer.");
+                    return;
+                }
+
+                // Sort chronologically (Past to Present)
+                toRepair.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn));
+
+                let repairedCount = 0;
+                for (const b of toRepair) {
+                    // Determine booking year
+                    const bYear = b.createdAt ? new Date(b.createdAt.seconds * 1000).getFullYear() : new Date(b.checkIn).getFullYear();
+                    const newId = await getSequentialInvoiceId(bYear);
+                    
+                    const updateData = {
+                        invoiceId: newId,
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    // Also generate secret token if missing
+                    if (!b.secretToken) {
+                        updateData.secretToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+                    }
+                    
+                    await updateDoc(doc(db, 'bookings', b.id), updateData);
+                    repairedCount++;
+                }
+
+                alert(`${repairedCount} factuurnummers succesvol hersteld.`);
+                loadInvoices(); // Refresh grid
+            } catch (err) {
+                console.error("Backfill failed:", err);
+                alert("Fout bij herstellen: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        };
 
         async function importToFirebase() {
             const overwrite = document.getElementById('imp-chk-overwrite').checked;
@@ -3040,7 +3028,9 @@
             for (let i = 0; i < _importParsed.length; i++) {
                 const b = _importParsed[i];
                 const snap = await getDoc(doc(db, 'bookings', b.id));
-                if (snap.exists() && !overwrite) {
+                const exists = snap.exists();
+
+                if (exists && !overwrite) {
                     skipped++;
                     impLog(`⏭ ${b.id} — overgeslagen (bestaat al)`);
                     document.getElementById('imp-progress-bar').style.width = Math.round(((i + 1) / _importParsed.length) * 100) + '%';
@@ -3048,8 +3038,15 @@
                 }
 
                 try {
+                    // Assign Invoice ID if missing
+                    let invoiceId = exists ? snap.data().invoiceId : null;
+                    if (!invoiceId && b.type === 'guest') {
+                        invoiceId = await getSequentialInvoiceId(b.bookingYear);
+                    }
+
                     await setDoc(doc(db, 'bookings', b.id), {
                         bookingId: b.id,
+                        invoiceId: invoiceId,
                         type: b.type,
                         status: b.type === 'owner' ? 'owner' : 'confirmed',
                         guestName: b.guestName,
@@ -3058,8 +3055,8 @@
                         guestAddress: b.guestAddress || '',
                         guestZipcode: b.guestZipcode || '',
                         guestCity: b.guestCity || '',
-                        guestCountry: b.guestCountry || b.country || '',
-                        country: b.guestCountry || b.country || '',
+                        guestCountry: b.guestCountry || '',
+                        country: b.guestCountry || '',
                         checkIn: b.checkIn,
                         checkOut: b.checkOut,
                         nights: b.nights,
@@ -3086,9 +3083,10 @@
                             balanceReminder: false, balanceReceived: false,
                             preStayInfo: false, postStay: false
                         }
-                    });
+                    }, { merge: true });
+
                     success++;
-                    impLog(`✅ ${b.id} — ${b.guestName || 'Eigenaar'} (${b.checkIn} → ${b.checkOut})`, '#16a34a');
+                    impLog(`✅ ${b.id} — ${b.guestName || 'Eigenaar'} (${invoiceId || 'Geen factuur'})`, '#16a34a');
                     await logActivity('Excel Import', `Boeking geïmporteerd via Excel upload`, b.id);
                 } catch (err) {
                     failed++;
@@ -3103,3 +3101,154 @@
             btn.textContent = '✔ Import voltooid';
             btn.disabled = false;
         }
+
+        // --- 9. FINANCE & INVOICES ---
+        let currentInvoiceView = localStorage.getItem('gipfel_invoice_view') || 'grid';
+
+        window.switchInvoiceView = function(type) {
+            currentInvoiceView = type;
+            localStorage.setItem('gipfel_invoice_view', type);
+
+            // Update buttons
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`toggle-${type}-btn`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Update containers
+            document.querySelectorAll('.invoice-view-content').forEach(el => el.classList.remove('active'));
+            const activeContainer = document.getElementById(`invoices-${type}-container`);
+            if (activeContainer) activeContainer.classList.add('active');
+            
+            // Re-render if switching (optional since they are both loaded, but keeps it clean)
+            loadInvoices();
+        };
+
+        window.loadInvoices = async function() {
+            const listBody = document.getElementById('invoices-list-body');
+            const gridBody = document.getElementById('invoices-grid-body');
+            const loader = document.getElementById('invoices-loader');
+            const emptyState = document.getElementById('invoices-empty');
+            if (!listBody || !gridBody) return;
+
+            listBody.innerHTML = '';
+            gridBody.innerHTML = '';
+            loader.style.display = 'block';
+            emptyState.style.display = 'none';
+
+            // Ensure correct view is active on load
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`toggle-${currentInvoiceView}-btn`)?.classList.add('active');
+            document.querySelectorAll('.invoice-view-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`invoices-${currentInvoiceView}-container`)?.classList.add('active');
+
+            try {
+                const { db, collection, getDocs, query } = await import('../site_js/core/firebase.js');
+                const querySnapshot = await getDocs(collection(db, "bookings"));
+
+                const allInvoices = [];
+                querySnapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    if (data.invoiceId || data.status === 'confirmed' || data.status === 'pending') {
+                        allInvoices.push(data);
+                    }
+                });
+
+                allInvoices.sort((a, b) => {
+                    const dateA = new Date(a.checkIn || 0);
+                    const dateB = new Date(b.checkIn || 0);
+                    return dateB - dateA;
+                });
+
+                allInvoices.forEach(data => {
+                    // Populate List
+                    listBody.appendChild(renderInvoiceRow(data));
+                    // Populate Grid
+                    gridBody.appendChild(renderInvoiceCard(data));
+                });
+
+                if (allInvoices.length === 0) {
+                    emptyState.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Error loading invoices:", err);
+                const errMsg = `<tr><td colspan="5" style="text-align:center; color:#ff6b6b; padding:40px;">Fout bij laden: ${err.message}</td></tr>`;
+                listBody.innerHTML = errMsg;
+                gridBody.innerHTML = `<p style="text-align:center; color:#ff6b6b; padding:20px;">Fout bij laden.</p>`;
+            } finally {
+                loader.style.display = 'none';
+            }
+        };
+
+        function renderInvoiceRow(data) {
+            const tr = document.createElement('tr');
+            const total = data.totalAmount || 0;
+            const fmtEUR = (val) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(val);
+            const previewUrl = `invoice.html?id=${data.id}&token=${data.secretToken}`;
+
+            tr.innerHTML = `
+                <td><span class="invoice-row-id">${data.invoiceId || 'NOG GEEN'}</span></td>
+                <td><span class="invoice-row-date">${data.receivedDate || data.checkIn || '—'}</span></td>
+                <td>
+                    <div class="invoice-row-guest">${data.guestName || '—'}</div>
+                    <div style="font-size:0.75rem; color:#64748b;">${data.id}</div>
+                </td>
+                <td class="invoice-row-amount">${fmtEUR(total)}</td>
+                <td>
+                    <div style="display:flex; gap:8px; justify-content:flex-end;">
+                        <a href="${previewUrl}" target="_blank" class="view-toggle-btn active" style="padding: 4px 8px;" title="Bekijk Voorbeeld">
+                            <i class="ph ph-eye"></i>
+                        </a>
+                    </div>
+                </td>
+            `;
+            return tr;
+        }
+
+        function renderInvoiceCard(data) {
+            const div = document.createElement('div');
+            const previewUrl = `invoice.html?id=${data.id}&token=${data.secretToken}`;
+            
+            div.className = 'invoice-grid-item'; // Wrapper for any extra padding
+            div.innerHTML = `
+                <a href="${previewUrl}" target="_blank" class="invoice-card">
+                    <div class="pdf-icon-wrapper">
+                        <div class="pdf-lines">
+                            <div class="pdf-line"></div>
+                            <div class="pdf-line"></div>
+                            <div class="pdf-line"></div>
+                            <div class="pdf-line"></div>
+                        </div>
+                        <div class="pdf-red-band">PDF</div>
+                    </div>
+                    <div class="invoice-card__id">${data.invoiceId || 'NOG GEEN'}</div>
+                    <div class="invoice-card__guest">${data.guestName || 'Gast'}</div>
+                    <div class="invoice-card__date">${data.receivedDate || data.checkIn || '—'}</div>
+                </a>
+            `;
+            return div;
+        }
+
+        window.filterInvoiceTable = function() {
+            const searchVal = document.getElementById('invoice-search').value.toLowerCase();
+            const yearVal = document.getElementById('invoice-filter-year').value;
+            const rows = document.querySelectorAll('#invoices-list-body tr');
+            const cards = document.querySelectorAll('.invoice-grid-item');
+            
+            let visibleCount = 0;
+
+            // Filter List rows
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const matches = text.includes(searchVal) && (yearVal === "" || text.includes(yearVal));
+                row.style.display = matches ? '' : 'none';
+                if (matches) visibleCount++;
+            });
+
+            // Filter Grid cards
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                const matches = text.includes(searchVal) && (yearVal === "" || text.includes(yearVal));
+                card.style.display = matches ? '' : 'none';
+            });
+
+        };

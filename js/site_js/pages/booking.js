@@ -426,9 +426,12 @@ const GipfelBooking = {
                             // 1. Get next sequential ID via transaction
                             const generateData = await runTransaction(db, async (transaction) => {
                                 const counterDoc = await transaction.get(counterRef);
+                                const bookingYear = new Date().getFullYear();
+                                const invYearKey = `lastInvoiceNumber_${bookingYear}`;
+
                                 // If counter doesn't exist, start high (e.g., from 615)
                                 let currentNum = counterDoc.exists() ? (counterDoc.data().lastBookingNumber || 0) : 615;
-                                let currentInv = counterDoc.exists() ? (counterDoc.data().lastInvoiceNumber || 1000) : 1000;
+                                let currentInv = counterDoc.exists() ? (counterDoc.data()[invYearKey] || 1000) : 1000;
                                 
                                 let uniqueFound = false;
                                 let attemptNum = currentNum + 1;
@@ -449,14 +452,14 @@ const GipfelBooking = {
 
                                 transaction.set(counterRef, { 
                                     lastBookingNumber: attemptNum,
-                                    lastInvoiceNumber: nextInv 
+                                    [invYearKey]: nextInv 
                                 }, { merge: true });
                                 
-                                return { bookingNum: attemptNum, invoiceNum: nextInv };
+                                return { bookingNum: attemptNum, invoiceNum: nextInv, year: bookingYear };
                             });
 
                             const bookingId = `Gipfel-${String(generateData.bookingNum).padStart(6, '0')}`;
-                            const invoiceId = `F${new Date().getFullYear()}-${String(generateData.invoiceNum).padStart(4, '0')}`;
+                            const invoiceId = `F${generateData.year}-${String(generateData.invoiceNum).padStart(4, '0')}`;
                             console.log("Generated Booking ID:", bookingId, "Invoice ID:", invoiceId);
 
                             // 2. Generate Secret Token for hosted invoice
