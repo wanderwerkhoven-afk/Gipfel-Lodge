@@ -46,6 +46,49 @@
             if (p.startsWith('+34')) return { code: 'es', name: 'Spanje' };
             return null;
         }
+        
+        // --- PRICING DATA MANAGEMENT ---
+        let adminPricingMaps = {
+            old: {}, // From pricing_2026.json (before Feb 2nd 2026)
+            new: {}  // From pricing_2027.json (after Feb 2nd 2026)
+        };
+        let adminPricingLoaded = false;
+
+        function formatDateLocal(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        async function loadAdminPricingData() {
+            if (adminPricingLoaded) return;
+            console.log("Loading Admin Pricing Data (Old & New Versions)...");
+            try {
+                // Fetch both versions: 2026.json (Old) and 2027.json (New)
+                const [resOld, resNew] = await Promise.all([
+                    fetch('pricing_sources/pricing_2026.json'),
+                    fetch('pricing_sources/pricing_2027.json')
+                ]);
+                
+                if (resOld.ok) {
+                    const data = await resOld.json();
+                    data.forEach(item => { adminPricingMaps.old[item.datum] = item; });
+                }
+                if (resNew.ok) {
+                    const data = await resNew.json();
+                    data.forEach(item => { adminPricingMaps.new[item.datum] = item; });
+                }
+                adminPricingLoaded = true;
+                console.log("Admin Pricing Maps loaded:", { 
+                    old: Object.keys(adminPricingMaps.old).length, 
+                    new: Object.keys(adminPricingMaps.new).length 
+                });
+            } catch(e) {
+                console.error("Error fetching admin pricing JSONs", e);
+            }
+        }
 
         function detectLanguage(phone, bookingData = null) {
             if (bookingData) {
@@ -635,6 +678,38 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // Sub-navigation for Kostenposten (Cleaning, Mobility, Tourist Tax)
+        function switchKostenpostenTab(tabId, el) {
+            // Update active tab buttons
+            const tabButtons = document.querySelectorAll('.kp-tab');
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.background = 'transparent';
+                btn.style.color = '#64748b';
+                btn.style.boxShadow = 'none';
+            });
+            
+            if (el) {
+                el.classList.add('active');
+                el.style.background = '#fff';
+                el.style.color = 'var(--color-gold)';
+                el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+            }
+
+            // Update tab panes visibility
+            const panes = document.querySelectorAll('.kp-pane');
+            panes.forEach(pane => {
+                pane.style.display = 'none';
+                pane.classList.remove('active');
+            });
+
+            const targetPane = document.getElementById('kp-tab-' + tabId);
+            if (targetPane) {
+                targetPane.style.display = 'block';
+                targetPane.classList.add('active');
+            }
+        }
+
         function filterBookings(status, el) {
             // Update active state of buttons
             const parent = el.closest('.filter-bar');
@@ -1002,8 +1077,8 @@
                 const pointerStyle = s.tmpl ? 'cursor: pointer;' : '';
 
                 let iconHtml = s.done
-                    ? `<span class="hub-step-icon icon-check" style="color: #6b21a8; font-size: 1.2rem; font-weight: bold; cursor: pointer; padding: 4px;" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', false)">✓</span>`
-                    : `<span class="hub-step-icon icon-wait" style="font-size: 1.2rem; cursor: pointer; padding: 4px;" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', true)">⏳</span>`;
+                    ? `<span class="hub-step-icon icon-check" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', false)">✓</span>`
+                    : `<span class="hub-step-icon icon-wait" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', true)">⏳</span>`;
 
                 let badgeHtml = isNext ? `<span class="badge-next-step">VOLGENDE STAP</span>` : '';
 
@@ -1013,17 +1088,18 @@
                 if (idx + 1 === recStep) extraClasses += ' recommended-step';
 
                 html += `
-                    <div class="hub-step ${extraClasses}" style="${pointerStyle}" ${clickAttr}>
-                        <div class="hub-step-title" style="display: flex; align-items: center;">
-                            <span class="hub-step-text">
-                                ${s.title}
-                            </span>
+                    <div class="hub-step-row ${extraClasses}" style="${pointerStyle}" ${clickAttr} data-step-key="${s.key}">
+                        <div class="hub-step-info">
+                            <span class="hub-step-title-text">${s.title}</span>
                             ${badgeHtml}
                         </div>
-                        ${iconHtml}
+                        <div class="hub-step-action">
+                            ${iconHtml}
+                        </div>
                     </div>
                 `;
             });
+
 
             list.innerHTML = html;
         }
@@ -1202,16 +1278,16 @@
         }
 
         async function loadMailChain() {
-            const list = document.getElementById('mailchain-list');
             const loader = document.getElementById('mailchain-loader');
             const prioList = document.getElementById('prio-list');
             const prioSection = document.getElementById('prio-section');
             const prioCountBadge = document.getElementById('prio-count');
+            const emptyMsg = document.getElementById('prio-empty-msg');
 
-            list.innerHTML = '';
-            prioList.innerHTML = '';
             loader.style.display = 'block';
             prioSection.style.display = 'none';
+            if (prioList) prioList.innerHTML = '';
+            if (emptyMsg) emptyMsg.style.display = 'none';
 
             const prioItems = [];
             let prioHtml = '';
@@ -1223,28 +1299,17 @@
 
                 loader.style.display = 'none';
 
-                let matchCount = 0;
                 const now = new Date();
 
-                // Sort bookings by check-in date (closest first)
-                const bookings = [];
+                // Process bookings for priority tasks
                 querySnapshot.forEach(doc => {
-                    bookings.push({ id: doc.id, ...doc.data() });
-                });
-                bookings.sort((a, b) => new Date(a.checkIn) - new Date(b.checkIn));
-
-                bookings.forEach(data => {
-                    matchCount++;
+                    const data = { id: doc.id, ...doc.data() };
                     const recStep = getRecommendedStep(data, now);
                     
-                    // CHECK FOR PRIORITY TASK
                     if (recStep > 0) {
                         prioCount++;
                         prioItems.push({ data, recStep });
                     }
-
-                    const card = renderBookingCardHTML(data, 'mailchain', now);
-                    list.appendChild(card);
                 });
 
                 // SORT PRIO ITEMS: Step 2 first, then by check-in date
@@ -1275,11 +1340,11 @@
                                     ${item.recStep === 2 ? '<span style="font-size:0.6rem; background:#fee2e2; color:#b91c1c; padding:2px 6px; border-radius:4px; margin-left:8px;">NIEUWE AANVRAAG</span>' : ''}
                                 </div>
                                 <div class="prio-item-task">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-gold);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    <i class="ph ph-clock-countdown" style="color:var(--color-gold);"></i>
                                     ${taskName}
                                 </div>
                             </div>
-                            <button class="prio-item-btn" onclick="document.getElementById('mc-card-${item.data.id}').scrollIntoView({behavior:'smooth'}); setTimeout(()=>openCommunicationHub('${item.data.id}'), 500);">
+                            <button class="prio-item-btn" onclick="openCommunicationHub('${item.data.id}')">
                                 BEHANDELEN
                             </button>
                         </div>
@@ -1293,10 +1358,7 @@
                     prioSection.style.display = 'block';
                 } else {
                     prioSection.style.display = 'none';
-                }
-
-                if (matchCount === 0) {
-                    list.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.6; padding: 40px;">Geen boekingen of aanvragen gevonden voor de mail-chain.</p>`;
+                    if (emptyMsg) emptyMsg.style.display = 'block';
                 }
 
             } catch (err) {
@@ -2729,7 +2791,16 @@
 
             } catch (err) {
                 console.error("Sending failed:", err);
-                alert("Verzenden mislukt: " + (err.text || err.message || "Onbekende fout"));
+                const isRejection = document.getElementById('composer-template-select').value === 'rejection';
+                
+                if (isRejection) {
+                    // Even if mail fails, we mark as declined as requested
+                    alert("Verzenden mislukt: " + (err.text || err.message || "Onbekende fout") + "\n\nDe boeking is desondanks gemarkeerd als GEWEIGERD in het systeem.");
+                    autoCheckMailStep('rejection');
+                } else {
+                    alert("Verzenden mislukt: " + (err.text || err.message || "Onbekende fout"));
+                }
+
                 btn.innerHTML = '❌ Fout';
                 btn.style.background = '#e74c3c';
                 setTimeout(() => {
@@ -2738,6 +2809,7 @@
                     btn.disabled = false;
                 }, 3000);
             }
+
         }
 
         // Handle escape key to close modal
@@ -2756,6 +2828,9 @@
         async function initImportView() {
             if (_importInitialized) return;
             _importInitialized = true;
+
+            // Load Pricing Data
+            loadAdminPricingData();
 
             // Lazy-load SheetJS
             if (!_xlsxLoaded) {
@@ -2814,6 +2889,8 @@
         }
 
         async function importProcessFile(file) {
+            await loadAdminPricingData(); // Ensure pricing is loaded
+
             const ab = await file.arrayBuffer();
             const wb = XLSX.read(ab, { type: 'array', cellDates: true });
             const ws = wb.Sheets[wb.SheetNames[0]];
@@ -2833,7 +2910,6 @@
                 const children = Number(row[col['Knd.']] || 0);
                 const babies = Number(row[col['Bab.']] || 0);
                 const nights = Number(row[col['Nachten']] || 0);
-                const totalAmount = parseFloat(String(row[col['Inkomsten']] || '0').replace(',', '.')) || 0;
                 
                 if (!raw) continue;
                 const parts = raw.split('|');
@@ -2855,7 +2931,36 @@
                 // Booking Date / Year identification
                 const rawBookingDate = row[col['Datum']] || row[col['Boekingsdatum']] || row[col['Geboekt op']];
                 const bookingDateParsed = importParseDate(rawBookingDate);
+                const bookingDateStr = bookingDateParsed ? formatDateLocal(new Date(bookingDateParsed)) : '';
                 const bookingYear = bookingDateParsed ? new Date(bookingDateParsed).getFullYear() : new Date(checkIn).getFullYear();
+
+                // --- Calculate Rent from Pricing JSON ---
+                let rent = 0;
+                let hasPricingError = false;
+                let usedPriceVersion = '2026';
+
+                if (!isOwner) {
+                    const threshold = '2026-02-02';
+                    const isNewPrice = bookingDateStr && bookingDateStr >= threshold;
+                    const targetMap = isNewPrice ? adminPricingMaps.new : adminPricingMaps.old;
+                    usedPriceVersion = isNewPrice ? '2027' : '2026';
+
+                    const start = new Date(checkIn);
+                    const end = new Date(checkOut);
+                    let tempDate = new Date(start);
+                    for (let i = 0; i < nights; i++) {
+                        const dateStr = formatDateLocal(tempDate);
+                        const priceObj = targetMap[dateStr];
+                        if (priceObj && priceObj.dagprijs !== undefined) {
+                            rent += priceObj.dagprijs;
+                        } else {
+                            hasPricingError = true;
+                        }
+                        tempDate.setDate(tempDate.getDate() + 1);
+                    }
+                }
+
+                const totalAmount = isOwner ? 0 : (rent + cleaning + bedLinen + touristTax + mobilityFee);
 
                 _importParsed.push({
                     id, sourceId, platform,
@@ -2868,18 +2973,20 @@
                     guestZipcode: '',
                     guestCity: '',
                     checkIn, checkOut,
-                    nights: Number(row[col['Nachten']] || 0),
+                    nights: nights,
                     adults: adults,
                     children: children,
                     babies: babies,
                     totalAmount: totalAmount,
                     message: String(row[col['Opmerking']] || '').trim(),
-                    rent: isOwner ? 0 : totalAmount - (cleaning + bedLinen + touristTax + mobilityFee),
+                    rent: rent,
                     cleaning: cleaning,
                     bedLinen: bedLinen,
                     touristTax: touristTax,
                     mobilityFee: mobilityFee,
                     bookingYear: bookingYear, // Needed for invoice ID
+                    hasPricingError: hasPricingError,
+                    usedPriceVersion: usedPriceVersion,
                     secretToken: Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8)
                 });
             }
@@ -2904,9 +3011,13 @@
                     ? `<span class="status-badge" style="background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;">Bestaat</span>`
                     : `<span class="status-badge" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;">Nieuw</span>`;
                 
+                const pricingBadge = b.hasPricingError 
+                    ? `<span class="status-badge" style="background:#fef2f2;color:#dc2626;border:1px solid #fee2e2;margin-left:4px;" title="Let op: Sommige data ontbreken in de prijs-JSON. Huur is mogelijk onvolledig.">⚠ Prijs Mist</span>`
+                    : `<span class="status-badge" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;margin-left:4px;">v${b.usedPriceVersion}</span>`;
+
                 rowsHtml.push(`
                     <tr>
-                        <td>${statusBadge}</td>
+                        <td>${statusBadge}${pricingBadge}</td>
                         <td style="font-family:monospace;font-size:0.75rem;">${b.id}</td>
                         <td style="font-size:0.75rem;color:#94a3b8;">${b.sourceId}</td>
                         <td>${b.guestName || '<em style="color:#94a3b8">Eigenaar</em>'}</td>
@@ -3123,6 +3234,51 @@
             loadInvoices();
         };
 
+        // --- Invoice Sort Dropdown Controller ---
+        window.toggleInvoiceSortDropdown = function(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('invoice-sort-dropdown');
+            const caret = document.getElementById('invoice-sort-caret');
+            const isOpen = dd && dd.style.display === 'block';
+            if (dd) dd.style.display = isOpen ? 'none' : 'block';
+            if (caret) caret.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+        };
+
+        window.setInvoiceSort = function(sortValue, label, el) {
+            // Update hidden select value (used by loadInvoices)
+            const sel = document.getElementById('invoice-sort');
+            if (sel) sel.value = sortValue;
+            // Update visible button label
+            const lbl = document.getElementById('invoice-sort-label');
+            if (lbl) lbl.textContent = label;
+            // Highlight active sort option
+            document.querySelectorAll('.inv-sort-option').forEach(opt => {
+                const active = opt.dataset.sort === sortValue;
+                opt.style.background = active ? '#f8fafc' : '';
+                opt.style.color = active ? 'var(--color-gold)' : '';
+                opt.style.fontWeight = active ? '700' : '';
+            });
+            // Close dropdown & reset caret
+            const dd = document.getElementById('invoice-sort-dropdown');
+            const caret = document.getElementById('invoice-sort-caret');
+            if (dd) dd.style.display = 'none';
+            if (caret) caret.style.transform = 'rotate(0deg)';
+            // Persist and reload
+            localStorage.setItem('gipfel_invoice_sort', sortValue);
+            loadInvoices();
+        };
+
+        // Close sort dropdown on outside click
+        document.addEventListener('click', function(e) {
+            const wrap = document.querySelector('.invoice-sort-wrap');
+            if (wrap && !wrap.contains(e.target)) {
+                const dd = document.getElementById('invoice-sort-dropdown');
+                const caret = document.getElementById('invoice-sort-caret');
+                if (dd) dd.style.display = 'none';
+                if (caret) caret.style.transform = 'rotate(0deg)';
+            }
+        });
+
         window.loadInvoices = async function() {
             const listBody = document.getElementById('invoices-list-body');
             const gridBody = document.getElementById('invoices-grid-body');
@@ -3141,6 +3297,11 @@
             document.querySelectorAll('.invoice-view-content').forEach(el => el.classList.remove('active'));
             document.getElementById(`invoices-${currentInvoiceView}-container`)?.classList.add('active');
 
+            // Sort preference
+            const sortType = document.getElementById('invoice-sort')?.value || localStorage.getItem('gipfel_invoice_sort') || 'date_desc';
+            if (document.getElementById('invoice-sort')) document.getElementById('invoice-sort').value = sortType;
+            localStorage.setItem('gipfel_invoice_sort', sortType);
+
             try {
                 const { db, collection, getDocs, query } = await import('../site_js/core/firebase.js');
                 const querySnapshot = await getDocs(collection(db, "bookings"));
@@ -3154,9 +3315,37 @@
                 });
 
                 allInvoices.sort((a, b) => {
-                    const dateA = new Date(a.checkIn || 0);
-                    const dateB = new Date(b.checkIn || 0);
-                    return dateB - dateA;
+                    if (sortType === 'checkin_asc') {
+                        // Sort by check-in date ascending (eerstvolgende boeking)
+                        const now = new Date();
+                        const dateA = new Date(a.checkIn || 0);
+                        const dateB = new Date(b.checkIn || 0);
+                        // Future bookings first (ascending from today), past bookings last
+                        const aFuture = dateA >= now;
+                        const bFuture = dateB >= now;
+                        if (aFuture && !bFuture) return -1;
+                        if (!aFuture && bFuture) return 1;
+                        return dateA - dateB;
+                    } else if (sortType === 'guest_az') {
+                        return (a.guestName || '').localeCompare(b.guestName || '');
+                    } else if (sortType === 'invoice_asc') {
+                        if (!a.invoiceId) return 1;
+                        if (!b.invoiceId) return -1;
+                        return a.invoiceId.localeCompare(b.invoiceId);
+                    } else if (sortType === 'invoice_desc') {
+                        if (!a.invoiceId) return 1;
+                        if (!b.invoiceId) return -1;
+                        return b.invoiceId.localeCompare(a.invoiceId);
+                    } else if (sortType === 'date_asc') {
+                        const dateA = new Date(a.checkIn || 0);
+                        const dateB = new Date(b.checkIn || 0);
+                        return dateA - dateB;
+                    } else {
+                        // Default: date_desc
+                        const dateA = new Date(a.checkIn || 0);
+                        const dateB = new Date(b.checkIn || 0);
+                        return dateB - dateA;
+                    }
                 });
 
                 allInvoices.forEach(data => {
@@ -3176,6 +3365,7 @@
                 gridBody.innerHTML = `<p style="text-align:center; color:#ff6b6b; padding:20px;">Fout bij laden.</p>`;
             } finally {
                 loader.style.display = 'none';
+                filterInvoiceTable(); // Maintain filter state after reload/sort
             }
         };
 

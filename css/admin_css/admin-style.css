@@ -1572,80 +1572,131 @@
         .hub-step-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
         }
 
-        .hub-step {
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 16px 20px;
+        .hub-step-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.2s;
+            padding: 14px 20px;
+            transition: all 0.2s ease;
+            position: relative;
+            background: #fff;
         }
 
-        .hub-step:hover {
-            border-color: #cbd5e1;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        .hub-step-row:not(:last-child) {
+            border-bottom: 1px solid #f1f5f9;
         }
 
-        .hub-step.completed {
-            background-color: #f8fafc;
-            border-color: #f1f5f9;
-            box-shadow: none;
-        }
-
-        .hub-step.completed .hub-step-text {
-            color: #94a3b8;
-        }
-
-        .hub-step-next {
-            border: 1.5px solid var(--color-gold);
+        .hub-step-row:hover {
             background: #fcfbf8;
-            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.1);
-            transition: all 0.3s ease;
         }
 
-        .hub-step-next:hover {
-            border-color: var(--color-gold) !important;
-            background: #fffdf7 !important;
-            box-shadow: 0 6px 20px rgba(197, 160, 89, 0.3) !important;
-            transform: translateY(-2px);
+        .hub-step-row.completed {
+            background-color: #fafbfc;
+        }
+
+        .hub-step-row.completed .hub-step-title-text {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Next Step Highlight */
+        .hub-step-row.hub-step-next {
+            z-index: 1;
+            background: linear-gradient(to right, #fffdf7, #fff);
+        }
+        
+        .hub-step-row.hub-step-next::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--color-gold);
+        }
+
+        .hub-step-row.hub-step-next:hover {
+            background: #fffdf7;
+        }
+
+        /* Recommended Step Indicator */
+        .hub-step-row.recommended-step {
+            background: rgba(197, 160, 89, 0.03);
         }
 
         .badge-next-step {
             background: var(--color-gold);
             color: #fff;
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 3px 8px;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 8px;
             border-radius: 4px;
             margin-left: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
+            box-shadow: 0 2px 4px rgba(197, 160, 89, 0.2);
         }
 
-        .hub-step-title {
-            font-size: 0.95rem;
-            color: var(--color-slate);
-            font-weight: 600;
-        }
-
-        .hub-step-icon {
-            font-size: 1.1rem;
+        .hub-step-info {
             display: flex;
             align-items: center;
         }
 
+        .hub-step-title-text {
+            font-size: 0.92rem;
+            color: var(--color-slate);
+            font-weight: 600;
+        }
+
+        .hub-step-action {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hub-step-icon {
+            font-size: 1.2rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .hub-step-icon:hover {
+            background: rgba(0,0,0,0.05);
+            transform: scale(1.1);
+        }
+
         .icon-check {
-            color: #6b21a8;
+            color: #2ecc71; /* Changed to green for better clarity */
             font-weight: bold;
         }
 
         .icon-wait {
-            color: #c47e09;
+            color: #94a3b8;
+            opacity: 0.6;
+        }
+
+        .hub-step-next .icon-wait {
+            color: var(--color-gold);
+            opacity: 1;
+            animation: pulse-gold 2s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
         }
 
         /* Email Editor Tab Styles */
@@ -2677,4 +2728,31 @@
             background: #fffbeb;
             color: #d97706;
             border: 1px solid #fef3c7;
+        }
+
+        /* Kostenposten Sub-navigation Tabs */
+        .kp-tab {
+            color: #64748b;
+            background: transparent;
+        }
+
+        .kp-tab:hover {
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--color-gold);
+        }
+
+        .kp-tab.active {
+            background: #ffffff !important;
+            color: var(--color-gold) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .kp-pane {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Invoice Sort Dropdown Option Hover */
+        .inv-sort-option:hover {
+            background: #f8fafc !important;
+            color: var(--color-gold) !important;
         }
