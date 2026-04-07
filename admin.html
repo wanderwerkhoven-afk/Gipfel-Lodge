@@ -840,6 +840,54 @@
         </div>
     </div>
 
+    <!-- BETAALSTATUS MODAL -->
+    <div id="payment-status-modal" onclick="if(event.target===this) closePaymentModal()">
+        <div class="pay-modal__box">
+            <div class="pay-modal__header">
+                <div>
+                    <p class="pay-modal__title" id="pay-modal-title">Betaalstatus bijwerken</p>
+                    <p class="pay-modal__subtitle" id="pay-modal-subtitle">—</p>
+                </div>
+                <button class="pay-modal__close" onclick="closePaymentModal()">✕</button>
+            </div>
+
+            <div class="pay-modal__body">
+                <!-- Huidige status -->
+                <div class="pay-modal__current-status" id="pay-modal-current">
+                    <div class="pay-modal__status-dot" id="pay-modal-status-dot"></div>
+                    <span id="pay-modal-status-label">—</span>
+                </div>
+
+                <!-- Betaaltermijnen -->
+                <div class="pay-modal__deadlines">
+                    <div class="pay-dl-row">
+                        <span class="pay-dl-label">
+                            <div class="pay-dl-dot" style="background:#f59e0b;"></div>
+                            Aanbetalingstermijn
+                        </span>
+                        <span class="pay-dl-date" id="pay-modal-deposit-dl">—</span>
+                    </div>
+                    <div class="pay-dl-row">
+                        <span class="pay-dl-label">
+                            <div class="pay-dl-dot" style="background:#64748b;"></div>
+                            Volledige betalingstermijn
+                        </span>
+                        <span class="pay-dl-date" id="pay-modal-balance-dl">—</span>
+                    </div>
+                </div>
+
+                <!-- Actieknoppen (dynamisch ingevuld) -->
+                <div class="pay-modal__actions" id="pay-modal-actions">
+                    <!-- Buttons injected by JS -->
+                </div>
+            </div>
+
+            <div class="pay-modal__footer" id="pay-modal-footer">
+                <!-- Reset knop voor superuser (optioneel) -->
+            </div>
+        </div>
+    </div>
+
     <!-- Excel Import Logic (Superuser only) -->
     <script src="js/admin_js/admin-core.js"></script>
 

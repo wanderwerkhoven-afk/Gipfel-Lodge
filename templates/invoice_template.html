@@ -400,22 +400,7 @@
         </div>
 
         <!-- PAYMENT OPTIONS -->
-        <div class="payment-options">
-            <h3>Payment Overview</h3>
-            <div class="option-grid">
-                <div class="option-card">
-                    <span class="option-title">Option 1: Down Payment (30%)</span>
-                    <span class="option-amount">{{depositAmount}}</span>
-                    <p class="option-note">To be paid immediately to confirm.</p>
-                </div>
-                <div class="option-card highlight">
-                    <span class="option-title">Option 2: Full Amount</span>
-                    <span class="option-amount">{{totalAmount}}</span>
-                    <p class="option-note">Pay the full amount at once.</p>
-                </div>
-            </div>
-            <p class="payment-deadline">If you choose the down payment, the remaining balance of <strong>{{balanceAmount}}</strong> must be paid at least 6 weeks prior to arrival.</p>
-        </div>
+        {{paymentOptionsHTML}}
 
         <p class="notice">
             If you do not agree with this invoice, please notify us within 5 working days.

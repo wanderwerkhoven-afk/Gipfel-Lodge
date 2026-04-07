@@ -1303,6 +1303,18 @@
             gap: 10px;
         }
 
+        .payment-toggle.skipped {
+            opacity: 0.45;
+            pointer-events: none;
+            cursor: default;
+        }
+        .payment-toggle.skipped span {
+            text-decoration: line-through rgba(0,0,0,0.15);
+        }
+        .payment-toggle.skipped .status-icon-toggle {
+            display: none; /* Hide icon like hourglass */
+        }
+
         .tile-section-label {
             display: block;
             font-size: 0.7rem;
@@ -1619,6 +1631,25 @@
             bottom: 0;
             width: 4px;
             background: var(--color-gold);
+        }
+
+        /* Skipped Step (Payment already done) */
+        .hub-step-row.hub-step-skipped {
+            opacity: 0.55;
+            pointer-events: none; /* Disable manual clicks if skipped by payment */
+            cursor: default !important;
+            background-color: #f8fafc !important;
+        }
+        .hub-step-row.hub-step-skipped .hub-step-title-text {
+            color: #94a3b8;
+            text-decoration: line-through rgba(148, 163, 184, 0.4);
+            font-weight: 400;
+        }
+        .hub-step-row.hub-step-skipped.hub-step-next::before {
+            background: #cbd5e1; /* Gray border instead of gold */
+        }
+        .hub-step-row.hub-step-skipped .icon-wait {
+            display: none; /* Hide hourglass */
         }
 
         .hub-step-row.hub-step-next:hover {
@@ -2654,22 +2685,46 @@
         .pdf-line:nth-child(3) { width: 90%; }
         .pdf-line:nth-child(4) { width: 60%; }
 
-        .pdf-red-band {
+        /* PDF STATUS BAND — dynamisch gekleurde statusband op PDF-icoon */
+        .pdf-status-band {
             position: absolute;
             top: 50%;
             left: -10%;
             width: 120%;
-            height: 24px;
-            background: #ef4444; /* Branded PDF red */
+            height: 26px;
             color: #fff;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 900;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             display: flex;
             align-items: center;
             justify-content: center;
             transform: translateY(-50%);
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Status 1 & 3: Oranje — NOG TE BETALEN / AANBETAALD */
+        .pdf-status-band--orange {
+            background: #f59e0b;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.45);
+        }
+
+        /* Status 2: Rood — AANBETALING VERVALLEN */
+        .pdf-status-band--red {
+            background: #ef4444;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
+        }
+
+        /* Status 4: Donkerrood — RESTBETALING VERVALLEN */
+        .pdf-status-band--darkred {
+            background: #b91c1c;
+            box-shadow: 0 2px 6px rgba(185, 28, 28, 0.45);
+        }
+
+        /* Status 5: Groen — VOLLEDIG BETAALD */
+        .pdf-status-band--green {
+            background: #22c55e;
+            box-shadow: 0 2px 6px rgba(34, 197, 94, 0.45);
         }
 
         .invoice-card__id {
@@ -2694,6 +2749,306 @@
             font-size: 0.75rem;
             color: #94a3b8;
             font-weight: 500;
+        }
+
+        /* Betalingstermijn info op de kaart */
+        .invoice-card__deadlines {
+            margin-top: 10px;
+            width: 100%;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .inv-deadline-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.68rem;
+            color: #94a3b8;
+        }
+
+        .inv-deadline-row span:first-child {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #cbd5e1;
+        }
+
+        .inv-deadline-row .inv-dl-val {
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .inv-dl-val.is-overdue {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        .inv-dl-val.is-paid {
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        /* Betaal-knop op de factuurkaart */
+        .invoice-card__pay-btn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+
+        .invoice-card__pay-btn:hover {
+            background: var(--color-gold);
+            border-color: var(--color-gold);
+            color: #fff;
+        }
+
+        /* Status badge in lijst-weergave */
+        .inv-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .inv-status-badge--orange  { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+        .inv-status-badge--red     { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .inv-status-badge--darkred { background: #fef2f2; color: #7f1d1d; border: 1px solid #fca5a5; }
+        .inv-status-badge--green   { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+        /* ============================================================
+           BETAALSTATUS MODAL
+           ============================================================ */
+        #payment-status-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #payment-status-modal.is-open {
+            display: flex;
+        }
+
+        .pay-modal__box {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+            animation: payModalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes payModalIn {
+            from { opacity: 0; transform: scale(0.92) translateY(16px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .pay-modal__header {
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .pay-modal__title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--color-slate);
+            margin: 0 0 2px;
+            font-family: var(--font-heading);
+        }
+
+        .pay-modal__subtitle {
+            font-size: 0.82rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .pay-modal__close {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .pay-modal__close:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .pay-modal__body {
+            padding: 20px 28px;
+        }
+
+        /* Betaaltermijnen info blok */
+        .pay-modal__deadlines {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pay-dl-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .pay-dl-label {
+            font-weight: 600;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pay-dl-date {
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .pay-dl-date.is-overdue {
+            color: #ef4444;
+        }
+
+        .pay-dl-date.is-paid {
+            color: #22c55e;
+        }
+
+        .pay-dl-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Huidige status display */
+        .pay-modal__current-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .pay-modal__status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Actieknoppen in modal */
+        .pay-modal__actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pay-action-btn {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .pay-action-btn--deposit {
+            background: #fffbeb;
+            color: #92400e;
+            border: 2px solid #fde68a;
+        }
+
+        .pay-action-btn--deposit:hover {
+            background: #f59e0b;
+            color: #fff;
+            border-color: #f59e0b;
+        }
+
+        .pay-action-btn--full {
+            background: #f0fdf4;
+            color: #14532d;
+            border: 2px solid #bbf7d0;
+        }
+
+        .pay-action-btn--full:hover {
+            background: #22c55e;
+            color: #fff;
+            border-color: #22c55e;
+        }
+
+        .pay-action-btn--reset {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px dashed #e2e8f0;
+            font-size: 0.8rem;
+        }
+
+        .pay-action-btn--reset:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .pay-modal__footer {
+            padding: 0 28px 24px;
         }
 
         /* View-specific visibility */

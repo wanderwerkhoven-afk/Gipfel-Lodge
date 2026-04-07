@@ -922,6 +922,17 @@
                         <!-- Steps 3-8 -->
                         ${['depositReminder', 'depositReceived', 'balanceReminder', 'balanceReceived', 'preStayInfo', 'postStay'].map((key, i) => {
                             const stepIdx = i + 3;
+                            const ps = data.paymentStatus || 'unpaid';
+                            let isSkipped = false;
+
+                            // Sync Logic (Same as Hub Modal)
+                            if (stepIdx === 3 && ps !== 'unpaid') isSkipped = true;
+                            if (ps === 'fully_paid' && (stepIdx === 4 || stepIdx === 5)) isSkipped = true;
+
+                            // If already manual done, don't show as skipped?
+                            // Actually, let's keep it gray if already paid.
+                            if (mc[key]) isSkipped = false;
+
                             const titleMap = {
                                 'depositReminder': '3. Aanbetaling herinnering',
                                 'depositReceived': '4. Aanbetaling ontvangen melding',
@@ -939,27 +950,28 @@
                                 'postStay': 'post_stay'
                             };
 
+                            const isRec = (recStep === stepIdx);
+                            const rowClass = `payment-toggle ${isRec ? 'recommended-step' : ''} ${isSkipped ? 'skipped' : ''}`;
+
                             return `
-                                <div class="payment-toggle ${recStep === stepIdx ? 'recommended-step' : ''}" data-step-index="${stepIdx}">
+                                <div class="${rowClass}" data-step-index="${stepIdx}">
                                     <div style="display:flex; flex-direction:column; gap:4px;">
-                                        <span>${titleMap[key]}</span>
+                                        <span style="opacity: ${isSkipped ? '0.4' : '1'};">${titleMap[key]}</span>
                                         <a href="javascript:void(0)" 
                                             data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
                                             data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
                                             data-guests="${data.totalGuests || '-'}" 
                                             data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
                                             data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="${typeMap[key]}" 
-                                            onclick="openEmailComposer(this)" 
-                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
+                                            onclick="${isSkipped ? 'return false' : 'openEmailComposer(this)'}" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700; ${isSkipped ? 'opacity:0.3; cursor:default;' : ''}">✉ BEWERK & KOPIEER</a>
                                     </div>
                                     <div class="payment-toggle-controls">
                                         <span class="status-icon-toggle" 
                                             data-step-icon="${key}" 
                                             data-booking-id="${data.id}"
-                                            onclick="toggleMailStep('${data.id}', '${key}', ${!mc[key]})"
-                                            style="cursor: pointer; font-size: 1.25rem; transition: transform 0.1s; display: inline-block; width: 32px; text-align: center;"
-                                            onmousedown="this.style.transform='scale(0.9)'"
-                                            onmouseup="this.style.transform='scale(1)'"
+                                            onclick="${isSkipped ? '' : `toggleMailStep('${data.id}', '${key}', ${!mc[key]})`}"
+                                            style="${isSkipped ? 'display:none;' : 'cursor: pointer; font-size: 1.25rem; transition: transform 0.1s; display: inline-block; width: 32px; text-align: center;'}"
                                             title="Klik om status te wijzigen">
                                             ${mc[key] ? '<span style="color: #6b21a8; font-weight: bold;">✓</span>' : '⏳'}
                                         </span>
@@ -1001,10 +1013,17 @@
             if (isPending) return 2; // Accepteren / Weigeren
             
             if (isConfirmed) {
+                const ps = data.paymentStatus || 'unpaid';
                 // Return first actionable step that isn't already DONE (mc[key] is true)
-                if (!mc.depositReminder && !data.depositPaid) return 3;
-                if (!mc.depositReceived && data.depositPaid) return 4;
-                if (!mc.balanceReminder && !data.balancePaid && diffIn <= 45 && diffIn > 0) return 5;
+                // Skip 3 if already (aan)betaald
+                if (ps === 'unpaid' && !mc.depositReminder && !data.depositPaid) return 3;
+                
+                // Skip 4 if fully paid or already sent
+                if (ps !== 'fully_paid' && !mc.depositReceived && data.depositPaid) return 4;
+                
+                // Skip 5 if fully paid or already sent
+                if (ps !== 'fully_paid' && !mc.balanceReminder && !data.balancePaid && diffIn <= 45 && diffIn > 0) return 5;
+                
                 if (!mc.balanceReceived && data.balancePaid) return 6;
                 if (!mc.preStayInfo && diffIn <= 7 && diffIn >= -1) return 7;
                 if (!mc.postStay && diffOut >= 0 && diffOut <= 7) return 8;
@@ -1066,19 +1085,49 @@
             const diffOut = Math.ceil((today - dOut) / (1000 * 60 * 60 * 24));
 
             let recStep = getRecommendedStep(data, today);
+            const ps = data.paymentStatus || 'unpaid';
 
-            // Find first uncompleted step (next step)
-            let nextStepIndex = steps.findIndex(s => !s.done);
+            // Find first uncompleted step (next step) that is NOT skipped by payment
+            let nextStepIndex = steps.findIndex((s, idx) => {
+                if (s.done) return false;
+                const stepNum = idx + 1;
+                let sk = false;
+                if (stepNum === 3 && ps !== 'unpaid') sk = true;
+                if (ps === 'fully_paid' && (stepNum === 4 || stepNum === 5)) sk = true;
+                return !sk;
+            });
 
             let html = '';
-            steps.forEach((s, idx) => {
-                const isNext = (idx === nextStepIndex);
-                const clickAttr = s.tmpl ? `onclick="openPreloadedComposer('${s.tmpl}')"` : '';
-                const pointerStyle = s.tmpl ? 'cursor: pointer;' : '';
 
-                let iconHtml = s.done
-                    ? `<span class="hub-step-icon icon-check" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', false)">✓</span>`
-                    : `<span class="hub-step-icon icon-wait" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', true)">⏳</span>`;
+            steps.forEach((s, idx) => {
+                const stepNum = idx + 1;
+                let isSkipped = false;
+
+                // User logic:
+                // If deposit_paid or fully_paid -> Step 3 is skipped
+                if (stepNum === 3 && ps !== 'unpaid') isSkipped = true;
+                
+                // If fully_paid -> Steps 4 and 5 are also skipped
+                if (ps === 'fully_paid' && (stepNum === 4 || stepNum === 5)) isSkipped = true;
+
+                // If already done, we don't necessarily "skip" (it's completed), 
+                // but if it's skipped by payment, we show it as skipped.
+                // However, if the user manually did it (done is true), 
+                // we probably should show it as COMPLETED even if payment would skip it.
+                // Actually, the user wants it gray if paid.
+                if (s.done) isSkipped = false; // "Done" takes precedence over "Skipped" for visual state? 
+                // Wait, if it's done, it should look completed. If it's NOT done BUT payment is OK, it's skipped.
+
+                const isNext = (idx === nextStepIndex) && !isSkipped;
+                const clickAttr = (s.tmpl && !isSkipped) ? `onclick="openPreloadedComposer('${s.tmpl}')"` : '';
+                const pointerStyle = (s.tmpl && !isSkipped) ? 'cursor: pointer;' : '';
+
+                let iconHtml = '';
+                if (s.done) {
+                    iconHtml = `<span class="hub-step-icon icon-check" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', false)">✓</span>`;
+                } else if (!isSkipped) {
+                    iconHtml = `<span class="hub-step-icon icon-wait" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', true)">⏳</span>`;
+                }
 
                 let badgeHtml = isNext ? `<span class="badge-next-step">VOLGENDE STAP</span>` : '';
 
@@ -1086,6 +1135,7 @@
                 let extraClasses = isNext ? 'hub-step-next' : '';
                 if (s.done) extraClasses += ' completed';
                 if (idx + 1 === recStep) extraClasses += ' recommended-step';
+                if (isSkipped) extraClasses += ' hub-step-skipped';
 
                 html += `
                     <div class="hub-step-row ${extraClasses}" style="${pointerStyle}" ${clickAttr} data-step-key="${s.key}">
@@ -3341,10 +3391,22 @@
                         const dateB = new Date(b.checkIn || 0);
                         return dateA - dateB;
                     } else {
-                        // Default: date_desc
-                        const dateA = new Date(a.checkIn || 0);
-                        const dateB = new Date(b.checkIn || 0);
-                        return dateB - dateA;
+                        // Default: date_desc (Nieuwste eerst)
+                        const tA = (a.createdAt && a.createdAt.seconds) 
+                            ? a.createdAt.seconds * 1000 
+                            : new Date(a.receivedDate || a.checkIn || 0).getTime();
+                        const tB = (b.createdAt && b.createdAt.seconds) 
+                            ? b.createdAt.seconds * 1000 
+                            : new Date(b.receivedDate || b.checkIn || 0).getTime();
+                        
+                        if (!isNaN(tA) && !isNaN(tB)) {
+                            return tB - tA;
+                        }
+                        
+                        // Fallback fallback als receivedDate onzinnig was:
+                        const fbA = new Date(a.checkIn || 0).getTime();
+                        const fbB = new Date(b.checkIn || 0).getTime();
+                        return fbB - fbA;
                     }
                 });
 
@@ -3374,6 +3436,15 @@
             const total = data.totalAmount || 0;
             const fmtEUR = (val) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(val);
             const previewUrl = `invoice.html?id=${data.id}&token=${data.secretToken}`;
+            const status = getPaymentStatusInfo(data);
+            const deadlines = calcPaymentDeadlines(data);
+
+            const depositStr = deadlines.isMerged ? 'N.v.t.' : (deadlines.depositDeadline
+                ? deadlines.depositDeadline.toLocaleDateString('nl-NL', { day: '2-digit', month: 'short', year: 'numeric' })
+                : '—');
+            const balanceStr = deadlines.balanceDeadline
+                ? deadlines.balanceDeadline.toLocaleDateString('nl-NL', { day: '2-digit', month: 'short', year: 'numeric' })
+                : '—';
 
             tr.innerHTML = `
                 <td><span class="invoice-row-id">${data.invoiceId || 'NOG GEEN'}</span></td>
@@ -3384,10 +3455,24 @@
                 </td>
                 <td class="invoice-row-amount">${fmtEUR(total)}</td>
                 <td>
-                    <div style="display:flex; gap:8px; justify-content:flex-end;">
-                        <a href="${previewUrl}" target="_blank" class="view-toggle-btn active" style="padding: 4px 8px;" title="Bekijk Voorbeeld">
+                    <span class="inv-status-badge inv-status-badge--${status.colorClass}">${status.label}</span>
+                </td>
+                <td style="font-size:0.75rem; color:#64748b; line-height:1.6;">
+                    ${deadlines.isMerged 
+                        ? `<div>Direct / Volledig: <strong style="color:var(--color-darkred);">${balanceStr}</strong></div>`
+                        : `<div>Aanbetaling: <strong>${depositStr}</strong></div>
+                           <div>Volledig: <strong>${balanceStr}</strong></div>`
+                    }
+                </td>
+                <td>
+                    <div style="display:flex; gap:8px; justify-content:flex-end; align-items:center;">
+                        <a href="${previewUrl}" target="_blank" class="view-toggle-btn active" style="padding: 4px 8px;" title="Bekijk factuur">
                             <i class="ph ph-eye"></i>
                         </a>
+                        <button class="view-toggle-btn" style="padding:4px 8px; cursor:pointer;" title="Betaalstatus bijwerken"
+                            onclick="openPaymentModal('${data.id}')">
+                            <i class="ph ph-credit-card"></i>
+                        </button>
                     </div>
                 </td>
             `;
@@ -3397,23 +3482,60 @@
         function renderInvoiceCard(data) {
             const div = document.createElement('div');
             const previewUrl = `invoice.html?id=${data.id}&token=${data.secretToken}`;
-            
-            div.className = 'invoice-grid-item'; // Wrapper for any extra padding
+            const status = getPaymentStatusInfo(data);
+            const deadlines = calcPaymentDeadlines(data);
+
+            const depositStr = deadlines.depositDeadline
+                ? deadlines.depositDeadline.toLocaleDateString('nl-NL', { day: '2-digit', month: 'short' })
+                : '—';
+            const balanceStr = deadlines.balanceDeadline
+                ? deadlines.balanceDeadline.toLocaleDateString('nl-NL', { day: '2-digit', month: 'short' })
+                : '—';
+
+            const depositPaid = data.paymentStatus === 'deposit_paid' || data.paymentStatus === 'fully_paid';
+            const fullyPaid  = data.paymentStatus === 'fully_paid';
+
+            const depositClass = fullyPaid ? 'is-paid' : (depositPaid ? 'is-paid' : (deadlines.depositOverdue ? 'is-overdue' : ''));
+            const balanceClass = fullyPaid ? 'is-paid' : (deadlines.balanceOverdue ? 'is-overdue' : '');
+
+            div.className = 'invoice-grid-item';
             div.innerHTML = `
-                <a href="${previewUrl}" target="_blank" class="invoice-card">
-                    <div class="pdf-icon-wrapper">
-                        <div class="pdf-lines">
-                            <div class="pdf-line"></div>
-                            <div class="pdf-line"></div>
-                            <div class="pdf-line"></div>
-                            <div class="pdf-line"></div>
+                <div class="invoice-card" style="cursor:default;">
+                    <a href="${previewUrl}" target="_blank" style="display:contents; text-decoration:none; color:inherit;">
+                        <div class="pdf-icon-wrapper">
+                            <div class="pdf-lines">
+                                <div class="pdf-line"></div>
+                                <div class="pdf-line"></div>
+                                <div class="pdf-line"></div>
+                                <div class="pdf-line"></div>
+                            </div>
+                            <div class="pdf-status-band pdf-status-band--${status.colorClass}">${status.label}</div>
                         </div>
-                        <div class="pdf-red-band">PDF</div>
+                        <div class="invoice-card__id">${data.invoiceId || 'NOG GEEN'}</div>
+                        <div class="invoice-card__guest">${data.guestName || 'Gast'}</div>
+                        <div class="invoice-card__date">${data.receivedDate || data.checkIn || '—'}</div>
+                    </a>
+                    <div class="invoice-card__deadlines">
+                        ${deadlines.isMerged ? `
+                        <div class="inv-deadline-row" style="margin-top:6px;">
+                            <span>Direct Voldoen</span>
+                            <span class="inv-dl-val ${balanceClass}" style="color:var(--color-darkred);">${balanceStr}</span>
+                        </div>
+                        ` : `
+                        <div class="inv-deadline-row">
+                            <span>Aanbetaling</span>
+                            <span class="inv-dl-val ${depositClass}">${depositStr}</span>
+                        </div>
+                        <div class="inv-deadline-row">
+                            <span>Volledig</span>
+                            <span class="inv-dl-val ${balanceClass}">${balanceStr}</span>
+                        </div>
+                        `}
                     </div>
-                    <div class="invoice-card__id">${data.invoiceId || 'NOG GEEN'}</div>
-                    <div class="invoice-card__guest">${data.guestName || 'Gast'}</div>
-                    <div class="invoice-card__date">${data.receivedDate || data.checkIn || '—'}</div>
-                </a>
+                    <button class="invoice-card__pay-btn" onclick="openPaymentModal('${data.id}')">
+                        <i class="ph ph-credit-card"></i> Betaalstatus
+                    </button>
+                </div>
             `;
             return div;
         }
@@ -3441,4 +3563,299 @@
                 card.style.display = matches ? '' : 'none';
             });
 
+        };
+
+        // ============================================================
+        // BETAALSTATUS HELPERS
+        // ============================================================
+
+        /**
+         * Berekent de aanbetalingstermijn (14 dagen na boekingsdatum)
+         * en de volledige betalingstermijn (30 dagen voor check-in).
+         */
+        function calcPaymentDeadlines(data) {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+
+            let depositDeadline = null;
+            let balanceDeadline = null;
+            let isMerged = false;
+
+            // Bepaal de boekingsdatum zo exact mogelijk
+            const bookingDate = data.receivedDate
+                ? new Date(data.receivedDate)
+                : (data.createdAt && data.createdAt.seconds ? new Date(data.createdAt.seconds * 1000) : new Date());
+            
+            const checkInDate = data.checkIn ? new Date(data.checkIn) : null;
+
+            if (checkInDate && !isNaN(checkInDate) && bookingDate && !isNaN(bookingDate)) {
+                // Standaard termijnen
+                const stdDeposit = new Date(bookingDate);
+                stdDeposit.setDate(stdDeposit.getDate() + 14);
+                stdDeposit.setHours(0, 0, 0, 0);
+
+                const stdBalance = new Date(checkInDate);
+                stdBalance.setDate(stdBalance.getDate() - 42); // 6 weken ipv 30 dagen
+                stdBalance.setHours(0, 0, 0, 0);
+
+                if (stdBalance < bookingDate) {
+                    // Regel 1: Volledige Last-Minute (binnen 6 weken geboekt)
+                    // Ze krijgen 3 dagen, of uiterlijk incheck - 1 dag
+                    let urgentDl = new Date(bookingDate);
+                    urgentDl.setDate(urgentDl.getDate() + 3);
+                    urgentDl.setHours(0, 0, 0, 0);
+
+                    const maxDl = new Date(checkInDate);
+                    maxDl.setDate(maxDl.getDate() - 1);
+                    maxDl.setHours(0, 0, 0, 0);
+
+                    if (urgentDl > maxDl) urgentDl = maxDl;
+                    if (urgentDl < bookingDate) urgentDl = new Date(bookingDate);
+
+                    depositDeadline = new Date(urgentDl);
+                    balanceDeadline = new Date(urgentDl);
+                    isMerged = true;
+                } else if (stdDeposit >= stdBalance) {
+                    // Regel 2: Aanbetaling kruist of raakt de volledige betalingsgrens
+                    depositDeadline = new Date(stdBalance);
+                    balanceDeadline = new Date(stdBalance);
+                    isMerged = true;
+                } else {
+                    // Regel 3: Genoeg tijd voor reguliere flow
+                    depositDeadline = stdDeposit;
+                    balanceDeadline = stdBalance;
+                }
+            } else if (bookingDate && !isNaN(bookingDate)) {
+                // Fallback (geen checkin ingevuld)
+                depositDeadline = new Date(bookingDate);
+                depositDeadline.setDate(depositDeadline.getDate() + 14);
+                depositDeadline.setHours(0, 0, 0, 0);
+            }
+
+            return {
+                depositDeadline,
+                balanceDeadline,
+                depositOverdue: depositDeadline ? now > depositDeadline : false,
+                balanceOverdue: balanceDeadline ? now > balanceDeadline : false,
+                isMerged
+            };
+        }
+
+        /**
+         * Bepaalt de betaalstatus en retourneert klasse + label.
+         * Vijf mogelijke statussen:
+         *  1. unpaid + binnen aanbetalingstermijn     → orange / NOG TE BETALEN
+         *  2. unpaid + aanbetalingstermijn verstreken → red    / AANBETALING VERVALLEN
+         *  3. deposit_paid + binnen balancetermijn    → orange / AANBETAALD
+         *  4. deposit_paid + balancetermijn verstreken → darkred / RESTBETALING VERVALLEN
+         *  5. fully_paid                              → green  / VOLLEDIG BETAALD
+         */
+        function getPaymentStatusInfo(data) {
+            const ps = data.paymentStatus || 'unpaid';
+            const dl = calcPaymentDeadlines(data);
+
+            if (ps === 'fully_paid') {
+                return { colorClass: 'green', label: 'VOLLEDIG BETAALD', color: '#22c55e' };
+            }
+            if (ps === 'deposit_paid') {
+                if (dl.balanceOverdue) {
+                    return { colorClass: 'darkred', label: 'RESTBETALING VERVALLEN', color: '#b91c1c' };
+                }
+                return { colorClass: 'orange', label: 'AANBETAALD', color: '#f59e0b' };
+            }
+            // unpaid
+            if (dl.depositOverdue) {
+                return { colorClass: 'red', label: 'AANBETALING VERVALLEN', color: '#ef4444' };
+            }
+            return { colorClass: 'orange', label: 'NOG TE BETALEN', color: '#f59e0b' };
+        }
+
+        // Cache van geladen boekingsdata voor gebruik in de modal
+        window._invoiceDataCache = {};
+
+        /**
+         * Slaat betaalstatus op in Firestore en vernieuwt de factuurlijst.
+         */
+        window.markPaymentStatus = async function(bookingId, newStatus) {
+            const actionsEl = document.getElementById('pay-modal-actions');
+
+            // Tijdelijk disable knoppen
+            actionsEl.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
+
+            try {
+                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                const updateData = { paymentStatus: newStatus };
+
+                if (newStatus === 'deposit_paid') {
+                    updateData.depositPaidAt = new Date().toISOString();
+                    updateData.depositPaid = true;
+                } else if (newStatus === 'fully_paid') {
+                    updateData.balancePaidAt = new Date().toISOString();
+                    updateData.depositPaid = true;
+                    updateData.balancePaid = true;
+                } else if (newStatus === 'unpaid') {
+                    updateData.depositPaidAt = null;
+                    updateData.balancePaidAt = null;
+                    updateData.depositPaid = false;
+                    updateData.balancePaid = false;
+                }
+
+                await updateDoc(doc(db, 'bookings', bookingId), updateData);
+
+                const statusLabels = {
+                    'unpaid': 'teruggezet op onbetaald',
+                    'deposit_paid': 'Aanbetaling geregistreerd',
+                    'fully_paid': 'Volledig betaald geregistreerd'
+                };
+                logActivity('PAYMENT_STATUS_UPDATED', statusLabels[newStatus] || newStatus, bookingId);
+
+                // Update cache
+                if (window._invoiceDataCache[bookingId]) {
+                    window._invoiceDataCache[bookingId].paymentStatus = newStatus;
+                    if (updateData.depositPaidAt !== undefined) window._invoiceDataCache[bookingId].depositPaidAt = updateData.depositPaidAt;
+                    if (updateData.balancePaidAt !== undefined) window._invoiceDataCache[bookingId].balancePaidAt = updateData.balancePaidAt;
+                }
+
+                closePaymentModal();
+                loadInvoices(); // Ververs het overzicht
+
+                // Toast melding
+                const toast = document.getElementById('eb-toast');
+                if (toast) {
+                    toast.textContent = statusLabels[newStatus] || 'Status bijgewerkt';
+                    toast.style.display = 'block';
+                    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+                }
+
+            } catch (err) {
+                console.error('Fout bij opslaan betaalstatus:', err);
+                alert('Fout bij opslaan: ' + err.message);
+                actionsEl.querySelectorAll('button').forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.opacity = '';
+                });
+            }
+        };
+
+        /**
+         * Opent de betaalstatus modal voor een specifieke boeking.
+         * Haalt data op uit cache of Firestore.
+         */
+        window.openPaymentModal = async function(bookingId) {
+            const modal = document.getElementById('payment-status-modal');
+            if (!modal) return;
+
+            // Vul alvast title in terwijl we laden
+            document.getElementById('pay-modal-title').textContent = 'Betaalstatus bijwerken';
+            document.getElementById('pay-modal-subtitle').textContent = 'Laden...';
+            document.getElementById('pay-modal-actions').innerHTML = '<div class="spinner" style="margin:16px auto; width:24px; height:24px;"></div>';
+            modal.classList.add('is-open');
+
+            try {
+                // Haal boekingsdata op (uit cache of Firestore)
+                let data = window._invoiceDataCache[bookingId];
+                if (!data) {
+                    const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
+                    const snap = await getDoc(doc(db, 'bookings', bookingId));
+                    if (!snap.exists()) throw new Error('Boeking niet gevonden');
+                    data = { id: snap.id, ...snap.data() };
+                    window._invoiceDataCache[bookingId] = data;
+                }
+
+                const ps = data.paymentStatus || 'unpaid';
+                const status = getPaymentStatusInfo(data);
+                const deadlines = calcPaymentDeadlines(data);
+                const fmtDate = (d) => d ? d.toLocaleDateString('nl-NL', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+
+                // Header
+                document.getElementById('pay-modal-title').textContent = data.guestName || 'Boeking';
+                document.getElementById('pay-modal-subtitle').textContent =
+                    `${data.invoiceId || data.id} · Check-in: ${data.checkIn || '—'}`;
+
+                // Huidige status
+                document.getElementById('pay-modal-status-dot').style.background = status.color;
+                document.getElementById('pay-modal-status-label').textContent = status.label;
+
+                // Betaaltermijnen
+                const depositDlEl = document.getElementById('pay-modal-deposit-dl');
+                const balanceDlEl = document.getElementById('pay-modal-balance-dl');
+                
+                depositDlEl.className = 'pay-dl-date';
+                balanceDlEl.className = 'pay-dl-date';
+
+                if (deadlines.isMerged) {
+                    depositDlEl.innerHTML = '<i style="color:#64748b; font-weight:normal;">N.v.t. (Direct betalen)</i>';
+                    balanceDlEl.textContent = fmtDate(deadlines.balanceDeadline);
+                    
+                    if (ps === 'fully_paid') {
+                        balanceDlEl.classList.add('is-paid');
+                        balanceDlEl.textContent += ' ✓';
+                    } else if (deadlines.balanceOverdue) {
+                        balanceDlEl.classList.add('is-overdue');
+                    }
+                } else {
+                    depositDlEl.textContent = fmtDate(deadlines.depositDeadline);
+                    if (ps === 'deposit_paid' || ps === 'fully_paid') {
+                        depositDlEl.classList.add('is-paid');
+                        depositDlEl.textContent += ' ✓';
+                    } else if (deadlines.depositOverdue) {
+                        depositDlEl.classList.add('is-overdue');
+                    }
+
+                    balanceDlEl.textContent = fmtDate(deadlines.balanceDeadline);
+                    if (ps === 'fully_paid') {
+                        balanceDlEl.classList.add('is-paid');
+                        balanceDlEl.textContent += ' ✓';
+                    } else if (deadlines.balanceOverdue) {
+                        balanceDlEl.classList.add('is-overdue');
+                    }
+                }
+
+                // Actieknoppen op basis van huidige status
+                const actionsEl = document.getElementById('pay-modal-actions');
+                actionsEl.innerHTML = '';
+
+                if (ps === 'unpaid') {
+                    actionsEl.innerHTML = `
+                        <button class="pay-action-btn pay-action-btn--deposit" onclick="markPaymentStatus('${bookingId}', 'deposit_paid')">
+                            <i class="ph ph-check-circle"></i> Aanbetaling ontvangen
+                        </button>
+                        <button class="pay-action-btn pay-action-btn--full" onclick="markPaymentStatus('${bookingId}', 'fully_paid')">
+                            <i class="ph ph-check-square"></i> Volledig betaald
+                        </button>
+                    `;
+                } else if (ps === 'deposit_paid') {
+                    actionsEl.innerHTML = `
+                        <button class="pay-action-btn pay-action-btn--full" onclick="markPaymentStatus('${bookingId}', 'fully_paid')">
+                            <i class="ph ph-check-square"></i> Restbetaling ontvangen
+                        </button>
+                    `;
+                } else if (ps === 'fully_paid') {
+                    actionsEl.innerHTML = `<p style="text-align:center; color:#22c55e; font-weight:700; padding:8px 0;">Volledig betaald</p>`;
+                }
+
+                // Superuser: terugzetten optie
+                const footerEl = document.getElementById('pay-modal-footer');
+                footerEl.innerHTML = '';
+                if (currentUserRole === 'superuser' && ps !== 'unpaid') {
+                    footerEl.innerHTML = `
+                        <button class="pay-action-btn pay-action-btn--reset" onclick="markPaymentStatus('${bookingId}', 'unpaid')">
+                            Status terugzetten naar onbetaald
+                        </button>
+                    `;
+                }
+
+            } catch (err) {
+                console.error('openPaymentModal error:', err);
+                document.getElementById('pay-modal-actions').innerHTML =
+                    `<p style="color:#ef4444; text-align:center;">Fout: ${err.message}</p>`;
+            }
+        };
+
+        window.closePaymentModal = function() {
+            const modal = document.getElementById('payment-status-modal');
+            if (modal) modal.classList.remove('is-open');
         };
