@@ -401,9 +401,10 @@
 
             // Show/hide Excel Import tab
             const importDesktop = document.getElementById('nav-import-desktop');
-            const importMobile = document.getElementById('nav-import-mobile');
+            const logsDesktop = document.getElementById('nav-logs-desktop');
+            
             if (importDesktop) importDesktop.style.display = isSuperUser ? '' : 'none';
-            if (importMobile) importMobile.style.display = isSuperUser ? '' : 'none';
+            if (logsDesktop) logsDesktop.style.display = isSuperUser ? '' : 'none';
         }
 
         function showDashboard() {
@@ -632,13 +633,14 @@
             const superUserViews = ['logs-view', 'import-view'];
             if (superUserViews.includes(viewId) && currentUserRole !== 'superuser') {
                 console.warn('Access denied: ' + viewId + ' requires superuser role.');
+                alert('Geen toegang: Deze pagina is alleen zichtbaar voor beheerders.');
                 return;
             }
 
             // Update nav items active state
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
-            // If navEl is provided, use it, otherwise find the one with matching onclick
+            // If navEl is provided, use it, otherwise find the ones with matching onclick
             if (navEl) {
                 navEl.classList.add('active');
             } else {
@@ -649,7 +651,7 @@
                 });
             }
 
-            // Close mobile menu if open
+            // Auto-close mobile menu if it was open
             const sidebar = document.getElementById('dashboard-sidebar');
             if (sidebar && sidebar.classList.contains('active')) {
                 toggleMobileMenu();

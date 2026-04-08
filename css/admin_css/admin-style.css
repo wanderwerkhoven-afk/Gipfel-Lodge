@@ -988,66 +988,28 @@
                 height: auto;
             }
 
-            /* Verberg de desktop sidebar op mobiel */
+            /* Dashboard Layout for Mobile */
+            #dashboard-screen {
+                height: auto !important;
+                min-height: 100dvh;
+                overflow: visible !important;
+                display: block !important;
+            }
+
+            .dashboard-layout {
+                height: auto !important;
+                display: block !important;
+            }
+
             .dashboard-sidebar {
-                display: none;
+                display: block; /* Zorg dat hij niet op none staat */
             }
 
             .dashboard-main {
-                padding: 20px 20px 120px !important; /* Extra ruimte onderaan voor de mobiele nav-balk */
-            }
-
-            /* Toon de mobile tab bar */
-            .mobile-nav {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: var(--color-slate);
-                height: 85px;
-                /* Verhoogd van 70px voor betere klikbaarheid */
-                z-index: 1000;
-                box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.3);
-                padding: 5px 10px;
-                padding-bottom: env(safe-area-inset-bottom);
-                box-sizing: content-box;
-            }
-
-            .mobile-nav-item {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                color: rgba(255, 255, 255, 0.6);
-                text-decoration: none;
-                font-size: 0.7rem;
-                font-weight: 600;
-                gap: 4px;
-                transition: all 0.2s;
-            }
-
-            .mobile-nav-item i {
-                font-size: 26px;
-                margin-bottom: 0;
-                color: rgba(255, 255, 255, 0.4);
-                transition: all 0.2s;
-            }
-
-            .mobile-nav-item span {
-                display: none; /* Verberg namen op mobiel */
-            }
-
-            .mobile-nav-item.active i {
-                color: var(--color-gold);
-                transform: scale(1.1);
-            }
-
-            .dashboard-main {
-                padding: 30px 15px 120px 15px;
-                /* Verhoogd van 100px om de hogere nav bar te compenseren */
-                overflow-y: visible;
+                padding: 100px 20px 60px !important; /* Top padding for topbar overlap */
+                min-height: 100dvh;
+                height: auto !important;
+                overflow-y: visible !important;
             }
 
             .page-header {
@@ -1090,21 +1052,84 @@
                 font-size: 0.8rem;
             }
 
-            .bookings-grid {
+            /* Invoice Grid Carousel */
+            .invoice-grid {
                 display: flex !important;
                 overflow-x: auto;
                 scroll-snap-type: x mandatory;
                 gap: 16px;
                 margin-top: 25px;
                 padding: 10px 0 30px 0;
-                /* Padding onder voor de schaduw */
                 scrollbar-width: none;
                 -ms-overflow-style: none;
                 width: calc(100% + 30px);
                 margin-left: -15px;
                 padding-left: 15px;
                 padding-right: 30px;
-                /* Meer padding rechts zodat de laatste kaart mooi stopt */
+            }
+            .invoice-grid::-webkit-scrollbar {
+                display: none;
+            }
+            .invoice-card {
+                flex: 0 0 92%;
+                scroll-snap-align: center;
+            }
+
+            /* Expense Tabs Carousel */
+            .kp-tabs {
+                display: flex !important;
+                overflow-x: auto !important;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                width: calc(100% + 30px) !important;
+                margin-left: -15px !important;
+                padding: 5px 15px !important;
+                white-space: nowrap;
+                border-radius: 0 !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            .kp-tabs::-webkit-scrollbar {
+                display: none;
+            }
+            .kp-tab {
+                flex: 0 0 auto;
+                padding: 8px 16px !important;
+            }
+
+            /* Expense Cards Grid Carousel */
+            .kp-pane > div[style*="display:grid"] {
+                display: flex !important;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 16px;
+                padding-bottom: 20px;
+                scrollbar-width: none;
+                width: calc(100% + 30px);
+                margin-left: -15px;
+                padding-left: 15px;
+                padding-right: 30px;
+            }
+            .kp-pane > div[style*="display:grid"]::-webkit-scrollbar {
+                display: none;
+            }
+            .kp-pane > div[style*="display:grid"] > div {
+                flex: 0 0 80%;
+                scroll-snap-align: center;
+            }
+
+            .bookings-grid {
+                display: flex !important;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 16px;
+                margin-top: 25px;
+                padding: 10px 0 40px 0;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                width: calc(100% + 30px);
+                margin-left: -15px;
+                padding-left: 15px;
+                padding-right: 30px;
             }
 
             .bookings-grid::-webkit-scrollbar {
