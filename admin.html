@@ -102,6 +102,9 @@
                     <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">
                         <i class="ph ph-file-arrow-up"></i> Excel Import
                     </li>
+                    <li id="nav-pricing-desktop" class="nav-item" onclick="switchView('pricing-view', this)">
+                        <i class="ph ph-tag"></i> Prijzen
+                    </li>
                     <li id="nav-carousel-desktop" class="nav-item" onclick="switchView('carousel-view', this)">
                         <i class="ph ph-cards"></i> Boekingskaarten
                     </li>
@@ -281,121 +284,197 @@
                 </div>
 
                 <!-- EXCEL IMPORT VIEW (Superuser only) -->
+                <!-- EXCEL IMPORT VIEW (Superuser only) -->
                 <div id="import-view" class="dashboard-view">
                     <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
                         <div>
-                            <h1>Excel → Firebase Import</h1>
-                            <p>Upload de bijgewerkte <strong>GipfelLodge_Booked.xlsx</strong> van Villa for You om
-                                boekingen direct in Firebase te zetten.</p>
+                            <h1>Data Beheer & Import</h1>
+                            <p style="margin: 0;">Beheer boekingen en tarieven via Excel-bestanden.</p>
                         </div>
                         <span
                             style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:4px 10px;border-radius:6px;background:rgba(197,160,89,0.15);color:var(--color-gold);border:1px solid rgba(197,160,89,0.3);">⭐
                             Superuser Only</span>
                     </div>
 
-                    <!-- Drop Zone -->
-                    <div class="eb2-section-card" style="margin-bottom:20px;">
-                        <div class="eb2-section-header">
-                            <div>
-                                <h3 class="eb2-section-title">📂 Stap 1 — Selecteer Excel-bestand</h3>
-                                <p class="eb2-section-subtitle">Sleep het .xlsx bestand hiernaartoe of klik om te
-                                    bladeren</p>
-                            </div>
+                    <!-- TAB NAVIGATION -->
+                    <div class="kp-tabs" style="display: flex; gap: 4px; margin: 15px 0 20px; background: rgba(0,0,0,0.03); padding: 5px; border-radius: 12px; border: 1px solid #e2e8f0; width: fit-content;">
+                        <div class="kp-tab active" onclick="switchImportTab('guests', this)" 
+                            style="padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+                            <i class="ph ph-users"></i> Gasten Excel
                         </div>
-                        <div style="padding:0 24px 24px;">
-                            <div id="import-drop-zone"
-                                style="border:2px dashed var(--color-gold);border-radius:10px;padding:40px 24px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fafcff;">
-                                <div style="font-size:2.5rem;margin-bottom:8px;">📊</div>
-                                <p style="margin:0;color:#334155;font-weight:600;">Sleep het Excel-bestand hierheen of
-                                    <strong style="color:var(--color-gold);">klik om te bladeren</strong></p>
-                                <small style="color:#94a3b8;font-size:0.8rem;">Ondersteunt .xlsx van Villa for You
-                                    (tabblad "Arrivals")</small>
-                            </div>
-                            <input type="file" id="import-file-input" accept=".xlsx" style="display:none;">
-                            
-                            <!-- DATA CLEANUP UTILITY -->
-                            <div style="margin-top:20px; padding:16px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                        <div class="kp-tab" onclick="switchImportTab('pricing', this)" 
+                            style="padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+                            <i class="ph ph-tag"></i> Tarieven Excel
+                        </div>
+                    </div>
+
+                    <!-- GUEST IMPORT PANE -->
+                    <div id="import-pane-guests" class="import-pane active">
+                        <!-- Drop Zone -->
+                        <div class="eb2-section-card" style="margin-bottom:20px;">
+                            <div class="eb2-section-header">
                                 <div>
-                                    <h4 style="margin:0 0 4px; font-size:0.85rem; color:#475569;">🧹 Data Opschoning</h4>
-                                    <p style="margin:0; font-size:0.75rem; color:#64748b;">Herstel ontbrekende factuurnummers voor bestaande boekingen.</p>
+                                    <h3 class="eb2-section-title">📂 Stap 1 — Selecteer Excel-bestand</h3>
+                                    <p class="eb2-section-subtitle">Sleep het .xlsx bestand hiernaartoe of klik om te
+                                        bladeren</p>
                                 </div>
-                                <button class="eb2-action-btn eb2-btn-secondary" onclick="backfillInvoiceIds()" id="btn-backfill-invoices">
-                                    <i class="ph ph-magic-wand"></i> Herstel Facturen
-                                </button>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Preview Section -->
-                    <div id="import-preview-section" class="eb2-section-card" style="margin-bottom:20px;display:none;">
-                        <div class="eb2-section-header">
-                            <div>
-                                <h3 class="eb2-section-title">👁 Stap 2 — Controleer geïmporteerde gegevens</h3>
-                                <p class="eb2-section-subtitle">Groen = nieuw te importeren · Oranje = al aanwezig in
-                                    Firebase</p>
-                            </div>
-                            <div style="display:flex;gap:12px;">
-                                <div style="text-align:center;">
-                                    <div id="imp-stat-total"
-                                        style="font-size:1.8rem;font-weight:700;color:var(--color-gold);">0</div>
-                                    <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Totaal</div>
+                            <div style="padding:0 24px 24px;">
+                                <div id="import-drop-zone"
+                                    style="border:2px dashed var(--color-gold);border-radius:10px;padding:40px 24px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fafcff;">
+                                    <div style="font-size:2.5rem;margin-bottom:8px;">📊</div>
+                                    <p style="margin:0;color:#334155;font-weight:600;">Sleep het Excel-bestand hierheen of
+                                        <strong style="color:var(--color-gold);">klik om te bladeren</strong></p>
+                                    <small style="color:#94a3b8;font-size:0.8rem;">Ondersteunt .xlsx van Villa for You
+                                        (tabblad "Arrivals")</small>
                                 </div>
-                                <div style="text-align:center;">
-                                    <div id="imp-stat-new" style="font-size:1.8rem;font-weight:700;color:#16a34a;">0
+                                <input type="file" id="import-file-input" accept=".xlsx" style="display:none;">
+                                
+                                <!-- DATA CLEANUP UTILITY -->
+                                <div style="margin-top:20px; padding:16px; background:#f8fafc; border-radius:10px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                        <h4 style="margin:0 0 4px; font-size:0.85rem; color:#475569;">🧹 Data Opschoning</h4>
+                                        <p style="margin:0; font-size:0.75rem; color:#64748b;">Herstel ontbrekende factuurnummers voor bestaande boekingen.</p>
                                     </div>
-                                    <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Nieuw</div>
-                                </div>
-                                <div style="text-align:center;">
-                                    <div id="imp-stat-exists" style="font-size:1.8rem;font-weight:700;color:#f59e0b;">0
-                                    </div>
-                                    <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Bestaat</div>
+                                    <button class="eb2-action-btn eb2-btn-secondary" onclick="backfillInvoiceIds()" id="btn-backfill-invoices">
+                                        <i class="ph ph-magic-wand"></i> Herstel Facturen
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div class="eb2-table-wrap">
-                            <table class="eb2-table">
-                                <thead>
-                                    <tr>
-                                        <th>Status</th>
-                                        <th>Firebase ID</th>
-                                        <th>Bron #</th>
-                                        <th>Gast</th>
-                                        <th>Check-in</th>
-                                        <th>Check-out</th>
-                                        <th>Nacht</th>
-                                        <th>Bedrag</th>
-                                        <th>Land</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="import-preview-body"></tbody>
-                            </table>
-                        </div>
-                        <div
-                            style="padding:16px 24px;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                            <label
-                                style="font-size:0.85rem;color:#64748b;cursor:pointer;display:flex;align-items:center;gap:8px;">
-                                <input type="checkbox" id="imp-chk-overwrite"> Overschrijf ook bestaande boekingen
-                            </label>
-                            <button class="eb2-action-btn eb2-btn-gold" id="imp-btn-import">▶ Importeer naar
-                                Firebase</button>
-                            <button class="eb2-action-btn eb2-btn-secondary" id="imp-btn-reset">↺ Ander bestand</button>
-                        </div>
-                    </div>
 
-                    <!-- Log Section -->
-                    <div id="import-log-section" class="eb2-section-card" style="display:none;">
-                        <div class="eb2-section-header">
-                            <h3 class="eb2-section-title">📋 Import Log</h3>
-                        </div>
-                        <div style="padding:0 24px 8px;">
+                        <!-- Preview Section -->
+                        <div id="import-preview-section" class="eb2-section-card" style="margin-bottom:20px;display:none;">
+                            <div class="eb2-section-header">
+                                <div>
+                                    <h3 class="eb2-section-title">👁 Stap 2 — Controleer geïmporteerde gegevens</h3>
+                                    <p class="eb2-section-subtitle">Groen = nieuw te importeren · Oranje = al aanwezig in
+                                        Firebase</p>
+                                </div>
+                                <div style="display:flex;gap:12px;">
+                                    <div style="text-align:center;">
+                                        <div id="imp-stat-total"
+                                            style="font-size:1.8rem;font-weight:700;color:var(--color-gold);">0</div>
+                                        <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Totaal</div>
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <div id="imp-stat-new" style="font-size:1.8rem;font-weight:700;color:#16a34a;">0
+                                        </div>
+                                        <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Nieuw</div>
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <div id="imp-stat-exists" style="font-size:1.8rem;font-weight:700;color:#f59e0b;">0
+                                        </div>
+                                        <div style="font-size:0.65rem;color:#94a3b8;text-transform:uppercase;">Bestaat</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="eb2-table-wrap">
+                                <table class="eb2-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Status</th>
+                                            <th>Firebase ID</th>
+                                            <th>Bron #</th>
+                                            <th>Gast</th>
+                                            <th>Check-in</th>
+                                            <th>Check-out</th>
+                                            <th>Nacht</th>
+                                            <th>Bedrag</th>
+                                            <th>Land</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="import-preview-body"></tbody>
+                                </table>
+                            </div>
                             <div
-                                style="height:6px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-bottom:12px;">
-                                <div id="imp-progress-bar"
-                                    style="height:100%;background:linear-gradient(90deg,var(--color-gold),#f0c060);width:0%;transition:width 0.3s;border-radius:4px;">
+                                style="padding:16px 24px;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                                <label
+                                    style="font-size:0.85rem;color:#64748b;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                                    <input type="checkbox" id="imp-chk-overwrite"> Overschrijf ook bestaande boekingen
+                                </label>
+                                <button class="eb2-action-btn eb2-btn-gold" id="imp-btn-import">▶ Importeer naar
+                                    Firebase</button>
+                                <button class="eb2-action-btn eb2-btn-secondary" id="imp-btn-reset">↺ Ander bestand</button>
+                            </div>
+                        </div>
+
+                        <!-- Log Section -->
+                        <div id="import-log-section" class="eb2-section-card" style="display:none;">
+                            <div class="eb2-section-header">
+                                <h3 class="eb2-section-title">📋 Import Log</h3>
+                            </div>
+                            <div style="padding:0 24px 8px;">
+                                <div
+                                    style="height:6px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-bottom:12px;">
+                                    <div id="imp-progress-bar"
+                                        style="height:100%;background:linear-gradient(90deg,var(--color-gold),#f0c060);width:0%;transition:width 0.3s;border-radius:4px;">
+                                    </div>
+                                </div>
+                                <div id="imp-log"
+                                    style="font-family:monospace;font-size:0.8rem;max-height:300px;overflow-y:auto;line-height:2;">
                                 </div>
                             </div>
-                            <div id="imp-log"
-                                style="font-family:monospace;font-size:0.8rem;max-height:300px;overflow-y:auto;line-height:2;">
+                        </div>
+                    </div>
+
+                    <!-- PRICING IMPORT PANE -->
+                    <div id="import-pane-pricing" class="import-pane" style="display:none;">
+                        <div style="display: grid; grid-template-columns: 350px 1fr; gap: 20px; align-items: start;">
+                            
+                            <!-- Sidebar: Upload Form -->
+                            <div class="eb2-section-card">
+                                <div class="eb2-section-header">
+                                    <div>
+                                        <h3 class="eb2-section-title">Nieuwe Prijzen Uploaden</h3>
+                                        <p class="eb2-section-subtitle">Selecteer de ingangsdatum en het bestand</p>
+                                    </div>
+                                </div>
+                                <div style="padding: 24px;">
+                                    <div style="margin-bottom: 20px;">
+                                        <label style="display:block; font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Ingangsdatum</label>
+                                        <input type="date" id="pricing-effective-date" class="form-input" style="width: 100%;">
+                                        <p style="font-size: 0.75rem; color: #64748b; margin-top: 6px;">Vanaf deze datum wordt deze prijslijst automatisch geselecteerd voor nieuwe berekeningen.</p>
+                                    </div>
+                                    
+                                    <div id="pricing-drop-zone" style="border: 2px dashed #e2e8f0; border-radius: 10px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: #f8fafc; margin-bottom: 20px;">
+                                        <div style="font-size: 2rem; margin-bottom: 8px;">📈</div>
+                                        <p style="margin: 0; font-size: 0.9rem; color: #334155; font-weight: 600;">Klik of sleep Excel</p>
+                                        <small style="color: #94a3b8;">pricing_20XX.xlsx</small>
+                                    </div>
+                                    <input type="file" id="pricing-file-input" accept=".xlsx" style="display:none;">
+                                    
+                                    <div id="pricing-upload-confirm" style="display:none;">
+                                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 8px; margin-bottom: 15px; display:flex; align-items:center; gap:10px;">
+                                            <i class="ph ph-check-circle" style="color: #16a34a; font-size: 1.2rem;"></i>
+                                            <div style="font-size: 0.8rem; color: #15803d;"><strong id="pricing-filename">-</strong> geladen</div>
+                                        </div>
+                                        <button class="eb2-action-btn eb2-btn-gold" style="width: 100%;" onclick="uploadPricingFile()">
+                                            <i class="ph ph-cloud-arrow-up"></i> Opslaan in Firebase
+                                        </button>
+                                        <button class="eb2-action-btn eb2-btn-secondary" style="width: 100%; margin-top: 8px;" onclick="resetPricingUpload()">
+                                            Annuleren
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Main: Existing Lists -->
+                            <div class="eb2-section-card">
+                                <div class="eb2-section-header" style="border-bottom: 1px solid #f1f5f9;">
+                                    <div>
+                                        <h3 class="eb2-section-title">Actieve Prijslijsten</h3>
+                                        <p class="eb2-section-subtitle">Overzicht van alle geüploade tarieven in Firebase</p>
+                                    </div>
+                                    <button class="eb2-action-btn eb2-btn-secondary" onclick="loadPricingVersions()">⟳ Verversen</button>
+                                </div>
+                                
+                                <div id="pricing-versions-container" style="padding: 20px;">
+                                    <div style="text-align:center; padding: 40px; color: #94a3b8;">
+                                        <div class="spinner" style="display:block; margin: 0 auto 15px;"></div>
+                                        Lijsten ophalen...
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -421,6 +500,74 @@
                     <div class="adm-carousel-empty" id="adm-carousel-empty" style="display:none;">
                         <i class="fa-solid fa-calendar-xmark"></i>
                         <p>Geen boekingen gevonden.</p>
+                    </div>
+                </div>
+
+                <!-- PRICING MANAGEMENT VIEW (User & Superuser) -->
+                <div id="pricing-view" class="dashboard-view">
+                    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div>
+                            <h1>Prijsbeheer & Last Minutes</h1>
+                            <p>Tarieven inzien en automatische kortingsregels beheren.</p>
+                        </div>
+                        <div style="display:flex; gap:12px;">
+                             <button class="eb2-action-btn eb2-btn-secondary" onclick="initPricingView()">
+                                <i class="ph ph-arrows-clockwise"></i> Verversen
+                             </button>
+                        </div>
+                    </div>
+
+                    <!-- DISCOUNT MANAGEMENT SECTION -->
+                    <div class="eb2-section-card" style="margin-bottom: 25px;">
+                        <div class="eb2-section-header" style="border-bottom: 1px solid #f1f5f9;">
+                            <div>
+                                <h3 class="eb2-section-title">🔥 Automatische Last Minute Kortingen</h3>
+                                <p class="eb2-section-subtitle">Selecteer welke kortingsregel op dit moment actief is voor de website en admin.</p>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button class="eb2-action-btn eb2-btn-gold" onclick="openNewDiscountModal()">
+                                    <i class="ph ph-plus"></i> Nieuwe Regel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 24px;">
+                            <div style="display: grid; grid-template-columns: 300px 1fr; gap: 30px;">
+                                <!-- Selection -->
+                                <div>
+                                    <label style="display:block; font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 12px;">Actieve Korting</label>
+                                    <select id="active-discount-selector" class="form-input" style="width: 100%; margin-bottom: 15px;" onchange="previewDiscountSelection(this.value)">
+                                        <option value="none">Geen korting (Standaardprijs)</option>
+                                    </select>
+                                    <button class="eb2-action-btn eb2-btn-gold" style="width: 100%;" onclick="saveActiveDiscount()">
+                                        <i class="ph ph-check"></i> Instelling Opslaan
+                                    </button>
+                                </div>
+                                
+                                <!-- Preview Visualization -->
+                                <div id="discount-preview-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                                    <div id="discount-preview-content" style="text-align: center; color: #94a3b8; padding: 20px;">
+                                        Selecteer een kortingsregel om de staffel te bekijken.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PRICING VISUALIZATION SECTION -->
+                    <div class="eb2-section-card">
+                        <div class="eb2-section-header">
+                            <div>
+                                <h3 class="eb2-section-title">📅 Actieve Tarieven</h3>
+                                <p class="eb2-section-subtitle">Overzicht van alle prijslijsten in de database.</p>
+                            </div>
+                        </div>
+                        <div style="padding: 0 24px 24px;">
+                            <div id="pricing-view-versions-container">
+                                <!-- Injected by JS -->
+                                <div style="text-align:center; padding:40px; color:#94a3b8;">Huidige tarieven laden...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -840,6 +987,38 @@
         </div>
     </div>
 
+    <!-- KORTINGSREGEL MODAL -->
+    <div id="discount-modal-overlay" class="modal-overlay" onclick="if(event.target===this) closeDiscountModal()">
+        <div class="modal-container" style="max-width: 500px; height: auto; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3>Kortingsregel Beheren</h3>
+                <button class="close-modal" onclick="closeDiscountModal()">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 25px; overflow-y: auto;">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label">Naam van de regel</label>
+                    <input type="text" id="discount-modal-name" class="form-input" placeholder="bijv. Last Minute Zomer 20/25/30">
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <label class="form-label">Kortings-Staffel (Dagen vs %)</label>
+                    <div id="discount-modal-tiers" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Tier rows will be injected here -->
+                    </div>
+                    
+                    <button class="action-btn" style="margin-top: 15px; background: #f1f5f9; color: var(--color-slate); border: 1px solid #e2e8f0; padding: 10px; font-size: 0.8rem;" onclick="addDiscountTierRow()">
+                        <i class="ph ph-plus-circle"></i> Stap toevoegen
+                    </button>
+                </div>
+
+                <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button class="action-btn" style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0;" onclick="closeDiscountModal()">Annuleren</button>
+                    <button class="action-btn" onclick="saveDiscountPresetFromModal()">Opslaan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- BETAALSTATUS MODAL -->
     <div id="payment-status-modal" onclick="if(event.target===this) closePaymentModal()">
         <div class="pay-modal__box">
@@ -890,6 +1069,9 @@
 
     <!-- Excel Import Logic (Superuser only) -->
     <script src="js/admin_js/admin-core.js"></script>
+
+    <!-- Toast Notification Container -->
+    <div id="eb-toast-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
 
     <!-- Service Worker Registratie -->
     <script>

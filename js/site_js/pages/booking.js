@@ -1,4 +1,4 @@
-import { db, collection, addDoc, serverTimestamp, runTransaction, doc, setDoc } from '../core/firebase.js';
+import { db, collection, addDoc, serverTimestamp, runTransaction, doc, setDoc, getDoc, getDocs, query, orderBy, where } from '../core/firebase.js';
 import { countries } from '../data/countries.js';
 
 const GipfelBooking = {
@@ -158,22 +158,64 @@ const GipfelBooking = {
 
     async loadPricingData() {
         try {
-            // Fetch both 2026 and 2027 data
-            const [res26, res27] = await Promise.all([
-                fetch('pricing_sources/pricing_2026.json'),
-                fetch('pricing_sources/pricing_2027.json')
-            ]);
+            // Fetch pricing versions from Firebase, ordered by effective date
+            const q = query(collection(db, 'pricing_versions'), orderBy('effectiveDate', 'asc'));
+            const snap = await getDocs(q);
             
-            if (res26.ok) {
-                const data = await res26.json();
-                data.forEach(item => { this.pricingData[item.datum] = item; });
+            const versions = [];
+            snap.forEach(docSnap => {
+                versions.push({ id: docSnap.id, ...docSnap.data() });
+            });
+
+            if (versions.length === 0) {
+                console.warn("No pricing versions found in Firebase. Falling back to legacy JSONs.");
+                // Fallback to legacy JSON files if no DB data exists
+                const [res26, res27] = await Promise.all([
+                    fetch('pricing_sources/pricing_2026.json'),
+                    fetch('pricing_sources/pricing_2027.json').catch(() => ({ ok: false }))
+                ]);
+                
+                if (res26 && res26.ok) {
+                    const data = await res26.json();
+                    data.forEach(item => { this.pricingData[item.datum] = item; });
+                }
+                if (res27 && res27.ok) {
+                    const data = await res27.json();
+                    data.forEach(item => { this.pricingData[item.datum] = item; });
+                }
+            } else {
+                this.pricingVersions = versions;
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Logic: Select the latest version that has already passed (or today)
+                const activeVersion = [...versions].reverse().find(v => v.effectiveDate <= today) || versions[0];
+                
+                if (activeVersion) {
+                    console.log("Website: Active pricing version selected for calculation:", activeVersion.effectiveDate);
+                    this.pricingData = activeVersion.prices;
+                }
             }
-            if (res27.ok) {
-                const data = await res27.json();
-                data.forEach(item => { this.pricingData[item.datum] = item; });
+
+            // --- FETCH ACTIVE DISCOUNT PRESET ---
+            try {
+                const settingsRef = doc(db, 'settings', 'pricing');
+                const settingsSnap = await getDoc(settingsRef);
+                if (settingsSnap.exists()) {
+                    const activePresetId = settingsSnap.data().activePresetId;
+                    if (activePresetId) {
+                        const presetSnap = await getDoc(doc(db, 'discount_presets', activePresetId));
+                        if (presetSnap.exists()) {
+                            this.activeDiscountPreset = presetSnap.data();
+                            console.log("Website: Active discount preset loaded:", this.activeDiscountPreset.name);
+                        }
+                    } else {
+                        this.activeDiscountPreset = null;
+                        console.log("Website: No active discount preset selected in settings.");
+                    }
+                }
             }
         } catch(e) {
-            console.error("Error fetching price JSON", e);
+            console.error("Error loading pricing data from Firebase", e);
         }
     },
 
@@ -732,13 +774,35 @@ const GipfelBooking = {
         const priceContainer = document.getElementById('booking-price-breakdown');
         if (costs && priceContainer) {
             const t = (key) => window.i18n ? window.i18n.t(key) : key;
+            
+            let rentHtml = `
+                <div class="settlement-row">
+                    <span class="settle-label">${t('settle-rent')} (${costs.nights} ${t('unit-nights')})</span>
+                    <span class="settle-val">${this.fmtEUR(costs.rent)}</span>
+                </div>
+            `;
+
+            if (costs.discountPercentage > 0) {
+                rentHtml = `
+                    <div class="settlement-row">
+                        <span class="settle-label">${t('settle-rent')} (${costs.nights} ${t('unit-nights')})</span>
+                        <span class="settle-val" style="text-decoration: line-through; opacity: 0.6; font-size: 0.9em;">${this.fmtEUR(costs.originalRent)}</span>
+                    </div>
+                    <div class="settlement-row" style="color: #c47e09; font-weight: 600;">
+                        <span class="settle-label">${costs.appliedDiscountName} (-${costs.discountPercentage}%)</span>
+                        <span class="settle-val">-${this.fmtEUR(costs.discountAmount)}</span>
+                    </div>
+                    <div class="settlement-row" style="padding-top: 0; margin-top: -8px; margin-bottom: 8px;">
+                        <span class="settle-label" style="font-size: 0.85em; opacity: 0.8;">${t('settle-rent-discounted') || 'Gereduceerde Huurprijs'}</span>
+                        <span class="settle-val" style="font-weight: 700;">${this.fmtEUR(costs.rent)}</span>
+                    </div>
+                `;
+            }
+
             priceContainer.innerHTML = `
                 <h4 class="settlement-title">${t('settle-title')}</h4>
                 <div class="settlement-table">
-                    <div class="settlement-row">
-                        <span class="settle-label">${t('settle-rent')} (${costs.nights} ${t('unit-nights')})</span>
-                        <span class="settle-val">${this.fmtEUR(costs.rent)}</span>
-                    </div>
+                    ${rentHtml}
                     <div class="settlement-row">
                         <span class="settle-label">${t('settle-cleaning')}</span>
                         <span class="settle-val">${this.fmtEUR(costs.cleaning)}</span>
@@ -775,6 +839,7 @@ const GipfelBooking = {
         nextMonth.setMonth(nextMonth.getMonth() + 1);
         this.renderMonth(nextMonth, this.cal2Title, this.cal2Grid);
 
+        this.renderDiscountBanner();
         this.updateNavigationButtons();
         this.updateContinueButton();
 
@@ -784,14 +849,48 @@ const GipfelBooking = {
         }
     },
 
+    renderDiscountBanner() {
+        const bannerEl = document.getElementById('booking-discount-banner');
+        if (!bannerEl) return;
+
+        if (this.activeDiscountPreset && this.activeDiscountPreset.tiers && this.activeDiscountPreset.tiers.length > 0) {
+            const tiers = [...this.activeDiscountPreset.tiers].sort((a,b) => b.percentage - a.percentage);
+            const maxDiscount = tiers[0].percentage;
+            
+            bannerEl.innerHTML = `
+                <div class="discount-banner-inner" style="background: linear-gradient(135deg, #c47e09 0%, #dab46d 100%); color: white; padding: 1.5rem 2rem; border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 10px 30px rgba(196, 126, 9, 0.2);">
+                    <div class="discount-icon" style="font-size: 2.5rem; opacity: 0.9;">
+                        <i class="ph-bold ph-tag"></i>
+                    </div>
+                    <div class="discount-text">
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${this.activeDiscountPreset.name}</h3>
+                        <p style="margin: 0.25rem 0 0 0; opacity: 0.95; font-size: 1rem;">Boek nu en profiteer van tot wel <span style="font-weight: 700; font-size: 1.2rem;">${maxDiscount}%</span> korting op uw verblijf!</p>
+                    </div>
+                    <div style="margin-left: auto;">
+                         <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">Active Deal</span>
+                    </div>
+                </div>
+            `;
+            bannerEl.style.display = 'block';
+        } else {
+            bannerEl.style.display = 'none';
+        }
+    },
+
     calculateCosts() {
         if (!this.selectedCheckIn || !this.selectedCheckOut) return null;
 
+        const today = new Date();
+        today.setHours(0,0,0,0);
         const checkIn = new Date(this.selectedCheckIn);
         checkIn.setHours(12, 0, 0, 0);
         const checkOut = new Date(this.selectedCheckOut);
         checkOut.setHours(12, 0, 0, 0);
         
+        // Days Until Arrival for Last Minute Discount calculation
+        const diffArrival = checkIn.getTime() - today.getTime();
+        const daysUntilArrival = Math.max(0, Math.ceil(diffArrival / (1000 * 60 * 60 * 24)));
+
         const adults = parseInt(document.getElementById('b-adults').value) || 0;
         const children = parseInt(document.getElementById('b-children').value) || 0;
         const babies = parseInt(document.getElementById('b-babies').value) || 0;
@@ -803,6 +902,11 @@ const GipfelBooking = {
 
         let rent = 0;
         let tempDate = new Date(checkIn);
+
+        // Get minimum payable nights from the start date
+        const startPriceObj = this.pricingData[this.selectedCheckIn];
+        const minPayNights = (startPriceObj && startPriceObj.min_nachten_betalen) ? startPriceObj.min_nachten_betalen : 0;
+
         for (let i = 0; i < nights; i++) {
             const dateStr = this.formatDateLocal(tempDate);
             const dayPrice = this.pricingData[dateStr]?.dagprijs || 0;
@@ -810,21 +914,50 @@ const GipfelBooking = {
             tempDate.setDate(tempDate.getDate() + 1);
         }
 
+        // Apply minimum payable nights if stay is shorter
+        if (nights > 0 && nights < minPayNights) {
+            const avgPrice = rent / nights;
+            rent = avgPrice * minPayNights;
+        }
+
+        // --- APPLY LAST MINUTE DISCOUNT ---
+        let discountPercentage = 0;
+        let appliedDiscountName = "";
+        
+        if (this.activeDiscountPreset && this.activeDiscountPreset.tiers) {
+            // Find the correct discount tier based on daysUntilArrival.
+            // We sort tiers by days ASC and pick the first one where daysUntilArrival <= tier.days
+            const tiers = [...this.activeDiscountPreset.tiers].sort((a, b) => a.days - b.days);
+            const matchingTier = tiers.find(t => daysUntilArrival <= t.days);
+            if (matchingTier) {
+                discountPercentage = matchingTier.percentage;
+                appliedDiscountName = this.activeDiscountPreset.name;
+            }
+        }
+
+        const discountAmount = rent * (discountPercentage / 100);
+        const rentAfterDiscount = rent - discountAmount;
+
         const cleaning = this.CLEANING_FEE;
         const bedLinen = chargeableGuests * this.BED_LINEN_FEE;
         const touristTax = chargeableGuests * nights * this.TOURIST_TAX_FEE;
         const mobilityFee = chargeableGuests * nights * this.MOBILITY_FEE;
         
-        const total = rent + cleaning + bedLinen + touristTax + mobilityFee;
+        const total = rentAfterDiscount + cleaning + bedLinen + touristTax + mobilityFee;
 
         return {
-            rent,
+            rent: rentAfterDiscount,
+            originalRent: rent,
+            discountAmount,
+            discountPercentage,
+            appliedDiscountName,
             cleaning,
             bedLinen,
             touristTax,
             mobilityFee,
             total,
             nights,
+            daysUntilArrival,
             totalGuests,
             chargeableGuests
         };
@@ -1055,7 +1188,13 @@ const GipfelBooking = {
             const costs = this.calculateCosts();
             if (costs && pricePreview) {
                 const formattedPrice = this.fmtEUR(costs.total);
-                pricePreview.innerHTML = `Vanaf <span style="font-size: 1.25rem;">${formattedPrice}</span><br><span style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">o.b.v. 2 personen</span>`;
+                let html = `Vanaf <span style="font-size: 1.25rem;">${formattedPrice}</span><br><span style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">o.b.v. ${costs.chargeableGuests} personen</span>`;
+                
+                if (costs.discountPercentage > 0) {
+                    html = `<span style="background: #c47e09; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; vertical-align: middle; margin-right: 8px;">-${costs.discountPercentage}% DEAL</span>` + html;
+                }
+                
+                pricePreview.innerHTML = html;
                 pricePreview.style.display = 'block';
             }
         } else {

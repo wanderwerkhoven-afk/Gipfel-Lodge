@@ -62,31 +62,71 @@
             return `${year}-${month}-${day}`;
         }
 
+        let activeDiscountPreset = null;
+
         async function loadAdminPricingData() {
             if (adminPricingLoaded) return;
-            console.log("Loading Admin Pricing Data (Old & New Versions)...");
+            console.log("Loading Admin Pricing Data from Firebase...");
             try {
-                // Fetch both versions: 2026.json (Old) and 2027.json (New)
-                const [resOld, resNew] = await Promise.all([
-                    fetch('pricing_sources/pricing_2026.json'),
-                    fetch('pricing_sources/pricing_2027.json')
-                ]);
+                const { db, collection, getDocs, getDoc, doc, query, orderBy } = await import('../site_js/core/firebase.js');
+                const q = query(collection(db, 'pricing_versions'), orderBy('effectiveDate', 'asc'));
+                const snap = await getDocs(q);
                 
-                if (resOld.ok) {
-                    const data = await resOld.json();
-                    data.forEach(item => { adminPricingMaps.old[item.datum] = item; });
-                }
-                if (resNew.ok) {
-                    const data = await resNew.json();
-                    data.forEach(item => { adminPricingMaps.new[item.datum] = item; });
-                }
-                adminPricingLoaded = true;
-                console.log("Admin Pricing Maps loaded:", { 
-                    old: Object.keys(adminPricingMaps.old).length, 
-                    new: Object.keys(adminPricingMaps.new).length 
+                const versions = [];
+                snap.forEach(docSnap => {
+                    versions.push({ id: docSnap.id, ...docSnap.data() });
                 });
+
+                if (versions.length === 0) {
+                    console.warn("No pricing versions found in Firebase. Falling back to legacy JSONs.");
+                    const [resOld, resNew] = await Promise.all([
+                        fetch('pricing_sources/pricing_2026.json'),
+                        fetch('pricing_sources/pricing_2027.json').catch(() => ({ ok: false }))
+                    ]);
+                    
+                    if (resOld && resOld.ok) {
+                        const data = await resOld.json();
+                        data.forEach(item => { adminPricingMaps.old[item.datum] = item; });
+                    }
+                    if (resNew && resNew.ok) {
+                        const data = await resNew.json();
+                        data.forEach(item => { adminPricingMaps.new[item.datum] = item; });
+                    }
+                } else {
+                    adminPricingMaps.versions = versions;
+                    const today = new Date().toISOString().split('T')[0];
+                    const activeVersion = [...versions].reverse().find(v => v.effectiveDate <= today) || versions[0];
+                    
+                    if (activeVersion) {
+                        console.log("Active pricing version found:", activeVersion.effectiveDate);
+                        adminPricingMaps.active = activeVersion.prices;
+                        // Populate legacy maps to prevent breakage
+                        adminPricingMaps.old = activeVersion.prices;
+                        adminPricingMaps.new = activeVersion.prices;
+                    }
+                }
+
+                // --- FETCH ACTIVE DISCOUNT PRESET ---
+                try {
+                    const settingsRef = doc(db, 'settings', 'pricing');
+                    const settingsSnap = await getDoc(settingsRef);
+                    if (settingsSnap.exists()) {
+                        const activePresetId = settingsSnap.data().activePresetId;
+                        if (activePresetId) {
+                            const presetSnap = await getDoc(doc(db, 'discount_presets', activePresetId));
+                            if (presetSnap.exists()) {
+                                activeDiscountPreset = presetSnap.data();
+                                console.log("Admin: Active discount preset loaded for import simulation:", activeDiscountPreset.name);
+                            }
+                        }
+                    }
+                } catch (discountErr) {
+                    console.warn("Could not load discount settings for admin", discountErr);
+                }
+
+                adminPricingLoaded = true;
             } catch(e) {
-                console.error("Error fetching admin pricing JSONs", e);
+                console.error("Error fetching admin pricing", e);
             }
         }
 
@@ -670,6 +710,8 @@
                 loadActivityLogs();
             } else if (viewId === 'import-view') {
                 initImportView();
+            } else if (viewId === 'pricing-view') {
+                initPricingView();
             } else if (viewId === 'carousel-view') {
                 loadCarouselView();
             } else if (viewId === 'invoices-view') {
@@ -2876,12 +2918,36 @@
         let _xlsxLoaded = false;
         let _importParsed = [];
         let _importInitialized = false;
+        let _pricingParsed = null;
+
+        window.switchImportTab = function(tabId, el) {
+            // Update tabs
+            const parent = el.parentElement;
+            parent.querySelectorAll('.kp-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            // Update panes
+            document.querySelectorAll('.import-pane').forEach(p => {
+                p.style.display = 'none';
+                p.classList.remove('active');
+            });
+            const activePane = document.getElementById(`import-pane-${tabId}`);
+            if (activePane) {
+                activePane.style.display = 'block';
+                activePane.classList.add('active');
+            }
+
+            // If pricing tab, load versions
+            if (tabId === 'pricing') {
+                loadPricingVersions();
+            }
+        };
 
         async function initImportView() {
             if (_importInitialized) return;
             _importInitialized = true;
 
-            // Load Pricing Data
+            // Load Pricing Data (Legacy)
             loadAdminPricingData();
 
             // Lazy-load SheetJS
@@ -2895,33 +2961,63 @@
                 });
             }
 
+            // GUEST IMPORT EVENTS
             const dropZone = document.getElementById('import-drop-zone');
             const fileInput = document.getElementById('import-file-input');
             const btnImport = document.getElementById('imp-btn-import');
             const btnReset = document.getElementById('imp-btn-reset');
 
-            dropZone.addEventListener('click', () => fileInput.click());
-            dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.background = '#fdf8f0'; });
-            dropZone.addEventListener('dragleave', () => { dropZone.style.background = '#fafcff'; });
-            dropZone.addEventListener('drop', e => {
-                e.preventDefault();
-                dropZone.style.background = '#fafcff';
-                if (e.dataTransfer.files[0]) importProcessFile(e.dataTransfer.files[0]);
-            });
-            fileInput.addEventListener('change', e => {
-                if (e.target.files[0]) importProcessFile(e.target.files[0]);
-            });
+            if (dropZone) {
+                dropZone.addEventListener('click', () => fileInput.click());
+                dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.background = '#fdf8f0'; });
+                dropZone.addEventListener('dragleave', () => { dropZone.style.background = '#fafcff'; });
+                dropZone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    dropZone.style.background = '#fafcff';
+                    if (e.dataTransfer.files[0]) importProcessFile(e.dataTransfer.files[0]);
+                });
+            }
+            if (fileInput) {
+                fileInput.addEventListener('change', e => {
+                    if (e.target.files[0]) importProcessFile(e.target.files[0]);
+                });
+            }
 
-            btnReset.addEventListener('click', () => {
-                _importParsed = [];
-                fileInput.value = '';
-                document.getElementById('import-preview-section').style.display = 'none';
-                document.getElementById('import-log-section').style.display = 'none';
-                document.getElementById('imp-log').innerHTML = '';
-                document.getElementById('imp-progress-bar').style.width = '0%';
-            });
+            if (btnReset) {
+                btnReset.addEventListener('click', () => {
+                    _importParsed = [];
+                    fileInput.value = '';
+                    document.getElementById('import-preview-section').style.display = 'none';
+                    document.getElementById('import-log-section').style.display = 'none';
+                    document.getElementById('imp-log').innerHTML = '';
+                    document.getElementById('imp-progress-bar').style.width = '0%';
+                });
+            }
 
-            btnImport.addEventListener('click', importToFirebase);
+            if (btnImport) btnImport.addEventListener('click', importToFirebase);
+
+            // PRICING IMPORT EVENTS
+            const pricingDropZone = document.getElementById('pricing-drop-zone');
+            const pricingFileInput = document.getElementById('pricing-file-input');
+
+            if (pricingDropZone) {
+                pricingDropZone.addEventListener('click', () => pricingFileInput.click());
+                pricingDropZone.addEventListener('dragover', e => { e.preventDefault(); pricingDropZone.style.background = '#fef2f2'; });
+                pricingDropZone.addEventListener('dragleave', () => { pricingDropZone.style.background = '#f8fafc'; });
+                pricingDropZone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    pricingDropZone.style.background = '#f8fafc';
+                    if (e.dataTransfer.files[0]) processPricingFile(e.dataTransfer.files[0]);
+                });
+            }
+            if (pricingFileInput) {
+                pricingFileInput.addEventListener('change', e => {
+                    if (e.target.files[0]) processPricingFile(e.target.files[0]);
+                });
+            }
+
+            // Initial load
+            loadPricingVersions();
         }
 
         function importParseDate(val) {
@@ -2986,20 +3082,23 @@
                 const bookingDateStr = bookingDateParsed ? formatDateLocal(new Date(bookingDateParsed)) : '';
                 const bookingYear = bookingDateParsed ? new Date(bookingDateParsed).getFullYear() : new Date(checkIn).getFullYear();
 
-                // --- Calculate Rent from Pricing JSON ---
+                // --- Calculate Rent from Dynamic Pricing ---
                 let rent = 0;
                 let hasPricingError = false;
-                let usedPriceVersion = '2026';
+                
+                // Select active version from DB (already populated in loadAdminPricingData)
+                const targetMap = adminPricingMaps.active || adminPricingMaps.old;
+                let usedPriceVersion = (adminPricingMaps.versions && adminPricingMaps.versions.length > 0) ? 'Database' : 'Legacy-2026';
 
                 if (!isOwner) {
-                    const threshold = '2026-02-02';
-                    const isNewPrice = bookingDateStr && bookingDateStr >= threshold;
-                    const targetMap = isNewPrice ? adminPricingMaps.new : adminPricingMaps.old;
-                    usedPriceVersion = isNewPrice ? '2027' : '2026';
-
                     const start = new Date(checkIn);
                     const end = new Date(checkOut);
                     let tempDate = new Date(start);
+                    
+                    // Check minimum payable nights on the start date
+                    const startPriceObj = targetMap[formatDateLocal(start)];
+                    const minPayNights = (startPriceObj && startPriceObj.min_nachten_betalen) ? startPriceObj.min_nachten_betalen : 0;
+
                     for (let i = 0; i < nights; i++) {
                         const dateStr = formatDateLocal(tempDate);
                         const priceObj = targetMap[dateStr];
@@ -3010,6 +3109,33 @@
                         }
                         tempDate.setDate(tempDate.getDate() + 1);
                     }
+
+                    // Apply minimum payable nights if stay is shorter
+                    if (nights > 0 && nights < minPayNights) {
+                        const avgPrice = rent / nights;
+                        rent = avgPrice * minPayNights;
+                    }
+
+                    // --- APPLY LAST MINUTE DISCOUNT (SIMULATION) ---
+                    let discountPercentage = 0;
+                    let appliedDiscountName = "";
+                    let originalRent = rent;
+                    
+                    if (activeDiscountPreset && activeDiscountPreset.tiers && bookingDateParsed) {
+                        // Days Until Arrival for Last Minute Discount (using the date the booking was made)
+                        const diffArrival = new Date(checkIn).getTime() - new Date(bookingDateParsed).getTime();
+                        const daysUntilArrival = Math.max(0, Math.ceil(diffArrival / (1000 * 60 * 60 * 24)));
+                        
+                        const tiers = [...activeDiscountPreset.tiers].sort((a, b) => a.days - b.days);
+                        const matchingTier = tiers.find(t => daysUntilArrival <= t.days);
+                        if (matchingTier) {
+                            discountPercentage = matchingTier.percentage;
+                            appliedDiscountName = activeDiscountPreset.name;
+                        }
+                    }
+
+                    var discountAmount = originalRent * (discountPercentage / 100);
+                    rent = originalRent - discountAmount;
                 }
 
                 const totalAmount = isOwner ? 0 : (rent + cleaning + bedLinen + touristTax + mobilityFee);
@@ -3032,6 +3158,10 @@
                     totalAmount: totalAmount,
                     message: String(row[col['Opmerking']] || '').trim(),
                     rent: rent,
+                    originalRent: typeof originalRent !== 'undefined' ? originalRent : rent,
+                    discountAmount: typeof discountAmount !== 'undefined' ? discountAmount : 0,
+                    discountPercentage: typeof discountPercentage !== 'undefined' ? discountPercentage : 0,
+                    appliedDiscountName: typeof appliedDiscountName !== 'undefined' ? appliedDiscountName : "",
                     cleaning: cleaning,
                     bedLinen: bedLinen,
                     touristTax: touristTax,
@@ -3067,6 +3197,15 @@
                     ? `<span class="status-badge" style="background:#fef2f2;color:#dc2626;border:1px solid #fee2e2;margin-left:4px;" title="Let op: Sommige data ontbreken in de prijs-JSON. Huur is mogelijk onvolledig.">⚠ Prijs Mist</span>`
                     : `<span class="status-badge" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;margin-left:4px;">v${b.usedPriceVersion}</span>`;
 
+                let amountDisplay = `€${b.totalAmount.toFixed(2)}`;
+                if (b.discountPercentage > 0) {
+                    amountDisplay = `
+                        <div style="font-size:0.7rem; color:#c2410c; font-weight:700; line-height:1;">-${b.discountPercentage}% ${b.appliedDiscountName.toUpperCase()}</div>
+                        <div style="text-decoration:line-through; font-size:0.7rem; opacity:0.6; line-height:1.4;">€${(b.totalAmount + b.discountAmount).toFixed(2)}</div>
+                        <div style="font-weight:700;">${amountDisplay}</div>
+                    `;
+                }
+
                 rowsHtml.push(`
                     <tr>
                         <td>${statusBadge}${pricingBadge}</td>
@@ -3076,7 +3215,7 @@
                         <td>${b.checkIn}</td>
                         <td>${b.checkOut}</td>
                         <td style="text-align:center;">${b.nights}</td>
-                        <td style="color:var(--color-gold);">€${b.totalAmount.toFixed(2)}</td>
+                        <td style="color:var(--color-gold); text-align:right;">${amountDisplay}</td>
                         <td>${b.guestCountry || ''}</td>
                     </tr>
                 `);
@@ -3264,6 +3403,412 @@
             btn.textContent = '✔ Import voltooid';
             btn.disabled = false;
         }
+
+        // --- PRICING DB LOGIC ---
+        // RedHat refactoring: renderPricingVersions with target container support
+        async function loadPricingVersions(targetId = 'pricing-versions-container') {
+            const container = document.getElementById(targetId);
+            if (!container) return;
+            
+            const { db, collection, getDocs, query, orderBy } = await import('../site_js/core/firebase.js');
+
+            try {
+                const q = query(collection(db, 'pricing_versions'), orderBy('effectiveDate', 'desc'));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) {
+                    container.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8;">Geen prijslijsten gevonden in Firebase.</div>';
+                    return;
+                }
+
+                let html = '';
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    const dateCount = Object.keys(data.prices || {}).length;
+                    
+                    html += `
+                        <div class="pricing-version-item" style="border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: white;">
+                            <div style="padding: 16px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; cursor: pointer;" onclick="togglePricingTable('${id}')">
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div style="background: var(--color-gold); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                        <i class="ph ph-calendar"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 700; color: #1e293b;">Ingangsdatum: ${data.effectiveDate}</div>
+                                        <div style="font-size: 0.75rem; color: #64748b;">${dateCount} dagen geconfigureerd · Toegevoegd op ${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Onbekend'}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    ${currentUserRole === 'superuser' ? `
+                                        <button class="eb2-action-btn eb2-btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="event.stopPropagation(); deletePricingVersion('${id}', '${data.effectiveDate}')">
+                                            <i class="ph ph-trash"></i>
+                                        </button>
+                                    ` : ''}
+                                    <i class="ph ph-caret-down pricing-caret-${id}" style="transition: transform 0.3s; color: #94a3b8;"></i>
+                                </div>
+                            </div>
+                            <div id="pricing-table-${id}" style="display: none; padding: 15px; border-top: 1px solid #f1f5f9; max-height: 400px; overflow-y: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                                    <thead>
+                                        <tr style="text-align: left; color: #94a3b8; border-bottom: 1px solid #f1f5f9;">
+                                            <th style="padding: 8px;">Datum</th>
+                                            <th style="padding: 8px;">Dagprijs</th>
+                                            <th style="padding: 8px;">Seizoen</th>
+                                            <th style="padding: 8px;">Min. Boeken</th>
+                                            <th style="padding: 8px;">Min. Betalen</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${Object.entries(data.prices || {}).sort((a,b) => a[0].localeCompare(b[0])).map(([date, p]) => `
+                                            <tr style="border-bottom: 1px solid #f8fafc;">
+                                                <td style="padding: 6px 8px; font-family: monospace;">${date}</td>
+                                                <td style="padding: 6px 8px; font-weight: 600; color: var(--color-gold);">€${Number(p.dagprijs || 0).toFixed(2)}</td>
+                                                <td style="padding: 6px 8px;">${p.seizoen || '-'}</td>
+                                                <td style="padding: 6px 8px; text-align: center;">${p.min_nachten_boeken || '-'}</td>
+                                                <td style="padding: 6px 8px; text-align: center;">${p.min_nachten_betalen || '-'}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } catch (err) {
+                console.error("Error loading pricing versions:", err);
+                container.innerHTML = `<div style="color: #ef4444; padding: 20px; text-align: center;">Fout bij laden: ${err.message}</div>`;
+            }
+        }
+
+        // --- PRICING PAGE & DISCOUNT LOGIC ---
+        let _allDiscountPresets = [];
+        let _activeDiscountRule = null;
+
+        async function initPricingView() {
+            console.log("Initializing Pricing & Discounts View...");
+            await loadDiscountPresets();
+            loadPricingVersions('pricing-view-versions-container');
+        }
+
+        async function loadDiscountPresets() {
+            const { db, collection, getDocs, doc, getDoc, query, orderBy } = await import('../site_js/core/firebase.js');
+            const selector = document.getElementById('active-discount-selector');
+            if (!selector) return;
+
+            try {
+                // 1. Load active setting
+                const settingsDoc = await getDoc(doc(db, 'settings', 'pricing'));
+                let activeId = 'none';
+                if (settingsDoc.exists()) {
+                    activeId = settingsDoc.data().activePresetId || 'none';
+                }
+
+                // 2. Load all presets
+                const q = query(collection(db, 'discount_presets'), orderBy('name', 'asc'));
+                const snap = await getDocs(q);
+                
+                _allDiscountPresets = [];
+                let html = '<option value="none">Geen korting (Standaardprijs)</option>';
+                
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const d = { id: docSnap.id, ...data };
+                    _allDiscountPresets.push(d);
+                    html += `<option value="${d.id}" ${d.id === activeId ? 'selected' : ''}>${d.name}</option>`;
+                });
+
+                selector.innerHTML = html;
+                previewDiscountSelection(selector.value);
+            } catch (err) {
+                console.error("Error loading discount presets:", err);
+            }
+        }
+
+        window.previewDiscountSelection = function(id) {
+            const container = document.getElementById('discount-preview-content');
+            if (!container) return;
+
+            if (id === 'none') {
+                container.innerHTML = '<div style="color: #94a3b8;">Geen korting geselecteerd. Gebruikt standaardprijzen.</div>';
+                _activeDiscountRule = null;
+                return;
+            }
+
+            const preset = _allDiscountPresets.find(p => p.id === id);
+            if (!preset) return;
+            _activeDiscountRule = preset;
+
+            // Render visual staffel
+            let html = `
+                <div style="text-align: left;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <strong style="font-size: 1.1rem;">${preset.name}</strong>
+                        ${currentUserRole === 'superuser' ? `
+                            <button onclick="deleteDiscountPreset('${preset.id}')" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.8rem;">
+                                <i class="ph ph-trash"></i> Verwijderen
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+            `;
+
+            // Sort by days descending
+            const sortedTiers = [...preset.tiers].sort((a,b) => b.days - a.days);
+            sortedTiers.forEach(tier => {
+                html += `
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width: 120px; font-size: 0.8rem; color: #64748b;">Tot ${tier.days} dagen vantevoren:</div>
+                        <div style="flex:1; background: #e2e8f0; height: 32px; border-radius: 16px; position: relative; overflow: hidden;">
+                            <div style="position:absolute; left:0; top:0; height:100%; width: ${tier.percentage}%; background: #99f6e4; display:flex; align-items:center; padding-left:12px; font-weight:700; color: #0d9488; font-size: 0.8rem;">
+                                ${tier.percentage}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        };
+
+        window.saveActiveDiscount = async function() {
+            const id = document.getElementById('active-discount-selector').value;
+            const { db, doc, setDoc } = await import('../site_js/core/firebase.js');
+            
+            try {
+                await setDoc(doc(db, 'settings', 'pricing'), {
+                    activePresetId: id,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+                
+                showToast("Succes", "Kortingsinstelling opgeslagen.");
+                logActivity('Discount Update', `Actieve kortingsregel gewijzigd naar ${id}`);
+            } catch (err) {
+                alert("Fout bij opslaan: " + err.message);
+            }
+        };
+
+        window.openDiscountModal = function() {
+            document.getElementById('discount-modal-name').value = '';
+            document.getElementById('discount-modal-tiers').innerHTML = '';
+            addDiscountTierRow(); // Add one empty row by default
+            document.getElementById('discount-modal-overlay').classList.add('active');
+        };
+
+        window.closeDiscountModal = function() {
+            document.getElementById('discount-modal-overlay').classList.remove('active');
+        };
+
+        window.addDiscountTierRow = function(days = '', percentage = '') {
+            const container = document.getElementById('discount-modal-tiers');
+            const row = document.createElement('div');
+            row.className = 'discount-tier-row';
+            row.innerHTML = `
+                <input type="number" class="discount-tier-input tier-days" placeholder="Dagen vantevoren (bijv. 42)" value="${days}">
+                <input type="number" class="discount-tier-input tier-percentage" placeholder="Korting % (bijv. 20)" value="${percentage}">
+                <button class="btn-tier-remove" onclick="this.parentElement.remove()">
+                    <i class="ph ph-trash"></i>
+                </button>
+            `;
+            container.appendChild(row);
+        };
+
+        window.saveDiscountPresetFromModal = async function() {
+            const name = document.getElementById('discount-modal-name').value.trim();
+            if (!name) { alert("Voer een naam in."); return; }
+
+            const tierRows = document.querySelectorAll('.discount-tier-row');
+            const tiers = [];
+            
+            tierRows.forEach(row => {
+                const days = parseInt(row.querySelector('.tier-days').value);
+                const percentage = parseInt(row.querySelector('.tier-percentage').value);
+                if (!isNaN(days) && !isNaN(percentage)) {
+                    tiers.push({ days, percentage });
+                }
+            });
+
+            if (tiers.length === 0) {
+                alert("Voeg minimaal één geldige stap toe.");
+                return;
+            }
+
+            try {
+                const { db, collection, addDoc } = await import('../site_js/core/firebase.js');
+                await addDoc(collection(db, 'discount_presets'), {
+                    name,
+                    tiers,
+                    createdAt: new Date().toISOString()
+                });
+
+                showToast("Succes", "Kortingsregel aangemaakt.");
+                closeDiscountModal();
+                loadDiscountPresets();
+            } catch (err) {
+                alert("Fout bij opslaan: " + err.message);
+            }
+        };
+
+        window.openNewDiscountModal = async function() {
+            openDiscountModal();
+        };
+
+        window.deleteDiscountPreset = async function(id) {
+            if (!confirm("Weet u zeker dat u deze kortingsregel wilt verwijderen?")) return;
+            
+            try {
+                const { db, doc, deleteDoc } = await import('../site_js/core/firebase.js');
+                await deleteDoc(doc(db, 'discount_presets', id));
+                showToast("Verwijderd", "Kortingsregel verwijderd.");
+                loadDiscountPresets();
+            } catch (err) {
+                alert("Fout bij verwijderen: " + err.message);
+            }
+        };
+
+        window.togglePricingTable = function(id) {
+            const table = document.getElementById(`pricing-table-${id}`);
+            const caret = document.querySelector(`.pricing-caret-${id}`);
+            if (table.style.display === 'none') {
+                table.style.display = 'block';
+                caret.style.transform = 'rotate(180deg)';
+            } else {
+                table.style.display = 'none';
+                caret.style.transform = 'rotate(0deg)';
+            }
+        };
+
+        window.deletePricingVersion = async function(id, date) {
+            const confirm1 = confirm(`Weet je zeker dat je de prijslijst van ${date} wilt verwijderen?`);
+            if (!confirm1) return;
+            
+            const confirm2 = confirm(`LET OP: Dit kan gevolgen hebben voor prijsberekeningen. Weet je het HEEL zeker? Dit is een onomkeerbare actie.`);
+            if (!confirm2) return;
+
+            const { db, doc, deleteDoc } = await import('../site_js/core/firebase.js');
+            try {
+                await deleteDoc(doc(db, 'pricing_versions', id));
+                logActivity('Pricing Delete', `Prijslijst verwijderd voor ingangsdatum ${date}`, id);
+                loadPricingVersions();
+            } catch (err) {
+                alert("Fout bij verwijderen: " + err.message);
+            }
+        };
+
+        async function processPricingFile(file) {
+            _pricingParsed = null;
+
+            // Auto-detect effective date from filename (pattern: pricing_DD-MM-YYYY.xlsx)
+            const fileDateMatch = file.name.match(/pricing_(\d{2})-(\d{2})-(\d{4})/i);
+            if (fileDateMatch) {
+                const isoDate = `${fileDateMatch[3]}-${fileDateMatch[2]}-${fileDateMatch[1]}`;
+                const dateInput = document.getElementById('pricing-effective-date');
+                if (dateInput) dateInput.value = isoDate;
+            }
+
+            const ab = await file.arrayBuffer();
+            const wb = XLSX.read(ab, { type: 'array', cellDates: true });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(ws);
+            
+            const priceMap = {};
+            rows.forEach(row => {
+                const keys = Object.keys(row);
+                // Fuzzy matcher: strip spaces and punctuation, then look for keywords
+                const findKey = (keywords) => keys.find(k => {
+                    const kl = k.toLowerCase().replace(/[\s\._\-]/g, '');
+                    return keywords.some(kw => kl.includes(kw.toLowerCase().replace(/[\s\._\-]/g, '')));
+                });
+                
+                const dateKey = findKey(['datum', 'date', 'dag', 'day']);
+                // Updated keywords based on exact Excel structure: "Min. nacht", "Min te betalen nachten", " Dagprijs "
+                const minPayKey = findKey(['mintebetalen', 'tebetalen', 'paynachten', 'minpay']);
+                const minNightsKey = findKey(['minnacht', 'minboeken', 'min.nacht', 'minimum']);
+                const priceKey = findKey(['dagprijs', 'dagtarief', 'prijs', 'price', 'amount', 'euro']);
+                const seasonKey = findKey(['seizoen', 'season', 'type', 'label', 'periode']);
+                const weekPriceKey = findKey(['weekprijs', 'week', '7nachten', 'weekly']);
+
+                const dateVal = dateKey ? row[dateKey] : null;
+                let dateStr = "";
+                
+                if (dateVal instanceof Date) {
+                    dateStr = dateVal.toISOString().split('T')[0];
+                } else if (typeof dateVal === 'number') {
+                    // Handle Excel numeric date format
+                    const d = XLSX.SSF.parse_date_code(dateVal);
+                    dateStr = `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}`;
+                } else if (dateVal) {
+                    const s = String(dateVal).trim();
+                    const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
+                    if (m) {
+                        dateStr = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+                    } else if (s.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        dateStr = s;
+                    }
+                }
+
+                if (dateStr && dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    priceMap[dateStr] = {
+                        dagprijs: Number(priceKey ? row[priceKey] : 0),
+                        seizoen: seasonKey ? String(row[seasonKey] || "") : "",
+                        min_nachten_boeken: Number(minNightsKey ? row[minNightsKey] : 0),
+                        min_nachten_betalen: Number(minPayKey ? row[minPayKey] : 0),
+                        weekprijs: Number(weekPriceKey ? row[weekPriceKey] : 0)
+                    };
+                }
+            });
+
+            if (Object.keys(priceMap).length === 0) {
+                alert("Geen geldige prijzen gevonden in het bestand. Controleer of de kolom-koppen (zoals 'datum' en 'prijs') aanwezig zijn.");
+                return;
+            }
+
+            _pricingParsed = priceMap;
+            document.getElementById('pricing-filename').textContent = file.name;
+            document.getElementById('pricing-upload-confirm').style.display = 'block';
+            document.getElementById('pricing-drop-zone').style.borderColor = '#bbf7d0';
+            document.getElementById('pricing-drop-zone').style.background = '#f0fdf4';
+        }
+
+        window.uploadPricingFile = async function() {
+            const effDate = document.getElementById('pricing-effective-date').value;
+            if (!effDate) {
+                alert("Selecteer eerst een ingangsdatum.");
+                return;
+            }
+
+            if (!_pricingParsed) return;
+
+            const { db, doc, setDoc, serverTimestamp } = await import('../site_js/core/firebase.js');
+            
+            try {
+                const docId = `price_list_${effDate.replace(/-/g, '')}`;
+                await setDoc(doc(db, 'pricing_versions', docId), {
+                    effectiveDate: effDate,
+                    prices: _pricingParsed,
+                    createdAt: serverTimestamp()
+                });
+
+                alert("Prijslijst succesvol opgeslagen!");
+                logActivity('Pricing Upload', `Nieuwe prijslijst geüpload voor ingangsdatum ${effDate}`, docId);
+                resetPricingUpload();
+                loadPricingVersions();
+            } catch (err) {
+                console.error("Upload failed:", err);
+                alert("Fout bij opslaan: " + err.message);
+            }
+        };
+
+        window.resetPricingUpload = function() {
+            _pricingParsed = null;
+            document.getElementById('pricing-file-input').value = '';
+            document.getElementById('pricing-upload-confirm').style.display = 'none';
+            document.getElementById('pricing-drop-zone').style.borderColor = '';
+            document.getElementById('pricing-drop-zone').style.background = '';
+            document.getElementById('pricing-effective-date').value = '';
+        };
 
         // --- 9. FINANCE & INVOICES ---
         let currentInvoiceView = localStorage.getItem('gipfel_invoice_view') || 'grid';
@@ -3725,12 +4270,7 @@
                 loadInvoices(); // Ververs het overzicht
 
                 // Toast melding
-                const toast = document.getElementById('eb-toast');
-                if (toast) {
-                    toast.textContent = statusLabels[newStatus] || 'Status bijgewerkt';
-                    toast.style.display = 'block';
-                    setTimeout(() => { toast.style.display = 'none'; }, 3000);
-                }
+                showToast("Betaalstatus", statusLabels[newStatus] || 'Status bijgewerkt', 'success');
 
             } catch (err) {
                 console.error('Fout bij opslaan betaalstatus:', err);
@@ -3860,4 +4400,30 @@
         window.closePaymentModal = function() {
             const modal = document.getElementById('payment-status-modal');
             if (modal) modal.classList.remove('is-open');
+        };
+
+        window.showToast = function(title, message, type = 'success') {
+            const container = document.getElementById('eb-toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `eb-toast eb-toast--${type}`;
+            toast.innerHTML = `
+                <div class="eb-toast__title">${title}</div>
+                <div class="eb-toast__message">${message}</div>
+                <div class="eb-toast__progress">
+                    <div class="eb-toast__progress-bar"></div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('active'), 10);
+
+            // Auto-remove after 4s
+            setTimeout(() => {
+                toast.classList.remove('active');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
         };
