@@ -31,6 +31,16 @@ export const InvoiceGenerator = {
                 <td class="amount-col">${fmtEUR(data.rent)}</td>
             </tr>
         `;
+        
+        // Discount Row
+        if (data.discountAmount > 0) {
+            itemRows += `
+                <tr style="color: #2e7d32; font-weight: 500;">
+                    <td>Korting -${data.discountPercentage}%</td>
+                    <td class="amount-col">-${fmtEUR(data.discountAmount)}</td>
+                </tr>
+            `;
+        }
 
         // Cleaning Row
         if (data.cleaning > 0) {

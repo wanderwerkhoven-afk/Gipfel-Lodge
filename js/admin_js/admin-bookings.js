@@ -1,0 +1,2079 @@
+/* MODULE: Bookings */
+        // --- SHARED UI COMPONENT: Unified Booking Card ---
+        function renderBookingCardHTML(data, context = 'default', todayRef = new Date()) {
+            const card = document.createElement('div');
+            card.className = 'booking-card';
+            if (context === 'mailchain') card.id = `mc-card-${data.id}`;
+
+            const dIn = new Date(data.checkIn);
+            const dOut = new Date(data.checkOut);
+            const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+
+            const today = new Date(todayRef);
+            today.setHours(0, 0, 0, 0);
+            const checkInRef = new Date(data.checkIn);
+            checkInRef.setHours(0, 0, 0, 0);
+            const checkOutRef = new Date(data.checkOut);
+            checkOutRef.setHours(0, 0, 0, 0);
+
+            const diffIn = Math.ceil((checkInRef - today) / (1000 * 60 * 60 * 24));
+            const diffOut = Math.ceil((today - checkOutRef) / (1000 * 60 * 60 * 24));
+
+            const mc = data.mailChain || {};
+            const isPending = data.status === 'pending';
+            const isDeclined = data.status === 'declined';
+            const isConfirmed = data.status === 'confirmed';
+            const isPassed = data.isPassed || (checkOutRef <= today);
+
+            // CURRENCY CALCULATIONS
+            const rawPVal = data.totalAmount || data.total_amount || 0;
+            const rawP = (typeof rawPVal === 'string') ? parseFloat(rawPVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawPVal;
+            const fmtP = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
+            const tAmt = rawP ? fmtP(rawP) : '€ [BEDRAG]';
+            const dAmt = rawP ? fmtP(rawP * 0.3) : '€ [BEDRAG]';
+            const bAmt = rawP ? fmtP(rawP * 0.7) : '€ [BEDRAG]';
+
+            const country = getCountryData(data.guestPhone, data);
+
+            // LOGIC FOR RECOMMENDED STEP
+            const recStep = getRecommendedStep(data, today);
+
+            let statusHtml = '';
+            if (isPassed) statusHtml = '<span class="status-badge status-completed">Voltooid</span>';
+            else if (isPending) statusHtml = '<span class="status-badge status-pending">In Afwachting</span>';
+            else if (isDeclined) statusHtml = '<span class="status-badge status-declined">Geweigerd</span>';
+            else statusHtml = '<span class="status-badge status-confirmed">Bevestigd</span>';
+
+            card.setAttribute('data-booking-id', data.id);
+            card.setAttribute('data-status', data.status || 'pending');
+            card.setAttribute('data-check-in', data.checkIn);
+            card.setAttribute('data-check-out', data.checkOut);
+
+            card.innerHTML = `
+                <div class="booking-card-header">
+                    <div>
+                        <p style="font-size: 0.7rem; font-weight: 800; color: var(--color-gold); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px;">Ref: ${data.bookingId || data.id}</p>
+                        <h3>${data.guestName || 'Gast'}</h3>
+                        <p style="margin-bottom: 4px; font-weight: 600; color: var(--color-slate);">${data.guestEmail || '-'}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            ${statusHtml}
+                            ${(isDeclined && currentUserRole === 'superuser') ? `
+                                <button class="delete-btn-trash" onclick="confirmDeleteBooking('${data.id}', '${data.guestName}')" title="Boeking permanent verwijderen">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </button>
+                            ` : ''}
+                        </div>
+                        ${country ? `
+                            <div class="country-badge" style="margin-top: 0;">
+                                <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
+                                <span class="country-code-label">${country.code}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="booking-card-body">
+                    <div class="booking-info-row">
+                        <span class="tile-section-label">Verblijf:</span>
+                        <strong>${dIn.toLocaleDateString('nl-NL', fmtOpts)} – ${dOut.toLocaleDateString('nl-NL', fmtOpts)}</strong>
+                    </div>
+
+                    <div class="tile-section-label" style="margin-top: 10px;">Details:</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 5px;">
+                        <strong>Gasten:</strong> ${Math.max(1, (data.adults || 0) + (data.children || 0) + (data.babies || 0))} 
+                        (${[data.adults > 0 ? `${data.adults} volw.` : null, data.children > 0 ? `${data.children} kind.` : null, data.babies > 0 ? `${data.babies} baby` : null].filter(Boolean).join(', ')})
+                    </div>
+                    <p style="font-style: italic; opacity: 0.8; font-size: 0.95rem; margin-bottom: 15px;">"${data.message || 'Geen bericht'}"</p>
+                    
+                    <div class="payment-info" style="margin-top: 15px;">
+                        <!-- Step 1 (Manual Check) -->
+                        <div class="payment-toggle" style="padding-bottom:10px;">
+                            <div>
+                                <span style="opacity: 0.6; display:block;">1. Boeking ontvangen</span>
+                                <a href="javascript:void(0)" 
+                                    data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
+                                    data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                    data-guests="${data.totalGuests || '-'}" 
+                                    data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                    data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="general" 
+                                    onclick="openEmailComposer(this)" 
+                                    style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700;">✉ BEWERK & KOPIEER</a>
+                            </div>
+                            <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">✔ VOLTOOID</span>
+                        </div>
+                        
+                                <div class="payment-toggle ${recStep === 2 ? 'recommended-step' : ''}" data-step-index="2" style="border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 5px;">
+                            <div>
+                                <span style="opacity: ${isPending ? '1' : '0.6'}; display:block; font-size: 0.85rem;">2. Accepteren / Weigeren</span>
+                                <div style="display:flex; gap:8px; margin-top:8px;">
+                                    <a href="javascript:void(0)" 
+                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                        data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="acceptance" 
+                                        onclick="openEmailComposer(this)" 
+                                        style="background: rgba(40, 167, 69, 0.05); border: 1px solid rgba(40, 167, 69, 0.2); color: #28a745; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ ACCEPTEER</a>
+                                    <a href="javascript:void(0)" 
+                                        data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" 
+                                        data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                        data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                        data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="rejection" 
+                                        onclick="openEmailComposer(this)" 
+                                        style="background: rgba(220, 53, 69, 0.04); border: 1px solid rgba(220, 53, 69, 0.15); color: #dc3545; padding: 4px 8px; border-radius: 6px; text-decoration: none; font-size: 0.68rem; font-weight: 800; transition: all 0.2s;">✉ WEIGER</a>
+                                </div>
+                            </div>
+                            <span style="color: var(--color-gold); font-size: 0.8rem; font-weight: bold;">${!isPending ? '✔ VOLTOOID' : 'ACTIE VEREIST'}</span>
+                        </div>
+                        
+                        <!-- Steps 3-8 -->
+                        ${['depositReminder', 'depositReceived', 'balanceReminder', 'balanceReceived', 'preStayInfo', 'postStay'].map((key, i) => {
+                            const stepIdx = i + 3;
+                            const ps = data.paymentStatus || 'unpaid';
+                            let isSkipped = false;
+
+                            // Sync Logic (Same as Hub Modal)
+                            if (stepIdx === 3 && ps !== 'unpaid') isSkipped = true;
+                            if (ps === 'fully_paid' && (stepIdx === 4 || stepIdx === 5)) isSkipped = true;
+
+                            // If already manual done, don't show as skipped?
+                            // Actually, let's keep it gray if already paid.
+                            if (mc[key]) isSkipped = false;
+
+                            const titleMap = {
+                                'depositReminder': '3. Aanbetaling herinnering',
+                                'depositReceived': '4. Aanbetaling ontvangen melding',
+                                'balanceReminder': '5. Restbetaling herinnering',
+                                'balanceReceived': '6. Restbetaling ontvangen melding',
+                                'preStayInfo': '7. Regels & wachtwoorden',
+                                'postStay': '8. Bedankje & Review'
+                            };
+                            const typeMap = {
+                                'depositReminder': 'deposit_request',
+                                'depositReceived': 'deposit_received',
+                                'balanceReminder': 'balance_reminder',
+                                'balanceReceived': 'balance_received',
+                                'preStayInfo': 'rules_info',
+                                'postStay': 'post_stay'
+                            };
+
+                            const isRec = (recStep === stepIdx);
+                            const rowClass = `payment-toggle ${isRec ? 'recommended-step' : ''} ${isSkipped ? 'skipped' : ''}`;
+
+                            return `
+                                <div class="${rowClass}" data-step-index="${stepIdx}">
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        <span style="opacity: ${isSkipped ? '0.4' : '1'};">${titleMap[key]}</span>
+                                        <a href="javascript:void(0)" 
+                                            data-id="${data.id}" data-name="${data.guestName || ''}" data-email="${data.guestEmail || ''}" data-phone="${data.guestPhone || ''}"
+                                            data-in="${dIn.toLocaleDateString('nl-NL', fmtOpts)}" data-out="${dOut.toLocaleDateString('nl-NL', fmtOpts)}" 
+                                            data-guests="${data.totalGuests || '-'}" 
+                                            data-tot="${tAmt}" data-dep="${dAmt}" data-bal="${bAmt}" 
+                                            data-message="${data.message || ''}" data-token="${data.secretToken || ''}" data-type="${typeMap[key]}" 
+                                            onclick="${isSkipped ? 'return false' : 'openEmailComposer(this)'}" 
+                                            style="font-size: 0.75rem; color: var(--color-gold); text-decoration: none; font-weight:700; ${isSkipped ? 'opacity:0.3; cursor:default;' : ''}">✉ BEWERK & KOPIEER</a>
+                                    </div>
+                                    <div class="payment-toggle-controls">
+                                        <span class="status-icon-toggle" 
+                                            data-step-icon="${key}" 
+                                            data-booking-id="${data.id}"
+                                            onclick="${isSkipped ? '' : `toggleMailStep('${data.id}', '${key}', ${!mc[key]})`}"
+                                            style="${isSkipped ? 'display:none;' : 'cursor: pointer; font-size: 1.25rem; transition: transform 0.1s; display: inline-block; width: 32px; text-align: center;'}"
+                                            title="Klik om status te wijzigen">
+                                            ${mc[key] ? '<span style="color: #6b21a8; font-weight: bold;">✓</span>' : '⏳'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Overige Acties -->
+                    <div style="margin-top:20px; padding-top:15px; border-top: 1px solid rgba(0,0,0,0.05);">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button onclick="openCommunicationHub('${data.id}')" 
+                                class="btn btn-primary action-btn" style="flex:1; background:transparent; border:1px solid var(--color-gold); color:var(--color-gold); padding: 8px; font-size: 0.8rem;">
+                                ✉ BEHEER IN HUB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function getRecommendedStep(data, todayRef = new Date()) {
+            const today = new Date(todayRef);
+            today.setHours(0, 0, 0, 0);
+            const checkInRef = new Date(data.checkIn);
+            checkInRef.setHours(0, 0, 0, 0);
+            const checkOutRef = new Date(data.checkOut);
+            checkOutRef.setHours(0, 0, 0, 0);
+
+            const diffIn = Math.ceil((checkInRef - today) / (1000 * 60 * 60 * 24));
+            const diffOut = Math.ceil((today - checkOutRef) / (1000 * 60 * 60 * 24));
+
+            const mc = data.mailChain || {};
+            const isConfirmed = data.status === 'confirmed';
+            const isPending = data.status === 'pending';
+
+            if (isPending) return 2; // Accepteren / Weigeren
+            
+            if (isConfirmed) {
+                const ps = data.paymentStatus || 'unpaid';
+                // Return first actionable step that isn't already DONE (mc[key] is true)
+                // Skip 3 if already (aan)betaald
+                if (ps === 'unpaid' && !mc.depositReminder && !data.depositPaid) return 3;
+                
+                // Skip 4 if fully paid or already sent
+                if (ps !== 'fully_paid' && !mc.depositReceived && data.depositPaid) return 4;
+                
+                // Skip 5 if fully paid or already sent
+                if (ps !== 'fully_paid' && !mc.balanceReminder && !data.balancePaid && diffIn <= 45 && diffIn > 0) return 5;
+                
+                if (!mc.balanceReceived && data.balancePaid) return 6;
+                if (!mc.preStayInfo && diffIn <= 7 && diffIn >= -1) return 7;
+                if (!mc.postStay && diffOut >= 0 && diffOut <= 7) return 8;
+            }
+            return 0;
+        }
+
+        function switchCommHubTab(tabId) {
+            // Update tabs
+            document.querySelectorAll('.hub-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-btn-' + tabId).classList.add('active');
+
+            // Update panes
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+        }
+
+        function openPreloadedComposer(templateId) {
+            switchCommHubTab('editor');
+            const select = document.getElementById('composer-template-select');
+            if (select) {
+                select.value = templateId;
+                loadSelectedTemplateIntoComposer();
+            }
+        }
+
+        function closeCommHub() {
+            document.getElementById('comm-hub-modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function renderHubSteps(data) {
+            const mc = data.mailChain || {};
+            const isPending = data.status === 'pending';
+
+            const list = document.getElementById('hub-step-list-container');
+            if (!list) return;
+
+            const steps = [
+                { key: 'received', title: '1. Boeking ontvangen', tmpl: '', done: true },
+                { key: 'accepted', title: '2. Accepteren / Weigeren', tmpl: 'acceptance', done: !isPending },
+                { key: 'depositReminder', title: '3. Aanbetaling Herinnering', tmpl: 'deposit_request', done: !!mc.depositReminder },
+                { key: 'depositReceived', title: '4. Aanbetaling Ontvangen', tmpl: 'deposit_received', done: !!mc.depositReceived },
+                { key: 'balanceReminder', title: '5. Restbetaling Herinnering', tmpl: 'balance_reminder', done: !!mc.balanceReminder },
+                { key: 'balanceReceived', title: '6. Restbetaling Ontvangen', tmpl: 'balance_received', done: !!mc.balanceReceived },
+                { key: 'preStayInfo', title: '7. Regels & Wachtwoorden', tmpl: 'rules_info', done: !!mc.preStayInfo },
+                { key: 'postStay', title: '8. Bedankje & Review', tmpl: 'post_stay', done: !!mc.postStay }
+            ];
+
+            // Recommendation Logic
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const dIn = new Date(data.checkIn);
+            dIn.setHours(0, 0, 0, 0);
+            const dOut = new Date(data.checkOut);
+            dOut.setHours(0, 0, 0, 0);
+
+            const diffIn = Math.ceil((dIn - today) / (1000 * 60 * 60 * 24));
+            const diffOut = Math.ceil((today - dOut) / (1000 * 60 * 60 * 24));
+
+            let recStep = getRecommendedStep(data, today);
+            const ps = data.paymentStatus || 'unpaid';
+
+            // Find first uncompleted step (next step) that is NOT skipped by payment
+            let nextStepIndex = steps.findIndex((s, idx) => {
+                if (s.done) return false;
+                const stepNum = idx + 1;
+                let sk = false;
+                if (stepNum === 3 && ps !== 'unpaid') sk = true;
+                if (ps === 'fully_paid' && (stepNum === 4 || stepNum === 5)) sk = true;
+                return !sk;
+            });
+
+            let html = '';
+
+            steps.forEach((s, idx) => {
+                const stepNum = idx + 1;
+                let isSkipped = false;
+
+                // User logic:
+                // If deposit_paid or fully_paid -> Step 3 is skipped
+                if (stepNum === 3 && ps !== 'unpaid') isSkipped = true;
+                
+                // If fully_paid -> Steps 4 and 5 are also skipped
+                if (ps === 'fully_paid' && (stepNum === 4 || stepNum === 5)) isSkipped = true;
+
+                // If already done, we don't necessarily "skip" (it's completed), 
+                // but if it's skipped by payment, we show it as skipped.
+                // However, if the user manually did it (done is true), 
+                // we probably should show it as COMPLETED even if payment would skip it.
+                // Actually, the user wants it gray if paid.
+                if (s.done) isSkipped = false; // "Done" takes precedence over "Skipped" for visual state? 
+                // Wait, if it's done, it should look completed. If it's NOT done BUT payment is OK, it's skipped.
+
+                const isNext = (idx === nextStepIndex) && !isSkipped;
+                const clickAttr = (s.tmpl && !isSkipped) ? `onclick="openPreloadedComposer('${s.tmpl}')"` : '';
+                const pointerStyle = (s.tmpl && !isSkipped) ? 'cursor: pointer;' : '';
+
+                let iconHtml = '';
+                if (s.done) {
+                    iconHtml = `<span class="hub-step-icon icon-check" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', false)">✓</span>`;
+                } else if (!isSkipped) {
+                    iconHtml = `<span class="hub-step-icon icon-wait" title="Klik om status te wijzigen" onclick="toggleHubStepManual(event, '${data.id}', '${s.key}', true)">⏳</span>`;
+                }
+
+                let badgeHtml = isNext ? `<span class="badge-next-step">VOLGENDE STAP</span>` : '';
+
+                // Extra styling for "next step"
+                let extraClasses = isNext ? 'hub-step-next' : '';
+                if (s.done) extraClasses += ' completed';
+                if (idx + 1 === recStep) extraClasses += ' recommended-step';
+                if (isSkipped) extraClasses += ' hub-step-skipped';
+
+                html += `
+                    <div class="hub-step-row ${extraClasses}" style="${pointerStyle}" ${clickAttr} data-step-key="${s.key}">
+                        <div class="hub-step-info">
+                            <span class="hub-step-title-text">${s.title}</span>
+                            ${badgeHtml}
+                        </div>
+                        <div class="hub-step-action">
+                            ${iconHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+
+            list.innerHTML = html;
+        }
+
+        async function toggleHubStepManual(event, bookingId, stepKey, value) {
+            if (event) event.stopPropagation(); // Don't trigger composer
+            if (stepKey === 'received' || stepKey === 'accepted') {
+                console.log("Stap 1 & 2 worden automatisch beheerd.");
+                return;
+            }
+
+            try {
+                // Call existing toggle function that syncs Firestore
+                await toggleMailStep(bookingId, stepKey, value);
+
+                // Re-fetch data and refresh Hub and Mail Chain
+                const { db } = await import('../site_js/core/firebase.js');
+                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+                const snap = await getDoc(doc(db, "bookings", bookingId));
+                if (snap.exists()) {
+                    renderHubSteps({ id: snap.id, ...snap.data() });
+                    // Also refresh the background mail chain page
+                    loadMailChain();
+                }
+            } catch (e) {
+                console.error("Fout bij handmatig afvinken:", e);
+                alert("Kon status niet bijwerken.");
+            }
+        }
+
+        function copyHubEmail() {
+            const email = document.getElementById('hub-guest-email').innerText;
+            if (email && email !== '-') {
+                navigator.clipboard.writeText(email)
+                    .then(() => {
+                        const btn = document.querySelector('.btn-copy-email');
+                        const origHtml = btn.innerHTML;
+                        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                        setTimeout(() => btn.innerHTML = origHtml, 2000);
+                    })
+                    .catch(err => console.error("Kopiëren mislukt", err));
+            }
+        }
+
+        async function openCommunicationHub(bookingId) {
+            try {
+                const { db } = await import('../site_js/core/firebase.js');
+                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js');
+                const snap = await getDoc(doc(db, "bookings", bookingId));
+
+                if (!snap.exists()) {
+                    alert('Boeking niet gevonden!');
+                    return;
+                }
+
+                const data = { id: snap.id, ...snap.data() };
+
+                // Set Modal Labels
+                document.getElementById('hub-guest-name').innerText = data.guestName || 'Gast';
+                document.getElementById('hub-guest-email').innerText = data.guestEmail || '-';
+
+                const statusBadge = document.getElementById('hub-guest-status');
+                if (data.status === 'pending') {
+                    statusBadge.innerText = 'WACHT OP ACTIE';
+                    statusBadge.style.color = '#c47e09';
+                    statusBadge.style.background = '#fdf8f0';
+                    statusBadge.style.borderColor = '#fbebd0';
+                } else if (data.status === 'declined') {
+                    statusBadge.innerText = 'GEWEIGERD';
+                    statusBadge.style.color = '#c62828';
+                    statusBadge.style.background = 'rgba(211, 47, 47, 0.08)';
+                    statusBadge.style.borderColor = 'rgba(211, 47, 47, 0.2)';
+                } else {
+                    statusBadge.innerText = 'BEVESTIGD';
+                    statusBadge.style.color = '#2e7d32';
+                    statusBadge.style.background = 'rgba(46, 125, 50, 0.1)';
+                    statusBadge.style.borderColor = 'rgba(46, 125, 50, 0.2)';
+                }
+
+                // Landkaartje/Flag in Hub
+                const country = getCountryData(data.guestPhone, data);
+                const hubHeaderInfo = document.querySelector('.status-overview-header > div');
+                // Check if already exists to avoid duplication if opened multiple times
+                const existingCountry = hubHeaderInfo.querySelector('.country-badge');
+                if (existingCountry) existingCountry.remove();
+
+                if (country) {
+                    const cb = document.createElement('div');
+                    cb.className = 'country-badge';
+                    cb.style.marginTop = '12px';
+                    cb.innerHTML = `
+                        <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name}">
+                        <span class="country-code-label">${country.code}</span>
+                    `;
+                    hubHeaderInfo.appendChild(cb);
+                }
+
+                renderHubSteps(data);
+
+                // Setup the Email Editor state
+                const dIn = new Date(data.checkIn);
+                const dOut = new Date(data.checkOut);
+                const fmtOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+
+                const rawVal = data.totalAmount || data.total_amount || 0;
+                const raw = (typeof rawVal === 'string') ? parseFloat(rawVal.replace(/[^0-9,.-]/g, '').replace(',', '.')) : rawVal;
+                const fmt = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(n || 0);
+                const tAmt = raw ? fmt(raw) : '€ [BEDRAG]';
+                const dAmt = raw ? fmt(raw * 0.3) : '€ [BEDRAG]';
+                const bAmt = raw ? fmt(raw * 0.7) : '€ [BEDRAG]';
+
+                const phone = data.guestPhone || '';
+                currentLang = detectLanguage(phone, data);
+                const labels = composerLabels[currentLang];
+
+                let guestsStr = data.totalGuests || '';
+                if (data.adults !== undefined) {
+                    const parts = [];
+                    const ad = parseInt(data.adults) || 0;
+                    const ch = parseInt(data.children) || 0;
+                    const ba = parseInt(data.babies) || 0;
+                    if (ad > 0) parts.push(`${ad} ${labels.adults}`);
+                    if (ch > 0) parts.push(`${ch} ${labels.children}`);
+                    if (ba > 0) parts.push(`${ba} ${labels.baby}`);
+                    if (parts.length > 0) guestsStr = parts.join(' | ');
+                }
+
+                // --- HEAL DATABASE: Generate secretToken if missing ---
+                let secretToken = data.secretToken;
+                if (!secretToken) {
+                    console.log("Healing booking: Generating missing secretToken...");
+                    secretToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+                    try {
+                        const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                        await updateDoc(doc(db, "bookings", bookingId), {
+                            secretToken: secretToken,
+                            updatedAt: new Date().toISOString()
+                        });
+                        console.log("Booking healed with new token.");
+                    } catch (e) {
+                        console.error("Failed to heal booking:", e);
+                    }
+                }
+
+                currentComposerData = {
+                    id: bookingId,
+                    name: data.guestName || 'Gast',
+                    email: data.guestEmail || '',
+                    phone: phone,
+                    in: dIn.toLocaleDateString('nl-NL', fmtOpts),
+                    out: dOut.toLocaleDateString('nl-NL', fmtOpts),
+                    guests: guestsStr,
+                    tot: tAmt,
+                    dep: dAmt,
+                    bal: bAmt,
+                    message: data.message || '',
+                    status: data.status || 'pending',
+                    mailChain: data.mailChain || {},
+                    token: secretToken
+                };
+
+                renderHubSteps({ id: bookingId, ...data });
+
+                switchCommHubTab('status');
+
+                document.getElementById('comm-hub-modal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                document.getElementById('composer-template-select').value = 'general';
+                loadSelectedTemplateIntoComposer();
+
+            } catch (e) {
+                console.error("Error opening comm hub:", e);
+                alert("Kon boeking niet openen in Hub.");
+            }
+        }
+
+        async function loadMailChain() {
+            const loader = document.getElementById('mailchain-loader');
+            const prioList = document.getElementById('prio-list');
+            const prioSection = document.getElementById('prio-section');
+            const prioCountBadge = document.getElementById('prio-count');
+            const emptyMsg = document.getElementById('prio-empty-msg');
+
+            loader.style.display = 'block';
+            prioSection.style.display = 'none';
+            if (prioList) prioList.innerHTML = '';
+            if (emptyMsg) emptyMsg.style.display = 'none';
+
+            const prioItems = [];
+            let prioHtml = '';
+            let prioCount = 0;
+
+            try {
+                const { db, collection, getDocs } = await import('../site_js/core/firebase.js');
+                const querySnapshot = await getDocs(collection(db, "bookings"));
+
+                loader.style.display = 'none';
+
+                const now = new Date();
+
+                // Process bookings for priority tasks
+                querySnapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    const recStep = getRecommendedStep(data, now);
+                    
+                    if (recStep > 0) {
+                        prioCount++;
+                        prioItems.push({ data, recStep });
+                    }
+                });
+
+                // SORT PRIO ITEMS: Step 2 first, then by check-in date
+                prioItems.sort((a, b) => {
+                    if (a.recStep === 2 && b.recStep !== 2) return -1;
+                    if (a.recStep !== 2 && b.recStep === 2) return 1;
+                    // Otherwise sort by check-in
+                    return new Date(a.data.checkIn) - new Date(b.data.checkIn);
+                });
+
+                const stepNames = {
+                    2: "Accepteren / Weigeren",
+                    3: "Aanbetaling Herinnering",
+                    4: "Aanbetaling Ontvangen",
+                    5: "Restbetaling Herinnering",
+                    6: "Restbetaling Ontvangen",
+                    7: "Regels & Wachtwoorden",
+                    8: "Bedankje & Review"
+                };
+
+                prioItems.forEach(item => {
+                    const taskName = stepNames[item.recStep];
+                    prioHtml += `
+                        <div class="prio-item ${item.recStep === 2 ? 'prio-item--urgent' : ''}">
+                            <div class="prio-item-main">
+                                <div class="prio-item-guest">
+                                    ${item.data.guestName || 'Gast'}
+                                    ${item.recStep === 2 ? '<span style="font-size:0.6rem; background:#fee2e2; color:#b91c1c; padding:2px 6px; border-radius:4px; margin-left:8px;">NIEUWE AANVRAAG</span>' : ''}
+                                </div>
+                                <div class="prio-item-task">
+                                    <i class="ph ph-clock-countdown" style="color:var(--color-gold);"></i>
+                                    ${taskName}
+                                </div>
+                            </div>
+                            <button class="prio-item-btn" onclick="openCommunicationHub('${item.data.id}')">
+                                BEHANDELEN
+                            </button>
+                        </div>
+                    `;
+                });
+
+                // RENDER PRIO SECTION IF TASKS EXIST
+                if (prioCount > 0) {
+                    prioList.innerHTML = prioHtml;
+                    prioCountBadge.innerText = prioCount;
+                    prioSection.style.display = 'block';
+                } else {
+                    prioSection.style.display = 'none';
+                    if (emptyMsg) emptyMsg.style.display = 'block';
+                }
+
+            } catch (err) {
+                console.error("Fout bij laden mail-chain:", err);
+                loader.style.display = 'none';
+                list.innerHTML = '<p style="color: #ff6b6b; grid-column: 1/-1; text-align: center;">Fout bij laden van gegevens.</p>';
+            }
+        }
+
+        async function toggleMailStep(bookingId, stepKey, value) {
+            try {
+                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+
+                // 1. Sync Logic (Main Card Icons)
+                const icons = document.querySelectorAll(`[data-step-icon="${stepKey}"][data-booking-id="${bookingId}"]`);
+                icons.forEach(el => {
+                    el.innerHTML = value ? '<span style="color: #6b21a8; font-weight: bold;">✓</span>' : '⏳';
+                    el.setAttribute('onclick', `toggleMailStep('${bookingId}', '${stepKey}', ${!value})`);
+                });
+
+                // Nested update in Firestore object
+                await updateDoc(doc(db, "bookings", bookingId), {
+                    [`mailChain.${stepKey}`]: value,
+                    updatedAt: new Date().toISOString()
+                });
+
+                // LOG ACTIVITY
+                const actionName = value ? 'EMAIL_STEP_COMPLETED' : 'EMAIL_STEP_REVERTED';
+                logActivity(actionName, `Stap '${stepKey}' gewijzigd naar ${value ? 'voltooid' : 'openstaand'}`, bookingId);
+
+                // 3. Live-update Status Overview (Hub Modal)
+                if (currentComposerData && currentComposerData.id === bookingId) {
+                    if (!currentComposerData.mailChain) currentComposerData.mailChain = {};
+                    currentComposerData.mailChain[stepKey] = value;
+                    renderHubSteps(currentComposerData);
+                }
+
+                // 4. Update highlights on BOTH Card and Hub
+                refreshCardHighlights(bookingId);
+
+            } catch (err) {
+                console.error(`Fout bij updaten mail-chain stap ${stepKey}:`, err);
+                alert("Kon de status niet opslaan in Database.");
+            }
+        }
+
+        /**
+         * Helper to instantly update the "Recommended Step" (gold border) on the UI
+         * after a state change (mail chain or payment status).
+         */
+        async function refreshCardHighlights(bookingId) {
+            try {
+                // Find all cards for this booking (could be in multiple views)
+                const cards = document.querySelectorAll(`[data-booking-id="${bookingId}"].booking-card, #mc-card-${bookingId}`);
+                if (cards.length === 0) return;
+
+                // We need the latest data to calculate the new recommendation
+                // For performance, we'll try to find the data in our current memory or DOM
+                // But for absolute correctness, a quick fetch or passing data is better.
+                // Here, we'll look for the icon states to reconstruct the mailChain.
+                
+                const mc = {};
+                const stepIcons = document.querySelectorAll(`[data-booking-id="${bookingId}"][data-step-icon]`);
+                stepIcons.forEach(icon => {
+                    const key = icon.getAttribute('data-step-icon');
+                    mc[key] = icon.innerHTML.includes('✓');
+                });
+
+                const depositPaid = document.querySelector(`[data-payment-icon="depositPaid"][data-booking-id="${bookingId}"]`)?.innerHTML.includes('✓');
+                const balancePaid = document.querySelector(`[data-payment-icon="balancePaid"][data-booking-id="${bookingId}"]`)?.innerHTML.includes('✓');
+
+                // Get other basic info from the card itself
+                const card = cards[0];
+                const checkInStr = card.getAttribute('data-check-in'); // Assuming we add this
+                const checkOutStr = card.getAttribute('data-check-out');
+                const status = card.getAttribute('data-status');
+
+                // If attributes aren't found, we can't reliably update without data.
+                // However, the unified card should have these.
+                if (!checkInStr) return;
+
+                const dummyData = {
+                    status: status,
+                    checkIn: checkInStr,
+                    checkOut: checkOutStr,
+                    depositPaid: depositPaid,
+                    balancePaid: balancePaid,
+                    mailChain: mc
+                };
+
+                const newRec = getRecommendedStep(dummyData, new Date());
+
+                // Update all items in this booking's payment-info sections
+                const stepContainers = document.querySelectorAll(`[data-booking-id="${bookingId}"] .payment-toggle`);
+                stepContainers.forEach((el, idx) => {
+                    // Step indices in our logic: 2 (accept), 3-8 (mail steps)
+                    // The loop index matches the map: 0->3, 1->4...
+                    // Step 2 is special.
+                    const isStep2 = el.innerText.includes('2.');
+                    const currentStepIdx = isStep2 ? 2 : (idx); // This is fragile, let's use a data-attribute instead
+                });
+                
+                // BETTER APPROACH: Just re-run the loop logic on the elements
+                const containers = document.querySelectorAll(`[data-booking-id="${bookingId}"] .payment-toggle`);
+                containers.forEach(el => {
+                    // We'll look for a data-step-index attribute we'll add in the next chunk
+                    const sIdx = parseInt(el.getAttribute('data-step-index'));
+                    if (sIdx === newRec) {
+                        el.classList.add('recommended-step');
+                    } else {
+                        el.classList.remove('recommended-step');
+                    }
+                });
+            } catch (e) {
+                console.warn("Could not selectively refresh highlights:", e);
+            }
+        }
+
+        async function togglePayment(bookingId, field, value, checkboxEl) {
+            try {
+                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), {
+                    [field]: value,
+                    updatedAt: new Date().toISOString()
+                });
+
+                // LOG ACTIVITY
+                logActivity('PAYMENT_STATUS_UPDATED', `Betalingsveld '${field}' gewijzigd naar ${value}`, bookingId);
+
+                // Update only the adjacent status label — no page reload needed
+                const label = checkboxEl.closest('.payment-toggle-controls').querySelector('.status-label');
+                if (label) {
+                    if (field === 'depositPaid') {
+                        label.textContent = value ? 'Voltooid' : 'Nog niet voltooid';
+                    } else {
+                        label.textContent = value ? 'Voltooid' : 'Nog niet gedaan';
+                    }
+                }
+            } catch (err) {
+                console.error("Fout bij bijwerken betalingsstatus:", err);
+                // Revert the checkbox on failure
+                checkboxEl.checked = !value;
+                alert("Kon de status niet bijwerken in de database.");
+            }
+        }
+
+        let _declineTimer = null;
+        async function declineBooking(bookingId, btnEl) {
+            if (!btnEl.classList.contains('confirming')) {
+                // --- Step 1: Ask for confirmation ---
+                btnEl.classList.add('confirming');
+                btnEl.textContent = '⚠ Zeker weten? Klik opnieuw om te weigeren';
+
+                // Auto-reset after 4 seconds if user doesn't confirm
+                clearTimeout(_declineTimer);
+                _declineTimer = setTimeout(() => {
+                    if (btnEl.classList.contains('confirming')) {
+                        btnEl.classList.remove('confirming');
+                        btnEl.textContent = '✕ Boeking Weigeren';
+                    }
+                }, 4000);
+            } else {
+                // --- Step 2: Execute decline ---
+                clearTimeout(_declineTimer);
+                btnEl.textContent = 'Bezig...';
+                btnEl.disabled = true;
+
+                try {
+                    const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                    await updateDoc(doc(db, "bookings", bookingId), {
+                        status: 'declined',
+                        declinedAt: new Date().toISOString()
+                    });
+
+                    // LOG ACTIVITY
+                    logActivity('BOOKING_DECLINED', 'Boeking gemarkeerd als GEWEIGERD via snelle actie', bookingId);
+
+                    // Fade out the card
+                    const card = btnEl.closest('.booking-card');
+                    card.style.transition = 'opacity 0.4s, transform 0.4s';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.97)';
+                    setTimeout(() => card.remove(), 400);
+                } catch (err) {
+                    console.error("Fout bij weigeren boeking:", err);
+                    btnEl.classList.remove('confirming');
+                    btnEl.disabled = false;
+                    btnEl.textContent = '✕ Boeking Weigeren';
+                    alert("Kon de boeking niet weigeren. Probeer opnieuw.");
+                }
+            }
+        }
+
+        async function undeclineBooking(bookingId, btnEl) {
+            btnEl.textContent = 'Bezig met herstellen...';
+            btnEl.disabled = true;
+
+            try {
+                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), {
+                    status: 'pending',
+                    updatedAt: new Date().toISOString()
+                });
+
+                // LOG ACTIVITY
+                logActivity('BOOKING_UNDECLINED', 'Weigering van boeking ongedaan gemaakt', bookingId);
+
+                // Fade out the card from the declined view
+                const card = btnEl.closest('.booking-card');
+                card.style.transition = 'opacity 0.4s, transform 0.4s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.97)';
+                setTimeout(() => card.remove(), 400);
+
+            } catch (err) {
+                console.error("Fout bij herstellen boeking:", err);
+                btnEl.disabled = false;
+                btnEl.textContent = '↩ Weigering ongedaan maken';
+                alert("Kon de boeking niet herstellen. Probeer opnieuw.");
+            }
+        }
+
+        function confirmBookingFromList(el) {
+            const ds = el.dataset;
+            // Fill the form
+            document.getElementById('guest-name').value = ds.name;
+            document.getElementById('guest-email').value = ds.email;
+            document.getElementById('check-in').value = ds.inRaw;
+            document.getElementById('check-out').value = ds.outRaw;
+            document.getElementById('guest-count').value = ds.guests;
+
+            // Switch view
+            switchView('confirm-view', document.querySelector('.nav-item:first-child'));
+        }
+
+        async function copyRichTextEmail(btn) {
+            const ds = btn.dataset;
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = 'Kopiëren...';
+            btn.disabled = true;
+
+            const name = ds.name || 'Gast';
+            const dateIn = ds.in || '';
+            const dateOut = ds.out || '';
+            const guests = ds.guests || '';
+
+            // This is the HTML from owner-notification-template.html with variables injected
+            // Dit inlines de CSS volledig voor e-mailclients die <style> tags strippen
+            const htmlString = `
+            \x3C!DOCTYPE html>
+            \x3Chtml lang="nl">
+            \x3Chead>
+                \x3Cmeta charset="UTF-8">
+            \x3C/head>
+            \x3Cbody style="margin: 0; padding: 0; background-color: #1a2830; font-family: 'Inter', Arial, sans-serif; color: #20303D; line-height: 1.6;">
+                \x3Ctable width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed; background-color: #1a2830; padding: 30px 0 50px; border-collapse: collapse;">
+                    \x3Ctr>
+                        \x3Ctd>
+                            \x3Ctable width="100%" cellpadding="0" cellspacing="0" align="center" style="max-width: 620px; margin: 0 auto; background-color: #ffffff; border-radius: 6px; overflow: hidden; border-collapse: collapse;">
+                                \x3Ctr>
+                                    \x3Ctd style="background-color: #20303D; padding: 30px 30px 25px; text-align: center;">
+                                        \x3Ch1 style="color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; letter-spacing: 0.05em; margin: 0; text-transform: uppercase;">Gipfel Lodge\x3C/h1>
+                                        \x3Ch2 style="color: #ffffff; font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; margin: 15px 0 6px;">Uw Verblijf in Oostenrijk\x3C/h2>
+                                        \x3Cp style="color: #C5A059; font-size: 13px; margin: 0; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Bericht over uw boeking\x3C/p>
+                                    \x3C/td>
+                                \x3C/tr>
+                                \x3Ctr>
+                                    \x3Ctd style="padding: 35px 30px;">
+                                        \x3Cp style="font-size: 16px; margin-bottom: 30px; color: #20303D;">
+                                            Hallo \x3Cstrong>${name}\x3C/strong>,\x3Cbr>\x3Cbr>
+                                            [ PLAATS HIER JE EIGEN BERICHT - Typ hier de reden van je bericht en wat je wilt vertellen aan de gast. ]
+                                        \x3C/p>
+                                        
+                                        \x3Cp style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #C5A059; margin: 0 0 12px;">Verblijfsperiode\x3C/p>
+                                        \x3Cdiv style="background-color: #20303D; border-radius: 6px; padding: 20px 25px; margin-bottom: 25px;">
+                                            \x3Ctable width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                                \x3Ctr>
+                                                    \x3Ctd style="width: 45%; vertical-align: top; padding-bottom: 4px;">
+                                                        \x3Cdiv style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #78868A; margin-bottom: 5px;">Check-in\x3C/div>
+                                                        \x3Cdiv style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #ffffff; font-weight: 600;">${dateIn}\x3C/div>
+                                                    \x3C/td>
+                                                    \x3Ctd style="width: 10%; text-align: center; vertical-align: middle; color: #C5A059; font-size: 20px; font-weight: 300;">&rarr;\x3C/td>
+                                                    \x3Ctd style="width: 45%; vertical-align: top; padding-bottom: 4px;">
+                                                        \x3Cdiv style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #78868A; margin-bottom: 5px;">Check-out\x3C/div>
+                                                        \x3Cdiv style="font-family: 'Cormorant Garamond', serif; font-size: 22px; color: #ffffff; font-weight: 600;">${dateOut}\x3C/div>
+                                                    \x3C/td>
+                                                \x3C/tr>
+                                            \x3C/table>
+                                        \x3C/div>
+
+                                        \x3Cp style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: #C5A059; margin: 0 0 12px;">Reisgezelschap\x3C/p>
+                                        \x3Ctable width="100%" cellpadding="8" cellspacing="0" style="border-collapse: separate; border-spacing: 6px; margin-bottom: 25px;">
+                                            \x3Ctr>
+                                                \x3Ctd style="background-color: #fcfbf8; border: 1px solid #e8e2d0; border-radius: 6px; padding: 12px 8px; text-align: center; width: 100%;">
+                                                    \x3Cdiv style="font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #20303D; font-weight: 600; line-height: 1;">${guests}\x3C/div>
+                                                    \x3Cdiv style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #78868A; margin-top: 4px;">Personen Totaal\x3C/div>
+                                                \x3C/td>
+                                            \x3C/tr>
+                                        \x3C/table>
+
+                                        \x3Cp style="font-size: 16px; margin-bottom: 30px; color: #20303D;">
+                                            Mocht u verdere vragen hebben, aarzel dan niet om contact met ons op te nemen. Wij kijken er ontzettend naar uit om u te mogen verwelkomen in de bergen!
+                                        \x3C/p>
+                                        
+                                        \x3Cdiv style="text-align: center; margin-top: 30px;">
+                                            \x3Ca href="https://gipfellodge.at" style="background-color: #C5A059; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: 700; display: inline-block; text-transform: uppercase; letter-spacing: 0.06em; font-size: 13px;">Kijk op de Website\x3C/a>
+                                        \x3C/div>
+                                    \x3C/td>
+                                \x3C/tr>
+                                \x3Ctr>
+                                    \x3Ctd style="background-color: #20303D; padding: 25px 30px; text-align: center; font-size: 12px; color: #78868A;">
+                                        \x3Cp style="margin: 0 0 6px;">
+                                            \x3Cstrong style="color: #ffffff;">Gipfel Lodge\x3C/strong> &mdash; Alpiner Luxus & Raum\x3Cbr>
+                                            Eben im Pongau, Austria &nbsp;|&nbsp; hello@gipfellodge.at
+                                        \x3C/p>
+                                    \x3C/td>
+                                \x3C/tr>
+                            \x3C/table>
+                        \x3C/td>
+                    \x3C/tr>
+                \x3C/table>
+            \x3C/body>
+            \x3C/html>
+            `;
+
+            try {
+                if (!navigator.clipboard) {
+                    throw new Error("Clipboard API niet ondersteund.");
+                }
+
+                await navigator.clipboard.writeText(htmlString);
+
+                btn.innerHTML = '✔ HTML-Code Gekopieerd!';
+                btn.style.color = '#2ecc71';
+            } catch (err) {
+                console.error("Kopiëren mislukt:", err);
+                alert("Kopiëren van broncode mislukt in deze browser. Probeer handmatig.");
+                btn.innerHTML = 'Kopiëren mislukt';
+                btn.style.color = 'red';
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.style.color = '';
+            }, 3000);
+        }
+
+        async function testFirebaseConnection() {
+            const statusTag = document.getElementById('db-status-tag');
+            const resultDiv = document.getElementById('db-test-result');
+            const dot = statusTag.querySelector('span');
+
+            resultDiv.style.display = 'none';
+            dot.style.background = '#f1c40f'; // geel: bezig
+            statusTag.innerHTML = '\x3Cspan style="width: 8px; height: 8px; border-radius: 50%; background: #f1c40f;">\x3C/span> Verbinding testen...';
+
+            try {
+                const { db, collection, addDoc, serverTimestamp } = await import('../site_js/core/firebase.js');
+
+                // Probeer een tijdelijk test-document te schrijven
+                await addDoc(collection(db, "system_checks"), {
+                    timestamp: serverTimestamp(),
+                    check: "Manual Health Check"
+                });
+
+                dot.style.background = '#2ecc71'; // groen: succes
+                statusTag.innerHTML = '\x3Cspan style="width: 8px; height: 8px; border-radius: 50%; background: #2ecc71;">\x3C/span> Firebase: Verbonden';
+                resultDiv.style.color = '#2ecc71';
+                resultDiv.innerText = "Succes! De verbinding met de database werkt.";
+                resultDiv.style.display = 'block';
+
+            } catch (err) {
+                console.error("Firebase Test Error:", err);
+                dot.style.background = '#e74c3c'; // rood: fout
+                statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #e74c3c;"></span> Firebase: Fout`;
+
+                let msg = "Fout: " + err.message;
+                if (err.message.includes("permission-denied")) {
+                    msg = "Permissions Error: Controleer je 'Security Rules' in de Firebase Console.";
+                } else if (err.message.includes("network")) {
+                    msg = "Netwerk Fout: Ben je online? Of blokkeert de browser de import?";
+                }
+
+                resultDiv.style.color = '#ff6b6b';
+                resultDiv.innerText = msg;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        /* ============================================================
+         * INVOICE GENERATION — opent de branded factuur in nieuw venster
+         * ============================================================ */
+        async function openInvoice(bookingId, event) {
+            if (event) event.stopPropagation();
+
+            const btn = event ? event.currentTarget : null;
+            const originalHTML = btn ? btn.innerHTML : "";
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Bezig...';
+            }
+
+            try {
+                const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
+
+                // Haal het secretToken op uit Firestore
+                const snap = await getDoc(doc(db, "bookings", bookingId));
+                if (!snap.exists()) throw new Error("Boeking niet gevonden.");
+
+                const data = snap.data();
+                const token = data.secretToken;
+
+                if (!token) throw new Error("Geen secretToken gevonden voor deze boeking. Open de boeking eerst via de Communication Hub om het token aan te maken.");
+
+                // Open invoice.html met de juiste parameters in een nieuw tabblad
+                const invoiceUrl = `invoice.html?id=${encodeURIComponent(bookingId)}&token=${encodeURIComponent(token)}`;
+                window.open(invoiceUrl, '_blank');
+
+            } catch (err) {
+                console.error("Factuur openen mislukt:", err);
+                alert("Fout bij het openen van de factuur:\n" + err.message);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                }
+            }
+        }
+
+        /* ============================================================
+         * BOOKING CARDS CAROUSEL — laadt Firebase data en rendert kaarten
+         * ============================================================ */
+
+        async function loadCarouselView() {
+            const loader = document.getElementById('carousel-loader');
+            const wrap = document.getElementById('adm-carousel-wrap');
+            const empty = document.getElementById('adm-carousel-empty');
+            const track = document.getElementById('adm-carousel-track');
+
+            if (!track) return;
+
+            // Reset state
+            loader.style.display = 'block';
+            wrap.style.display = 'none';
+            empty.style.display = 'none';
+            track.innerHTML = '';
+
+            try {
+                const { db, collection, getDocs, query, orderBy } =
+                    await import('../site_js/core/firebase.js');
+
+                const q = query(collection(db, 'bookings'), orderBy('checkIn', 'asc'));
+                const snap = await getDocs(q);
+
+                const bookings = [];
+                snap.forEach(d => bookings.push({ id: d.id, ...d.data() }));
+
+                loader.style.display = 'none';
+
+                if (!bookings.length) {
+                    empty.style.display = 'flex';
+                    return;
+                }
+
+                renderAdminBookingCarousel(bookings);
+
+            } catch (err) {
+                console.error('Carousel load error:', err);
+                loader.style.display = 'none';
+                empty.style.display = 'flex';
+                empty.querySelector('p').textContent = 'Fout bij laden: ' + err.message;
+            }
+        }
+
+        function renderAdminBookingCarousel(bookings) {
+            const carousel = document.getElementById('adm-booking-carousel');
+            const track = document.getElementById('adm-carousel-track');
+            const wrap = document.getElementById('adm-carousel-wrap');
+            const knob = document.getElementById('adm-knob');
+            const ticksWrap = document.getElementById('adm-ticks');
+            const counter = document.getElementById('adm-carousel-counter');
+
+            if (!carousel || !track) return;
+
+            // ── Helpers ──────────────────────────────────────────────
+            const parseDate = (v) => {
+                if (!v) return null;
+                if (v instanceof Date) return v;
+                // "YYYY-MM-DD"
+                const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
+                if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+                const d = new Date(v);
+                return isNaN(d.getTime()) ? null : d;
+            };
+
+            const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+            const fmtDate = (d) => d
+                ? d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+                : '—';
+
+            const fmtRange = (a, b) => {
+                const aStr = a.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+                const bStr = b.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+                return `${aStr} → ${bStr}`;
+            };
+
+            const fmtEUR = (n) => Number(n || 0).toLocaleString('nl-NL', { style: 'currency', currency: 'EUR' });
+
+            const fmtSettle = (n) => Number(n || 0).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // ── Normalize rows ────────────────────────────────────────
+            const rows = bookings
+                .map(b => ({
+                    checkIn: parseDate(b.checkIn),
+                    checkOut: parseDate(b.checkOut),
+                    nights: Number(b.nights) || 0,
+                    guest: b.guestName || 'Onbekende gast',
+                    isOwner: (b.type === 'owner'),
+                    platform: b.platform || '',
+                    bookingId: b.bookingId || b.id || '',
+                    adults: Number(b.adults) || 0,
+                    children: Number(b.children) || 0,
+                    babies: Number(b.babies) || 0,
+                    totalGuests: Number(b.totalGuests) || 0,
+                    phone: b.guestPhone || '',
+                    email: b.guestEmail || '',
+                    country: (b.country || '').trim().toUpperCase(),
+                    totalAmount: Number(b.totalAmount) || 0,
+                    status: b.status || 'pending',
+                    // Official amounts from Database
+                    rent: Number(b.rent) || 0,
+                    cleaning: Number(b.cleaning) || 0,
+                    bedLinen: Number(b.bedLinen) || 0,
+                    touristTax: Number(b.touristTax) || 0,
+                    mobilityFee: Number(b.mobilityFee) || 0
+                }))
+                .filter(r => r.checkIn && r.checkOut)
+                .sort((a, b) => a.checkIn - b.checkIn);
+
+            if (!rows.length) {
+                document.getElementById('adm-carousel-empty').style.display = 'flex';
+                return;
+            }
+
+            // ── Start index (voorkeur: NU → VOLGENDE → 0) ────────────
+            const now = startOfDay(new Date());
+            const currentIdx = rows.findIndex(r => r.checkIn <= now && now < r.checkOut);
+            const nextIdx = rows.findIndex(r => r.checkIn > now);
+            const startIndex = currentIdx !== -1 ? currentIdx : (nextIdx !== -1 ? nextIdx : 0);
+
+            // ── Pager helpers ─────────────────────────────────────────
+            const updateActiveSlideClasses = (activeIdx) => {
+                const slides = track.querySelectorAll('.adm-booking-slide');
+                slides.forEach((s, i) => {
+                    if (i === activeIdx) s.classList.add('is-active');
+                    else s.classList.remove('is-active');
+                });
+            };
+
+            const updateKnob = (idx) => {
+                if (!knob) return;
+                updateActiveSlideClasses(idx);
+                const rail = knob.closest('.adm-scrollbar__rail');
+                if (!rail) return;
+                const rect = rail.getBoundingClientRect();
+                const padding = 14;
+                const usable = Math.max(0, rect.width - padding * 2);
+                const t = idx / Math.max(1, rows.length - 1);
+                knob.style.left = `${padding + usable * t}px`;
+            };
+
+            const getStep = () => track.querySelector('.adm-booking-slide')?.offsetWidth || 350;
+
+            const scrollToIndex = (idx, smooth = true) => {
+                const step = getStep();
+                carousel.scrollTo({ left: step * idx, behavior: smooth ? 'smooth' : 'instant' });
+                updateKnob(idx);
+                if (counter) counter.textContent = `${idx + 1} / ${rows.length}`;
+            };
+
+            const getClosestIndex = () => {
+                if (!carousel || !carousel.children.length) return 0;
+                const step = getStep();
+                return Math.max(0, Math.min(rows.length - 1, Math.round(carousel.scrollLeft / step)));
+            };
+
+            // ── Build ticks ───────────────────────────────────────────
+            track.innerHTML = '';
+            if (ticksWrap) {
+                ticksWrap.innerHTML = '';
+                rows.forEach(() => {
+                    const t = document.createElement('div');
+                    t.className = 'adm-tick';
+                    ticksWrap.appendChild(t);
+                });
+            }
+
+            // ── Render slides ─────────────────────────────────────────
+            rows.forEach((b, idx) => {
+                const isNow = b.checkIn <= now && now < b.checkOut;
+                const isNext = !isNow && b.checkIn > now;
+
+                // Timeline badge
+                const timelineClass = isNow ? 'adm-badge--now' : (isNext ? 'adm-badge--next' : 'adm-badge--past');
+                const timelineText = isNow ? 'NU' : (isNext ? 'VOLGENDE' : 'VERLEDEN');
+
+                // Status badge
+                const statusMap = {
+                    confirmed: 'adm-badge--confirmed',
+                    pending: 'adm-badge--pending',
+                    declined: 'adm-badge--declined',
+                    completed: 'adm-badge--completed',
+                };
+                const statusClass = statusMap[b.status] || 'adm-badge--pending';
+                const statusLabel = {
+                    confirmed: 'Bevestigd', pending: 'In afwachting',
+                    declined: 'Geweigerd', completed: 'Voltooid',
+                }[b.status] || b.status;
+
+                // Guest breakdown
+                const parts = [];
+                if (b.adults > 0) parts.push(`${b.adults} volw.`);
+                if (b.children > 0) parts.push(`${b.children} kind.`);
+                if (b.babies > 0) parts.push(`${b.babies} baby`);
+                const breakdown = parts.length ? `(${parts.join(', ')})` : '';
+
+                const guests = b.totalGuests || (b.adults + b.children + b.babies);
+                const cc = b.country;
+                const flag = cc ? `<img class="adm-bc__flag" src="https://flagcdn.com/w40/${cc.toLowerCase()}.png" alt="${cc}" />` : '';
+
+                // Settlement calc (estimate based on totalAmount as base rent)
+                const rent = b.totalAmount;
+                const cleaning = b.isOwner ? 0 : 350.00;
+                const bedLinen = b.isOwner ? 0 : (guests * 20.95);
+                const touristTax = guests * b.nights * 2.50;
+                const mobilityFee = guests * b.nights * 0.50;
+                const commission = rent * 0.24;
+                const totalSettlement = rent + cleaning + bedLinen + touristTax + mobilityFee - commission;
+
+                // Platform tag
+                const platformBadge = b.isOwner
+                    ? `<span class="adm-badge adm-badge--owner">Huiseigenaar</span>`
+                    : (b.platform ? `<span class="adm-badge adm-badge--platform">${b.platform}</span>` : '');
+
+                const slide = document.createElement('div');
+                slide.className = 'adm-booking-slide';
+                slide.innerHTML = `
+                    <div class="adm-flip-container" onclick="this.classList.toggle('is-flipped')">
+                        <div class="adm-flipper">
+
+                            <!-- FRONT -->
+                            <div class="adm-card--front adm-booking-card--v2">
+                                <div class="adm-bc__header">
+                                    <h3 class="adm-bc__title">Boeking</h3>
+                                    <div class="adm-bc__badges">
+                                        <span class="adm-badge ${timelineClass}">${timelineText}</span>
+                                        <span class="adm-badge ${statusClass}">${statusLabel}</span>
+                                        ${platformBadge}
+                                    </div>
+                                </div>
+
+                                <div class="adm-bc__divider"></div>
+
+                                <div class="adm-bc__top">
+                                    <div>
+                                        <div class="adm-bc__guest">${b.guest}</div>
+                                        <div class="adm-bc__row adm-bc__row--strong">
+                                            <i class="fa-solid fa-user"></i>
+                                            <span><strong>${guests || '—'}</strong> gasten</span>
+                                        </div>
+                                        ${breakdown ? `<div class="adm-bc__sub">${breakdown}</div>` : ''}
+                                    </div>
+                                    <div class="adm-bc__country">
+                                        ${flag}
+                                        <div class="adm-bc__country-code">${cc || '—'}</div>
+                                    </div>
+                                </div>
+
+                                <div class="adm-bc__rows">
+                                    <div class="adm-bc__row">
+                                        <i class="fa-regular fa-calendar"></i>
+                                        <span>${fmtRange(b.checkIn, b.checkOut)}</span>
+                                    </div>
+                                    <div class="adm-bc__row">
+                                        <i class="fa-regular fa-moon"></i>
+                                        <span>${b.nights} nachten</span>
+                                    </div>
+                                    ${b.bookingId ? `<div class="adm-bc__row">
+                                        <i class="fa-solid fa-hashtag"></i>
+                                        <span>${b.bookingId}</span>
+                                    </div>` : ''}
+                                    ${b.phone ? `<div class="adm-bc__row">
+                                        <i class="fa-solid fa-phone" onclick="event.stopPropagation()"></i>
+                                        <a class="adm-bc__link" href="tel:${b.phone}" onclick="event.stopPropagation()">${b.phone}</a>
+                                    </div>` : ''}
+                                    ${b.email ? `<div class="adm-bc__row">
+                                        <i class="fa-regular fa-envelope" onclick="event.stopPropagation()"></i>
+                                        <a class="adm-bc__link" href="mailto:${b.email}" onclick="event.stopPropagation()">${b.email}</a>
+                                    </div>` : ''}
+                                </div>
+
+                                <div class="adm-bc__divider adm-bc__divider--bottom"></div>
+                                <div class="adm-bc__price">${fmtEUR(b.totalAmount)}</div>
+                            </div>
+
+                            <!-- BACK (factuurspecificatie) -->
+                            <div class="adm-card--back adm-booking-card--v2">
+                                <div class="adm-bc__header">
+                                    <h3 class="adm-bc__title">Factuur specificatie</h3>
+                                </div>
+                                <div class="adm-bc__divider"></div>
+                                <div class="adm-bc__sub" style="margin-bottom:8px;">${b.guest} · ${b.nights} nachten · ${guests} gasten</div>
+
+                                <div class="adm-settlement-table">
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Huur</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(b.rent || b.totalAmount - (b.cleaning + b.bedLinen + b.touristTax + b.mobilityFee))}</span>
+                                    </div>
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Schoonmaak</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(b.cleaning)}</span>
+                                    </div>
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Bedlinnen</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(b.bedLinen)}</span>
+                                    </div>
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Toeristenbelasting</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(b.touristTax)}</span>
+                                    </div>
+                                    <div class="adm-settle-row">
+                                        <span class="adm-settle-label">Mobiliteitsheffing</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(b.mobilityFee)}</span>
+                                    </div>
+                                    <div class="adm-bc__divider" style="margin: 10px 0;"></div>
+                                    <div class="adm-settle-row adm-settle-row--total">
+                                        <span class="adm-settle-label">Totaal (incl. BTW)</span>
+                                        <span class="adm-settle-val">€ ${fmtSettle(b.totalAmount)}</span>
+                                    </div>
+                                </div>
+
+                                <div class="adm-bc__footer" style="margin-top: auto; padding-top: 20px;">
+                                    <button class="action-btn" onclick="openInvoice('${b.bookingId}', event)" style="background: var(--color-gold); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                        <i class="fa-solid fa-file-invoice"></i> 🗒 OPEN FACTUUR
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+                track.appendChild(slide);
+            });
+
+            // ── Show + scroll to start ────────────────────────────────
+            wrap.style.display = 'block';
+            if (counter) counter.textContent = `${startIndex + 1} / ${rows.length}`;
+
+            requestAnimationFrame(() => {
+                scrollToIndex(startIndex, false);
+            });
+
+            // ── Scroll → update pager ─────────────────────────────────
+            let raf = null;
+            carousel.addEventListener('scroll', () => {
+                if (raf) cancelAnimationFrame(raf);
+                raf = requestAnimationFrame(() => {
+                    const idx = getClosestIndex();
+                    updateKnob(idx);
+                    if (counter) counter.textContent = `${idx + 1} / ${rows.length}`;
+                });
+            }, { passive: true });
+
+            // ── Draggable knob ────────────────────────────────────────
+            const rail = knob ? knob.closest('.adm-scrollbar__rail') : null;
+            const clamp = (v, mn, mx) => Math.max(mn, Math.min(mx, v));
+
+            const idxFromX = (clientX) => {
+                if (!rail) return 0;
+                const rect = rail.getBoundingClientRect();
+                const padding = 14;
+                const usable = Math.max(1, rect.width - padding * 2);
+                const x = clamp(clientX - rect.left - padding, 0, usable);
+                return Math.round((x / usable) * Math.max(1, rows.length - 1));
+            };
+
+            if (knob && rail) {
+                let dragging = false;
+
+                knob.addEventListener('pointerdown', (e) => {
+                    dragging = true;
+                    knob.setPointerCapture(e.pointerId);
+                    e.preventDefault();
+                }, { passive: false });
+
+                knob.addEventListener('pointermove', (e) => {
+                    if (!dragging) return;
+                    e.preventDefault();
+                    const idx = idxFromX(e.clientX);
+                    updateKnob(idx);
+                    const step = getStep();
+                    carousel.scrollTo({ left: step * idx, behavior: 'instant' });
+                    if (counter) counter.textContent = `${idx + 1} / ${rows.length}`;
+                }, { passive: false });
+
+                const stopDrag = (e) => {
+                    if (!dragging) return;
+                    dragging = false;
+                    try { knob.releasePointerCapture(e.pointerId); } catch (_) { }
+                    scrollToIndex(idxFromX(e.clientX), true);
+                };
+
+                knob.addEventListener('pointerup', stopDrag, { passive: false });
+                knob.addEventListener('pointercancel', stopDrag, { passive: false });
+
+                rail.addEventListener('pointerdown', (e) => {
+                    if (e.target === knob || knob.contains(e.target)) return;
+                    scrollToIndex(idxFromX(e.clientX), true);
+                }, { passive: true });
+            }
+        }
+        let currentComposerData = {};
+        let currentLang = 'nl'; // Detected language: nl, de, en
+
+        // Detect language from country or phone country code
+        function detectLanguage(phone, bookingData = null) {
+            if (bookingData) {
+                const countryData = getCountryData(phone, bookingData);
+                if (countryData && countryData.code) {
+                    const code = countryData.code.toLowerCase();
+                    if (code === 'nl') return 'nl';
+                    if (code === 'de' || code === 'at') return 'de';
+                    return 'en';
+                }
+            }
+            if (!phone) return 'en'; // default
+            const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+            if (cleaned.startsWith('+31') || cleaned.startsWith('0031')) return 'nl';
+            if (cleaned.startsWith('+49') || cleaned.startsWith('0049')) return 'de';
+            if (cleaned.startsWith('+43') || cleaned.startsWith('0043')) return 'de'; // Oostenrijk = Duits
+            return 'en'; // Alle andere landen = Engels
+        }
+
+        // Multi-language labels used in details & extra content
+        const composerLabels = {
+            nl: {
+                greeting: 'Beste', arrivalDeparture: 'Aankomst & Vertrek', travelGroup: 'Reisgezelschap',
+                totalPrice: 'Totaalprijs', deposit30: 'Aanbetaling (30%)', checkIn: 'Inchecken',
+                checkOut: 'Uitchecken', from15: 'Vanaf 15:00 uur', until10: 'Uiterlijk 10:00 uur',
+                importantInfo: 'Belangrijke informatie voor uw verblijf:',
+                payment: '1. Betaling', paymentDesc: 'Om uw reservering definitief te maken, vragen wij een aanbetaling van 30%. Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan.',
+                depositLabel: 'Aanbetaling:', ibanLabel: 'IBAN:', bicLabel: 'BIC/SWIFT:', refLabel: 'Omschrijving:',
+                arrivalDepartureTitle: '2. Aankomst & Vertrek',
+                arrivalDepartureDesc: 'Inchecken is mogelijk vanaf <strong>15:00 uur</strong> op de dag van aankomst. Op de dag van vertrek vragen we u de lodge uiterlijk om <strong>10:00 uur</strong> vrij te maken.',
+                houseRulesTitle: '3. Huisregels',
+                houseRulesDesc: 'Gipfel Lodge is een rookvrij verblijf en huisdieren zijn in overleg toegestaan. Voor aankomst ontvangt u van ons de toegangscode en uitgebreide huisinformatie.',
+                invoiceTitle: '4. Factuur & Betaling',
+                invoiceDesc: 'U kunt uw officiële factuur online inzien en downloaden via onderstaande link:',
+                invoiceLink: 'Bekijk uw Factuur Online',
+                rulesHeading: 'Onze Huisregels',
+                ruleShoes: '<strong>Schoeisel:</strong> In de lodge dragen we graag pantoffels. Skischoenen graag in de skiruimte.',
+                ruleSmoke: '<strong>Rookvrij:</strong> De lodge is strikt rookvrij. Roken kan buiten op het terras.',
+                adults: 'Volw.', children: 'Kind', baby: 'Baby'
+            },
+            de: {
+                greeting: 'Liebe/r', arrivalDeparture: 'Anreise & Abreise', travelGroup: 'Reisegruppe',
+                totalPrice: 'Gesamtpreis', deposit30: 'Anzahlung (30%)', checkIn: 'Check-in',
+                checkOut: 'Check-out', from15: 'Ab 15:00 Uhr', until10: 'Spätestens 10:00 Uhr',
+                importantInfo: 'Wichtige Informationen für Ihren Aufenthalt:',
+                payment: '1. Zahlung', paymentDesc: 'Um Ihre Reservierung zu bestätigen, bitten wir um eine Anzahlung von 30%. Der Restbetrag ist spätestens 6 Wochen vor Anreise fällig.',
+                depositLabel: 'Anzahlung:', ibanLabel: 'IBAN:', bicLabel: 'BIC/SWIFT:', refLabel: 'Verwendungszweck:',
+                arrivalDepartureTitle: '2. Anreise & Abreise',
+                arrivalDepartureDesc: 'Check-in ist möglich ab <strong>15:00 Uhr</strong> am Anreisetag. Am Abreisetag bitten wir Sie, die Lodge bis spätestens <strong>10:00 Uhr</strong> freizumachen.',
+                houseRulesTitle: '3. Hausregeln',
+                houseRulesDesc: 'Die Gipfel Lodge ist rauchfrei und Haustiere sind nach Absprache willkommen. Vor Ihrer Anreise erhalten Sie den Zugangscode und weitere Informationen.',
+                invoiceTitle: '4. Rechnung & Zahlung',
+                invoiceDesc: 'Sie können Ihre offizielle Rechnung online über de folgenden Link einsehen und herunterladen:',
+                invoiceLink: 'Rechnung Online ansehen',
+                rulesHeading: 'Unsere Hausregeln',
+                ruleShoes: '<strong>Schuhwerk:</strong> In der Lodge tragen wir gerne Hausschuhe. Skischuhe bitte im Skiraum abstellen.',
+                ruleSmoke: '<strong>Rauchfrei:</strong> Die Lodge ist strikt rauchfrei. Rauchen ist nur auf der Terrasse gestattet.',
+                adults: 'Erw.', children: 'Kind', baby: 'Baby'
+            },
+            en: {
+                greeting: 'Dear', arrivalDeparture: 'Arrival & Departure', travelGroup: 'Travel Party',
+                totalPrice: 'Total Price', deposit30: 'Deposit (30%)', checkIn: 'Check-in',
+                checkOut: 'Check-out', from15: 'From 3:00 PM', until10: 'By 10:00 AM',
+                importantInfo: 'Important information for your stay:',
+                payment: '1. Payment', paymentDesc: 'To confirm your reservation, we kindly ask for a 30% deposit. The remaining balance is due at least 6 weeks before arrival.',
+                depositLabel: 'Deposit:', ibanLabel: 'IBAN:', bicLabel: 'BIC/SWIFT:', refLabel: 'Reference:',
+                arrivalDepartureTitle: '2. Arrival & Departure',
+                arrivalDepartureDesc: 'Check-in is possible from <strong>3:00 PM</strong> on the day of arrival. On departure day, we kindly ask you to vacate the lodge by <strong>10:00 AM</strong>.',
+                houseRulesTitle: '3. House Rules',
+                houseRulesDesc: 'Gipfel Lodge is a non-smoking property and pets are welcome by arrangement. Before arrival, you will receive the access code and detailed house information.',
+                invoiceTitle: '4. Invoice & Payment',
+                invoiceDesc: 'You can view and download your official invoice online via the following link:',
+                invoiceLink: 'View your Invoice Online',
+                rulesHeading: 'Our House Rules',
+                ruleShoes: '<strong>Footwear:</strong> Inside the lodge, we kindly ask you to wear slippers. Ski boots should be left in the ski room.',
+                ruleSmoke: '<strong>Non-smoking:</strong> The lodge is strictly non-smoking. Smoking is only allowed on the terrace.',
+                adults: 'Adults', children: 'Children', baby: 'Baby'
+            }
+        };
+
+        const composerTemplates = {
+            nl: {
+                general: {
+                    tagline: 'Bericht van Gipfel Lodge', heading: 'Update rondom je verblijf',
+                    intro: 'Bedankt voor je bericht. We voorzien je graag van de gevraagde informatie.',
+                    closing: 'We hopen je hiermee voldoende te hebben geïnformeerd. Heb je nog andere vragen? Aarzel dan niet om contact op te nemen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#20303D', buttonText: 'Naar de website', format: 'standard'
+                },
+                acceptance: {
+                    tagline: 'Alpiner Luxus & Raum', heading: 'Uw verblijf is gereserveerd',
+                    intro: 'Goed nieuws! Uw boeking bij Gipfel Lodge Eben is geaccepteerd en staat voor u gereserveerd! We kijken ernaar uit om u te mogen verwelkomen in ons alpenverblijf.',
+                    closing: 'Heeft u in de tussentijd nog vragen of speciale wensen? Reageer dan gerust op deze e-mail.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Bereid uw reis voor', format: 'acceptance'
+                },
+                rejection: {
+                    tagline: 'Update Boekingsaanvraag', heading: 'Helaas, geen beschikbaarheid',
+                    intro: 'Bedankt voor je interesse in Gipfel Lodge. Helaas moeten we je mededelen dat we op de door jou geselecteerde data geen verblijf meer vrij hebben dat past bij jullie reisgezelschap.',
+                    closing: 'Bekijk onze kalender op de website voor andere beschikbare periodes. We hopen je in de toekomst alsnog te mogen ontvangen.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#E53935', buttonText: 'Zoek andere data', format: 'standard'
+                },
+                deposit_request: {
+                    tagline: 'Actie Vereist', heading: 'Aanbetaling & Bevestiging',
+                    intro: 'Bedankt voor uw boeking bij Gipfel Lodge. We hebben de details van jullie naderende reis in goede orde ontvangen voor de volgende verblijfsperiode:',
+                    closing: 'Het restbedrag dient uiterlijk 6 weken voor aankomst te worden voldaan. Zodra de betaling goed en wel bij ons binnen is gekomen op de rekening sturen wij u een definitieve bevestiging met alle overige details.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#F59E0B', buttonText: 'Naar Website', format: 'deposit_request'
+                },
+                deposit_received: {
+                    tagline: 'Boeking Definitief Bevestigd', heading: 'Aanbetaling succesvol verwerkt',
+                    intro: 'We hebben je aanbetaling in goede orde ontvangen! Hiermee is je boeking bij Gipfel Lodge officieel en definitief bevestigd voor onderstaande reisgegevens:',
+                    closing: 'Mochten er tussentijds vragen zijn over je verblijf of de omgeving, laat het ons dan gerust weten door deze e-mail te beantwoorden. We helpen je graag!\n\nWe kijken ernaar uit je te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Bekijk Gipfel Lodge', format: 'deposit_received'
+                },
+                balance_reminder: {
+                    tagline: 'Restbetaling Verblijf', heading: 'Betalingsherinnering',
+                    intro: 'We kijken ernaar uit je binnenkort te mogen verwelkomen in de Gipfel Lodge! Graag herinneren we je eraan dat er nog een openstaand saldo is voor je naderende reservering.',
+                    closing: 'Heb je de betaling toevallig in de afgelopen dagen al voldaan? Dan heeft deze e-mail je betaling gekruist en mag je dit bericht als niet verzonden beschouwen. Bedankt!\n\nWe sturen de reisinformatie toe zodra de reis dichterbij komt.\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#F59E0B', buttonText: 'Naar Website', format: 'balance_reminder'
+                },
+                balance_received: {
+                    tagline: 'Betaling Volledig Voldaan', heading: 'Uw restbetaling is binnen',
+                    intro: 'Goed nieuws! We hebben de restbetaling zojuist in goede orde ontvangen. Hiermee is de volledige reissom voldaan en is financieel gezien alles definitief in orde voor je verblijf bij Gipfel Lodge.',
+                    closing: 'Namens de hele familie en staf willen we je bedanken voor het vertrouwen en de vlotte afhandeling van de betaling.\n\nDe bergen roepen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Naar Website', format: 'balance_received'
+                },
+                rules_info: {
+                    tagline: 'Voorbereiding op uw verblijf', heading: 'Tijd om in te pakken!',
+                    intro: 'De aankomst in de Gipfel Lodge komt nu écht dichterbij! Om ervoor te zorgen dat je verblijf vanaf het eerste moment soepel en zorgeloos verloopt, delen we alvast de belangrijkste praktische informatie en huisregels met jullie.',
+                    closing: 'Let op: op de dag (of vlak voor de dag) van aankomst ontvangt u van ons een kort bericht met de unieke pincode voor de sleutelkluis van uw appartement.\n\nWe wensen je alvast een veilige reis!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Naar Website', format: 'rules_info'
+                },
+                post_stay: {
+                    tagline: 'Alpine Memories', heading: 'Bedankt voor je verblijf',
+                    intro: 'We hopen dat jullie een fantastisch verblijf hebben gehad in Gipfel Lodge en veilig zijn thuisgekomen! Het was een waar genoegen om jullie als gasten te mogen ontvangen.',
+                    closing: 'Zou je zo vriendelijk willen zijn om een korte review achter te laten over je verblijf? Dit is erg waardevol voor ons. We hopen jullie in de toekomst nog eens te mogen verwelkomen!\n\nMet hartelijke groet,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Laat een review achter', format: 'standard'
+                }
+            },
+            de: {
+                general: {
+                    tagline: 'Nachricht von Gipfel Lodge', heading: 'Update zu Ihrem Aufenthalt',
+                    intro: 'Vielen Dank für Ihre Nachricht. Gerne informieren wir Sie über die gewünschten Details.',
+                    closing: 'Wir hoffen, Ihnen damit weitergeholfen zu haben. Bei weiteren Fragen stehen wir Ihnen jederzeit gerne zur Verfügung.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#20303D', buttonText: 'Zur Website', format: 'standard'
+                },
+                acceptance: {
+                    tagline: 'Alpiner Luxus & Raum', heading: 'Ihr Aufenthalt ist reserviert',
+                    intro: 'Gute Neuigkeiten! Ihre Buchung in der Gipfel Lodge Eben wurde angenommen und ist für Sie reserviert! Wir freuen uns darauf, Sie in unserem alpinen Refugium willkommen zu heißen.',
+                    closing: 'Haben Sie in der Zwischenzeit Fragen oder besondere Wünsche? Antworten Sie gerne auf diese E-Mail.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Bereiten Sie Ihre Reise vor', format: 'acceptance'
+                },
+                rejection: {
+                    tagline: 'Update Buchungsanfrage', heading: 'Leider keine Verfügbarkeit',
+                    intro: 'Vielen Dank für Ihr Interesse an der Gipfel Lodge. Leider müssen wir Ihnen mitteilen, dass für den gewählten Zeitraum keine passende Unterkunft mehr verfügbar ist.',
+                    closing: 'Schauen Sie gerne in unseren Kalender auf der Website für alternative Zeiträume. Wir hoffen, Sie in Zukunft dennoch willkommen heißen zu dürfen.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#E53935', buttonText: 'Andere Termine suchen', format: 'standard'
+                },
+                deposit_request: {
+                    tagline: 'Aktion Erforderlich', heading: 'Anzahlung & Bestätigung',
+                    intro: 'Vielen Dank für Ihre Buchung in der Gipfel Lodge. Wir haben die Details Ihrer bevorstehenden Reise erhalten für den folgenden Aufenthaltszeitraum:',
+                    closing: 'Der Restbetrag ist spätestens 6 Wochen vor Anreise fällig. Sobald die Zahlung bei uns eingegangen ist, senden wir Ihnen eine endgültige Bestätigung mit allen weiteren Details.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#F59E0B', buttonText: 'Zur Website', format: 'deposit_request'
+                },
+                deposit_received: {
+                    tagline: 'Buchung Endgültig Bestätigt', heading: 'Anzahlung erfolgreich verarbeitet',
+                    intro: 'Wir haben Ihre Anzahlung erhalten! Damit ist Ihre Buchung in der Gipfel Lodge offiziell und endgültig für den folgenden Zeitraum bestätigt:',
+                    closing: 'Sollten Sie in der Zwischenzeit Fragen zu Ihrem Aufenthalt oder der Umgebung haben, antworten Sie gerne auf diese E-Mail. Wir helfen Ihnen gerne!\n\nWir freuen uns, Sie bald willkommen zu heißen!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Gipfel Lodge entdecken', format: 'deposit_received'
+                },
+                balance_reminder: {
+                    tagline: 'Restzahlung Aufenthalt', heading: 'Zahlungserinnerung',
+                    intro: 'Wir freuen uns, Sie bald in der Gipfel Lodge willkommen zu heißen! Gerne erinnern wir Sie daran, dass noch ein offener Betrag für Ihre bevorstehende Reservierung besteht.',
+                    closing: 'Haben Sie die Zahlung in den letzten Tagen bereits getätigt? Dann hat sich diese E-Mail mit Ihrer Zahlung gekreuzt und Sie können diese Nachricht ignorieren. Vielen Dank!\n\nDie Reiseinformationen senden wir Ihnen, sobald Ihre Reise näher rückt.\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#F59E0B', buttonText: 'Zur Website', format: 'balance_reminder'
+                },
+                balance_received: {
+                    tagline: 'Zahlung Vollständig Beglichen', heading: 'Ihre Restzahlung ist eingegangen',
+                    intro: 'Gute Neuigkeiten! Wir haben die Restzahlung erhalten. Damit ist der gesamte Reisepreis beglichen und alles ist bereit für Ihren Aufenthalt in der Gipfel Lodge.',
+                    closing: 'Im Namen der gesamten Familie und unseres Teams möchten wir uns für Ihr Vertrauen und die reibungslose Abwicklung bedanken.\n\nDie Berge rufen!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Zur Website', format: 'balance_received'
+                },
+                rules_info: {
+                    tagline: 'Vorbereitung auf Ihren Aufenthalt', heading: 'Zeit zum Kofferpacken!',
+                    intro: 'Die Anreise zur Gipfel Lodge rückt näher! Damit Ihr Aufenthalt von Anfang an reibungslos und sorgenfrei verläuft, teilen wir vorab die wichtigsten praktischen Informationen und Hausregeln mit Ihnen.',
+                    closing: 'Bitte beachten Sie: Am Anreisetag (oder kurz davor) erhalten Sie von uns eine Nachricht mit dem einmaligen PIN-Code für den Schlüsseltresor Ihrer Wohnung.\n\nWir wünschen Ihnen eine sichere Anreise!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Zur Website', format: 'rules_info'
+                },
+                post_stay: {
+                    tagline: 'Alpine Erinnerungen', heading: 'Vielen Dank für Ihren Aufenthalt',
+                    intro: 'Wir hoffen, dass Sie einen fantastischen Aufenthalt in der Gipfel Lodge hatten und sicher nach Hause gekommen sind! Es war uns eine große Freude, Sie als Gäste empfangen zu dürfen.',
+                    closing: 'Würden Sie uns eine kurze Bewertung zu Ihrem Aufenthalt hinterlassen? Das wäre sehr wertvoll für uns. Wir hoffen, Sie in Zukunft wieder willkommen heißen zu dürfen!\n\nMit herzlichen Grüßen,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Bewertung hinterlassen', format: 'standard'
+                }
+            },
+            en: {
+                general: {
+                    tagline: 'Message from Gipfel Lodge', heading: 'Update regarding your stay',
+                    intro: 'Thank you for your message. We are happy to provide you with the requested information.',
+                    closing: 'We hope this answers your questions. If you have any further enquiries, please don\'t hesitate to get in touch.\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#20303D', buttonText: 'Visit our website', format: 'standard'
+                },
+                acceptance: {
+                    tagline: 'Alpine Luxury & Space', heading: 'Your stay is confirmed',
+                    intro: 'Great news! Your booking at Gipfel Lodge Eben has been accepted and is reserved for you! We look forward to welcoming you to our alpine retreat.',
+                    closing: 'If you have any questions or special requests in the meantime, feel free to reply to this email.\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Prepare your trip', format: 'acceptance'
+                },
+                rejection: {
+                    tagline: 'Booking Request Update', heading: 'Unfortunately, no availability',
+                    intro: 'Thank you for your interest in Gipfel Lodge. Unfortunately, we must inform you that the selected dates are no longer available for your travel party.',
+                    closing: 'Please check our calendar on the website for alternative dates. We hope to welcome you in the future.\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#E53935', buttonText: 'Find other dates', format: 'standard'
+                },
+                deposit_request: {
+                    tagline: 'Action Required', heading: 'Deposit & Confirmation',
+                    intro: 'Thank you for your booking at Gipfel Lodge. We have received the details of your upcoming trip for the following stay period:',
+                    closing: 'The remaining balance is due at least 6 weeks before arrival. Once the payment has been received, we will send you a final confirmation with all further details.\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#F59E0B', buttonText: 'Visit Website', format: 'deposit_request'
+                },
+                deposit_received: {
+                    tagline: 'Booking Confirmed', heading: 'Deposit successfully processed',
+                    intro: 'We have received your deposit! Your booking at Gipfel Lodge is now officially confirmed for the following period:',
+                    closing: 'If you have any questions about your stay or the area, feel free to reply to this email. We\'re happy to help!\n\nWe look forward to welcoming you!\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Discover Gipfel Lodge', format: 'deposit_received'
+                },
+                balance_reminder: {
+                    tagline: 'Remaining Balance', heading: 'Payment Reminder',
+                    intro: 'We look forward to welcoming you to Gipfel Lodge soon! We would like to remind you that there is an outstanding balance for your upcoming reservation.',
+                    closing: 'Have you already made the payment in the past few days? If so, this email has crossed with your payment and you can disregard this message. Thank you!\n\nWe will send you the travel information as your trip approaches.\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#F59E0B', buttonText: 'Visit Website', format: 'balance_reminder'
+                },
+                balance_received: {
+                    tagline: 'Payment Fully Settled', heading: 'Your remaining balance has been received',
+                    intro: 'Good news! We have received the remaining payment. The full amount has been settled and everything is in order for your stay at Gipfel Lodge.',
+                    closing: 'On behalf of the entire family and team, we would like to thank you for your trust and the smooth transaction.\n\nThe mountains are calling!\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Visit Website', format: 'balance_received'
+                },
+                rules_info: {
+                    tagline: 'Preparing for your stay', heading: 'Time to pack!',
+                    intro: 'Your arrival at Gipfel Lodge is getting closer! To ensure your stay runs smoothly from the very first moment, we would like to share the most important practical information and house rules with you.',
+                    closing: 'Please note: on the day of arrival (or shortly before), you will receive a message from us with the unique PIN code for the key safe of your apartment.\n\nWe wish you a safe journey!\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Visit Website', format: 'rules_info'
+                },
+                post_stay: {
+                    tagline: 'Alpine Memories', heading: 'Thank you for your stay',
+                    intro: 'We hope you had a wonderful stay at Gipfel Lodge and arrived home safely! It was a true pleasure to have you as our guests.',
+                    closing: 'Would you be so kind as to leave a short review about your stay? This means a lot to us. We hope to welcome you again in the future!\n\nKind regards,\nTeam Gipfel Lodge',
+                    themeColor: '#C5A059', buttonText: 'Leave a review', format: 'standard'
+                }
+            }
+        };
+
+        async function openEmailComposer(btn) {
+            const ds = btn.dataset;
+            const bookingId = ds.id;
+
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Laden...';
+            btn.disabled = true;
+
+            await openCommunicationHub(bookingId);
+
+            // After loading, switch to the requested template and tab
+            const type = ds.type || 'general';
+            document.getElementById('composer-template-select').value = type;
+            loadSelectedTemplateIntoComposer();
+            switchCommHubTab('editor');
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
+        function loadSelectedTemplateIntoComposer() {
+            const type = document.getElementById('composer-template-select').value;
+            const langTemplates = composerTemplates[currentLang] || composerTemplates.nl;
+            const template = langTemplates[type] || langTemplates.general;
+            const labels = composerLabels[currentLang];
+            const previewArea = document.getElementById('composer-preview-area');
+
+            // Re-map common fields
+            const introHtml = (template.intro || '').replace(/\n/g, '<br>');
+            const closingHtml = (template.closing || '').replace(/\n/g, '<br>');
+
+            let detailsHtml = `
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">${labels.arrivalDeparture}</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.in} &mdash; ${currentComposerData.out}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">${labels.travelGroup}</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.guests}</div>
+                        </td>
+                    </tr>
+                </table>
+            `;
+
+            if (template.format === 'deposit_request') {
+                detailsHtml = `
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">${labels.arrivalDeparture}</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.in} &mdash; ${currentComposerData.out}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">${labels.totalPrice}</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${currentComposerData.tot}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: none;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">${labels.deposit30}</div>
+                            <div style="font-size: 15px; color: #c47e09; font-weight: 700;">${currentComposerData.dep}</div>
+                        </td>
+                    </tr>
+                </table>`;
+            } else if (template.format === 'rules_info') {
+                detailsHtml = `
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">${labels.checkIn}</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${labels.from15}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; border-bottom: 1px solid #f0ecdf;">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A;">${labels.checkOut}</div>
+                            <div style="font-size: 15px; color: #20303D; font-weight: 500;">${labels.until10}</div>
+                        </td>
+                    </tr>
+                </table>`;
+            }
+
+            let extraHtml = '';
+            if (template.format === 'acceptance') {
+                extraHtml = `
+                    <p style="font-size: 15px; font-weight: 600; margin-bottom: 20px; color: #20303D;">${labels.importantInfo}</p>
+                    <div style="border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background: #f9f9f9;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px;">${labels.payment}</div>
+                        <p style="font-size: 14px; color: #56686d; margin: 0 0 12px 0;">${labels.paymentDesc}</p>
+                        <div style="background: #ffffff; border: 1px solid #e0e4e8; padding: 15px; border-radius: 4px; font-size: 13px;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="color: #20303D;">
+                                <tr><td style="padding-bottom: 8px; font-weight: 600;">${labels.depositLabel}</td><td style="text-align: right; padding-bottom: 8px; font-weight: 700; color: #c47e09;">${currentComposerData.dep}</td></tr>
+                                <tr><td style="padding-bottom: 5px; color: #78868A; font-size: 11px;">${labels.ibanLabel}</td><td style="text-align: right; padding-bottom: 5px; font-weight: 500;">[ NL00 BANK 0000 0000 00 ]</td></tr>
+                                <tr><td style="padding-bottom: 5px; color: #78868A; font-size: 11px;">${labels.bicLabel}</td><td style="text-align: right; padding-bottom: 5px; font-weight: 500;">[ BIC CODE ]</td></tr>
+                                <tr><td style="color: #78868A; font-size: 11px;">${labels.refLabel}</td><td style="text-align: right; font-weight: 500;">Boeking ${currentComposerData.id} - ${currentComposerData.name}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background: #f9f9f9;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px;">${labels.arrivalDepartureTitle}</div>
+                        <p style="font-size: 14px; color: #56686d; margin: 0;">${labels.arrivalDepartureDesc}</p>
+                    </div>
+                    <div style="border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background: #f9f9f9;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px;">${labels.houseRulesTitle}</div>
+                        <p style="font-size: 14px; color: #56686d; margin: 0;">${labels.houseRulesDesc}</p>
+                    </div>
+                    <div style="border-left: 3px solid #C5A059; padding: 15px 20px; margin-bottom: 20px; background: #fcfbf8;">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #20303D; margin-bottom: 5px;">${labels.invoiceTitle}</div>
+                        <p style="font-size: 14px; color: #56686d; margin: 0 0 10px 0;">${labels.invoiceDesc}</p>
+                        <a href="https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/invoice.html?id=${currentComposerData.id}&token=${currentComposerData.token}" 
+                           style="color: #C5A059; font-weight: 700; text-decoration: underline; font-size: 14px;">${labels.invoiceLink}</a>
+                    </div>
+                `;
+            } else if (template.format === 'rules_info') {
+                extraHtml = `
+                    <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #20303D; margin: 25px 0 15px;">${labels.rulesHeading}</h3>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px; font-size: 13px; line-height: 1.5; color: #20303D;">
+                        <tr><td style="width: 25px; color: #C5A059; font-weight: bold; vertical-align: top;">&bull;</td><td style="padding-bottom: 10px;">${labels.ruleShoes}</td></tr>
+                        <tr><td style="width: 25px; color: #C5A059; font-weight: bold; vertical-align: top;">&bull;</td><td style="padding-bottom: 10px;">${labels.ruleSmoke}</td></tr>
+                    </table>
+                `;
+            }
+
+            const alertHtml = type !== 'general' ? `
+                <tr>
+                    <td style="background-color: #f7f9fa; padding: 12px 30px; text-align: center; border-bottom: 1px solid #e0e4e8;">
+                        <p style="margin: 0; color: #78868A; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">${template.tagline}</p>
+                    </td>
+                </tr>
+            ` : '';
+
+            const fullHtml = `
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FAF9F6; margin: 0; padding: 20px 0 40px; font-family: 'Inter', Arial, sans-serif;">
+                <tr>
+                    <td align="center">
+                        <table class="composer-main-table" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border: 1px solid #e0e4e8;">
+                            <!-- Header -->
+                            <tr>
+                                <td style="background-color: #20303D; padding: 30px 20px; text-align: center;">
+                                    <table align="center" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="vertical-align: middle; color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">GIPFEL</td>
+                                            <td style="vertical-align: middle; padding: 0 10px;"><img src="https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/assets/images/logo-Topbar.png" alt="Logo" style="height: 30px; display: block; border: 0;"></td>
+                                            <td style="vertical-align: middle; color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">LODGE</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            ${alertHtml}
+                            <!-- Body -->
+                            <tr>
+                                <td style="padding: 40px 30px;">
+                                    <p style="color: ${template.themeColor}; font-size: 13px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 10px;">${template.tagline}</p>
+                                    <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 26px; color: #20303D; margin-bottom: 20px; font-weight: 600; line-height: 1.2;">${template.heading}</h2>
+                                    
+                                    <div id="editable-composer-content">
+                                        <p style="font-size: 15px; margin-bottom: 25px; color: #20303D;">
+                                            ${labels.greeting} <strong>${currentComposerData.name}</strong>,<br><br>
+                                            ${introHtml}
+                                        </p>
+                                        
+                                        <table width="100%" cellpadding="20" cellspacing="0" style="background-color: #fcfbf8; border: 1px solid #f0ecdf; border-radius: 8px; margin-bottom: 25px;">
+                                            <tr>
+                                                <td>
+                                                    ${detailsHtml}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        ${extraHtml}
+                                        
+                                        <p style="font-size: 15px; margin-top: 25px; margin-bottom: 30px; color: #20303D;">
+                                            ${closingHtml}
+                                        </p>
+                                    </div>
+
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="center">
+                                                <a href="https://gipfellodge.at" style="background-color: ${template.themeColor}; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 13px;">${template.buttonText}</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <!-- Footer -->
+                            <tr>
+                                <td style="background-color: #f4f4f4; padding: 25px; text-align: center; font-size: 11px; color: #78868A;">
+                                    <p style="margin: 0;">&copy; 2026 Gipfel Lodge &mdash; Alpiner Luxus & Raum<br>Eben im Pongau, Austria | hello@gipfellodge.at</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            `;
+
+            previewArea.innerHTML = fullHtml;
+
+            // Re-apply contenteditable only to the inner content area
+            const editableArea = document.getElementById('editable-composer-content');
+            if (editableArea) {
+                editableArea.setAttribute('contenteditable', 'true');
+                editableArea.style.outline = 'none';
+            }
+        }
+
+        async function autoCheckMailStep(uiTemplateId) {
+            if (!currentComposerData) return;
+            const bookingId = currentComposerData.id;
+
+            if (uiTemplateId === 'acceptance') {
+                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), {
+                    status: 'confirmed',
+                    updatedAt: new Date().toISOString()
+                });
+
+                logActivity('BOOKING_CONFIRMED', 'Boeking automatisch bevestigd via Hub', bookingId);
+
+                currentComposerData.status = 'confirmed';
+                renderHubSteps(currentComposerData);
+
+                const sb = document.getElementById('hub-guest-status');
+                if (sb) {
+                    sb.innerText = 'BEVESTIGD';
+                    sb.style.color = '#1e8e3e';
+                    sb.style.background = '#e6f4ea';
+                    sb.style.borderColor = '#ceead6';
+                }
+            } else if (uiTemplateId === 'rejection') {
+                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                await updateDoc(doc(db, "bookings", bookingId), { status: 'declined' });
+                currentComposerData.status = 'declined';
+                renderHubSteps(currentComposerData);
+
+                const sb = document.getElementById('hub-guest-status');
+                if (sb) {
+                    sb.innerText = 'GEWEIGERD';
+                    sb.style.color = '#c62828';
+                    sb.style.background = 'rgba(211, 47, 47, 0.08)';
+                    sb.style.borderColor = 'rgba(211, 47, 47, 0.2)';
+                }
+            } else {
+                const map = {
+                    'deposit_request': 'depositReminder',
+                    'deposit_received': 'depositReceived',
+                    'balance_reminder': 'balanceReminder',
+                    'balance_received': 'balanceReceived',
+                    'rules_info': 'preStayInfo',
+                    'post_stay': 'postStay'
+                };
+                const stepKey = map[uiTemplateId];
+                if (stepKey) {
+                    toggleMailStep(bookingId, stepKey, true);
+                }
+            }
+        }
+
+        async function sendComposerEmailDirectly() {
+            const previewArea = document.getElementById('composer-preview-area');
+            const btn = document.getElementById('btn-composer-send-email');
+            const originalText = btn.innerHTML;
+
+            // 1. Get the HTML content - Remove contenteditable first
+            let html = previewArea.innerHTML;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const editable = tempDiv.querySelector('[contenteditable]');
+            if (editable) editable.removeAttribute('contenteditable');
+
+            // Wrap in a clean document structure for EmailJS
+            const finalHtml = `\x3C!DOCTYPE html>
+\x3Chtml lang="nl">
+\x3Chead>
+    \x3Cmeta charset="UTF-8">
+\x3C/head>
+\x3Cbody style="margin:0; padding:0; background-color: #FAF9F6;">
+    ${tempDiv.innerHTML}
+\x3C/body>
+\x3C/html>`;
+
+            // DEBUG: Show first bit of HTML to user
+            console.log("FULL HTML TO SEND:", finalHtml);
+            // alert("DEBUG - E-mail grootte: " + finalHtml.length + " tekens. Controleer console voor volledige HTML.");
+
+            // 2. Prepare params
+            const uiTemplateId = document.getElementById('composer-template-select').value;
+            const subjectMap = {
+                'acceptance': 'Boekingsbevestiging - Gipfel Lodge',
+                'rejection': 'Uw aanvraag voor Gipfel Lodge',
+                'deposit_request': 'Verzoek tot aanbetaling - Gipfel Lodge',
+                'deposit_received': 'Aanbetaling in goede orde ontvangen - Gipfel Lodge',
+                'balance_reminder': 'Herinnering openstaand saldo - Gipfel Lodge',
+                'balance_received': 'Betaling volledig ontvangen - Gipfel Lodge',
+                'rules_info': 'Belangrijke informatie voor uw verblijf - Gipfel Lodge',
+                'post_stay': 'Bedankt voor uw verblijf bij Gipfel Lodge',
+                'general': 'Bericht van Gipfel Lodge'
+            };
+
+            const mailSubject = subjectMap[uiTemplateId] || 'Bericht van Gipfel Lodge';
+
+            const params = {
+                to_email: currentComposerData.email,
+                user_name: currentComposerData.name,
+                email_html: finalHtml,
+                subject: mailSubject,
+                title: mailSubject
+            };
+
+            console.log("Email Payload Prepared:", params);
+
+            if (!params.to_email) {
+                alert("Geen e-mailadres bekend voor deze gast.");
+                return;
+            }
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '\x3Cdiv class="spinner" style="display:block; margin:0 auto; width:18px; height:18px; border-top-color:white;">\x3C/div>';
+
+                // Use the configured EmailJS dynamic template or fallback
+                const templateId = localStorage.getItem('emailjs_dynamic_template_id') || 'template_si14pan';
+                const serviceId = localStorage.getItem('emailjs_service_id') || 'service_rl6qzmr';
+                const publicKey = localStorage.getItem('emailjs_public_key') || 'WC62OFB5MXpryYO1u';
+
+                console.log("Sending via EmailJS...", { serviceId, templateId });
+                await emailjs.send(serviceId, templateId, params, publicKey);
+
+                // LOG ACTIVITY
+                logActivity('EMAIL_SENT_COMPOSER', `E-mail '${mailSubject}' verzonden via de Hub editor`, currentComposerData.id);
+
+                // Auto-check step in the hub
+                const uiTemplateId = document.getElementById('composer-template-select').value;
+                autoCheckMailStep(uiTemplateId);
+
+                btn.innerHTML = '✔ Verzonden!';
+                btn.style.background = '#27ae60';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (err) {
+                console.error("Sending failed:", err);
+                const isRejection = document.getElementById('composer-template-select').value === 'rejection';
+                
+                if (isRejection) {
+                    // Even if mail fails, we mark as declined as requested
+                    alert("Verzenden mislukt: " + (err.text || err.message || "Onbekende fout") + "\n\nDe boeking is desondanks gemarkeerd als GEWEIGERD in het systeem.");
+                    autoCheckMailStep('rejection');
+                } else {
+                    alert("Verzenden mislukt: " + (err.text || err.message || "Onbekende fout"));
+                }
+
+                btn.innerHTML = '❌ Fout';
+                btn.style.background = '#e74c3c';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+            }
+
+        }
+
+        // Handle escape key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('comm-hub-modal').classList.contains('active')) closeCommHub();
+                if (document.getElementById('emailTesterModal').classList.contains('active')) closeEmailTester();
+            }
+        });
+

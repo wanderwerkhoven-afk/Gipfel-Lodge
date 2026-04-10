@@ -538,7 +538,11 @@ const GipfelBooking = {
                                 message: ownerParams.message || '-',
                                 totalAmount: totalAmount,
                                 // Breakdown
-                                rent: costs ? costs.rent : 0,
+                                rent: costs ? (costs.originalRent || costs.rent) : 0, // Store original if available
+                                discountAmount: costs ? costs.discountAmount : 0,
+                                discountPercentage: costs ? costs.discountPercentage : 0,
+                                discountName: costs ? costs.appliedDiscountName : '',
+                                
                                 cleaning: costs ? costs.cleaning : 0,
                                 bedLinen: costs ? costs.bedLinen : 0,
                                 touristTax: costs ? costs.touristTax : 0,
