@@ -213,6 +213,9 @@ const GipfelBooking = {
                         console.log("Website: No active discount preset selected in settings.");
                     }
                 }
+            } catch(discountErr) {
+                console.warn("Could not load discount preset, continuing without discount.", discountErr);
+                this.activeDiscountPreset = null;
             }
         } catch(e) {
             console.error("Error loading pricing data from Firebase", e);
@@ -852,29 +855,7 @@ const GipfelBooking = {
     renderDiscountBanner() {
         const bannerEl = document.getElementById('booking-discount-banner');
         if (!bannerEl) return;
-
-        if (this.activeDiscountPreset && this.activeDiscountPreset.tiers && this.activeDiscountPreset.tiers.length > 0) {
-            const tiers = [...this.activeDiscountPreset.tiers].sort((a,b) => b.percentage - a.percentage);
-            const maxDiscount = tiers[0].percentage;
-            
-            bannerEl.innerHTML = `
-                <div class="discount-banner-inner" style="background: linear-gradient(135deg, #c47e09 0%, #dab46d 100%); color: white; padding: 1.5rem 2rem; border-radius: 12px; display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 10px 30px rgba(196, 126, 9, 0.2);">
-                    <div class="discount-icon" style="font-size: 2.5rem; opacity: 0.9;">
-                        <i class="ph-bold ph-tag"></i>
-                    </div>
-                    <div class="discount-text">
-                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${this.activeDiscountPreset.name}</h3>
-                        <p style="margin: 0.25rem 0 0 0; opacity: 0.95; font-size: 1rem;">Boek nu en profiteer van tot wel <span style="font-weight: 700; font-size: 1.2rem;">${maxDiscount}%</span> korting op uw verblijf!</p>
-                    </div>
-                    <div style="margin-left: auto;">
-                         <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">Active Deal</span>
-                    </div>
-                </div>
-            `;
-            bannerEl.style.display = 'block';
-        } else {
-            bannerEl.style.display = 'none';
-        }
+        bannerEl.style.display = 'none'; // Replaced by calendar ribbons
     },
 
     calculateCosts() {
@@ -1054,11 +1035,20 @@ const GipfelBooking = {
             const cellDate = new Date(year, month, i);
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             
-            // Basic Content
-            el.innerHTML = `<span>${i}</span>`;
-            
+            // Calculate Discount Prefix for Ribbon
+            let discountHTML = '';
+            if (this.activeDiscountPreset && this.activeDiscountPreset.tiers && cellDate >= today) {
+                const diffTime = cellDate.getTime() - today.getTime();
+                const daysUntil = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                const sortedTiers = [...this.activeDiscountPreset.tiers].sort((a, b) => a.days - b.days);
+                const matchingTier = sortedTiers.find(t => daysUntil <= t.days);
+                if (matchingTier) {
+                    discountHTML = `<div class="cal-discount-ribbon">-${matchingTier.percentage}%</div>`;
+                }
+            }
+
             // Structured content
-            el.innerHTML = `<span class="cal-day-num">${i}</span>`;
+            el.innerHTML = `<span class="cal-day-num">${i}</span>${discountHTML}`;
             
             // Logic state
             const isConfirmedIn = (this.confirmedCheckIns || []).includes(dateStr);

@@ -3494,8 +3494,6 @@
 
         async function loadDiscountPresets() {
             const { db, collection, getDocs, doc, getDoc, query, orderBy } = await import('../site_js/core/firebase.js');
-            const selector = document.getElementById('active-discount-selector');
-            if (!selector) return;
 
             try {
                 // 1. Load active setting
@@ -3504,77 +3502,107 @@
                 if (settingsDoc.exists()) {
                     activeId = settingsDoc.data().activePresetId || 'none';
                 }
+                window._currentActiveDiscountId = activeId;
 
                 // 2. Load all presets
                 const q = query(collection(db, 'discount_presets'), orderBy('name', 'asc'));
                 const snap = await getDocs(q);
                 
                 _allDiscountPresets = [];
-                let html = '<option value="none">Geen korting (Standaardprijs)</option>';
                 
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
                     const d = { id: docSnap.id, ...data };
                     _allDiscountPresets.push(d);
-                    html += `<option value="${d.id}" ${d.id === activeId ? 'selected' : ''}>${d.name}</option>`;
                 });
 
-                selector.innerHTML = html;
-                previewDiscountSelection(selector.value);
+                renderAllDiscountRules();
             } catch (err) {
                 console.error("Error loading discount presets:", err);
             }
         }
 
-        window.previewDiscountSelection = function(id) {
-            const container = document.getElementById('discount-preview-content');
+        window.renderAllDiscountRules = function() {
+            const container = document.getElementById('all-discount-rules-container');
             if (!container) return;
+            
+            const activeId = window._currentActiveDiscountId || 'none';
 
-            if (id === 'none') {
-                container.innerHTML = '<div style="color: #94a3b8;">Geen korting geselecteerd. Gebruikt standaardprijzen.</div>';
-                _activeDiscountRule = null;
+            if (!_allDiscountPresets || _allDiscountPresets.length === 0) {
+                container.innerHTML = '<div style="color: #94a3b8; text-align:center; padding: 20px;">Geen automatische regels gevonden. Maak er één aan.</div>';
                 return;
             }
 
-            const preset = _allDiscountPresets.find(p => p.id === id);
-            if (!preset) return;
-            _activeDiscountRule = preset;
-
-            // Render visual staffel
-            let html = `
-                <div style="text-align: left;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <strong style="font-size: 1.1rem;">${preset.name}</strong>
-                        ${currentUserRole === 'superuser' ? `
-                            <button onclick="deleteDiscountPreset('${preset.id}')" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:0.8rem;">
+            let html = '<div class="eb2-discount-list">';
+            
+            _allDiscountPresets.forEach(preset => {
+                const isActive = preset.id === activeId;
+                
+                // Sort by days descending
+                const sortedTiers = [...preset.tiers].sort((a,b) => b.days - a.days);
+                
+                html += `
+                    <div class="discount-item ${isActive ? 'active' : ''}">
+                        <div class="discount-item-header">
+                            <div class="discount-item-title" style="cursor:pointer;" onclick="toggleActiveDiscount('${preset.id}')">
+                                <i class="ph ${isActive ? 'ph-check-square' : 'ph-square'}"></i>
+                                <span>${preset.name}</span>
+                            </div>
+                            <button class="discount-item-delete" onclick="deleteDiscountPreset('${preset.id}')">
                                 <i class="ph ph-trash"></i> Verwijderen
                             </button>
-                        ` : ''}
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-            `;
-
-            // Sort by days descending
-            const sortedTiers = [...preset.tiers].sort((a,b) => b.days - a.days);
-            sortedTiers.forEach(tier => {
+                        </div>
+                        <div class="discount-timeline">
+                            <div class="discount-timeline-days">
+                `;
+                
+                // Add the days text row
+                sortedTiers.forEach((tier, index) => {
+                    const nextDays = sortedTiers[index + 1] ? sortedTiers[index + 1].days : 0;
+                    const weight = tier.days - nextDays;
+                    html += `<div style="flex: ${weight} 1 0%; border-left: 1px dashed #cbd5e1; padding-left: 6px;">${tier.days} d</div>`;
+                });
+                
                 html += `
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="width: 120px; font-size: 0.8rem; color: #64748b;">Tot ${tier.days} dagen vantevoren:</div>
-                        <div style="flex:1; background: #e2e8f0; height: 32px; border-radius: 16px; position: relative; overflow: hidden;">
-                            <div style="position:absolute; left:0; top:0; height:100%; width: ${tier.percentage}%; background: #99f6e4; display:flex; align-items:center; padding-left:12px; font-weight:700; color: #0d9488; font-size: 0.8rem;">
-                                ${tier.percentage}%
+                            </div>
+                            <div class="discount-timeline-bars">
+                `;
+                
+                // Add the percentages bar row
+                sortedTiers.forEach((tier, index) => {
+                    const nextDays = sortedTiers[index + 1] ? sortedTiers[index + 1].days : 0;
+                    const weight = tier.days - nextDays;
+                    html += `
+                                <div class="discount-tier-segment" style="flex: ${weight} 1 0%;">
+                                    ${tier.percentage}%
+                                </div>
+                    `;
+                });
+                
+                html += `
                             </div>
                         </div>
                     </div>
                 `;
             });
 
-            html += `</div></div>`;
+            html += '</div>';
             container.innerHTML = html;
         };
 
-        window.saveActiveDiscount = async function() {
-            const id = document.getElementById('active-discount-selector').value;
+        window.toggleActiveDiscount = async function(id) {
+            // Toggle off if it's already active
+            const newActiveId = (window._currentActiveDiscountId === id) ? 'none' : id;
+            window._currentActiveDiscountId = newActiveId;
+            
+            // Re-render immediately for visual feedback
+            renderAllDiscountRules();
+            
+            // Call save
+            await saveActiveDiscount(newActiveId);
+        };
+
+        window.saveActiveDiscount = async function(id) {
             const { db, doc, setDoc } = await import('../site_js/core/firebase.js');
             
             try {

@@ -532,23 +532,12 @@
                         </div>
                         
                         <div style="padding: 24px;">
-                            <div style="display: grid; grid-template-columns: 300px 1fr; gap: 30px;">
-                                <!-- Selection -->
-                                <div>
-                                    <label style="display:block; font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 12px;">Actieve Korting</label>
-                                    <select id="active-discount-selector" class="form-input" style="width: 100%; margin-bottom: 15px;" onchange="previewDiscountSelection(this.value)">
-                                        <option value="none">Geen korting (Standaardprijs)</option>
-                                    </select>
-                                    <button class="eb2-action-btn eb2-btn-gold" style="width: 100%;" onclick="saveActiveDiscount()">
-                                        <i class="ph ph-check"></i> Instelling Opslaan
-                                    </button>
-                                </div>
-                                
-                                <!-- Preview Visualization -->
-                                <div id="discount-preview-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
-                                    <div id="discount-preview-content" style="text-align: center; color: #94a3b8; padding: 20px;">
-                                        Selecteer een kortingsregel om de staffel te bekijken.
-                                    </div>
+                            <label style="display:block; font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 12px;">Actieve Korting</label>
+                            
+                            <!-- All Rules Visualization -->
+                            <div id="all-discount-rules-container" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px;">
+                                <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                                    Regels inladen...
                                 </div>
                             </div>
                         </div>

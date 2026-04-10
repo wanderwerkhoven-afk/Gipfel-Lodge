@@ -3234,8 +3234,129 @@
             animation: fadeIn 0.3s ease-out;
         }
 
-        /* Invoice Sort Dropdown Option Hover */
         .inv-sort-option:hover {
             background: #f8fafc !important;
             color: var(--color-gold) !important;
+        }
+
+        /* DISCOUNT TIMELINE LIST UI */
+        .eb2-discount-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .discount-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .discount-item:not(.active) {
+            background: #f8fafc; /* light grey shade */
+            opacity: 0.6; /* faded out */
+        }
+        
+        .discount-item:not(.active):hover {
+            opacity: 0.85; /* slightly brightens on hover */
+        }
+
+        .discount-item.active {
+            border-color: var(--color-gold);
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.1);
+        }
+
+        .discount-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .discount-item-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--color-slate);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .discount-item-title i {
+            color: #cbd5e1;
+            font-size: 1.3rem;
+        }
+
+        .discount-item.active .discount-item-title i {
+            color: var(--color-gold);
+            font-size: 1.4rem;
+        }
+
+        .discount-item-delete {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            transition: color 0.2s;
+        }
+
+        .discount-item-delete:hover {
+            color: #b91c1c;
+        }
+
+        .discount-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-left: 10px;
+        }
+
+        .discount-timeline-days {
+            display: flex;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
+        .discount-timeline-bars {
+            display: flex;
+            height: 36px;
+            border-radius: 18px;
+            background: #f1f5f9;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .discount-tier-segment {
+            background: #a7f3d0;
+            /* mint green */
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            padding-left: 14px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .discount-item:not(.active) .discount-tier-segment {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+
+        .discount-tier-segment:first-child {
+            border-top-left-radius: 14px;
+            border-bottom-left-radius: 14px;
+        }
+
+        .discount-tier-segment:last-child {
+            border-top-right-radius: 14px;
+            border-bottom-right-radius: 14px;
         }
