@@ -5,6 +5,11 @@
 window.navigateTo = function(pageId) {
     console.log('Navigating to:', pageId);
 
+    // Track analytics (Async)
+    import('../utils/analytics.js').then(m => {
+        m.Analytics.logPageView(pageId);
+    }).catch(err => console.warn('Analytics failed to load', err));
+
     // Save to local storage
     if (pageId) {
         localStorage.setItem('gipfel_last_page', pageId);

@@ -45,6 +45,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // [ANALYTICS] Public can log views; only Admin can read/manage.
+    match /page_views/{viewId} {
+      allow create: if true;
+      allow read, delete: if isAdmin();
+    }
+
     // DEFAULT: Deny everything else
     match /{document=**} {
       allow read, write: if false;

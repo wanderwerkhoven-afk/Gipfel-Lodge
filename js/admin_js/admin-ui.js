@@ -79,6 +79,8 @@
                 loadCarouselView();
             } else if (viewId === 'invoices-view') {
                 loadInvoices();
+            } else if (viewId === 'behavior-view') {
+                loadBehaviorStats();
             }
 
             // Scroll to top when switching views on mobile
