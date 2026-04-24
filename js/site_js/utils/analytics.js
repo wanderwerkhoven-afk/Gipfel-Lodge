@@ -21,17 +21,22 @@ export const Analytics = {
                 ip = ipData.ip;
             } catch(e) { console.warn("Could not fetch IP", e); }
 
+            // Detect device type
+            const ua = navigator.userAgent;
+            const deviceType = /Mobi|Android|iPhone/i.test(ua) ? 'Mobiel' : 'Desktop';
+
             const docRef = await addDoc(collection(db, "page_views"), {
                 pageId: pageId,
                 timestamp: serverTimestamp(),
                 url: window.location.href,
                 referrer: document.referrer || 'direct',
-                userAgent: navigator.userAgent,
+                userAgent: ua,
                 language: document.documentElement.lang || 'nl',
                 isLocal: isLocal,
-                ip: ip
+                ip: ip,
+                deviceType: deviceType
             });
-            console.log(`[Analytics] Logged view for: ${pageId} (IP: ${ip})`);
+            console.log(`[Analytics] Logged view for: ${pageId} (${deviceType})`);
             return docRef;
         } catch (e) {
             console.error("[Analytics] Failed to log page view:", e);

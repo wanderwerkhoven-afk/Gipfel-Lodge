@@ -220,6 +220,9 @@ function renderBehaviorTable(views) {
         tr.innerHTML = `
             <td style="font-size: 0.8rem; color: #64748b;">${date}</td>
             <td><span class="status-badge" style="background: rgba(32, 48, 61, 0.05); color: #20303D; text-transform: capitalize;">${v.pageId || 'home'}</span></td>
+            <td style="font-size: 0.8rem; color: #64748b;">
+                <i class="ph ${v.deviceType === 'Mobiel' ? 'ph-smartphone' : 'ph-desktop'}"></i> ${v.deviceType || 'Desktop'}
+            </td>
             <td><span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${v.language || 'nl'}</span></td>
             <td style="font-size: 0.8rem; font-family: monospace; color: #64748b;">${v.ip || '-'}</td>
             <td style="font-size: 0.8rem; color: #94a3b8;" title="${v.referrer || ''}">${ref}</td>
