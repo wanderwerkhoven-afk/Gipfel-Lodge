@@ -10,6 +10,14 @@ async function loadBehaviorStats() {
     console.log("Loading Behavior Stats...");
     const recentList = document.getElementById('behavior-recent-list');
     
+    // UI feedback for refresh button
+    const refreshBtn = document.querySelector('#behavior-view .eb2-add-btn');
+    const originalBtnHtml = refreshBtn ? refreshBtn.innerHTML : '';
+    if (refreshBtn) {
+        refreshBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Laden...';
+        refreshBtn.disabled = true;
+    }
+    
     try {
         const { db, collection, getDocs, query, orderBy, limit } = await import('../site_js/core/firebase.js');
 
@@ -65,6 +73,11 @@ async function loadBehaviorStats() {
     } catch (err) {
         console.error("Error loading behavior stats:", err);
         recentList.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: #ff6b6b;">Fout bij laden van statistieken: ${err.message}</td></tr>`;
+    } finally {
+        if (refreshBtn) {
+            refreshBtn.innerHTML = originalBtnHtml;
+            refreshBtn.disabled = false;
+        }
     }
 }
 

@@ -2210,7 +2210,16 @@
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        window.open(EXTERNAL_BOOKING_URL, '_blank', 'noopener,noreferrer');
+        // Track click before redirect
+        import('./js/site_js/utils/analytics.js').then(async (m) => {
+          try {
+            await m.Analytics.logPageView('booking-click');
+          } catch(e) {}
+          window.open(EXTERNAL_BOOKING_URL, '_blank', 'noopener,noreferrer');
+        }).catch(err => {
+          console.warn('Analytics failed, redirecting anyway', err);
+          window.open(EXTERNAL_BOOKING_URL, '_blank', 'noopener,noreferrer');
+        });
       }, true);
     })();
   </script>
