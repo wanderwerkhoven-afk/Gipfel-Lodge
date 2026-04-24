@@ -231,9 +231,34 @@
                             <h1>Gedrag & Statistieken</h1>
                             <p>Inzicht in hoe bezoekers de website gebruiken en welke pagina's populair zijn.</p>
                         </div>
-                        <button class="eb2-add-btn" onclick="loadBehaviorStats()" style="margin-bottom: 10px;">
-                            <i class="ph ph-arrows-clockwise"></i> Verversen
-                        </button>
+                        <div style="display: flex; gap: 12px; align-items: flex-end; margin-bottom: 10px;">
+                            <!-- CUSTOM POPUP FILTER -->
+                            <div style="position: relative;">
+                                <label style="font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block;">Verkeer Filter</label>
+                                <button class="eb2-add-btn" onclick="toggleBehaviorFilterPopup()" style="background: white; border: 1px solid #e2e8f0; color: #20303D;">
+                                    <i class="ph ph-funnel"></i> <span id="behavior-filter-label">Alle bezoeken</span>
+                                </button>
+                                
+                                <input type="hidden" id="behavior-filter-type" value="all">
+                                
+                                <div id="behavior-filter-popup" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; width: 220px; z-index: 100; padding: 8px;">
+                                    <div style="padding: 8px 12px; font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Kies weergave</div>
+                                    <div class="filter-pop-item" onclick="setBehaviorFilter('all', 'Alle bezoeken')">
+                                        <i class="ph ph-globe"></i> Alle bezoeken
+                                    </div>
+                                    <div class="filter-pop-item" onclick="setBehaviorFilter('site', 'Alleen Live Site')">
+                                        <i class="ph ph-browsers"></i> Alleen Live Site
+                                    </div>
+                                    <div class="filter-pop-item" onclick="setBehaviorFilter('local', 'Alleen Localhost')">
+                                        <i class="ph ph-laptop"></i> Alleen Localhost
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="eb2-add-btn" onclick="loadBehaviorStats()">
+                                <i class="ph ph-arrows-clockwise"></i> Verversen
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Stats Overview Grid -->
@@ -276,6 +301,7 @@
                                         <th>Tijdstip</th>
                                         <th>Pagina</th>
                                         <th>Taal</th>
+                                        <th>IP Adres</th>
                                         <th>Referrer</th>
                                     </tr>
                                 </thead>

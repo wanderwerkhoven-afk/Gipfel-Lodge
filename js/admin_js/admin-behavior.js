@@ -6,6 +6,28 @@
 let behaviorChartDaily = null;
 let behaviorChartPages = null;
 
+/** --- POPUP FILTER LOGIC --- **/
+function toggleBehaviorFilterPopup() {
+    const pop = document.getElementById('behavior-filter-popup');
+    pop.style.display = pop.style.display === 'none' ? 'block' : 'none';
+}
+
+function setBehaviorFilter(value, label) {
+    document.getElementById('behavior-filter-type').value = value;
+    document.getElementById('behavior-filter-label').innerText = label;
+    document.getElementById('behavior-filter-popup').style.display = 'none';
+    loadBehaviorStats();
+}
+
+// Close popup on outside click
+document.addEventListener('click', (e) => {
+    const pop = document.getElementById('behavior-filter-popup');
+    const btn = document.querySelector('[onclick="toggleBehaviorFilterPopup()"]');
+    if (pop && pop.style.display === 'block' && !pop.contains(e.target) && !btn.contains(e.target)) {
+        pop.style.display = 'none';
+    }
+});
+
 async function loadBehaviorStats() {
     console.log("Loading Behavior Stats...");
     const recentList = document.getElementById('behavior-recent-list');
@@ -26,12 +48,25 @@ async function loadBehaviorStats() {
         const snap = await getDocs(q);
 
         const views = [];
+        const filterType = document.getElementById('behavior-filter-type')?.value || 'all';
+
         snap.forEach(doc => {
             const data = doc.data();
-            views.push({ id: doc.id, ...data });
+            
+            // Filter logic
+            let include = true;
+            if (filterType === 'site') {
+                if (data.isLocal === true) include = false;
+            } else if (filterType === 'local') {
+                if (data.isLocal !== true) include = false;
+            }
+            
+            if (include) {
+                views.push({ id: doc.id, ...data });
+            }
         });
 
-        console.log(`Fetched ${views.length} views from Firebase.`);
+        console.log(`Fetched ${views.length} views from Firebase (Filter: ${filterType}).`);
 
         if (views.length === 0) {
             document.getElementById('stat-total-views').innerText = '0';
@@ -186,6 +221,7 @@ function renderBehaviorTable(views) {
             <td style="font-size: 0.8rem; color: #64748b;">${date}</td>
             <td><span class="status-badge" style="background: rgba(32, 48, 61, 0.05); color: #20303D; text-transform: capitalize;">${v.pageId || 'home'}</span></td>
             <td><span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${v.language || 'nl'}</span></td>
+            <td style="font-size: 0.8rem; font-family: monospace; color: #64748b;">${v.ip || '-'}</td>
             <td style="font-size: 0.8rem; color: #94a3b8;" title="${v.referrer || ''}">${ref}</td>
         `;
         list.appendChild(tr);

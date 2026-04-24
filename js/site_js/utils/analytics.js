@@ -11,15 +11,27 @@ export const Analytics = {
      */
     async logPageView(pageId) {
         try {
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            
+            // Fetch IP address (optional, non-blocking)
+            let ip = 'unknown';
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                ip = ipData.ip;
+            } catch(e) { console.warn("Could not fetch IP", e); }
+
             const docRef = await addDoc(collection(db, "page_views"), {
                 pageId: pageId,
                 timestamp: serverTimestamp(),
                 url: window.location.href,
                 referrer: document.referrer || 'direct',
                 userAgent: navigator.userAgent,
-                language: document.documentElement.lang || 'nl'
+                language: document.documentElement.lang || 'nl',
+                isLocal: isLocal,
+                ip: ip
             });
-            console.log(`[Analytics] Logged view for: ${pageId}`);
+            console.log(`[Analytics] Logged view for: ${pageId} (IP: ${ip})`);
             return docRef;
         } catch (e) {
             console.error("[Analytics] Failed to log page view:", e);
