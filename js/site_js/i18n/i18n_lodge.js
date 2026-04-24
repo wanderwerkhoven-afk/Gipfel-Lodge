@@ -39,8 +39,23 @@ Object.assign(window.gipfelTranslations.de, {
     "gallery-btn-photos": "Fotos",
     "gallery-btn-share": "Teilen",
     "gallery-btn-favorite": "Favorit",
-    "lodge-cta-title": "Bereit für eine Auszeit?",
-    "lodge-cta-subtitle": "Sichern Sie sich Ihren exklusiven Aufenthalt in der Gipfel Lodge und erleben Sie Urlaub auf höchstem Niveau."
+    "lodge-cta-subtitle": "Sichern Sie sich Ihren exklusiven Aufenthalt in der Gipfel Lodge und erleben Sie Urlaub auf höchstem Niveau.",
+    "gal-winter": "Winteransicht",
+    "gal-summer": "Sommeransicht",
+    "gal-living": "Wohnzimmer",
+    "gal-dining": "Essbereich",
+    "gal-kitchen": "Küche",
+    "gal-bedroom": "Schlafzimmer",
+    "gal-bathroom": "Badezimmer",
+    "gal-reading": "Leseecke",
+    "gal-entrance": "Eingangsbereich",
+    "gal-hallways": "Flure",
+    "gal-terrace": "Terrasse",
+    "gal-garage": "Garage",
+    "gal-bunkbed": "Stockbettzimmer",
+    "gal-sauna": "Sauna",
+    "gal-ski-room": "Skiraum",
+    "gal-sign": "Gipfel Lodge Eben"
 });
 
 // EN
@@ -80,8 +95,23 @@ Object.assign(window.gipfelTranslations.en, {
     "gallery-btn-photos": "Photos",
     "gallery-btn-share": "Share",
     "gallery-btn-favorite": "Favorite",
-    "lodge-cta-title": "Ready for a getaway?",
-    "lodge-cta-subtitle": "Secure your exclusive stay at Gipfel Lodge and experience holiday living at the highest level."
+    "lodge-cta-subtitle": "Secure your exclusive stay at Gipfel Lodge and experience holiday living at the highest level.",
+    "gal-winter": "Winter View",
+    "gal-summer": "Summer View",
+    "gal-living": "Living Room",
+    "gal-dining": "Dining Area",
+    "gal-kitchen": "Kitchen",
+    "gal-bedroom": "Bedroom",
+    "gal-bathroom": "Bathroom",
+    "gal-reading": "Reading Corner",
+    "gal-entrance": "Entrance",
+    "gal-hallways": "Hallways",
+    "gal-terrace": "Terrace",
+    "gal-garage": "Garage",
+    "gal-bunkbed": "Bunk Bedroom",
+    "gal-sauna": "Sauna",
+    "gal-ski-room": "Ski Room",
+    "gal-sign": "Gipfel Lodge Eben"
 });
 
 // FR
@@ -121,8 +151,23 @@ Object.assign(window.gipfelTranslations.fr, {
     "gallery-btn-photos": "Photos",
     "gallery-btn-share": "Partager",
     "gallery-btn-favorite": "Favori",
-    "lodge-cta-title": "Prêt pour une escapade ?",
-    "lodge-cta-subtitle": "Réservez votre séjour exclusif au Gipfel Lodge et vivez des vacances d’exception."
+    "lodge-cta-subtitle": "Réservez votre séjour exclusif au Gipfel Lodge et vivez des vacances d’exception.",
+    "gal-winter": "Vue d'hiver",
+    "gal-summer": "Vue d'été",
+    "gal-living": "Salon",
+    "gal-dining": "Salle à manger",
+    "gal-kitchen": "Cuisine",
+    "gal-bedroom": "Chambre",
+    "gal-bathroom": "Salle de bain",
+    "gal-reading": "Coin lecture",
+    "gal-entrance": "Entrée",
+    "gal-hallways": "Couloirs",
+    "gal-terrace": "Terrasse",
+    "gal-garage": "Garage",
+    "gal-bunkbed": "Chambre avec lits superposés",
+    "gal-sauna": "Sauna",
+    "gal-ski-room": "Local à skis",
+    "gal-sign": "Gipfel Lodge Eben"
 });
 
 // IT
@@ -162,8 +207,23 @@ Object.assign(window.gipfelTranslations.it, {
     "gallery-btn-photos": "Foto",
     "gallery-btn-share": "Condividi",
     "gallery-btn-favorite": "Preferito",
-    "lodge-cta-title": "Pronti per una pausa?",
-    "lodge-cta-subtitle": "Assicuratevi il vostro soggiorno esclusivo al Gipfel Lodge e vivete una vacanza di altissimo livello."
+    "lodge-cta-subtitle": "Assicuratevi il vostro soggiorno esclusivo al Gipfel Lodge e vivete una vacanza di altissimo livello.",
+    "gal-winter": "Vista invernale",
+    "gal-summer": "Vista estiva",
+    "gal-living": "Soggiorno",
+    "gal-dining": "Area pranzo",
+    "gal-kitchen": "Cucina",
+    "gal-bedroom": "Camera da letto",
+    "gal-bathroom": "Bagno",
+    "gal-reading": "Angolo lettura",
+    "gal-entrance": "Ingresso",
+    "gal-hallways": "Corridoi",
+    "gal-terrace": "Terrazza",
+    "gal-garage": "Garage",
+    "gal-bunkbed": "Camera con letti a castello",
+    "gal-sauna": "Sauna",
+    "gal-ski-room": "Deposito sci",
+    "gal-sign": "Gipfel Lodge Eben"
 });
 
 // PL
@@ -203,8 +263,23 @@ Object.assign(window.gipfelTranslations.pl, {
     "gallery-btn-photos": "Zdjęcia",
     "gallery-btn-share": "Udostępnij",
     "gallery-btn-favorite": "Ulubione",
-    "lodge-cta-title": "Gotowi na wyjazd?",
-    "lodge-cta-subtitle": "Zarezerwuj swój ekskluzywny pobyt w Gipfel Lodge i odkryj wypoczynek na najwyższym poziomie."
+    "lodge-cta-subtitle": "Zarezerwuj swój ekskluzywny pobyt w Gipfel Lodge i odkryj wypoczynek na najwyższym poziomie.",
+    "gal-winter": "Widok zimowy",
+    "gal-summer": "Widok letni",
+    "gal-living": "Salon",
+    "gal-dining": "Jadalnia",
+    "gal-kitchen": "Kuchnia",
+    "gal-bedroom": "Sypialnia",
+    "gal-bathroom": "Łazienka",
+    "gal-reading": "Kącik do czytania",
+    "gal-entrance": "Wejście",
+    "gal-hallways": "Korytaze",
+    "gal-terrace": "Taras",
+    "gal-garage": "Garaż",
+    "gal-bunkbed": "Sypialnia z łóżkami piętrowymi",
+    "gal-sauna": "Sauna",
+    "gal-ski-room": "Przechowalnia nart",
+    "gal-sign": "Gipfel Lodge Eben"
 });
 
 // HE
@@ -244,8 +319,23 @@ Object.assign(window.gipfelTranslations.he, {
     "gallery-btn-photos": "תמונות",
     "gallery-btn-share": "שתפו",
     "gallery-btn-favorite": "מועדף",
-    "lodge-cta-title": "מוכנים לחופשה קצרה?",
-    "lodge-cta-subtitle": "הבטיחו לעצמכם שהות אקסקלוסיבית ב-Gipfel Lodge וחוו חופשה ברמה הגבוהה ביותר."
+    "lodge-cta-subtitle": "הבטיחו לעצמכם שהות אקסקלוסיבית ב-Gipfel Lodge וחוו חופשה ברמה הגבוהה ביותר.",
+    "gal-winter": "נוף חורפי",
+    "gal-summer": "נוף קיצי",
+    "gal-living": "סלון",
+    "gal-dining": "פינת אוכל",
+    "gal-kitchen": "מטבח",
+    "gal-bedroom": "חדר שינה",
+    "gal-bathroom": "חדר רחצה",
+    "gal-reading": "פינת קריאה",
+    "gal-entrance": "כניסה",
+    "gal-hallways": "מסדרונות",
+    "gal-terrace": "טרסה",
+    "gal-garage": "גראז׳",
+    "gal-bunkbed": "חדר עם מיטות קומתיים",
+    "gal-sauna": "סאונה",
+    "gal-ski-room": "חדר סקי",
+    "gal-sign": "ג׳יפפל לודג׳ אבן"
 });
 
 // NL
@@ -285,6 +375,21 @@ Object.assign(window.gipfelTranslations.nl, {
     "gallery-btn-photos": "Foto's",
     "gallery-btn-share": "Delen",
     "gallery-btn-favorite": "Favoriet",
-    "lodge-cta-title": "Klaar voor een uitstapje?",
-    "lodge-cta-subtitle": "Verzeker uzelf van uw exclusieve verblijf in de Gipfel Lodge en ervaar vakantie op het hoogste niveau."
+    "lodge-cta-subtitle": "Verzeker uzelf van uw exclusieve verblijf in de Gipfel Lodge en ervaar vakantie op het hoogste niveau.",
+    "gal-winter": "Winteruitzicht",
+    "gal-summer": "Zomeruitzicht",
+    "gal-living": "Woonkamer",
+    "gal-dining": "Eethoek",
+    "gal-kitchen": "Keuken",
+    "gal-bedroom": "Slaapkamer",
+    "gal-bathroom": "Badkamer",
+    "gal-reading": "Leeshoek",
+    "gal-entrance": "Entree",
+    "gal-hallways": "Gangen",
+    "gal-terrace": "Terras",
+    "gal-garage": "Garage",
+    "gal-bunkbed": "Stapelbedkamer",
+    "gal-sauna": "Sauna",
+    "gal-ski-room": "Skiruimte",
+    "gal-sign": "Gipfel Lodge Eben"
 });

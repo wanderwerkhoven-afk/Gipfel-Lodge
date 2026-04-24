@@ -63,7 +63,11 @@ Object.assign(window.gipfelTranslations.de, {
     "email-message": "NACHRICHT",
     "email-contact": "KONTAKT",
     "email-closing": "In der Zwischenzeit können Sie bereits von den wunderschönen Bildern der Lodge auf unserer Website träumen. Wir freuen uns darauf, Sie begrüßen zu dürfen!",
-    "email-visit-website": "Website Besuchen"
+    "email-visit-website": "Website Besuchen",
+    "price-original-prefix": "von",
+    "price-discounted-prefix": "jetzt für",
+    "price-basis": "auf Basis von {n} Personen",
+    "unit-discount": "Rabatt"
 });
 
 // EN
@@ -127,7 +131,11 @@ Object.assign(window.gipfelTranslations.en, {
     "email-message": "MESSAGE",
     "email-contact": "CONTACT",
     "email-closing": "In the meantime, you can already start dreaming with the beautiful images of the lodge on our website. We look forward to welcoming you!",
-    "email-visit-website": "Visit Website"
+    "email-visit-website": "Visit Website",
+    "price-original-prefix": "from",
+    "price-discounted-prefix": "now for",
+    "price-basis": "based on {n} persons",
+    "unit-discount": "Discount"
 });
 
 // NL
@@ -191,7 +199,11 @@ Object.assign(window.gipfelTranslations.nl, {
     "email-message": "BERICHT",
     "email-contact": "CONTACT",
     "email-closing": "In de tussentijd kun je alvast wegdromen bij de prachtige beelden van de lodge op onze website. We kijken ernaar uit je te verwelkomen!",
-    "email-visit-website": "Website Bezoeken"
+    "email-visit-website": "Website Bezoeken",
+    "price-original-prefix": "van",
+    "price-discounted-prefix": "nu voor",
+    "price-basis": "o.b.v. {n} personen",
+    "unit-discount": "Korting"
 });
 
 // FR
@@ -255,7 +267,11 @@ Object.assign(window.gipfelTranslations.fr, {
     "email-message": "MESSAGE",
     "email-contact": "CONTACT",
     "email-closing": "En attendant, vous pouvez déjà commencer à rêver avec les magnifiques images du lodge sur notre site. Nous avons hâte de vous accueillir !",
-    "email-visit-website": "Visitez le site web"
+    "email-visit-website": "Visitez le site web",
+    "price-original-prefix": "de",
+    "price-discounted-prefix": "maintenant pour",
+    "price-basis": "sur la base de {n} personnes",
+    "unit-discount": "Réduction"
 });
 
 // IT
@@ -312,7 +328,11 @@ Object.assign(window.gipfelTranslations.it, {
     "soon-title": "Disponibile a breve",
     "soon-text": "Stiamo ultimando questa pagina. Vuoi già pianificare il soggiorno? Controlla la disponibilità o contattaci.",
     "soon-btn-booking": "Controlla disponibilità",
-    "soon-btn-home": "Torna alla Home"
+    "soon-btn-home": "Torna alla Home",
+    "price-original-prefix": "da",
+    "price-discounted-prefix": "ora per",
+    "price-basis": "sulla base di {n} persone",
+    "unit-discount": "Sconto"
 });
 
 // PL
@@ -369,7 +389,11 @@ Object.assign(window.gipfelTranslations.pl, {
     "soon-title": "Wkrótce dostępne",
     "soon-text": "Pracujemy nad tą stroną. Chcesz już zaplanować pobyt? Sprawdź dostępność lub skontaktuj się z nami.",
     "soon-btn-booking": "Sprawdź dostępność",
-    "soon-btn-home": "Powrót do strony głównej"
+    "soon-btn-home": "Powrót do strony głównej",
+    "price-original-prefix": "z",
+    "price-discounted-prefix": "teraz za",
+    "price-basis": "na podstawie {n} osób",
+    "unit-discount": "Zniżka"
 });
 
 // HE
@@ -426,5 +450,9 @@ Object.assign(window.gipfelTranslations.he, {
     "soon-title": "בקרוב זמין",
     "soon-text": "אנחנו עובדים על הדף הזה. רוצים לתכנן את השהות כבר עכשיו? פנו אלינו ונשמח לעזור.",
     "soon-btn-booking": "בדוק זמינות",
-    "soon-btn-home": "חזרה לדף הבית"
+    "soon-btn-home": "חזרה לדף הבית",
+    "price-original-prefix": "מ-",
+    "price-discounted-prefix": "עכשיו ב-",
+    "price-basis": "מבוסס על {n} אנשים",
+    "unit-discount": "הנחה"
 });

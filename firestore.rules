@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper: Check if the authenticated user has 'superuser' role
+    function isAdmin() {
+      return request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superuser';
+    }
+
+    // [USERS] Only user themselves can read their profile; superuser has full access.
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // [PRICING & SETTINGS] Public can read for calculation; only Admin can edit.
+    match /pricing_versions/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /discount_presets/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // [METADATA] Counters for sequential IDs (e.g. Booking Numbers)
+    match /metadata/counters {
+      allow read, write: if true; 
+    }
+
+    // [BOOKINGS] Public reads for availability and writes for submitting new requests.
+    match /bookings/{bookingId} {
+      allow read: if true; // Public calendar needs to see booked/pending dates
+      allow create: if true; // Guests can submit booking forms
+      allow update, delete: if isAdmin(); // Only admins can manage bookings
+    }
+
+    // [LOGS] Only Admin can interact with audit logs.
+    match /audit_logs/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // DEFAULT: Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

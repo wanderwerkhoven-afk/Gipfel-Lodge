@@ -886,56 +886,62 @@ const GipfelBooking = {
         const nights = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         let rent = 0;
+        let originalRent = 0;
+        let totalDiscountAmount = 0;
         let tempDate = new Date(checkIn);
 
-        // Get minimum payable nights from the start date
+        // Get minimum payable nights from the start date (used for the whole duration)
         const startPriceObj = this.pricingData[this.selectedCheckIn];
         const minPayNights = (startPriceObj && startPriceObj.min_nachten_betalen) ? startPriceObj.min_nachten_betalen : 0;
 
         for (let i = 0; i < nights; i++) {
             const dateStr = this.formatDateLocal(tempDate);
             const dayPrice = this.pricingData[dateStr]?.dagprijs || 0;
-            rent += dayPrice;
+            
+            // Calculate days until arrival for THIS specific night
+            const diffNight = tempDate.getTime() - today.getTime();
+            const daysUntilNight = Math.max(0, Math.ceil(diffNight / (1000 * 60 * 60 * 24)));
+
+            let nightDiscountPercentage = 0;
+            if (this.activeDiscountPreset && this.activeDiscountPreset.tiers) {
+                const tiers = [...this.activeDiscountPreset.tiers].sort((a, b) => a.days - b.days);
+                const matchingTier = tiers.find(t => daysUntilNight <= t.days);
+                if (matchingTier) {
+                    nightDiscountPercentage = matchingTier.percentage;
+                }
+            }
+
+            const nightDiscountAmount = dayPrice * (nightDiscountPercentage / 100);
+            totalDiscountAmount += nightDiscountAmount;
+            originalRent += dayPrice;
+            rent += (dayPrice - nightDiscountAmount);
+            
             tempDate.setDate(tempDate.getDate() + 1);
         }
 
         // Apply minimum payable nights if stay is shorter
         if (nights > 0 && nights < minPayNights) {
-            const avgPrice = rent / nights;
-            rent = avgPrice * minPayNights;
+            const ratio = minPayNights / nights;
+            rent = rent * ratio;
+            originalRent = originalRent * ratio;
+            totalDiscountAmount = totalDiscountAmount * ratio;
         }
 
-        // --- APPLY LAST MINUTE DISCOUNT ---
-        let discountPercentage = 0;
-        let appliedDiscountName = "";
-        
-        if (this.activeDiscountPreset && this.activeDiscountPreset.tiers) {
-            // Find the correct discount tier based on daysUntilArrival.
-            // We sort tiers by days ASC and pick the first one where daysUntilArrival <= tier.days
-            const tiers = [...this.activeDiscountPreset.tiers].sort((a, b) => a.days - b.days);
-            const matchingTier = tiers.find(t => daysUntilArrival <= t.days);
-            if (matchingTier) {
-                discountPercentage = matchingTier.percentage;
-                appliedDiscountName = this.activeDiscountPreset.name;
-            }
-        }
-
-        const discountAmount = rent * (discountPercentage / 100);
-        const rentAfterDiscount = rent - discountAmount;
+        const effectiveDiscountPercentage = originalRent > 0 ? Math.round((totalDiscountAmount / originalRent) * 100) : 0;
 
         const cleaning = this.CLEANING_FEE;
         const bedLinen = chargeableGuests * this.BED_LINEN_FEE;
         const touristTax = chargeableGuests * nights * this.TOURIST_TAX_FEE;
         const mobilityFee = chargeableGuests * nights * this.MOBILITY_FEE;
         
-        const total = rentAfterDiscount + cleaning + bedLinen + touristTax + mobilityFee;
+        const total = rent + cleaning + bedLinen + touristTax + mobilityFee;
 
         return {
-            rent: rentAfterDiscount,
-            originalRent: rent,
-            discountAmount,
-            discountPercentage,
-            appliedDiscountName,
+            rent: rent,
+            originalRent: originalRent,
+            discountAmount: totalDiscountAmount,
+            discountPercentage: effectiveDiscountPercentage,
+            effectiveDiscountPercentage,
             cleaning,
             bedLinen,
             touristTax,
@@ -1181,11 +1187,32 @@ const GipfelBooking = {
             // Calculate base cost and show preview
             const costs = this.calculateCosts();
             if (costs && pricePreview) {
-                const formattedPrice = this.fmtEUR(costs.total);
-                let html = `Vanaf <span style="font-size: 1.25rem;">${formattedPrice}</span><br><span style="font-size: 0.75rem; font-weight: 400; opacity: 0.8;">o.b.v. ${costs.chargeableGuests} personen</span>`;
-                
-                if (costs.discountPercentage > 0) {
-                    html = `<span style="background: #c47e09; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; vertical-align: middle; margin-right: 8px;">-${costs.discountPercentage}% DEAL</span>` + html;
+                const t = (k) => window.i18n ? window.i18n.t(k) : k;
+
+                let html = '';
+                if (costs.effectiveDiscountPercentage > 0) {
+                    const originalTotal = costs.originalRent + costs.cleaning + costs.bedLinen + costs.touristTax + costs.mobilityFee;
+                    html = `
+                        <div class="price-preview-wrap">
+                            <div class="price-row-top">
+                                <span class="price-deal-badge">-${costs.effectiveDiscountPercentage}% ${t('unit-discount')}</span>
+                                <span class="price-original">${t('price-original-prefix')} ${this.fmtEUR(originalTotal)}</span>
+                            </div>
+                            <div class="price-now">
+                                ${t('price-discounted-prefix')} <strong>${this.fmtEUR(costs.total)}</strong>
+                            </div>
+                            <span class="price-per-person">${t('price-basis').replace('{n}', costs.chargeableGuests)}</span>
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="price-preview-wrap">
+                            <div class="price-now">
+                                ${t('cal-price-from')} ${this.fmtEUR(costs.total)}
+                            </div>
+                            <span class="price-per-person">${t('price-basis').replace('{n}', costs.chargeableGuests)}</span>
+                        </div>
+                    `;
                 }
                 
                 pricePreview.innerHTML = html;

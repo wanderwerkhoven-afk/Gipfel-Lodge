@@ -46,11 +46,8 @@ Object.assign(window.gipfelTranslations.de, {
     "act-card-2-p": "Entdecken Sie die schönsten Bergwege rund um Eben.",
     "act-card-3-t": "Sauna",
     "act-card-3-p": "Entspannung in Ihrer privaten Lodge-Sauna.",
-    "act-card-4-t": "Natur erleben",
     "act-card-4-p": "Die Alpen in ihrer ursprünglichsten Form erleben.",
-    "act-card-5-t": "Gastfreundschaft",
-    "act-card-5-p": "Gemütliche Abende auf der privaten Terrasse.",
-    "act-card-6-t": "Umgebung",
+    "act-card-6-t": "Aktivitäten",
     "act-card-6-p": "Zentral gelegen für zahlreiche Ausflüge.",
 
     "features-v3-title": "Alles für einen perfekten Aufenthalt",
@@ -62,6 +59,7 @@ Object.assign(window.gipfelTranslations.de, {
     "feat-6": "2 Parkplätze",
     "feat-7": "Balkon & Terrasse",
     "feat-8": "Warme alpine Atmosphäre",
+    "feat-9": "Frischer Brötchenservice (täglich frei Haus)",
 
     "loc-v3-label": "Lage",
     "loc-v3-title": "Perfekt gelegen in den Alpen",
@@ -82,7 +80,23 @@ Object.assign(window.gipfelTranslations.de, {
     "book-cta-v3-t": "Ihr Aufenthalt beginnt hier",
     "book-cta-v3-s": "Erleben Sie die perfekte Kombination aus Luxus, Natur und Komfort in der Gipfel Lodge.",
     "book-cta-v3-b1": "Verfügbarkeit",
-    "book-cta-v3-b2": "Jetzt buchen"
+    "book-cta-v3-b2": "Jetzt buchen",
+
+    "lodge-indeling-tag": "Wohnkonzept",
+    "lodge-indeling-title": "Raumaufteilung",
+    "lodge-indeling-subtitle": "Ein Zuhause auf drei Ebenen, durchdacht für Ihren Komfort.",
+    "lodge-ug": "Entspannung (UG)",
+    "lodge-ug-list-1": "Wellness-Suite mit Bad",
+    "lodge-ug-list-2": "Private Sauna",
+    "lodge-ug-list-3": "Skiraum & Technik",
+    "lodge-1og": "Schlafkomfort (1. OG)",
+    "lodge-1og-list-1": "3 edle Suiten",
+    "lodge-1og-list-2": "2 Designer-Bäder",
+    "lodge-1og-list-3": "Panorama-Terrasse",
+    "lodge-2og": "Genuss & Panorama (2. OG)",
+    "lodge-2og-list-1": "Offene Gourmet-Küche",
+    "lodge-2og-list-2": "Kamin-Lounge",
+    "lodge-2og-list-3": "Panorama-Balkon"
 });
 
 // FR
@@ -129,11 +143,8 @@ Object.assign(window.gipfelTranslations.fr, {
     "act-card-2-p": "Découvrez les plus beaux sentiers autour d’Eben.",
     "act-card-3-t": "Sauna",
     "act-card-3-p": "Détendez-vous dans votre sauna privé.",
-    "act-card-4-t": "Nature",
     "act-card-4-p": "Découvrez les Alpes dans leur forme la plus pure.",
-    "act-card-5-t": "Convivialité",
-    "act-card-5-p": "Profitez de soirées chaleureuses sur votre terrasse privée.",
-    "act-card-6-t": "Région",
+    "act-card-6-t": "Activités",
     "act-card-6-p": "Situation idéale pour toutes vos excursions.",
 
     "features-v3-title": "Tout pour un séjour parfait",
@@ -145,6 +156,7 @@ Object.assign(window.gipfelTranslations.fr, {
     "feat-6": "2 places de parking",
     "feat-7": "Balcon & terrasse",
     "feat-8": "Ambiance alpine chaleureuse",
+    "feat-9": "Service de pain frais (livré chaque matin)",
 
     "loc-v3-label": "Localisation",
     "loc-v3-title": "Idéalement situé dans les Alpes",
@@ -165,7 +177,23 @@ Object.assign(window.gipfelTranslations.fr, {
     "book-cta-v3-t": "Votre séjour commence ici",
     "book-cta-v3-s": "Découvrez l’alliance parfaite entre luxe, nature et confort au Gipfel Lodge.",
     "book-cta-v3-b1": "Disponibilités",
-    "book-cta-v3-b2": "Réserver"
+    "book-cta-v3-b2": "Réserver",
+
+    "lodge-indeling-tag": "Concept de vie",
+    "lodge-indeling-title": "Agencement de la maison",
+    "lodge-indeling-subtitle": "Une maison sur trois niveaux, conçue pour votre confort.",
+    "lodge-ug": "Détente (Sous-sol)",
+    "lodge-ug-list-1": "Suite bien-être avec salle de bain",
+    "lodge-ug-list-2": "Sauna privé",
+    "lodge-ug-list-3": "Local à skis & Technique",
+    "lodge-1og": "Confort de sommeil (1er étage)",
+    "lodge-1og-list-1": "3 suites de luxe",
+    "lodge-1og-list-2": "2 salles de bain design",
+    "lodge-1og-list-3": "Terrasse panoramique",
+    "lodge-2og": "Plaisir & Panorama (2ème étage)",
+    "lodge-2og-list-1": "Cuisine gastronomique ouverte",
+    "lodge-2og-list-2": "Salon avec cheminée",
+    "lodge-2og-list-3": "Balcon panoramique"
 });
 
 // IT
@@ -212,11 +240,8 @@ Object.assign(window.gipfelTranslations.it, {
     "act-card-2-p": "Scopri i più bei sentieri di montagna nei dintorni di Eben.",
     "act-card-3-t": "Sauna",
     "act-card-3-p": "Rilassati nella sauna privata del lodge.",
-    "act-card-4-t": "Natura",
     "act-card-4-p": "Vivi le Alpi nella loro forma più autentica.",
-    "act-card-5-t": "Ospitalità",
-    "act-card-5-p": "Goditi serate accoglienti sulla terrazza privata.",
-    "act-card-6-t": "Dintorni",
+    "act-card-6-t": "Attività",
     "act-card-6-p": "Posizione ideale per ogni tipo di escursione.",
 
     "features-v3-title": "Tutto per un soggiorno perfetto",
@@ -228,6 +253,7 @@ Object.assign(window.gipfelTranslations.it, {
     "feat-6": "2 posti auto",
     "feat-7": "Balcone & terrazza",
     "feat-8": "Atmosfera alpina calda",
+    "feat-9": "Servizio pane fresco (consegna ogni mattina)",
 
     "loc-v3-label": "Posizione",
     "loc-v3-title": "Posizione perfetta nelle Alpi",
@@ -248,7 +274,23 @@ Object.assign(window.gipfelTranslations.it, {
     "book-cta-v3-t": "Il vostro soggiorno inizia qui",
     "book-cta-v3-s": "Scoprite la perfetta combinazione di lusso, natura e comfort al Gipfel Lodge.",
     "book-cta-v3-b1": "Disponibilità",
-    "book-cta-v3-b2": "Prenota ora"
+    "book-cta-v3-b2": "Prenota ora",
+
+    "lodge-indeling-tag": "Concetto abitativo",
+    "lodge-indeling-title": "Disposizione della casa",
+    "lodge-indeling-subtitle": "Una casa su tre livelli, pensata per il vostro comfort.",
+    "lodge-ug": "Relax (Piano seminterrato)",
+    "lodge-ug-list-1": "Suite wellness con bagno",
+    "lodge-ug-list-2": "Sauna privata",
+    "lodge-ug-list-3": "Deposito sci & Area tecnica",
+    "lodge-1og": "Comfort del sonno (1° Piano)",
+    "lodge-1og-list-1": "3 suite eleganti",
+    "lodge-1og-list-2": "2 bagni di design",
+    "lodge-1og-list-3": "Terrazza panoramica",
+    "lodge-2og": "Gusto & Panorama (2° Piano)",
+    "lodge-2og-list-1": "Cuisine gourmet a vista",
+    "lodge-2og-list-2": "Lounge con camino",
+    "lodge-2og-list-3": "Balcone panoramico"
 });
 
 // EN
@@ -295,11 +337,8 @@ Object.assign(window.gipfelTranslations.en, {
     "act-card-2-p": "Discover the most beautiful mountain trails around Eben.",
     "act-card-3-t": "Sauna",
     "act-card-3-p": "Unwind in your private lodge sauna.",
-    "act-card-4-t": "Nature",
     "act-card-4-p": "Experience the Alps in their purest form.",
-    "act-card-5-t": "Hospitality",
-    "act-card-5-p": "Enjoy cozy evenings on your private terrace.",
-    "act-card-6-t": "Surroundings",
+    "act-card-6-t": "Activities",
     "act-card-6-p": "Perfectly located for all excursions.",
 
     "features-v3-title": "Everything for a perfect stay",
@@ -311,6 +350,7 @@ Object.assign(window.gipfelTranslations.en, {
     "feat-6": "2 parking spaces",
     "feat-7": "Balcony & terrace",
     "feat-8": "Warm alpine atmosphere",
+    "feat-9": "Fresh bread service (delivered daily)",
 
     "loc-v3-label": "Location",
     "loc-v3-title": "Perfectly located in the Alps",
@@ -331,7 +371,23 @@ Object.assign(window.gipfelTranslations.en, {
     "book-cta-v3-t": "Your stay starts here",
     "book-cta-v3-s": "Experience the perfect combination of luxury, nature and comfort at Gipfel Lodge.",
     "book-cta-v3-b1": "Availability",
-    "book-cta-v3-b2": "Book now"
+    "book-cta-v3-b2": "Book now",
+
+    "lodge-indeling-tag": "Living Concept",
+    "lodge-indeling-title": "House Layout",
+    "lodge-indeling-subtitle": "A home on three levels, designed for your comfort.",
+    "lodge-ug": "Relaxation (Lower Ground)",
+    "lodge-ug-list-1": "Wellness suite with bathroom",
+    "lodge-ug-list-2": "Private sauna",
+    "lodge-ug-list-3": "Ski room & Technical area",
+    "lodge-1og": "Sleeping Comfort (1st Floor)",
+    "lodge-1og-list-1": "3 luxury suites",
+    "lodge-1og-list-2": "2 designer bathrooms",
+    "lodge-1og-list-3": "Panoramic terrace",
+    "lodge-2og": "Enjoyment & Panorama (2nd Floor)",
+    "lodge-2og-list-1": "Open gourmet kitchen",
+    "lodge-2og-list-2": "Fireplace lounge",
+    "lodge-2og-list-3": "Panoramic balcony"
 });
 
 // PL
@@ -378,11 +434,8 @@ Object.assign(window.gipfelTranslations.pl, {
     "act-card-2-p": "Odkryj najpiękniejsze szlaki górskie w okolicy Eben.",
     "act-card-3-t": "Sauna",
     "act-card-3-p": "Zrelaksuj się w prywatnej saunie w lodge.",
-    "act-card-4-t": "Natura",
     "act-card-4-p": "Poznaj Alpy w ich najczystszej formie.",
-    "act-card-5-t": "Gościnność",
-    "act-card-5-p": "Spędzaj przytulne wieczory na prywatnym tarasie.",
-    "act-card-6-t": "Okolica",
+    "act-card-6-t": "Atrakcje",
     "act-card-6-p": "Idealna lokalizacja na różnorodne wycieczki.",
 
     "features-v3-title": "Wszystko dla idealnego pobytu",
@@ -394,6 +447,7 @@ Object.assign(window.gipfelTranslations.pl, {
     "feat-6": "2 miejsca parkingowe",
     "feat-7": "Balkon i taras",
     "feat-8": "Ciepła alpejska atmosfera",
+    "feat-9": "Serwis świeżego pieczywa (dostawa każdego ranka)",
 
     "loc-v3-label": "Lokalizacja",
     "loc-v3-title": "Idealna lokalizacja w Alpach",
@@ -414,7 +468,23 @@ Object.assign(window.gipfelTranslations.pl, {
     "book-cta-v3-t": "Twój pobyt zaczyna się tutaj",
     "book-cta-v3-s": "Doświadcz idealnego połączenia luksusu, natury i komfortu w Gipfel Lodge.",
     "book-cta-v3-b1": "Dostępność",
-    "book-cta-v3-b2": "Zarezerwuj teraz"
+    "book-cta-v3-b2": "Zarezerwuj teraz",
+
+    "lodge-indeling-tag": "Koncepcja mieszkalna",
+    "lodge-indeling-title": "Rozkład domu",
+    "lodge-indeling-subtitle": "Dom na trzech poziomach, zaprojektowany dla Twojej wygody.",
+    "lodge-ug": "Relaks (Parter/Piwnica)",
+    "lodge-ug-list-1": "Apartament wellness z łazienką",
+    "lodge-ug-list-2": "Prywatna sauna",
+    "lodge-ug-list-3": "Narciarnia i pomieszczenie techniczne",
+    "lodge-1og": "Komfort snu (1. piętro)",
+    "lodge-1og-list-1": "3 luksusowe apartamenty",
+    "lodge-1og-list-2": "2 designerskie łazienki",
+    "lodge-1og-list-3": "Taras panoramiczny",
+    "lodge-2og": "Czysta przyjemność i panorama (2. piętro)",
+    "lodge-2og-list-1": "Otwarta kuchnia dla smakoszy",
+    "lodge-2og-list-2": "Salon z kominkiem",
+    "lodge-2og-list-3": "Balkon panoramiczny"
 });
 
 // HE (Hebrew) #dir="rtl"
@@ -461,11 +531,8 @@ Object.assign(window.gipfelTranslations.he, {
     "act-card-2-p": "גלו את מסלולי ההרים היפים ביותר באזור Eben.",
     "act-card-3-t": "סאונה",
     "act-card-3-p": "הירגעו בסאונה הפרטית שלכם בלודג׳.",
-    "act-card-4-t": "טבע",
     "act-card-4-p": "חוו את האלפים במלוא עוצמתם.",
-    "act-card-5-t": "אירוח",
-    "act-card-5-p": "ערבים נעימים במרפסת הפרטית.",
-    "act-card-6-t": "הסביבה",
+    "act-card-6-t": "פעילויות",
     "act-card-6-p": "מיקום מרכזי לכל סוגי הטיולים.",
 
     "features-v3-title": "הכול לשהות מושלמת",
@@ -477,6 +544,7 @@ Object.assign(window.gipfelTranslations.he, {
     "feat-6": "2 מקומות חניה",
     "feat-7": "מרפסת וטרסה",
     "feat-8": "אווירה אלפינית חמימה",
+    "feat-9": "שירות לחמניות טריות (משלוח כל בוקר)",
 
     "loc-v3-label": "מיקום",
     "loc-v3-title": "מיקום מושלם באלפים",
@@ -497,7 +565,23 @@ Object.assign(window.gipfelTranslations.he, {
     "book-cta-v3-t": "השהות שלכם מתחילה כאן",
     "book-cta-v3-s": "חוו את השילוב המושלם של יוקרה, טבע ונוחות ב-Gipfel Lodge.",
     "book-cta-v3-b1": "זמינות",
-    "book-cta-v3-b2": "הזמינו עכשיו"
+    "book-cta-v3-b2": "הזמינו עכשיו",
+
+    "lodge-indeling-tag": "קונספט מגורים",
+    "lodge-indeling-title": "פריסת הבית",
+    "lodge-indeling-subtitle": "בית בשלושה מפלסים, המעוצב לנוחותכם.",
+    "lodge-ug": "רגיעה (קומת מרתף)",
+    "lodge-ug-list-1": "סוויטת וולנס עם חדר רחצה",
+    "lodge-ug-list-2": "סאונה פרטית",
+    "lodge-ug-list-3": "חדר סקי ואזור טכני",
+    "lodge-1og": "נוחות שינה (קומה 1)",
+    "lodge-1og-list-1": "3 סוויטות יוקרתיות",
+    "lodge-1og-list-2": "2 חדרי רחצה מעוצבים",
+    "lodge-1og-list-3": "מרפסת פנורמית",
+    "lodge-2og": "הנאה ופנורמה (קומה 2)",
+    "lodge-2og-list-1": "מטבח גורמה פתוח",
+    "lodge-2og-list-2": "טרקלין עם אח",
+    "lodge-2og-list-3": "מרפסת פנורמית"
 });
 
 // NL
@@ -544,11 +628,8 @@ Object.assign(window.gipfelTranslations.nl, {
     "act-card-2-p": "Ontdek de mooiste bergroutes rondom Eben.",
     "act-card-3-t": "Sauna",
     "act-card-3-p": "Ontspanning in uw privé lodge sauna.",
-    "act-card-4-t": "Natuurbeleving",
     "act-card-4-p": "Ervaar de Alpen in hun puurste vorm.",
-    "act-card-5-t": "Gastvrijheid",
-    "act-card-5-p": "Gezellige avonden op het privéterras.",
-    "act-card-6-t": "Omgeving",
+    "act-card-6-t": "Activiteiten",
     "act-card-6-p": "Centraal gelegen voor alle uitstapjes.",
 
     "features-v3-title": "Alles voor een perfect verblijf",
@@ -560,6 +641,7 @@ Object.assign(window.gipfelTranslations.nl, {
     "feat-6": "2 parkeerplaatsen",
     "feat-7": "Balkon & terras",
     "feat-8": "Warme alpiene sfeer",
+    "feat-9": "Verse broodjesservice (elke ochtend aan huis)",
 
     "loc-v3-label": "Locatie",
     "loc-v3-title": "Perfect gelegen in de Alpen",
@@ -580,5 +662,21 @@ Object.assign(window.gipfelTranslations.nl, {
     "book-cta-v3-t": "Uw verblijf begint hier",
     "book-cta-v3-s": "Ervaar de perfecte combinatie van luxe, natuur en comfort in Gipfel Lodge.",
     "book-cta-v3-b1": "Beschikbaarheid",
-    "book-cta-v3-b2": "Boek direct"
+    "book-cta-v3-b2": "Boek direct",
+
+    "lodge-indeling-tag": "Woonconcept",
+    "lodge-indeling-title": "Indeling woning",
+    "lodge-indeling-subtitle": "Een huis op drie niveaus, ontworpen voor uw comfort.",
+    "lodge-ug": "Ontspanning (Souterrain)",
+    "lodge-ug-list-1": "Wellness-suite met bad",
+    "lodge-ug-list-2": "Privé sauna",
+    "lodge-ug-list-3": "Skiruim & Techniek",
+    "lodge-1og": "Slaapcomfort (1e verdieping)",
+    "lodge-1og-list-1": "3 luxe suites",
+    "lodge-1og-list-2": "2 designer badkamers",
+    "lodge-1og-list-3": "Panoramisch terras",
+    "lodge-2og": "Genot & Panorama (2e verdieping)",
+    "lodge-2og-list-1": "Open gastronomische keuken",
+    "lodge-2og-list-2": "Open haard lounge",
+    "lodge-2og-list-3": "Panoramisch balkon"
 });

@@ -65,6 +65,8 @@ function reInitPageContent(pageId) {
         window.SeasonsPage.init(true);
     } else if (pageId === 'booking' && window.GipfelBooking) {
         window.GipfelBooking.init();
+    } else if (pageId === 'enjoyment' && window.EnjoymentPage) {
+        window.EnjoymentPage.init();
     }
 
     // Global components re-scan

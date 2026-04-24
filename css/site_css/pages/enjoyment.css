@@ -1,0 +1,150 @@
+/* =========================================================
+   ENJOYMENT PAGE - REDESIGN (UNIFORM WITH ACTIVITIES)
+   ========================================================= */
+
+/* THEME: ENJOYMENT (Warm Culinary Palette) */
+#enjoyment-page {
+  --theme-bg: #FAF9F6;
+  --theme-text: #20303D;
+  --theme-muted: #5D6D70;
+  --theme-primary: #8B5E3C; /* Old Wood */
+  --theme-heading: #20303D; /* Deep Slate */
+  --theme-accent: #C5A059;  /* Brushed Gold */
+  --theme-shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+  --theme-shadow-lg: 0 24px 48px -12px rgba(0,0,0,0.12);
+  --theme-card-bg: #ffffff;
+  --theme-foot-bg: #1a2530;
+  
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+/* Reusing .mega-* patterns from seizoenen.css */
+
+.enjoyment-hero {
+    position: relative;
+    height: 80vh;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary);
+    overflow: hidden;
+    color: var(--color-white);
+    text-align: center;
+}
+
+.enjoyment-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    transition: transform 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.enjoyment-hero:hover .enjoyment-hero-bg {
+    transform: scale(1.05);
+}
+
+.enjoyment-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, var(--theme-bg) 100%);
+    z-index: 2;
+}
+
+.enjoyment-hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 900px;
+    padding-top: 60px;
+}
+
+.enjoyment-hero-title {
+    font-size: var(--h1-size);
+    margin-bottom: 24px;
+    line-height: 1.1;
+    text-shadow: 0 4px 16px rgba(0,0,0,0.6);
+}
+
+.enjoyment-hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    margin-bottom: 40px;
+    opacity: 0.95;
+    font-weight: 300;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* MEGA SUBNAV - CULINARY OVERRIDE */
+.enjoyment-subnav {
+    position: sticky;
+    top: var(--header-height);
+    background: var(--theme-bg);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.enjoyment-subnav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    height: 60px;
+    gap: 40px;
+}
+
+.enjoyment-subnav a {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    color: var(--theme-muted);
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+.enjoyment-subnav a.active {
+    color: var(--theme-accent);
+}
+
+.enjoyment-subnav a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--theme-accent);
+}
+
+/* MEGA GRID OVERRIDES */
+.mega-grid.enjoyment-grid {
+    padding-bottom: 80px;
+}
+
+/* ITINERARY OVERRIDES */
+.culinary-itinerary {
+    background-color: #F3ECE2; /* Slightly warmer background for culinary day */
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .enjoyment-hero {
+        height: 70vh;
+    }
+    
+    .enjoyment-subnav ul {
+        gap: 20px;
+        padding: 0 20px;
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+}
