@@ -2126,7 +2126,8 @@
       </div>
       <div style="text-align: right;">
         <h3 class="footer-title" data-i18n="footer-follow">Volg ons</h3>
-        <p><a href="https://www.instagram.com/gipfellodge?igsh=MTZweDkxd2hqNGN6dg==" target="_blank">Instagram</a> | <a href="#">Facebook</a></p>
+        <p><a href="https://www.instagram.com/gipfellodge?igsh=MTZweDkxd2hqNGN6dg==" target="_blank">Instagram</a> | <a
+            href="#">Facebook</a></p>
       </div>
     </div>
     <div class="container footer-bottom">
@@ -2214,7 +2215,7 @@
         import('./js/site_js/utils/analytics.js').then(async (m) => {
           try {
             await m.Analytics.logPageView('booking-click');
-          } catch(e) {}
+          } catch (e) { }
           window.open(EXTERNAL_BOOKING_URL, '_blank', 'noopener,noreferrer');
         }).catch(err => {
           console.warn('Analytics failed, redirecting anyway', err);
