@@ -112,6 +112,11 @@
                         <i class="ph ph-cards"></i> Boekingskaarten
                     </li>
 
+                    <li class="nav-group-title">WEBSITE CONTENT</li>
+                    <li id="nav-galleries-desktop" class="nav-item" onclick="switchView('galleries-view', this)">
+                        <i class="ph ph-image"></i> Galerijen Beheren
+                    </li>
+
                     <li class="nav-group-title">FINANCIEN</li>
                     <li id="nav-bank-desktop" class="nav-item"
                         onclick="switchView('bank-view', this)">
@@ -375,6 +380,76 @@
                                     <!-- Logs populated here -->
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GALLERIES VIEW -->
+                <style>
+                    #galleries-view.active {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                </style>
+                <div id="galleries-view" class="dashboard-view" style="height: 100%;">
+                    <div class="page-header" style="flex-shrink: 0; position: relative;">
+                        <h1>Galerijen Beheren</h1>
+                        <p>Sleep afbeeldingen vanuit de bibliotheek naar de website-zones.</p>
+                        <div style="position: absolute; right: 0; top: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                            <div style="display: flex; gap: 10px;">
+                                <button id="galleries-refresh-btn" class="eb2-action-btn eb2-btn-secondary" onclick="refreshImages()">
+                                    <i class="ph ph-arrows-clockwise"></i> Haal afbeeldingen op
+                                </button>
+                                <button id="galleries-save-btn" class="eb2-action-btn eb2-btn-primary" onclick="saveGalleryConfig()">
+                                    <i class="ph ph-floppy-disk"></i> Wijzigingen Opslaan
+                                </button>
+                            </div>
+                            <div style="font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 5px; background: #f8fafc; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                <span style="font-family: monospace; color: #0f172a;">node build-images-index.js</span>
+                                <button onclick="navigator.clipboard.writeText('node build-images-index.js'); showToast('Gekopieerd!', 'Commando naar klembord gekopieerd. Plak en run dit in de terminal.', 'success');" style="background: none; border: none; color: var(--color-gold); cursor: pointer; padding: 0 4px;" title="Kopieer commando">
+                                    <i class="ph ph-copy"></i> Kopieer commando
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="gallery-pages-container" style="display: flex; gap: 10px; margin-top: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                        <!-- Page tabs rendered here -->
+                    </div>
+
+                    <div id="gallery-zones-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px 0;">
+                        <!-- Zones rendered here based on active page -->
+                    </div>
+
+                    <!-- INLINE EDITOR (Replaces zones view when editing a zone) -->
+                    <div id="gallery-editor-container" style="display: none; flex-direction: column; padding: 20px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 id="gallery-editor-title" style="margin: 0;">Zone Aanpassen</h2>
+                            <button class="eb2-action-btn eb2-btn-secondary" onclick="closeGalleryEditor()">
+                                <i class="ph ph-arrow-left"></i> Terug naar overzicht
+                            </button>
+                        </div>
+                        
+                        <div style="display: flex; gap: 30px; align-items: flex-start;">
+                            <!-- Left: Selected Images -->
+                            <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                                <h3 style="margin: 0 0 5px 0; font-size: 1.1rem;"><i class="ph ph-check-square"></i> Geselecteerde Afbeeldingen</h3>
+                                <p style="margin: 0 0 20px 0; font-size: 0.85rem; color: #64748b;" id="gallery-editor-count">0 foto's (Sleep om te ordenen)</p>
+                                
+                                <div id="gallery-editor-selected" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+                                    <!-- Selected images -->
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Library (2 columns) -->
+                            <div style="flex: 1; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                                <h3 style="margin: 0 0 5px 0; font-size: 1.1rem;"><i class="ph ph-folder-open"></i> Bibliotheek</h3>
+                                <input type="text" placeholder="Zoek op bestandsnaam..." oninput="filterImageLibrary(this.value)" style="width: 100%; padding: 10px 15px; margin-bottom: 20px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                
+                                <div id="gallery-editor-library" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <!-- Library images -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1167,6 +1242,7 @@
     <script src="js/admin_js/admin-pricing.js"></script>
     <script src="js/admin_js/admin-invoices.js"></script>
     <script src="js/admin_js/admin-behavior.js"></script>
+    <script src="js/admin_js/admin-galleries.js"></script>
     <!-- Toast Notification Container -->
     <div id="eb-toast-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
 

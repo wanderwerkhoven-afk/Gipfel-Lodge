@@ -31,6 +31,13 @@ Write-Host "  GIPFEL LODGE - BUILD SCRIPT" -ForegroundColor Magenta
 Write-Host "=============================================" -ForegroundColor Magenta
 
 # =============================================================
+# 0. GENEREER IMAGE INDEX
+# =============================================================
+Write-Step "Genereren van image index (images.json)..."
+node "$Root\build-images-index.js"
+Write-Ok "Image index succesvol gegenereerd."
+
+# =============================================================
 # 1. SITEGROUND_UPLOAD - Publieke website
 # =============================================================
 if (-not $BeheerOnly) {
@@ -137,6 +144,11 @@ Sitemap: https://gipfellodge.com/sitemap.xml
         Write-Ok "Geen gevoelige data gevonden in siteground_upload/"
     }
 
+    # -- PHP Scripts --
+    Write-Step "Kopieren van PHP scripts..."
+    Copy-Item "$Root\list-images.php" "$Dist\list-images.php" -ErrorAction SilentlyContinue
+    Write-Ok "list-images.php"
+
     Write-Host "`n[DONE] siteground_upload/ klaar!" -ForegroundColor Green
     Write-Host "   Upload de inhoud van siteground_upload/ naar SiteGround public_html" -ForegroundColor White
 }
@@ -181,11 +193,19 @@ Write-Ok "css/admin_css/ + css/site_css/"
 Copy-Item "$Root\templates" "$Beheer\templates" -Recurse
 Write-Ok "templates/ (alle e-mailsjablonen)"
 
+# -- Assets (afbeeldingen, iconen voor weergave in galerij) --
+Copy-Item "$Root\assets" "$Beheer\assets" -Recurse
+Write-Ok "assets/ (afbeeldingen voor galerijweergave)"
+
 # -- Favicon admin --
 $beheerManifest = Join-Path $Beheer "site_manifest\favicon_admin"
 New-Item -ItemType Directory -Path $beheerManifest -Force | Out-Null
 Copy-Item "$Root\site_manifest\favicon_admin\*" $beheerManifest -Recurse
 Write-Ok "site_manifest/favicon_admin/"
+
+# -- PHP Scripts --
+Copy-Item "$Root\list-images.php" "$Beheer\list-images.php" -ErrorAction SilentlyContinue
+Write-Ok "list-images.php"
 
 # -- README voor beheer --
 Copy-Item "$Root\beheer\README.md" "$Beheer\README.md" -ErrorAction SilentlyContinue

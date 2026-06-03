@@ -724,7 +724,7 @@
         <div class="floor-layout-grid">
           <div class="floor-card reveal">
             <div class="floor-card-img">
-              <div class="mini-carousel">
+              <div class="mini-carousel" id="lodge-mini-ug">
                 <img src="assets/images/Foto-collage-woning/sauna-2.jpg" alt="Sauna 2" class="active">
                 <img src="assets/images/Foto-collage-woning/entrancehall-estatic.jpg" alt="Entrance Hall Estatic">
                 <img src="assets/images/Foto-collage-woning/entrancehall.jpg" alt="Entrance Hall">
@@ -748,7 +748,7 @@
           </div>
           <div class="floor-card reveal" style="transition-delay: 0.1s;">
             <div class="floor-card-img">
-              <div class="mini-carousel">
+              <div class="mini-carousel" id="lodge-mini-1og">
                 <img src="assets/images/Foto-collage-woning/bedroom-2.jpg" alt="Bedroom 2" class="active">
                 <img src="assets/images/Foto-collage-woning/bathroom-2.jpg" alt="Bathroom 2">
                 <img src="assets/images/Foto-collage-woning/bedroom-3.jpg" alt="Bedroom 3">
@@ -771,7 +771,7 @@
           </div>
           <div class="floor-card reveal" style="transition-delay: 0.2s;">
             <div class="floor-card-img">
-              <div class="mini-carousel">
+              <div class="mini-carousel" id="lodge-mini-2og">
                 <img src="assets/images/Foto-collage-woning/Kitchen-1.jpg" alt="Kitchen 1" class="active">
                 <img src="assets/images/Foto-collage-woning/readingcorner.jpg" alt="Reading Corner">
                 <img src="assets/images/Foto-collage-woning/diningtable-estatic.jpg" alt="Dining Table Estatic">
@@ -2175,6 +2175,8 @@
   </script>
 
   <!-- 3.2 COMPONENTS -->
+  <!-- Dynamic Gallery Loader — must run BEFORE carousel init -->
+  <script type="module" src="js/site_js/utils/gallery-loader.js"></script>
   <script src="js/site_js/components/hero-carousel.js"></script>
   <script src="js/site_js/components/gallery-carousel.js"></script>
   <script src="js/site_js/components/lightbox.js"></script>

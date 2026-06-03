@@ -17,6 +17,22 @@ const LodgePage = {
         if (!this.isInitialized) {
             this.setupShare();
             this.setupFavorite();
+            if (window.GalleryCarousel) {
+                window.GalleryCarousel.init();
+            }
+
+            // Listen for dynamic gallery injections
+            document.addEventListener('galleriesUpdated', () => {
+                if (window.GalleryCarousel) window.GalleryCarousel.init();
+                LodgePage.setupMiniCarousels();
+                if (window.GipfelScroll) window.GipfelScroll.init();
+                // Re-init the top photo strip with the newly injected images
+                LodgePage.scrollContainer = null;
+                LodgePage.galleryGrid = null;
+                LodgePage.items = [];
+                LodgePage.setupGallery();
+            });
+
             this.setupGallery();
             this.setupMiniCarousels();
             
