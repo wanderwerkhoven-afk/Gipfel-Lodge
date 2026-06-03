@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uw Factuur — Gipfel Lodge</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-gold: #C5A059;
+            --color-slate: #1e293b;
+            --bg-page: #f8fafc;
+        }
+
+        /* =============================================
+           PRINT RULES — These take over when Ctrl+P is pressed.
+           @page sets A4 paper with 15mm margins.
+           The invoice naturally fills the full page at 100% scale.
+        ============================================= */
+        @page {
+            size: A4 portrait;
+            margin: 15mm;
+        }
+
+        @media print {
+            html, body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+
+            /* Hide the top bar and status area when printing */
+            .action-bar { display: none !important; }
+            .status-container { display: none !important; }
+
+            /* The invoice fills the full printable area defined by @page margins */
+            #invoice-viewer {
+                width: 100% !important;     /* Fill the 180mm content area (210mm - 2x15mm) */
+                margin: 0 !important;
+                padding: 0 !important;      /* @page margins handle the spacing */
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 1 !important;         /* Reset screen zoom — @page handles real-world sizing */
+                display: block !important;
+                min-height: auto !important; /* CRITICAL: prevent blank second page */
+                height: auto !important;     /* Only as tall as the actual content */
+            }
+
+            /* Also reset body min-height */
+            body {
+                min-height: auto !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ACTION BAR */
+        .action-bar {
+            width: 100%;
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+        }
+
+        .action-container {
+            width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .btn-download {
+            background-color: var(--color-gold);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
+        }
+
+        /* CONTENT */
+        #invoice-viewer {
+            margin: 40px auto;
+            background: white;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+            width: 794px; /* Exact 210mm @ 96dpi */
+            padding: 15mm; /* Premium Margins */
+            box-sizing: border-box;
+            min-height: 1123px;
+            overflow: visible;
+            position: relative;
+        }
+
+        .invoice-container {
+            width: 100%;
+            margin: 0;
+            position: relative;
+        }
+
+        /* HEADER */
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 50px; /* Increased from 30px */
+        }
+
+        .logo-container {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: left;
+            width: 50%;
+        }
+
+        .logo-container svg {
+            width: 110px;
+            height: auto;
+            color: var(--color-dark);
+        }
+
+        .invoice-title {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: right;
+            width: 50%;
+        }
+
+        /* Prevent the double HTML structure from breaking things */
+        #invoice-viewer div, 
+        #invoice-viewer p, 
+        #invoice-viewer h1, 
+        #invoice-viewer h3, 
+        #invoice-viewer table {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        /* LOADING & ERRORS */
+        .status-container {
+            margin: 100px auto;
+            text-align: center;
+            width: 500px;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .error-technical {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 25px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            word-break: break-all;
+            text-align: left;
+            font-family: monospace;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--color-gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 850px) {
+            #invoice-viewer {
+                width: 95vw;
+                zoom: 0.5;
+            }
+            .action-container { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="action-bar" id="action-bar" style="display:none;">
+        <div class="action-container">
+            <div style="font-weight: 700; color: var(--color-slate);">GIPFEL <span style="color: var(--color-gold);">LODGE</span> — Factuur</div>
+            <button class="btn-download" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Afdrukken / Opslaan als PDF
+            </button>
+        </div>
+    </div>
+
+    <div id="status-area" class="status-container">
+        <div class="loader" id="main-loader"></div>
+        <h2 id="status-msg">Uw factuur wordt klaargezet...</h2>
+    </div>
+
+    <div id="invoice-viewer" style="display:none;">
+        <!-- CONTENT FROM GENERATOR -->
+    </div>
+
+    <script type="module">
+        import { db, doc, getDoc } from './js/site_js/core/firebase.js';
+        import { InvoiceGenerator } from './js/utils/invoiceGenerator.js';
+
+        const statusArea = document.getElementById('status-area');
+        const statusMsg = document.getElementById('status-msg');
+        const loader = document.getElementById('main-loader');
+        const invoiceViewer = document.getElementById('invoice-viewer');
+
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const token = urlParams.get('token');
+
+            if (!id || !token) {
+                showError("Ongeldige link. Controleer de link in uw email.", "URL parameters 'id' of 'token' ontbreken.");
+                return;
+            }
+
+            try {
+                // 1. Fetch data from Firestore
+                const snap = await getDoc(doc(db, "bookings", id));
+                if (!snap.exists()) {
+                    showError("Factuur niet gevonden.", "Boeking " + id + " niet gevonden in Database.");
+                    return;
+                }
+
+                const data = snap.data();
+
+                // 2. Security Check: Token MUST match
+                if (data.secretToken !== token) {
+                    showError("Geen toegang tot deze factuur.", "Token onjuist of verlopen.");
+                    return;
+                }
+
+                // 3. Fetch the HTML template
+                const templateResp = await fetch('templates/invoice_template.html');
+                if (!templateResp.ok) throw new Error("Template bestand niet gevonden (status: " + templateResp.status + ")");
+                const templateHTML = await templateResp.text();
+
+                // 4. Generate fully populated HTML
+                const html = InvoiceGenerator.generateHTML(data, templateHTML);
+                
+                // 5. Update UI
+                invoiceViewer.innerHTML = html;
+                statusArea.style.display = 'none';
+                invoiceViewer.style.display = 'block';
+                document.getElementById('action-bar').style.display = 'flex';
+                // Store ID for download filename
+                window.currentInvoiceId = id;
+
+            } catch (err) {
+                console.error("Error loading invoice:", err);
+                showError("Er is een fout opgetreden bij het laden van de gegevens.", err.message || err.toString());
+            }
+        }
+
+        function showError(msg, technicalErr = "") {
+            loader.style.display = 'none';
+            statusMsg.innerText = msg;
+            statusMsg.style.color = '#e74c3c';
+            
+            if (technicalErr) {
+                const errBox = document.createElement('div');
+                errBox.className = 'error-technical';
+                errBox.innerText = "Technische details: " + technicalErr;
+                statusArea.appendChild(errBox);
+                console.error("Invoice Error:", technicalErr);
+            }
+        }
+
+
+        init();
+    </script>
+</body>
+</html>

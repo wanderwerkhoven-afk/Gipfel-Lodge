@@ -1,0 +1,698 @@
+/* =========================================================================
+   WINTER IN EBEN - LANDING PAGE STYLES
+   Focus on: Winterse Luxe, Sneeuw, Hout, Kaarslicht, Contrast
+========================================================================= */
+
+:root {
+  --season-bg: #FDFDFA;           /* Sneeuw wit / Crème */
+  --season-text: #333333;         /* Antraciet */
+  --season-muted: #6b6b6b;
+  --season-green: #1a2a21;        /* Diep dennen groen */
+  --season-wood: #865E3C;         /* Warm bruin/hout */
+  --season-gold: #c29d60;         /* Zacht goud als accent */
+  
+  --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.06);
+  --shadow-md: 0 12px 24px -6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 30px 60px -15px rgba(26,42,33,0.15); /* Greenish dark shadow */
+}
+
+.winter-landing {
+  background-color: var(--season-bg);
+  color: var(--season-text);
+  font-family: var(--font-body);
+}
+
+.winter-landing .topbar {
+  background-color: var(--color-primary); /* Keep brand consistency */
+}
+
+/* ================= HERO ================= */
+.season-hero {
+  position: relative;
+  height: 90vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.season-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%; /* Parallax illusion */
+  object-fit: cover;
+  z-index: 0;
+  transform: translateY(0);
+}
+
+.season-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(26,37,48,0.7) 0%, rgba(26,37,48,0.3) 50%, rgba(253,253,250,0.98) 100%);
+  z-index: 1;
+}
+
+.season-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  padding-top: 100px; /* Offset for Header */
+  max-width: 900px;
+}
+
+.season-hero-tag {
+  color: var(--season-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.season-hero-content h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 400;
+  margin-bottom: 24px;
+  line-height: 1.1;
+  text-shadow: 0 8px 24px rgba(0,0,0,0.4); /* Stronger shadow for bright snow backgrounds */
+}
+
+.season-hero-sub {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  line-height: 1.6;
+  max-width: 750px;
+  margin: 0 auto 40px auto;
+  color: rgba(255,255,255,0.95);
+  font-weight: 300;
+}
+
+.season-hero-ctas {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Base button adaptations for Hero */
+.winter-landing .btn-primary {
+  background: var(--season-wood);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 14px 32px;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(134, 94, 60, 0.4);
+}
+
+.winter-landing .btn-primary:hover {
+  background: #6e4b2e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(134, 94, 60, 0.5);
+}
+
+.act-btn-ghost {
+  display: inline-block;
+  background: rgba(0,0,0,0.2);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+  padding: 14px 32px;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.act-btn-ghost:hover {
+  background: white;
+  color: var(--season-text);
+}
+
+
+/* ================= SUBNAV (Sticky) ================= */
+.season-subnav {
+  position: sticky;
+  top: 80px; /* Under the main header */
+  background: rgba(253,253,250,0.95);
+  backdrop-filter: blur(10px);
+  color: var(--season-muted);
+  z-index: 100;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.season-subnav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0;
+  height: 60px;
+  gap: 40px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.season-subnav a {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  color: var(--season-text);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.season-subnav a:hover, .season-subnav a.active {
+  color: var(--season-wood);
+}
+
+.season-subnav a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--season-wood);
+}
+
+
+/* ================= INTRO (WHY EBEN) ================= */
+.season-intro {
+  padding-top: 100px;
+  padding-bottom: 80px;
+}
+
+.season-intro-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+@media (max-width: 991px) {
+  .season-intro-split {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.section-tag {
+  color: var(--season-wood);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.season-intro-text h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  color: var(--season-green);
+  margin-bottom: 24px;
+}
+
+.season-intro-text p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--season-text);
+  font-weight: 300;
+}
+
+.season-intro-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.badge-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.badge-card:hover {
+  transform: translateX(5px);
+  box-shadow: var(--shadow-md);
+  border-left-color: var(--season-wood);
+}
+
+.badge-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--season-wood);
+  flex-shrink: 0;
+}
+
+.badge-card span {
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--season-text);
+}
+
+
+/* ================= FILTER MODULE ================= */
+.season-filter-section {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+.season-filter-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.season-filter-header h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  color: var(--season-green);
+}
+
+.season-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.filter-btn {
+  background: white;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--season-text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.filter-btn:hover {
+  border-color: var(--season-wood);
+  color: var(--season-wood);
+}
+
+.filter-btn.active {
+  background: var(--season-green);
+  border-color: var(--season-green);
+  color: white;
+}
+
+
+/* ================= ACTIVITIES GRID ================= */
+.season-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 40px;
+  padding-bottom: 120px;
+}
+
+@media (max-width: 768px) {
+  .season-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.season-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease;
+}
+
+.season-card.hide {
+  display: none;
+}
+
+.season-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-img-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.season-card:hover .card-img-wrap img {
+  transform: scale(1.05);
+}
+
+.card-chips {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  background: rgba(255,255,255,0.95);
+  color: var(--season-text);
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+}
+
+.card-body {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 262px); /* Calc based on aspect ratio roughly */
+}
+
+.card-cat {
+  color: var(--season-wood);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.card-body h3 {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--season-green);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+.card-body p {
+  color: var(--season-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  flex-grow: 1; /* Pushes footer to bottom */
+}
+
+.card-footer {
+  display: flex;
+  flex-direction: column; 
+  gap: 12px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-top: 20px;
+}
+
+.card-link {
+  color: var(--season-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.card-link::after {
+  content: '→';
+  margin-left: 8px;
+  font-size: 1.2em;
+  transition: transform 0.3s ease;
+}
+
+.card-link:hover {
+  color: var(--season-wood);
+}
+
+.card-link:hover::after {
+  transform: translateX(4px);
+}
+
+
+/* ================= ITINERARIES ================= */
+.season-itineraries {
+  padding-top: 80px;
+  padding-bottom: 100px;
+  background-color: #ededed; /* Cooler gray for winter context, or warm white */
+  border-radius: 12px;
+  margin-bottom: 100px;
+}
+
+.season-filter-header.center h2 {
+  margin-bottom: 10px;
+}
+
+.itinerary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+@media (max-width: 991px) {
+  .itinerary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.itinerary-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+/* Central Highlight Card */
+.itinerary-card.highlight {
+  background: var(--season-green); /* Deep Green */
+  color: white;
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-lg);
+}
+
+.itinerary-card.highlight:hover {
+  transform: translateY(-15px);
+}
+
+.itinerary-card.highlight h4 {
+  color: white;
+}
+
+.iti-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.itinerary-card.highlight .iti-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+}
+
+.iti-header h4 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--season-text);
+}
+
+.iti-header span {
+  font-size: 1.8rem;
+}
+
+.iti-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.iti-list li {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--season-text);
+}
+
+.itinerary-card.highlight .iti-list li {
+  color: rgba(255,255,255,0.9);
+}
+
+.iti-list strong {
+  display: block;
+  font-weight: 600;
+  color: var(--season-text);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.itinerary-card.highlight .iti-list strong {
+  color: var(--season-gold);
+}
+
+
+/* ================= PRACTICAL INFO ================= */
+.season-practical {
+  padding-bottom: 120px;
+  display: flex;
+  justify-content: center;
+}
+
+.practical-content {
+  width: 100%;
+  max-width: 800px;
+}
+
+.practical-content h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  color: var(--season-green);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.accordion-item {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 24px 0;
+  cursor: pointer;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--season-text);
+}
+
+.accordion-header .icon {
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform 0.3s ease;
+}
+
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.accordion-body p {
+  padding-top: 16px;
+  color: var(--season-muted);
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+.accordion-item.active .accordion-body {
+  max-height: 200px; 
+}
+
+.accordion-item.active .accordion-header .icon {
+  transform: rotate(45deg); 
+}
+
+
+/* ================= FINAL CTA ================= */
+.season-cta {
+  position: relative;
+  background-image: url('https://images.unsplash.com/photo-1548777123-e216912df7d8?q=80&w=2070&auto=format&fit=crop'); 
+  background-size: cover;
+  background-position: center;
+  padding: 120px 0;
+  text-align: center;
+}
+
+.cta-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--season-green);
+  opacity: 0.9;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 2;
+  color: white;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-content h2 {
+  font-family: var(--font-heading);
+  font-size: var(--h2-size);
+  margin-bottom: 24px;
+}
+
+.cta-content p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.85);
+}
+
+
+/* ================= CUSTOM FOOTER TWEAKS ================= */
+.season-footer {
+  background-color: var(--season-text); /* Solid Anthracite */
+  color: white;
+  padding-top: 80px;
+}
+
+.footer-link-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-link-list li {
+  margin-bottom: 12px;
+}
+
+.footer-link-list a {
+  color: rgba(255,255,255,0.7);
+  transition: color 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.footer-link-list a:hover {
+  color: var(--season-wood);
+}

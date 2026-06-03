@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset */
+        body { margin: 0; padding: 0; background-color: #FAF9F6; font-family: 'Inter', Arial, sans-serif; color: #20303D; line-height: 1.6; }
+        table { border-collapse: collapse; }
+        img { border: 0; display: block; border-radius: 4px; }
+        
+        /* Container */
+        .email-wrapper { width: 100%; table-layout: fixed; background-color: #FAF9F6; padding-bottom: 40px; }
+        .email-container { width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e0e4e8; }
+        
+        /* Header */
+        .email-header { background-color: #20303D; padding: 40px 20px; text-align: center; }
+        .logo-text { color: #C5A059; font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; letter-spacing: 0.05em; margin: 0; text-transform: uppercase; }
+        
+        /* Alert Banner Info */
+        .alert-banner { background-color: #f7f9fa; padding: 14px 30px; text-align: center; border-bottom: 1px solid #e0e4e8; }
+        .alert-banner p { margin: 0; color: #78868A; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
+        /* Content Body */
+        .email-body { padding: 40px 30px; }
+        .heading { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: #20303D; margin-bottom: 15px; font-weight: 600; }
+        .tagline { color: #C5A059; font-size: 14px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; margin-bottom: 10px; }
+        .intro-text { font-size: 16px; margin-bottom: 30px; }
+        
+        /* Details Grid */
+        .details-box { background-color: #fcfbf8; border: 1px solid #f0ecdf; border-radius: 8px; padding: 25px; margin-bottom: 30px; }
+        .detail-row { padding: 10px 0; border-bottom: 1px solid #f0ecdf; }
+        .detail-row:last-child { border-bottom: none; }
+        .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #78868A; margin-bottom: 4px; }
+        .value { font-size: 16px; color: #20303D; font-weight: 500; }
+        
+        /* Checklist */
+        .rule-item { display: flex; align-items: flex-start; margin-bottom: 15px; }
+        /* Since many email clients strip flexbox, fallback table layout for rules */
+        .rule-table { width: 100%; margin-bottom: 25px; }
+        .rule-table td { padding-bottom: 15px; vertical-align: top; }
+        .rule-icon { width: 30px; color: #C5A059; font-size: 18px; line-height: 1.4; padding-right: 10px; font-weight: bold; }
+        .rule-text { font-size: 15px; color: #20303D; line-height: 1.5; }
+        
+        /* Button */
+        .button-wrapper { text-align: center; margin-top: 35px; margin-bottom: 15px; }
+        .btn { background-color: #C5A059; color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 4px; font-weight: 600; display: inline-block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; }
+        
+        /* Footer */
+        .email-footer { background-color: #f4f4f4; padding: 30px; text-align: center; font-size: 12px; color: #78868A; }
+    </style>
+</head>
+<body>
+    <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <table class="email-container" width="100%" cellpadding="0" cellspacing="0">
+                    <!-- HEADER -->
+                    <tr>
+                        <td class="email-header">
+                            <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                                <tr>
+                                    <td style="vertical-align: middle;"><span class="logo-text">GIPFEL</span></td>
+                                    <td style="vertical-align: middle; padding: 0 15px;"><img src="https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/assets/images/logo-Topbar.png" alt="Logo" style="height: 38px; display: block; border: 0;"></td>
+                                    <td style="vertical-align: middle;"><span class="logo-text">LODGE</span></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- ALERT BANNER -->
+                    <tr>
+                        <td class="alert-banner">
+                            <p>&#10548;&nbsp; Pre-Stay Informatie & Huisregels</p>
+                        </td>
+                    </tr>
+
+                    <!-- BODY -->
+                    <tr>
+                        <td class="email-body">
+                            <p class="tagline">Voorbereiding op uw verblijf</p>
+                            <h2 class="heading">Tijd om in te pakken!</h2>
+                            <p class="intro-text">
+                                Beste <strong>{{user_name}}</strong>,<br><br>
+                                De aankomst in de Gipfel Lodge komt nu écht dichterbij! Om ervoor te zorgen dat je verblijf vanaf het eerste moment soepel en zorgeloos verloopt, delen we alvast de belangrijkste praktische informatie en huisregels met jullie.
+                            </p>
+                            
+                            <!-- DETAILS -->
+                            <div class="details-box">
+                                <div class="detail-row">
+                                    <div class="label">Inchecken</div>
+                                    <div class="value">Vanaf 15:00 uur (Zelf inchecken met code)</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="label">Uitchecken</div>
+                                    <div class="value">Uiterlijk om 10:00 uur</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="label" style="opacity: 0.8;">Aankomstdatum</div>
+                                    <div class="value" style="font-size: 14px;">{{check_in}}</div>
+                                </div>
+                                <div class="detail-row" style="background-color: #faf9f6; margin: 10px -25px -25px -25px; padding: 25px; border-radius: 0 0 8px 8px; border-top: 1px solid #e0e4e8;">
+                                    <div class="label" style="color: #78868A;">Wifi Netwerk</div>
+                                    <div class="value" style="color: #20303D; font-weight: 700;">GipfelLodge_Guest<br>
+                                    <span style="font-size: 13px; font-weight: 500; opacity: 0.8; letter-spacing: 1px;">{{wifi_password}}</span></div>
+                                </div>
+                            </div>
+
+                            <p class="tagline" style="font-size: 11px; color: #78868A; margin-top: 35px;">Lodge Etiquette</p>
+                            <h2 class="heading" style="font-size: 22px;">Onze Huisregels</h2>
+                            
+                            <!-- RULES TABLE (email client safe) -->
+                            <table class="rule-table" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Schoeisel:</strong> In de lodge dragen we graag pantoffels. Natte of vieze bergschoenen en skischoenen kun je veilig en verwarmd achterlaten in de speciale 'boot-room' (skiruimte) op de begane grond.</td>
+                                </tr>
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Rust en Respect:</strong> Uit respect voor de andere gasten en de omwonenden, hanteren we een rustige avond en nachtrust tussen 22:00 uur en 07:00 uur. Geniet samen in de woonkamer, maar pas het volume 's avonds iets aan.</td>
+                                </tr>
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Rookvrij:</strong> De gehele binnenkant van Gipfel Lodge is strikt rookvrij. Mocht je willen roken, dan kan dit buiten op de balkons of het terras. Gebruik hiervoor altijd de beschikbare asbakken.</td>
+                                </tr>
+                                <tr>
+                                    <td class="rule-icon">&bull;</td>
+                                    <td class="rule-text"><strong>Afval Scheiden:</strong> Oostenrijk is streng op afval scheiden. Onder de gootsteen vind je verschillende bakken. De grote containers voor papier, restafval en plastic bevinden zich rechts naast de voordeur buiten.</td>
+                                </tr>
+                            </table>
+
+                            <p class="intro-text" style="font-size: 14px; color: #78868A; margin-top: 30px;">
+                                <em>Let op: op de dag (of vlak voor de dag) van aankomst ontvangt u van ons een kort bericht met de unieke pincode voor de sleutelkluis van uw appartement.</em>
+                            </p>
+
+                            <p class="intro-text">
+                                We wensen je alvast een veilige reis!<br><br>
+                                Met hartelijke groet,<br>
+                                <strong>Team Gipfel Lodge</strong>
+                            </p>
+                            
+                        </td>
+                    </tr>
+                    
+                    <!-- FOOTER -->
+                    <tr>
+                        <td class="email-footer">
+                            <p>&copy; 2026 Gipfel Lodge &mdash; Alpiner Luxus & Raum<br>
+                            Eben im Pongau, Austria | hello@gipfellodge.com</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

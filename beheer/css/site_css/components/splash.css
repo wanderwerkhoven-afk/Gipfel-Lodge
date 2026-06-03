@@ -1,0 +1,111 @@
+/* CINEMATIC SPLASH SCREEN STYLES - TIGHTER SEQUENTIAL TIMING */
+
+#splash-screen {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, #20303D 0%, #0F181F 100%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1), opacity 1.2s ease;
+    overflow: hidden;
+}
+
+#splash-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://www.transparenttextures.com/patterns/dark-matter.png');
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+#splash-screen.hidden {
+    transform: scale(1.05) translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.splash-logo-container {
+    width: 90%;
+    max-width: 350px;
+    color: var(--color-accent);
+}
+
+/* Ensure the font and basic SVG properties are set correctly */
+.gipfel-logo-svg .text {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+}
+
+.gipfel-logo-svg .line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* MOUNTAINS - Staggered Drawing (0-2s) */
+.gipfel-logo-svg .line {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+}
+
+.mountain-1 {
+    animation: drawLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.mountain-2 {
+    animation: drawLine 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.6s;
+}
+
+/* STARS - Sequential Pop (Tighter delay: starts at 1.5s) */
+.gipfel-logo-svg .stars path {
+    opacity: 0;
+    transform-origin: center;
+    transform: scale(2);
+    animation: flyIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.stars path:nth-child(1) { animation-delay: 1.5s; }
+.stars path:nth-child(2) { animation-delay: 1.65s; }
+.stars path:nth-child(3) { animation-delay: 1.8s; }
+.stars path:nth-child(4) { animation-delay: 1.95s; }
+
+/* S APPEARS AFTER STARS */
+.gipfel-logo-svg .stars text {
+    opacity: 0;
+    transform-origin: center;
+    transform: scale(2);
+    animation: flyIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-delay: 2.15s;
+}
+
+/* LOGO TEXT - Fade and Focus */
+.gipfel-logo-svg > .text {
+    opacity: 0;
+    filter: blur(8px);
+    animation: textFocus 0.75s ease-out forwards;
+    animation-delay: 2.35s;
+}
+
+@keyframes drawLine {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes flyIn {
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes textFocus {
+    to { 
+        opacity: 1; 
+        filter: blur(0); 
+    }
+}

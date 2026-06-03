@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice — Gipfel Lodge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #C5A059; /* Gold/Sand */
+            --color-dark: #121212;
+            --color-text: #333333;
+            --color-light-gray: #f8f9fa;
+            --color-border: #e0e0e0;
+            --font-heading: 'Cormorant Garamond', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-text);
+            font-size: 10pt; /* Slightly smaller to fit on one page */
+            line-height: 1.35;
+            background: white;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .invoice-container {
+            width: 100%;
+            margin: 0;
+            position: relative;
+        }
+
+        /* HEADER */
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 22px;
+        }
+
+        .logo-container {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: left;
+            width: 50%;
+        }
+
+        .logo-container svg {
+            width: 125px; /* Increased from 110px */
+            height: auto;
+            color: var(--color-dark);
+        }
+
+        .invoice-title {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: right;
+            width: 50%;
+        }
+
+        .invoice-title h1 {
+            font-family: var(--font-heading);
+            font-size: 24pt; /* Slightly smaller */
+            font-weight: 600;
+            color: var(--color-dark);
+            margin-bottom: 3px;
+            line-height: 1;
+        }
+
+        .invoice-title p {
+            color: var(--color-primary);
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 10pt;
+            text-transform: uppercase;
+        }
+
+        /* ADDRESSES */
+        .address-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 12px;
+        }
+
+        .address-block {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .address-block h3 {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 4px;
+        }
+
+        .address-block p {
+            margin-bottom: 1px;
+        }
+
+        /* DETAILS BOX */
+        .details-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background-color: var(--color-light-gray);
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 14px;
+            border: 1px solid var(--color-border);
+        }
+
+        .detail-item {
+            width: 48%;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding: 2px 0; /* Reduced from 4px */
+            font-size: 9pt;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            font-size: 8pt;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: var(--color-dark);
+        }
+
+        /* TABLE */
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed; /* Force respect of container width */
+        }
+
+        .invoice-table th {
+            text-align: left;
+            padding: 10px 8px;
+            background-color: var(--color-dark);
+            color: white;
+            font-family: var(--font-heading);
+            font-size: 13pt;
+            font-weight: 500;
+        }
+
+        .invoice-table td {
+            padding: 7px 8px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .invoice-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .invoice-table .amount-col {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .invoice-table .desc-col {
+            width: 70%;
+        }
+
+        /* TOTALS */
+        .totals-container {
+            width: 320px;
+            margin-left: auto;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 8px;
+        }
+
+        .total-row.grand-total {
+            margin-top: 6px;
+            background-color: var(--color-primary);
+            color: white;
+            padding: 8px 12px; /* Reduced from 12px 15px */
+            font-weight: 700;
+            font-size: 13pt; /* Slightly smaller */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 16px;
+            border-top: 2px solid var(--color-primary);
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 8pt;
+            color: #666;
+        }
+
+        .footer > div {
+            width: 30%;
+        }
+
+        .footer h4 {
+            color: var(--color-dark);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 8.5pt;
+        }
+
+        .footer p { margin-bottom: 2px; }
+
+        .notice {
+            margin-top: 12px;
+            font-style: italic;
+            font-size: 8pt;
+            color: #999;
+            text-align: center;
+        }
+
+        /* PAYMENT OPTIONS */
+        .payment-options {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background-color: #fbfaf8;
+            border: 1px solid var(--color-primary);
+            border-radius: 8px;
+        }
+
+        .payment-options h3 {
+            font-family: var(--font-heading);
+            font-size: 13pt;
+            color: var(--color-dark);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--color-primary);
+            padding-bottom: 4px;
+        }
+
+        .option-grid {
+            display: flex;
+            gap: 10px; /* Reduced from 20px */
+            margin-bottom: 8px; /* Reduced from 15px */
+        }
+
+        .option-card {
+            flex: 1;
+            padding: 8px; /* Reduced from 15px */
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-card.highlight {
+            border-color: var(--color-primary);
+            background-color: #fff9ef;
+        }
+
+        .option-title {
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .option-amount {
+            font-size: 16pt;
+            font-weight: 700;
+            color: var(--color-dark);
+        }
+
+        .option-note {
+            font-size: 8pt;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .payment-deadline {
+            font-size: 9pt;
+            color: #555;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* PAGE BREAK PREVENTION */
+        tr, .totals-container, .footer, .payment-options {
+            page-break-inside: avoid;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="invoice-container" id="invoice">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo-container">
+                <!-- FULL GIPFEL LOGO SVG (MATCHING INDEX.HTML) -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="gipfel-logo-svg">
+                    <path d="M 65 210 L 160 50 L 220 145" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M 180 145 L 240 50 L 335 210" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <g class="stars">
+                      <path d="M 155 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+                      <path d="M 185 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+                      <path d="M 215 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+                      <path d="M 245 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+                      <text x="265" y="190" font-size="28" style="text-transform: none; fill: currentColor; font-family: 'Mrs Saint Delafield', cursive;">s</text>
+                    </g>
+                    <text x="65" y="270" text-anchor="start" font-size="41" font-weight="700" letter-spacing="1" textLength="270" lengthAdjust="spacing" style="text-transform: uppercase; fill: currentColor; font-family: sans-serif;">Gipfel Lodge</text>
+                </svg>
+            </div>
+            <div class="invoice-title">
+                <h1>Invoice</h1>
+                <p style="font-size: 11pt; color: var(--color-primary); margin-bottom: 2px;">#{{invoiceId}}</p>
+                <p style="font-size: 8pt; color: #999; margin-bottom: 4px; letter-spacing: 0;">Ref: {{bookingId}}</p>
+                <p style="font-size: 9pt; color: var(--color-dark); letter-spacing: 0;">Date: {{receivedDate}}</p>
+            </div>
+        </div>
+
+        <!-- ADDRESSES -->
+        <div class="address-row">
+            <div class="address-block">
+                <h3>From</h3>
+                <p><strong>Gipfel Invest GmbH</strong></p>
+                <p>Fjodor Werkhoven</p>
+                <p>Ober-Reinbach 23/13</p>
+                <p>AT - 5600 St. Johann im Pongau</p>
+            </div>
+            <div class="address-block" style="text-align: right;">
+                <h3>To</h3>
+                <p><strong>{{guestName}}</strong></p>
+                <p>{{guestAddress}}</p>
+                <p>{{guestZipcode}} {{guestCity}}</p>
+                <p>{{guestCountry}}</p>
+                <p style="margin-top: 5px; font-size: 9pt; color: #666;">{{guestEmail}}</p>
+            </div>
+        </div>
+
+        <!-- DETAILS -->
+        <div class="details-grid">
+            <div class="detail-item">
+                <span class="detail-label">Check-in</span>
+                <span class="detail-value">{{checkIn}}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Check-out</span>
+                <span class="detail-value">{{checkOut}}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Nights</span>
+                <span class="detail-value">{{nights}}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Guests</span>
+                <span class="detail-value">{{adults}} Adults, {{children}} Children, {{babies}} Babies</span>
+            </div>
+        </div>
+
+        <!-- ITEMS TABLE -->
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th class="desc-col">Description</th>
+                    <th class="amount-col">Amount (incl. VAT)</th>
+                </tr>
+            </thead>
+            <tbody id="invoice-items">
+                {{itemRows}}
+            </tbody>
+        </table>
+
+        <!-- TOTALS -->
+        <div class="totals-container">
+            <div class="total-row grand-total">
+                <span>Total</span>
+                <span>{{totalAmount}}</span>
+            </div>
+        </div>
+
+        <!-- PAYMENT OPTIONS -->
+        {{paymentOptionsHTML}}
+
+        <p class="notice">
+            If you do not agree with this invoice, please notify us within 5 working days.
+        </p>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div>
+                <h4>Location</h4>
+                <p>Tauernlodge Eben E4</p>
+                <p>Niedernfritzerstraße 24D</p>
+                <p>5531 Eben im Pongau</p>
+                <p>Austria</p>
+            </div>
+            <div>
+                <h4>Company Details</h4>
+                <p>Gipfel Invest GmbH</p>
+                <p>VAT: ATU81691901</p>
+                <p>CoC: FN 625345 b</p>
+                <p>E: info@gipfellodge.at</p>
+            </div>
+            <div>
+                <h4>Payment Details</h4>
+                <p>Bank: [Bank Name]</p>
+                <p>IBAN: [Placeholder IBAN]</p>
+                <p>BIC: [Placeholder BIC]</p>
+                <p style="margin-top: 5px;">Please quote invoice number #{{invoiceId}}</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

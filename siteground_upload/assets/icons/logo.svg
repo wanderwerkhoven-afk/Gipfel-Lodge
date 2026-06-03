@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="gipfel-logo-svg">
+  <style>
+    .line { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .star { fill: currentColor; }
+    .text { font-family: 'Cormorant Garamond', serif; font-weight: 700; text-transform: uppercase; fill: currentColor; }
+  </style>
+  
+  <!-- Mountain Lines -->
+  <g class="mountains">
+    <path class="line mountain-1" d="M 65 210 L 160 50 L 220 145" />
+    <path class="line mountain-2" d="M 180 145 L 240 50 L 335 210" />
+  </g>
+
+  <!-- Stars -->
+  <g class="stars">
+    <path class="star" d="M 155 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" />
+    <path class="star" d="M 185 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" />
+    <path class="star" d="M 215 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" />
+    <path class="star" d="M 245 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" />
+    <text x="265" y="190" font-size="28" class="text" style="text-transform: none;">s</text>
+  </g>
+
+  <!-- Title Text (Precisely aligned to mountain bounds 65-335) -->
+  <text x="65" y="270" text-anchor="start" font-size="41" font-weight="700" letter-spacing="1" textLength="270" lengthAdjust="spacing" class="text">Gipfel Lodge</text>
+</svg>
