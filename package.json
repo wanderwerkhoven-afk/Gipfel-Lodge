@@ -1,0 +1,10 @@
+{
+  "name": "gipfel-lodge-website",
+  "version": "1.0.0",
+  "description": "Gipfel Lodge publicatie build-scripts",
+  "scripts": {
+    "build:siteground": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1",
+    "build:beheer": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1 -BeheerOnly"
+  },
+  "private": true
+}

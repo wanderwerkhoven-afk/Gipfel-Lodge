@@ -784,11 +784,12 @@
                 btnEl.disabled = true;
 
                 try {
-                    const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                    const { db, doc, updateDoc, deleteDoc } = await import('../site_js/core/firebase.js');
                     await updateDoc(doc(db, "bookings", bookingId), {
                         status: 'declined',
                         declinedAt: new Date().toISOString()
                     });
+                    await deleteDoc(doc(db, "public_availability", `avail_${bookingId}`));
 
                     // LOG ACTIVITY
                     logActivity('BOOKING_DECLINED', 'Boeking gemarkeerd als GEWEIGERD via snelle actie', bookingId);
@@ -814,11 +815,23 @@
             btnEl.disabled = true;
 
             try {
-                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
-                await updateDoc(doc(db, "bookings", bookingId), {
+                const { db, doc, updateDoc, setDoc, getDoc } = await import('../site_js/core/firebase.js');
+                const bRef = doc(db, "bookings", bookingId);
+                await updateDoc(bRef, {
                     status: 'pending',
                     updatedAt: new Date().toISOString()
                 });
+                const bSnap = await getDoc(bRef);
+                if (bSnap.exists()) {
+                    const bData = bSnap.data();
+                    await setDoc(doc(db, "public_availability", `avail_${bookingId}`), {
+                        bookingRef: bookingId,
+                        checkIn: bData.checkIn,
+                        checkOut: bData.checkOut,
+                        status: 'pending',
+                        createdAt: new Date().toISOString()
+                    });
+                }
 
                 // LOG ACTIVITY
                 logActivity('BOOKING_UNDECLINED', 'Weigering van boeking ongedaan gemaakt', bookingId);
@@ -980,7 +993,8 @@
                 // Probeer een tijdelijk test-document te schrijven
                 await addDoc(collection(db, "system_checks"), {
                     timestamp: serverTimestamp(),
-                    check: "Manual Health Check"
+                    check: "Manual Health Check",
+                    agent: navigator.userAgent
                 });
 
                 dot.style.background = '#2ecc71'; // groen: succes
@@ -994,11 +1008,13 @@
                 dot.style.background = '#e74c3c'; // rood: fout
                 statusTag.innerHTML = `<span style="width: 8px; height: 8px; border-radius: 50%; background: #e74c3c;"></span> Firebase: Fout`;
 
-                let msg = "Fout: " + err.message;
-                if (err.message.includes("permission-denied")) {
-                    msg = "Permissions Error: Controleer je 'Security Rules' in de Firebase Console.";
-                } else if (err.message.includes("network")) {
-                    msg = "Netwerk Fout: Ben je online? Of blokkeert de browser de import?";
+                let msg = "Fout: " + (err.message || "Onbekende fout");
+                if (err.message && err.message.includes("permission-denied")) {
+                    msg = "Permissions Error: De app heeft geen schrijfrechten. Controleer je 'Security Rules' of je login status.";
+                } else if (err.message && (err.message.includes("network") || err.message.includes("unavailable"))) {
+                    msg = "Netwerkfout: De Firebase servers zijn niet bereikbaar. Controleer je internetverbinding.";
+                } else if (err.name === 'TypeError' && err.message.includes('failed to fetch dynamically imported module')) {
+                    msg = "Module Error: De Firebase SDK kon niet worden geladen. Controleer of de paden correct zijn.";
                 }
 
                 resultDiv.style.color = '#ff6b6b';
@@ -1033,8 +1049,8 @@
 
                 if (!token) throw new Error("Geen secretToken gevonden voor deze boeking. Open de boeking eerst via de Communication Hub om het token aan te maken.");
 
-                // Open invoice.html met de juiste parameters in een nieuw tabblad
-                const invoiceUrl = `invoice.html?id=${encodeURIComponent(bookingId)}&token=${encodeURIComponent(token)}`;
+                // Open invoice.html met de juiste parameters in een nieuw tabblad (vanuit de root directory)
+                const invoiceUrl = `../invoice.html?id=${encodeURIComponent(bookingId)}&token=${encodeURIComponent(token)}`;
                 window.open(invoiceUrl, '_blank');
 
             } catch (err) {
@@ -1913,11 +1929,14 @@
             const bookingId = currentComposerData.id;
 
             if (uiTemplateId === 'acceptance') {
-                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                const { db, doc, updateDoc, setDoc } = await import('../site_js/core/firebase.js');
                 await updateDoc(doc(db, "bookings", bookingId), {
                     status: 'confirmed',
                     updatedAt: new Date().toISOString()
                 });
+                await setDoc(doc(db, "public_availability", `avail_${bookingId}`), {
+                    status: 'confirmed'
+                }, { merge: true });
 
                 logActivity('BOOKING_CONFIRMED', 'Boeking automatisch bevestigd via Hub', bookingId);
 
@@ -1932,8 +1951,9 @@
                     sb.style.borderColor = '#ceead6';
                 }
             } else if (uiTemplateId === 'rejection') {
-                const { db, doc, updateDoc } = await import('../site_js/core/firebase.js');
+                const { db, doc, updateDoc, deleteDoc } = await import('../site_js/core/firebase.js');
                 await updateDoc(doc(db, "bookings", bookingId), { status: 'declined' });
+                await deleteDoc(doc(db, "public_availability", `avail_${bookingId}`));
                 currentComposerData.status = 'declined';
                 renderHubSteps(currentComposerData);
 

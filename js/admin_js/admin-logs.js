@@ -182,6 +182,9 @@
             // Apply role-based UI restrictions
             applyRolePermissions();
 
+            // Auto-test connection on load
+            if (window.testFirebaseConnection) testFirebaseConnection();
+
             // Zorg dat de juiste view geladen wordt (default Alle Aanvragen)
             const activeNav = document.querySelector('.nav-item.active');
             if (activeNav) {

@@ -72,11 +72,23 @@ const GipfelBooking = {
         });
 
         // Initialize EmailJS
+        // ============================================================
+        // EMAILJS BEVEILIGINGSNOTA
+        // De publicKey hieronder is bedoeld om publiek te zijn.
+        // Bescherm het formulier via:
+        //   - EmailJS Dashboard → Security → Allowed Origins/Domains
+        //     Voeg toe: https://gipfellodge.com
+        //   - De submit-knop wordt direct disabled na verzending
+        //     om dubbele inzendingen te voorkomen.
+        // ============================================================
         if (typeof emailjs !== 'undefined') {
             emailjs.init({
                 publicKey: "WC62OFB5MXpryYO1u",
             });
         }
+
+        // Rate limiting: track last submission timestamp
+        this._lastSubmitTime = 0;
 
         // Load dynamic availability
         this.loadAvailabilityData().then(() => {
@@ -88,8 +100,8 @@ const GipfelBooking = {
         try {
             const { getDocs, query, collection, where, db } = await import('../core/firebase.js');
             
-            // Fetch ALL bookings (or filter by status if preferred)
-            const q = query(collection(db, "bookings"));
+            // Fetch ALL public availability records
+            const q = query(collection(db, "public_availability"));
             const querySnapshot = await getDocs(q);
             
             this.bookedDates = [];
@@ -329,6 +341,17 @@ const GipfelBooking = {
                 finalBtn.classList.add('disabled');
 
                 const t = (key) => window.i18n ? window.i18n.t(key) : key;
+
+                // --- Client-side rate limiting guard (30 seconden cooldown) ---
+                const now = Date.now();
+                if (now - (this._lastSubmitTime || 0) < 30000) {
+                    const remaining = Math.ceil((30000 - (now - this._lastSubmitTime)) / 1000);
+                    alert(`Wacht nog ${remaining} seconden voor je opnieuw kunt verzenden.`);
+                    finalBtn.innerText = originalText;
+                    finalBtn.classList.remove('disabled');
+                    return;
+                }
+                this._lastSubmitTime = now;
                 let guestParams, ownerParams;
 
                 // Calculate total amount safely — outside the critical try block
@@ -482,9 +505,10 @@ const GipfelBooking = {
                                 let attemptNum = currentNum + 1;
                                 
                                 // Robust logic: skip any manually created IDs or prior collisions
+                                // We check 'public_availability' instead of 'bookings' because public users have read access to it
                                 while (!uniqueFound) {
                                     const candidateId = `Gipfel-${String(attemptNum).padStart(6, '0')}`;
-                                    const checkDoc = await transaction.get(doc(db, "bookings", candidateId));
+                                    const checkDoc = await transaction.get(doc(db, "public_availability", `avail_${candidateId}`));
                                     if (!checkDoc.exists()) {
                                         uniqueFound = true;
                                     } else {
@@ -517,45 +541,65 @@ const GipfelBooking = {
                             console.log(`[Firebase Save] Resolving country ${rawCountry} to code: ${finalCountryCode}`);
 
                             // 3. Save booking with custom ID
-                            await setDoc(doc(db, "bookings", bookingId), {
-                                bookingId: bookingId,
-                                invoiceId: invoiceId,
-                                guestName: ownerParams.user_name || 'Anoniem',
-                                guestEmail: ownerParams.user_email || '',
-                                guestPhone: ownerParams.user_phone || '-',
-                                guestAddress: ownerParams.user_address || '',
-                                guestZipcode: ownerParams.user_zipcode || '',
-                                guestCity: ownerParams.user_city || '',
-                                guestCountry: ownerParams.user_country || '',
-                                country: finalCountryCode,
-                                checkIn: ownerParams.check_in || '',
-                                checkOut: ownerParams.check_out || '',
-                                nights: ownerParams.nights || 0,
-                                totalGuests: ownerParams.total_guests || 0,
-                                adults: ownerParams.adults || 0,
-                                children: ownerParams.children || 0,
-                                babies: ownerParams.babies || 0,
-                                message: ownerParams.message || '-',
-                                totalAmount: totalAmount,
-                                // Breakdown
-                                rent: costs ? (costs.originalRent || costs.rent) : 0, // Store original if available
-                                discountAmount: costs ? costs.discountAmount : 0,
-                                discountPercentage: costs ? costs.discountPercentage : 0,
-                                discountName: costs ? costs.appliedDiscountName : '',
-                                
-                                cleaning: costs ? costs.cleaning : 0,
-                                bedLinen: costs ? costs.bedLinen : 0,
-                                touristTax: costs ? costs.touristTax : 0,
-                                mobilityFee: costs ? costs.mobilityFee : 0,
-                                
-                                depositPaid: false,
-                                balancePaid: false,
-                                status: "pending", 
-                                receivedDate: ownerParams.received_date || '',
-                                receivedTime: ownerParams.received_time || '',
-                                secretToken: secretToken,
-                                createdAt: serverTimestamp() 
-                            });
+                            try {
+                                await setDoc(doc(db, "bookings", bookingId), {
+                                    bookingId: bookingId,
+                                    invoiceId: invoiceId,
+                                    guestName: ownerParams.user_name || 'Anoniem',
+                                    guestEmail: ownerParams.user_email || '',
+                                    guestPhone: ownerParams.user_phone || '-',
+                                    guestAddress: ownerParams.user_address || '',
+                                    guestZipcode: ownerParams.user_zipcode || '',
+                                    guestCity: ownerParams.user_city || '',
+                                    guestCountry: ownerParams.user_country || '',
+                                    country: finalCountryCode,
+                                    checkIn: ownerParams.check_in || '',
+                                    checkOut: ownerParams.check_out || '',
+                                    nights: ownerParams.nights || 0,
+                                    totalGuests: ownerParams.total_guests || 0,
+                                    adults: ownerParams.adults || 0,
+                                    children: ownerParams.children || 0,
+                                    babies: ownerParams.babies || 0,
+                                    message: ownerParams.message || '-',
+                                    totalAmount: totalAmount,
+                                    // Breakdown
+                                    rent: costs ? (costs.originalRent || costs.rent || 0) : 0, // Store original if available
+                                    discountAmount: costs ? (costs.discountAmount || 0) : 0,
+                                    discountPercentage: costs ? (costs.discountPercentage || 0) : 0,
+                                    discountName: costs ? (costs.appliedDiscountName || '') : '',
+                                    
+                                    cleaning: costs ? (costs.cleaning || 0) : 0,
+                                    bedLinen: costs ? (costs.bedLinen || 0) : 0,
+                                    touristTax: costs ? (costs.touristTax || 0) : 0,
+                                    mobilityFee: costs ? (costs.mobilityFee || 0) : 0,
+                                    
+                                    depositPaid: false,
+                                    balancePaid: false,
+                                    status: "pending", 
+                                    receivedDate: ownerParams.received_date || '',
+                                    receivedTime: ownerParams.received_time || '',
+                                    secretToken: secretToken,
+                                    createdAt: serverTimestamp() 
+                                });
+                                console.log("[OK] Booking saved to /bookings:", bookingId);
+                            } catch (dbError) {
+                                console.error("[FAIL] Could not write to /bookings:", dbError.code, dbError.message);
+                            }
+
+                            // 4. Save public availability record (without PII) to immediately block the calendar
+                            try {
+                                await setDoc(doc(db, "public_availability", `avail_${bookingId}`), {
+                                    bookingRef: bookingId,
+                                    checkIn: ownerParams.check_in || '',
+                                    checkOut: ownerParams.check_out || '',
+                                    status: "pending",
+                                    createdAt: serverTimestamp()
+                                });
+                                console.log("[OK] Availability saved to /public_availability:", `avail_${bookingId}`);
+                            } catch (dbError) {
+                                console.error("[FAIL] Could not write to /public_availability:", dbError.code, dbError.message);
+                            }
+
                             console.log("Booking successfully archived in Firestore with ID:", bookingId);
                         } catch (dbError) {
                             console.error("Firestore Archiving Error:", dbError);

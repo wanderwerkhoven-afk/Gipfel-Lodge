@@ -96,6 +96,13 @@ window.SeasonsPage = {
                 if (targetEl) targetEl.scrollIntoView({behavior: 'smooth'});
             };
         }
+
+        // Zorg dat de wissel-animatie stopt zodra de gebruiker naar beneden scrolt
+        window.addEventListener('scroll', () => {
+            if (this.animationRunning && window.scrollY > 50) {
+                this.stopAnimation();
+            }
+        }, { passive: true });
     },
 
     switchTheme: function(targetTheme) {
@@ -246,8 +253,9 @@ window.SeasonsPage = {
                 const targetId = anchor.getAttribute('href').substring(1);
                 const targetEl = document.getElementById(targetId);
                 if(targetEl) {
+                    const targetY = targetEl.getBoundingClientRect().top + window.pageYOffset - 120;
                     window.scrollTo({
-                        top: targetEl.offsetTop - 120,
+                        top: targetY,
                         behavior: 'smooth'
                     });
                 }

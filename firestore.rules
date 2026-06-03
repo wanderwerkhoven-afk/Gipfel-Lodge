@@ -2,10 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper: Check if the authenticated user has 'superuser' role
+    // Helper: Check if the authenticated user exists in the 'users' collection
+    // Both 'superuser' and 'user' roles get access to manage the dashboard.
     function isAdmin() {
       return request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superuser';
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
     }
 
     // [USERS] Only user themselves can read their profile; superuser has full access.
@@ -33,11 +34,17 @@ service cloud.firestore {
       allow read, write: if true; 
     }
 
-    // [BOOKINGS] Public reads for availability and writes for submitting new requests.
+    // [BOOKINGS] Private collection with PII. Public can only create new requests.
     match /bookings/{bookingId} {
-      allow read: if true; // Public calendar needs to see booked/pending dates
-      allow create: if true; // Guests can submit booking forms
-      allow update, delete: if isAdmin(); // Only admins can manage bookings
+      allow create: if true && request.resource.data.status == 'pending';
+      allow read, update, delete: if isAdmin();
+    }
+
+    // [PUBLIC AVAILABILITY] No PII. Public can read and create pending requests.
+    match /public_availability/{availId} {
+      allow read: if true;
+      allow create: if (true && request.resource.data.status == 'pending') || isAdmin();
+      allow update, delete: if isAdmin();
     }
 
     // [LOGS] Only Admin can interact with audit logs.
@@ -49,6 +56,11 @@ service cloud.firestore {
     match /page_views/{viewId} {
       allow create: if true;
       allow read, delete: if isAdmin();
+    }
+
+    // [SYSTEM CHECKS] Publicly accessible for health checks
+    match /system_checks/{checkId} {
+      allow read, write: if true;
     }
 
     // DEFAULT: Deny everything else
