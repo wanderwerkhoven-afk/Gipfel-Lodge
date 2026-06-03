@@ -2197,32 +2197,26 @@
        naar de eigen booking pagina (#booking).
        ============================================================ -->
   <script>
-    (function () {
+    document.addEventListener('DOMContentLoaded', function () {
       var EXTERNAL_BOOKING_URL = 'https://www.villaforyou.com/ho-16679/AT.5531.14';
 
       if (!EXTERNAL_BOOKING_URL) return; // schakel uit door null in te stellen
 
-      // Gebruik 'true' (capture phase) en 'stopImmediatePropagation' om te voorkomen
-      // dat de interne router (router.js) de pagina-wissel uitvoert.
-      document.addEventListener('click', function (e) {
-        var anchor = e.target.closest('a[href="#booking"]');
-        if (!anchor) return;
+      // Wijzig de actuele link (href) zodat mobiele browsers (Safari)
+      // de popup niet blokkeren en lang-indrukken de juiste URL toont.
+      document.querySelectorAll('a[href="#booking"]').forEach(function(anchor) {
+        anchor.href = EXTERNAL_BOOKING_URL;
+        anchor.target = "_blank";
+        anchor.rel = "noopener noreferrer";
 
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-        // Track click before redirect
-        import('./js/site_js/utils/analytics.js').then(async (m) => {
-          try {
-            await m.Analytics.logPageView('booking-click');
-          } catch (e) { }
-          window.open(EXTERNAL_BOOKING_URL, '_blank', 'noopener,noreferrer');
-        }).catch(err => {
-          console.warn('Analytics failed, redirecting anyway', err);
-          window.open(EXTERNAL_BOOKING_URL, '_blank', 'noopener,noreferrer');
+        // Track de klik (maar laat de browser de link normaal openen)
+        anchor.addEventListener('click', function () {
+          import('./js/site_js/utils/analytics.js').then(function(m) {
+            m.Analytics.logPageView('booking-click');
+          }).catch(function(e) {});
         });
-      }, true);
-    })();
+      });
+    });
   </script>
 </body>
 
