@@ -522,7 +522,7 @@
                 height: 100vh;
                 border-radius: 0;
                 box-shadow: none;
-                display: block !important;
+                display: block;
             }
 
             .dashboard-layout {

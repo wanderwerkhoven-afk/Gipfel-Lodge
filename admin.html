@@ -390,6 +390,16 @@
                         display: flex;
                         flex-direction: column;
                     }
+                    .gallery-library-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                        gap: 15px;
+                    }
+                    @media (max-width: 600px) {
+                        .gallery-library-grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
                 </style>
                 <div id="galleries-view" class="dashboard-view" style="height: 100%;">
                     <div class="page-header" style="flex-shrink: 0; position: relative;">
@@ -446,7 +456,7 @@
                                 <h3 style="margin: 0 0 5px 0; font-size: 1.1rem;"><i class="ph ph-folder-open"></i> Bibliotheek</h3>
                                 <input type="text" placeholder="Zoek op bestandsnaam..." oninput="filterImageLibrary(this.value)" style="width: 100%; padding: 10px 15px; margin-bottom: 20px; border: 1px solid #cbd5e1; border-radius: 6px;">
                                 
-                                <div id="gallery-editor-library" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div id="gallery-editor-library" class="gallery-library-grid">
                                     <!-- Library images -->
                                 </div>
                             </div>
