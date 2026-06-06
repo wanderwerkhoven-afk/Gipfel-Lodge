@@ -207,26 +207,104 @@ function renderBehaviorTable(views) {
     const list = document.getElementById('behavior-recent-list');
     list.innerHTML = '';
 
-    views.forEach(v => {
-        const tr = document.createElement('tr');
-        const date = v.timestamp && typeof v.timestamp.toDate === 'function' 
-            ? v.timestamp.toDate().toLocaleString('nl-NL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) 
-            : 'Zojuist';
-        
-        // Determine source domain with color coding
-        const domainBadge = formatDomainBadge(v);
+    // Grouping consecutive views by IP and date
+    const groups = [];
+    let currentGroup = null;
 
-        tr.innerHTML = `
-            <td style="font-size: 0.8rem; color: #64748b;">${date}</td>
-            <td><span class="status-badge" style="background: rgba(32, 48, 61, 0.05); color: #20303D; text-transform: capitalize;">${v.pageId || 'home'}</span></td>
-            <td style="font-size: 0.8rem; color: #64748b;">
-                <i class="ph ${v.deviceType === 'Mobiel' ? 'ph-smartphone' : 'ph-desktop'}"></i> ${v.deviceType || 'Desktop'}
-            </td>
-            <td><span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${v.language || 'nl'}</span></td>
-            <td style="font-size: 0.8rem; font-family: monospace; color: #64748b;">${v.ip || '-'}</td>
-            <td>${domainBadge}</td>
-        `;
-        list.appendChild(tr);
+    views.forEach(v => {
+        const dateStr = v.timestamp && typeof v.timestamp.toDate === 'function' 
+            ? v.timestamp.toDate().toLocaleDateString('nl-NL') 
+            : 'Vandaag';
+        
+        const ip = v.ip || 'unknown';
+        const groupKey = `${ip}-${dateStr}`;
+
+        if (!currentGroup || currentGroup.key !== groupKey) {
+            currentGroup = {
+                key: groupKey,
+                dateStr: dateStr,
+                ip: ip,
+                deviceType: v.deviceType || 'Desktop',
+                language: v.language || 'nl',
+                domainBadge: formatDomainBadge(v),
+                latestTimestamp: v.timestamp,
+                views: []
+            };
+            groups.push(currentGroup);
+        }
+        currentGroup.views.push(v);
+    });
+
+    groups.forEach((g, index) => {
+        const latestTime = g.latestTimestamp && typeof g.latestTimestamp.toDate === 'function' 
+            ? g.latestTimestamp.toDate().toLocaleString('nl-NL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) 
+            : 'Zojuist';
+
+        if (g.views.length > 1) {
+            // Group with multiple views
+            const summaryTr = document.createElement('tr');
+            summaryTr.style.cursor = 'pointer';
+            summaryTr.style.transition = 'background-color 0.2s';
+            summaryTr.innerHTML = `
+                <td style="font-size: 0.8rem; color: #64748b; padding-left: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="ph ph-caret-right" id="caret-${index}" style="transition: transform 0.2s; font-size: 1rem; color: #94a3b8;"></i>
+                    ${latestTime}
+                </td>
+                <td><span class="status-badge" style="background: rgba(197, 160, 89, 0.1); color: var(--color-gold); font-weight: 700;">${g.views.length} Acties</span></td>
+                <td style="font-size: 0.8rem; color: #64748b;">
+                    <i class="ph ${g.deviceType === 'Mobiel' ? 'ph-smartphone' : 'ph-desktop'}"></i> ${g.deviceType}
+                </td>
+                <td><span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${g.language}</span></td>
+                <td style="font-size: 0.8rem; font-family: monospace; color: #64748b;">${g.ip !== 'unknown' ? g.ip : '-'}</td>
+                <td>${g.domainBadge}</td>
+            `;
+
+            const detailsTr = document.createElement('tr');
+            detailsTr.id = `details-${index}`;
+            detailsTr.style.display = 'none';
+            detailsTr.style.backgroundColor = '#f8fafc';
+            
+            let detailsHtml = '<td colspan="6" style="padding: 16px 24px 16px 48px; border-bottom: 1px solid #e2e8f0;"><div style="display: flex; flex-direction: column; gap: 8px;">';
+            g.views.forEach(v => {
+                const time = v.timestamp && typeof v.timestamp.toDate === 'function' 
+                    ? v.timestamp.toDate().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) 
+                    : 'Zojuist';
+                detailsHtml += `
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span style="font-size: 0.75rem; color: #94a3b8; width: 45px; font-variant-numeric: tabular-nums;">${time}</span>
+                        <span class="status-badge" style="background: rgba(32, 48, 61, 0.05); color: #20303D; text-transform: capitalize; padding: 4px 10px; font-size: 0.75rem;">${v.pageId || 'home'}</span>
+                    </div>
+                `;
+            });
+            detailsHtml += '</div></td>';
+            detailsTr.innerHTML = detailsHtml;
+
+            summaryTr.onclick = () => {
+                const isHidden = detailsTr.style.display === 'none';
+                detailsTr.style.display = isHidden ? 'table-row' : 'none';
+                document.getElementById(`caret-${index}`).style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
+                summaryTr.style.backgroundColor = isHidden ? '#f1f5f9' : '';
+            };
+
+            list.appendChild(summaryTr);
+            list.appendChild(detailsTr);
+
+        } else {
+            // Single view
+            const v = g.views[0];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-size: 0.8rem; color: #64748b; padding-left: 36px;">${latestTime}</td>
+                <td><span class="status-badge" style="background: rgba(32, 48, 61, 0.05); color: #20303D; text-transform: capitalize;">${v.pageId || 'home'}</span></td>
+                <td style="font-size: 0.8rem; color: #64748b;">
+                    <i class="ph ${g.deviceType === 'Mobiel' ? 'ph-smartphone' : 'ph-desktop'}"></i> ${g.deviceType}
+                </td>
+                <td><span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${g.language}</span></td>
+                <td style="font-size: 0.8rem; font-family: monospace; color: #64748b;">${g.ip !== 'unknown' ? g.ip : '-'}</td>
+                <td>${g.domainBadge}</td>
+            `;
+            list.appendChild(tr);
+        }
     });
 }
 
