@@ -2033,12 +2033,27 @@
         /* ========================
            EMAIL BUILDER 2.0 STYLES
         ======================== */
+        /* Charts grid - 2 kolommen op desktop, 1 kolom op mobiel */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .eb2-section-card {
             background: #fff;
             border-radius: 14px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             overflow: hidden;
         }
+
 
         .eb2-section-header {
             display: flex;
