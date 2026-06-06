@@ -29,6 +29,7 @@ export const Analytics = {
                 pageId: pageId,
                 timestamp: serverTimestamp(),
                 url: window.location.href,
+                domain: window.location.hostname,
                 referrer: document.referrer || 'direct',
                 userAgent: ua,
                 language: document.documentElement.lang || 'nl',

@@ -213,9 +213,8 @@ function renderBehaviorTable(views) {
             ? v.timestamp.toDate().toLocaleString('nl-NL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) 
             : 'Zojuist';
         
-        // Format referrer to be readable
-        let ref = v.referrer || 'direct';
-        if (ref.length > 30) ref = ref.substring(0, 30) + '...';
+        // Determine source domain with color coding
+        const domainBadge = formatDomainBadge(v);
 
         tr.innerHTML = `
             <td style="font-size: 0.8rem; color: #64748b;">${date}</td>
@@ -225,8 +224,38 @@ function renderBehaviorTable(views) {
             </td>
             <td><span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">${v.language || 'nl'}</span></td>
             <td style="font-size: 0.8rem; font-family: monospace; color: #64748b;">${v.ip || '-'}</td>
-            <td style="font-size: 0.8rem; color: #94a3b8;" title="${v.referrer || ''}">${ref}</td>
+            <td>${domainBadge}</td>
         `;
         list.appendChild(tr);
     });
 }
+
+function formatDomainBadge(v) {
+    // Use the new 'domain' field if available, otherwise try to parse from 'url' or 'referrer'
+    let hostname = v.domain || '';
+    if (!hostname && v.url) {
+        try { hostname = new URL(v.url).hostname; } catch(e) { hostname = ''; }
+    }
+    
+    const domainMap = [
+        { match: 'gipfellodge.at',    label: '.at',    color: '#C5A059', bg: 'rgba(197,160,89,0.12)',  flag: '🇦🇹' },
+        { match: 'gipfellodge.nl',    label: '.nl',    color: '#e85d04', bg: 'rgba(232,93,4,0.12)',    flag: '🇳🇱' },
+        { match: 'gipfellodge.eu',    label: '.eu',    color: '#003399', bg: 'rgba(0,51,153,0.12)',    flag: '🇪🇺' },
+        { match: 'gipfellodge.de',    label: '.de',    color: '#dd1c1a', bg: 'rgba(221,28,26,0.12)',   flag: '🇩🇪' },
+        { match: 'gipfellodge.com',   label: '.com',   color: '#10b981', bg: 'rgba(16,185,129,0.12)',  flag: '🌐' },
+        { match: 'github.io',         label: 'GitHub', color: '#6e40c9', bg: 'rgba(110,64,201,0.12)',  flag: '🐙' },
+        { match: 'localhost',         label: 'Local',  color: '#64748b', bg: 'rgba(100,116,139,0.12)', flag: '💻' },
+        { match: '127.0.0.1',         label: 'Local',  color: '#64748b', bg: 'rgba(100,116,139,0.12)', flag: '💻' },
+    ];
+
+    for (const d of domainMap) {
+        if (hostname.includes(d.match)) {
+            return `<span style="font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: ${d.bg}; color: ${d.color}; white-space: nowrap;">${d.flag} ${d.label}</span>`;
+        }
+    }
+
+    // Fallback: show hostname or 'direct'
+    const fallback = hostname || 'direct';
+    return `<span style="font-size: 0.75rem; color: #94a3b8;">${fallback}</span>`;
+}
+
