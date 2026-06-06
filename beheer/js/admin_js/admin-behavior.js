@@ -207,9 +207,8 @@ function renderBehaviorTable(views) {
     const list = document.getElementById('behavior-recent-list');
     list.innerHTML = '';
 
-    // Grouping consecutive views by IP and date
-    const groups = [];
-    let currentGroup = null;
+    // Grouping ALL views by IP and date
+    const groupsMap = new Map();
 
     views.forEach(v => {
         const dateStr = v.timestamp && typeof v.timestamp.toDate === 'function' 
@@ -219,8 +218,8 @@ function renderBehaviorTable(views) {
         const ip = v.ip || 'unknown';
         const groupKey = `${ip}-${dateStr}`;
 
-        if (!currentGroup || currentGroup.key !== groupKey) {
-            currentGroup = {
+        if (!groupsMap.has(groupKey)) {
+            groupsMap.set(groupKey, {
                 key: groupKey,
                 dateStr: dateStr,
                 ip: ip,
@@ -229,11 +228,12 @@ function renderBehaviorTable(views) {
                 domainBadge: formatDomainBadge(v),
                 latestTimestamp: v.timestamp,
                 views: []
-            };
-            groups.push(currentGroup);
+            });
         }
-        currentGroup.views.push(v);
+        groupsMap.get(groupKey).views.push(v);
     });
+
+    const groups = Array.from(groupsMap.values());
 
     groups.forEach((g, index) => {
         const latestTime = g.latestTimestamp && typeof g.latestTimestamp.toDate === 'function' 
