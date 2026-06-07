@@ -1,3 +1,5 @@
+@import url("dataviz/style.css");
+
         /* Reset & Variables (Hergebruik van hoofdthema) */
         :root {
             --color-bg-dark: #1a2830;

@@ -1,6 +1,4 @@
 import { state } from "./app.js";
-import { saveToLocalStorage } from "./dataManager.js";
-
 export const CHART_COLORS = {
   blue: "#3b82f6",
   orange: "#f59e0b",
@@ -85,7 +83,6 @@ export function wireCustomYearSelect({ containerId, displayId, optionsId, hidden
       display.textContent = String(year);
       hidden.value = String(year);
       set(year);
-      saveToLocalStorage(); // Persist change for offline survival
       container.classList.remove("open");
       options.classList.remove("show");
       onChange?.();
