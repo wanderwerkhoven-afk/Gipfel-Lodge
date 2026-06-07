@@ -83,6 +83,12 @@
                 loadInvoices();
             } else if (viewId === 'behavior-view') {
                 loadBehaviorStats();
+            } else if (viewId.startsWith('dataviz-')) {
+                if (typeof window.initDatavizView === 'function') {
+                    window.initDatavizView(viewId);
+                } else {
+                    console.warn("initDatavizView function is not yet loaded");
+                }
             }
 
             // Scroll to top when switching views on mobile
