@@ -1261,22 +1261,21 @@
         </div>
     </div>
 
-    <!-- Core Logic & Helpers -->
+   <!-- Core Logic & Helpers -->
     <script src="js/admin_js/admin-core.js"></script>
     <script src="js/admin_js/admin-auth.js"></script>
     <script src="js/admin_js/admin-logs.js"></script>
     <script src="js/admin_js/admin-behavior.js"></script>
 
-    <!-- Dataviz module registreren vóór admin-ui.js -->
+    <!-- Dataviz module -->
     <script type="module">
         import { initDataviz, initDatavizView } from './js/admin_js/dataviz/init-dataviz.js';
         window.initDataviz = initDataviz;
         window.initDatavizView = initDatavizView;
+        console.log("✅ Dataviz module geladen");
     </script>
 
     <script src="js/admin_js/admin-email.js"></script>
-
-    <!-- UI & View Switching -->
     <script src="js/admin_js/admin-ui.js"></script>
 
     <!-- Feature Modules -->
