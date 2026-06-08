@@ -35,8 +35,9 @@ service cloud.firestore {
     }
 
     // [BOOKINGS] Private collection with PII. Public can only create new requests.
+    // Admins can create bookings with any status (needed for Excel import of owner-stays etc.)
     match /bookings/{bookingId} {
-      allow create: if true && request.resource.data.status == 'pending';
+      allow create: if isAdmin() || (true && request.resource.data.status == 'pending');
       allow read, update, delete: if isAdmin();
     }
 
