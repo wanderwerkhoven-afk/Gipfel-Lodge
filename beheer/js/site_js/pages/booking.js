@@ -317,7 +317,26 @@ const GipfelBooking = {
                     document.getElementById('b-checkin').value = this.selectedCheckIn;
                     document.getElementById('b-checkout').value = this.selectedCheckOut;
                     
-                    this.goToStep(2);
+                    const checkoutDate = new Date(this.selectedCheckOut);
+                    const cutoffDate = new Date('2027-04-01');
+
+                    if (checkoutDate < cutoffDate) {
+                        const vUrl = new URL('https://www.villaforyou.com/ho-16679/AT.5531.14');
+                        vUrl.searchParams.set('arrival', this.selectedCheckIn);
+                        vUrl.searchParams.set('departure', this.selectedCheckOut);
+                        
+                        const adults = document.getElementById('b-adults') ? document.getElementById('b-adults').value : 2;
+                        const children = document.getElementById('b-children') ? document.getElementById('b-children').value : 0;
+                        const babies = document.getElementById('b-babies') ? document.getElementById('b-babies').value : 0;
+                        
+                        vUrl.searchParams.set('adults', adults);
+                        if (children > 0) vUrl.searchParams.set('children', children);
+                        if (babies > 0) vUrl.searchParams.set('babies', babies);
+
+                        window.open(vUrl.toString(), '_blank');
+                    } else {
+                        this.goToStep(2);
+                    }
                 }
             };
         }
@@ -627,7 +646,26 @@ const GipfelBooking = {
                     } else if (targetStep > this.currentStep) {
                         // Allow going forward only if conditions met
                         if (targetStep === 2 && this.selectedCheckIn && this.selectedCheckOut) {
-                            this.goToStep(2);
+                            const checkoutDate = new Date(this.selectedCheckOut);
+                            const cutoffDate = new Date('2027-04-01');
+
+                            if (checkoutDate < cutoffDate) {
+                                const vUrl = new URL('https://www.villaforyou.com/ho-16679/AT.5531.14');
+                                vUrl.searchParams.set('arrival', this.selectedCheckIn);
+                                vUrl.searchParams.set('departure', this.selectedCheckOut);
+                                
+                                const adults = document.getElementById('b-adults') ? document.getElementById('b-adults').value : 2;
+                                const children = document.getElementById('b-children') ? document.getElementById('b-children').value : 0;
+                                const babies = document.getElementById('b-babies') ? document.getElementById('b-babies').value : 0;
+                                
+                                vUrl.searchParams.set('adults', adults);
+                                if (children > 0) vUrl.searchParams.set('children', children);
+                                if (babies > 0) vUrl.searchParams.set('babies', babies);
+
+                                window.open(vUrl.toString(), '_blank');
+                            } else {
+                                this.goToStep(2);
+                            }
                         } else if (targetStep === 3) {
                             // ...
                         } else if (targetStep === 4) {
