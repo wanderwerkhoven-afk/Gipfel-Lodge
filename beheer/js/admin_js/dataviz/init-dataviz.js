@@ -6,6 +6,7 @@ import { OccupancyPage } from './pages/occupancyPage.js';
 import { RevenuePage } from './pages/revenuePage.js';
 import { BehaviorPage } from './pages/behaviorPage.js';
 import { DataPage } from './pages/dataPage.js';
+import { TodoPage } from './pages/todoPage.js';
 
 let _isInitialized = false;
 
@@ -39,7 +40,8 @@ export async function initDataviz() {
         { id: 'dataviz-occupancy-view', module: OccupancyPage },
         { id: 'dataviz-revenue-view', module: RevenuePage },
         { id: 'dataviz-behavior-view', module: BehaviorPage },
-        { id: 'dataviz-data-view', module: DataPage }
+        { id: 'dataviz-data-view', module: DataPage },
+        { id: 'dataviz-todo-view', module: TodoPage }
     ];
 
     views.forEach(v => {
@@ -61,4 +63,5 @@ export async function initDatavizView(viewId) {
     else if (viewId === 'dataviz-revenue-view') await RevenuePage.init();
     else if (viewId === 'dataviz-behavior-view') await BehaviorPage.init();
     else if (viewId === 'dataviz-data-view') await DataPage.init();
+    else if (viewId === 'dataviz-todo-view') await TodoPage.init();
 }

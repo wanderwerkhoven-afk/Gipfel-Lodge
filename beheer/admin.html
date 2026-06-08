@@ -165,6 +165,9 @@
                     <li id="nav-dataviz-data" class="nav-item" onclick="switchView('dataviz-data-view', this)">
                         <i class="ph ph-database"></i> Database Browser
                     </li>
+                    <li id="nav-dataviz-todo" class="nav-item" onclick="switchView('dataviz-todo-view', this)">
+                        <i class="ph ph-check-square-offset"></i> TO-DO's
+                    </li>
                 </ul>
 
                 <div
@@ -196,6 +199,9 @@
             </aside>
 
             <main class="dashboard-main">
+                <!-- Dataviz Todo View -->
+                <div id="dataviz-todo-view" class="dashboard-view dataviz-view"></div>
+
                 <!-- Bookings List View -->
                 <div id="bookings-view" class="dashboard-view active">
                     <div class="page-header">

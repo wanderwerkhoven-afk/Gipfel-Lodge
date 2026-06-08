@@ -23,6 +23,13 @@ export const OccupancyPage = {
   title: "Bezetting",
   template: () => `
     <div class="container">
+      <div class="page-head">
+        <div>
+          <h2 class="page-title">Bezetting</h2>
+          <p class="page-subtitle">Kalender en bezettingsstatistieken</p>
+        </div>
+      </div>
+
       <div class="kalender-header">
         <div class="kalender-header__left">
           <h3 class="kalender__title">Bezettingskalender</h3>
@@ -665,7 +672,7 @@ function renderOccupancyTrendChart(allBookings) {
       datasets: [
         { label: "Bezet (nachten)", data: platformNights, backgroundColor: "#3b82f6", stack: "total" },
         { label: "Eigen gebruik (nachten)", data: ownerNights, backgroundColor: "#f59e0b", stack: "total" },
-        { label: "Vrij (nachten)", data: freeNights, backgroundColor: "rgba(255, 255, 255, 0.05)", borderColor: "rgba(255, 255, 255, 0.1)", borderWidth: 1, stack: "total" }
+        { label: "Vrij (nachten)", data: freeNights, backgroundColor: "rgba(51, 65, 85, 0.05)", borderColor: "rgba(51, 65, 85, 0.1)", borderWidth: 1, stack: "total" }
       ]
     },
     options: {
@@ -674,10 +681,10 @@ function renderOccupancyTrendChart(allBookings) {
         x: {
           stacked: true,
           grid: { display: false },
-          ticks: { color: "rgba(255,255,255,0.5)", maxRotation: 45, minRotation: 45, autoSkip: false }
+          ticks: { color: "rgba(51,65,85,0.6)", maxRotation: 45, minRotation: 45, autoSkip: false }
         },
         y: {
-          stacked: true, beginAtZero: true, max: 7, grid: { color: "rgba(255,255,255,0.05)" },
+          stacked: true, beginAtZero: true, max: 7, grid: { color: "rgba(51,65,85,0.08)" },
           ticks: { display: false }, border: { display: false }
         }
       },
@@ -816,14 +823,14 @@ function renderMonthlyOccupancyChart(allBookings) {
       scales: {
         x: {
           grid: { display: false },
-          ticks: { color: "rgba(255,255,255,0.6)", font: { size: 12 } }
+          ticks: { color: "rgba(51,65,85,0.6)", font: { size: 12 } }
         },
         y: {
           beginAtZero: true,
           max: 100,
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: "rgba(51,65,85,0.08)" },
           ticks: {
-            color: "rgba(255,255,255,0.6)",
+            color: "rgba(51,65,85,0.6)",
             callback: (v) => v + "%",
             stepSize: 20
           }
@@ -950,14 +957,14 @@ function renderLengthOfStayChart(allBookings) {
       scales: {
         x: { 
           grid: { display: false },
-          ticks: { color: "rgba(255,255,255,0.6)", font: { size: 12 } },
-          title: { display: true, text: "Nachten", color: "rgba(255,255,255,0.4)", font: { size: 10 } }
+          ticks: { color: "rgba(51,65,85,0.6)", font: { size: 12 } },
+          title: { display: true, text: "Nachten", color: "rgba(51,65,85,0.6)", font: { size: 10 } }
         },
         y: {
           beginAtZero: true,
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: "rgba(51,65,85,0.08)" },
           ticks: { 
-            color: "rgba(255,255,255,0.6)",
+            color: "rgba(51,65,85,0.6)",
             callback: (v) => state.losMode === "percent" ? v + "%" : v
           }
         }

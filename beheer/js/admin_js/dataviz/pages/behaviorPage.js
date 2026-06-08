@@ -13,6 +13,12 @@ export const BehaviorPage = {
   title: "Gedrag",
   template: () => `
     <div class="container slide-up">
+      <div class="page-head">
+        <div>
+          <h2 class="page-title">Boekingsgedrag</h2>
+          <p class="page-subtitle">Inzichten per boekingsjaar</p>
+        </div>
+      </div>
       <!-- DASHBOARD HEADER -->
       <div class="kpi-header">
         <div class="kpi-header__left">
@@ -78,6 +84,15 @@ export const BehaviorPage = {
           <h3 class="panel-title">Verblijfsduur Frequentie</h3>
           <div class="chart-container">
             <canvas id="chartStayDurationDist"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid-2">
+        <div class="chart-panel">
+          <h3 class="panel-title">Groepsgrootte (Aantal personen)</h3>
+          <div class="chart-container">
+            <canvas id="chartGroupSizeDist"></canvas>
           </div>
         </div>
       </div>
@@ -148,6 +163,9 @@ export async function renderBehaviorCharts() {
 
   // 5. Stay Duration (Bar)
   renderStayDurationChart(allRows);
+
+  // 6. Group Size (Bar)
+  renderGroupSizeChart(allRows);
 }
 
 function renderLeadTimeChart(rows) {
@@ -322,6 +340,56 @@ function renderStayDurationChart(rows) {
       scales: {
         y: { beginAtZero: true, grid: { color: CHART_COLORS.border }, ticks: { color: CHART_COLORS.text } },
         x: { grid: { display: false }, ticks: { color: CHART_COLORS.text } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+function renderGroupSizeChart(rows) {
+  const canvas = document.getElementById("chartGroupSizeDist");
+  if (!canvas) return;
+
+  const sizeMap = {};
+  rows.forEach(r => {
+    const s = r.__totalGuests || 0;
+    if (s > 0) sizeMap[s] = (sizeMap[s] || 0) + 1;
+  });
+
+  const sortedSizes = Object.keys(sizeMap).map(Number).sort((a, b) => a - b).slice(0, 10);
+  const labels = sortedSizes.map(s => s + (s === 1 ? " pers." : " pers."));
+  const data = sortedSizes.map(s => sizeMap[s]);
+  const mostCommonIdx = data.indexOf(Math.max(...data));
+
+  if (state.charts.behGroupSize) state.charts.behGroupSize.destroy();
+
+  state.charts.behGroupSize = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Aantal boekingen",
+        data,
+        backgroundColor: (context) => {
+          return context.dataIndex === mostCommonIdx ? CHART_COLORS.orange : CHART_COLORS.green;
+        },
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { 
+          grid: { display: false }, 
+          ticks: { color: CHART_COLORS.text },
+          title: { display: true, text: "Gasten per boeking", color: CHART_COLORS.text, font: { size: 10 } }
+        },
+        y: { 
+          beginAtZero: true, 
+          grid: { color: CHART_COLORS.border }, 
+          ticks: { color: CHART_COLORS.text, precision: 0 } 
+        }
       },
       plugins: { legend: { display: false } }
     }

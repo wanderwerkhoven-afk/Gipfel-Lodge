@@ -454,9 +454,10 @@
   }
 
   #occCalendarTrack {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 24px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 340px) !important;
+    gap: 32px 48px !important;
+    padding: 0 !important; /* Verwijder de 100px zij-padding van booking-carousel__track */
     width: 100% !important;
     transform: none !important;
   }

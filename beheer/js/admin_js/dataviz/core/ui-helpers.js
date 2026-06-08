@@ -69,22 +69,49 @@ export function withPreservedScroll(fn) {
  */
 export function wireCustomYearSelect({ containerId, displayId, optionsId, hiddenId, years, get, set, onChange }) {
   const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // --- Wire trigger directly (remove old listener by cloning) ---
+  const trigger = container.querySelector(".select-trigger");
+  if (trigger) {
+    const newTrigger = trigger.cloneNode(true);
+    trigger.parentNode.replaceChild(newTrigger, trigger);
+  }
+
+  // Nu pas DOM elementen ophalen, anders verwijzen ze naar de oude (verwijderde) node!
   const display = document.getElementById(displayId);
   const options = document.getElementById(optionsId);
   const hidden = document.getElementById(hiddenId);
-  if (!container || !display || !options || !hidden) return;
+  if (!display || !options || !hidden) return;
+
+  const initial = get();
+  
+  // Set initial display value
+  display.textContent = initial === "ALL" ? "Alle jaren" : String(initial);
+  hidden.value = String(initial);
+
+  /** Mark the active option visually */
+  const updateActiveOption = (selectedVal) => {
+    options.querySelectorAll(".option").forEach((opt) => {
+      opt.classList.toggle("active", opt.dataset.value === String(selectedVal));
+    });
+  };
 
   // --- Populate options ---
   options.innerHTML = "";
   years.forEach((year) => {
     const div = document.createElement("div");
     div.className = "option";
-    div.textContent = String(year);
+    div.dataset.value = String(year);
+    div.textContent = year === "ALL" ? "Alle jaren" : String(year);
+    if (String(year) === String(initial)) div.classList.add("active");
+
     div.addEventListener("click", (e) => {
       e.stopPropagation();
-      display.textContent = String(year);
+      display.textContent = year === "ALL" ? "Alle jaren" : String(year);
       hidden.value = String(year);
       set(year);
+      updateActiveOption(year);
       container.classList.remove("open");
       options.classList.remove("show");
       onChange?.();
@@ -92,13 +119,9 @@ export function wireCustomYearSelect({ containerId, displayId, optionsId, hidden
     options.appendChild(div);
   });
 
-  // --- Wire trigger directly (no dependency on initGlobalUI) ---
-  const trigger = container.querySelector(".select-trigger");
-  if (trigger) {
-    // Remove old listener by cloning
-    const newTrigger = trigger.cloneNode(true);
-    trigger.parentNode.replaceChild(newTrigger, trigger);
-    newTrigger.addEventListener("click", (e) => {
+  const activeTrigger = container.querySelector(".select-trigger");
+  if (activeTrigger) {
+    activeTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
       const isOpen = container.classList.contains("open");
       // Close all other open selects first
@@ -126,10 +149,11 @@ export function wireCustomYearSelect({ containerId, displayId, optionsId, hidden
     }
   });
 
-  const initial = get();
-  display.textContent = String(initial);
+  // Set initial display value
+  display.textContent = initial === "ALL" ? "Alle jaren" : String(initial);
   hidden.value = String(initial);
 }
+
 
 
 /* ============================================================

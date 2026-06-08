@@ -551,7 +551,7 @@ const GipfelBooking = {
                                     guestAddress: ownerParams.user_address || '',
                                     guestZipcode: ownerParams.user_zipcode || '',
                                     guestCity: ownerParams.user_city || '',
-                                    guestCountry: ownerParams.user_country || '',
+                                    guestCountry: finalCountryCode || ownerParams.user_country || '',
                                     country: finalCountryCode,
                                     checkIn: ownerParams.check_in || '',
                                     checkOut: ownerParams.check_out || '',
