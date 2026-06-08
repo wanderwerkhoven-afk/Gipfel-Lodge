@@ -126,7 +126,7 @@
 }
 
 .data-table th {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--panel-light);
   padding: 14px 16px;
   font-weight: 600;
   color: var(--text-muted);
@@ -147,7 +147,7 @@
 }
 
 .data-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--panel-light);
 }
 
 .empty-state {
@@ -173,7 +173,7 @@
 }
 
 .action-btn-large:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--panel-light);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -188,7 +188,7 @@
   font-family: monospace;
   font-size: 11px;
   color: var(--accent);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--panel-light);
   border-radius: 8px;
   text-align: center;
 }

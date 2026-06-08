@@ -35,10 +35,12 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link rel="stylesheet" href="css/admin_css/admin-style.css">
+    <link rel="stylesheet" href="css/admin_css/admin-style.css?v=dataviz2">
     
     <!-- Chart.js for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Date adapter for Chart.js time scale -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 
 <body>
@@ -163,6 +165,9 @@
                     <li id="nav-dataviz-data" class="nav-item" onclick="switchView('dataviz-data-view', this)">
                         <i class="ph ph-database"></i> Database Browser
                     </li>
+                    <li id="nav-dataviz-todo" class="nav-item" onclick="switchView('dataviz-todo-view', this)">
+                        <i class="ph ph-check-square-offset"></i> TO-DO's
+                    </li>
                 </ul>
 
                 <div
@@ -194,6 +199,9 @@
             </aside>
 
             <main class="dashboard-main">
+                <!-- Dataviz Todo View -->
+                <div id="dataviz-todo-view" class="dashboard-view dataviz-view"></div>
+
                 <!-- Bookings List View -->
                 <div id="bookings-view" class="dashboard-view active">
                     <div class="page-header">

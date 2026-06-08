@@ -1,15 +1,15 @@
 import { state } from "./app.js";
 export const CHART_COLORS = {
   blue: "#3b82f6",
-  orange: "#f59e0b",
+  orange: "#f97316",
   green: "#10b981",
-  red: "#ef4444",
   purple: "#8b5cf6",
-  pink: "#ec4899",
-  cyan: "#06b6d4",
-  gray: "rgba(255, 255, 255, 0.1)",
-  text: "rgba(255, 255, 255, 0.5)",
-  border: "rgba(255, 255, 255, 0.05)",
+  yellow: "#eab308",
+  teal: "#14b8a6",
+  red: "#ef4444",
+  gray: "rgba(51, 65, 85, 0.1)",
+  text: "rgba(51, 65, 85, 0.7)",
+  border: "rgba(51, 65, 85, 0.1)",
 };
 
 export const CHART_PALETTE = [
@@ -65,6 +65,7 @@ export function withPreservedScroll(fn) {
 
 /**
  * Wires up a custom select component.
+ * Self-contained: no dependency on initGlobalUI for toggling.
  */
 export function wireCustomYearSelect({ containerId, displayId, optionsId, hiddenId, years, get, set, onChange }) {
   const container = document.getElementById(containerId);
@@ -73,16 +74,30 @@ export function wireCustomYearSelect({ containerId, displayId, optionsId, hidden
   const hidden = document.getElementById(hiddenId);
   if (!container || !display || !options || !hidden) return;
 
+  const initial = get();
+
+  /** Mark the active option visually */
+  const updateActiveOption = (selectedVal) => {
+    options.querySelectorAll(".option").forEach((opt) => {
+      opt.classList.toggle("active", opt.dataset.value === String(selectedVal));
+    });
+  };
+
+  // --- Populate options ---
   options.innerHTML = "";
   years.forEach((year) => {
     const div = document.createElement("div");
     div.className = "option";
-    div.textContent = String(year);
+    div.dataset.value = String(year);
+    div.textContent = year === "ALL" ? "Alle jaren" : String(year);
+    if (String(year) === String(initial)) div.classList.add("active");
+
     div.addEventListener("click", (e) => {
       e.stopPropagation();
-      display.textContent = String(year);
+      display.textContent = year === "ALL" ? "Alle jaren" : String(year);
       hidden.value = String(year);
       set(year);
+      updateActiveOption(year);
       container.classList.remove("open");
       options.classList.remove("show");
       onChange?.();
@@ -90,10 +105,46 @@ export function wireCustomYearSelect({ containerId, displayId, optionsId, hidden
     options.appendChild(div);
   });
 
-  const initial = get();
-  display.textContent = String(initial);
+  // --- Wire trigger directly (no dependency on initGlobalUI) ---
+  const trigger = container.querySelector(".select-trigger");
+  if (trigger) {
+    // Remove old listener by cloning
+    const newTrigger = trigger.cloneNode(true);
+    trigger.parentNode.replaceChild(newTrigger, trigger);
+    newTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = container.classList.contains("open");
+      // Close all other open selects first
+      document.querySelectorAll(".custom-select.open").forEach((c) => {
+        if (c !== container) {
+          c.classList.remove("open");
+          c.querySelector(".select-options")?.classList.remove("show");
+        }
+      });
+      if (isOpen) {
+        container.classList.remove("open");
+        options.classList.remove("show");
+      } else {
+        container.classList.add("open");
+        options.classList.add("show");
+      }
+    });
+  }
+
+  // Close on outside click
+  document.addEventListener("click", (e) => {
+    if (!container.contains(e.target)) {
+      container.classList.remove("open");
+      options.classList.remove("show");
+    }
+  });
+
+  // Set initial display value
+  display.textContent = initial === "ALL" ? "Alle jaren" : String(initial);
   hidden.value = String(initial);
 }
+
+
 
 /* ============================================================
  * GLOBAL UI HANDLERS (Delegated)

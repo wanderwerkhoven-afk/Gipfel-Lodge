@@ -1,16 +1,16 @@
 :root {
   /* Achtergrond & Panels */
-  --bg: #050a18;           /* Extreem diep blauw (bijna zwart, maar warmer) */
-  --panel: #0d152b;        /* Marineblauw voor kaarten en navigatie */
-  --panel-light: #161f3d;  /* Voor actieve items of hover-states */
+  --bg: #F4F7F6;           /* Admin Main Background */
+  --panel: #ffffff;        /* Admin Section Card Background */
+  --panel-light: #f1f5f9;  /* Soft hover */
 
   /* Tekst */
-  --text: #ffffff;         /* Puur wit voor titels */
-  --text-muted: #94a3b8;   /* Zacht blauwgrijs voor secundaire info */
+  --text: #334155;         /* Admin color-slate */
+  --text-muted: #64748b;   /* Admin slate lighter */
 
   /* Accentkleuren */
-  --accent: #3b82f6;       /* Helder blauw voor knoppen en icons */
-  --border: rgba(255, 255, 255, 0.08);
+  --accent: #C5A059;       /* Admin color-gold */
+  --border: #e2e8f0;       /* Admin border color */
 
   --radius: 16px;
 

@@ -1,5 +1,6 @@
 import { fetchDatavizRows } from './admin-dataviz-adapter.js';
 import { setState, state } from './core/app.js';
+import { initGlobalUI } from './core/ui-helpers.js';
 import { HomePage } from './pages/homePage.js';
 import { OccupancyPage } from './pages/occupancyPage.js';
 import { RevenuePage } from './pages/revenuePage.js';
@@ -17,6 +18,12 @@ export async function initDataviz() {
     // 1. Fetch live data from Firebase via the adapter
     const rows = await fetchDatavizRows();
     setState({ rawRows: rows });
+
+    // 1b. Initialize global UI listeners (for dropdowns, etc)
+    initGlobalUI();
+    if (window.Chart) {
+        window.Chart.defaults.color = "rgba(51, 65, 85, 0.7)";
+    }
 
     // 2. Set default years
     const years = [...new Set(rows.map(r => r.__aankomst.getFullYear()))].sort((a, b) => b - a);

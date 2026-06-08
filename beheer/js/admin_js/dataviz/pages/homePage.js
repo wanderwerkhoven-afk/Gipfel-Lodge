@@ -235,9 +235,13 @@ function setupHomeYearSelects() {
 }
 
 function bindSeasonButtons() {
-  document.querySelectorAll(".filter-btn").forEach((btn) => {
-    btn.onclick = () => {
-      document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+  // Scope to dataviz-home-view to avoid conflicts with admin booking filter buttons
+  const homeView = document.getElementById("dataviz-home-view");
+  if (!homeView) return;
+  homeView.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      homeView.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       state.currentSeason = btn.dataset.season;
       withPreservedScroll(renderHomeRevenueChart);
@@ -541,76 +545,76 @@ export function renderHomeBookingCarousel(allRows) {
     slide.className = "booking-slide";
     slide.dataset.index = idx; // ✅ Index opslaan voor de observer
     slide.innerHTML = `
-      <div class="booking-card-flip-container" onclick="this.classList.toggle('is-flipped')">
-        <div class="booking-card-flipper">
+      <div class="dv-booking-card-flip-container" onclick="this.classList.toggle('is-flipped')">
+        <div class="dv-booking-card-flipper">
           
           <!-- FRONT -->
-          <div class="chart-panel booking-card booking-card--v2 booking-card--front">
-            <div class="booking-card__header">
-              <h3 class="booking-card__title">Boeking</h3>
-              <div class="booking-card__badges">
+          <div class="chart-panel dv-booking-card dv-booking-card--v2 dv-booking-card--front">
+            <div class="dv-booking-card__header">
+              <h3 class="dv-booking-card__title">Boeking</h3>
+              <div class="dv-booking-card__badges">
                 <span class="badge ${statusClass}">${statusText}</span>
                 ${sourceText ? `<span class="badge badge--muted ${picked.owner ? "badge--owner" : ""}">${sourceText}</span>` : ""}
                 <button class="flip-btn" title="Bekijk factuur"><i class="fa-solid fa-file-invoice"></i></button>
               </div>
             </div>
 
-            <div class="booking-card__divider"></div>
+            <div class="dv-booking-card__divider"></div>
 
-            <div class="booking-card__top">
-              <div class="booking-card__left">
-                <div class="booking-card__guest">${picked.guest || "—"}</div>
+            <div class="dv-booking-card__top">
+              <div class="dv-booking-card__left">
+                <div class="dv-booking-card__guest">${picked.guest || "—"}</div>
 
-                <div class="booking-card__row booking-card__row--strong">
+                <div class="dv-booking-card__row dv-booking-card__row--strong">
                   <i class="fa-solid fa-user"></i>
                   <span><strong>${totalGuests || "—"}</strong> gasten</span>
                 </div>
 
-                <div class="booking-card__sub">${breakdown}</div>
+                <div class="dv-booking-card__sub">${breakdown}</div>
               </div>
 
-              <div class="booking-card__country">
-                ${flagUrl ? `<img class="booking-card__flag" src="${flagUrl}" alt="Flag" />` : ""}
-                <div class="booking-card__countryCode">${cc || "—"}</div>
+              <div class="dv-booking-card__country">
+                ${flagUrl ? `<img class="dv-booking-card__flag" src="${flagUrl}" alt="Flag" />` : ""}
+                <div class="dv-booking-card__countryCode">${cc || "—"}</div>
               </div>
             </div>
 
-            <div class="booking-card__rows">
-              <div class="booking-card__row">
+            <div class="dv-booking-card__rows">
+              <div class="dv-booking-card__row">
                 <i class="fa-regular fa-calendar"></i>
                 <span>${fmtRange(picked.aankomst, picked.vertrek)}</span>
               </div>
 
-              <div class="booking-card__row">
+              <div class="dv-booking-card__row">
                 <i class="fa-regular fa-moon"></i>
                 <span>${picked.nights || 0} nachten</span>
               </div>
 
               ${picked.phone ? `
-                <div class="booking-card__row">
+                <div class="dv-booking-card__row">
                   <i class="fa-solid fa-phone" onclick="event.stopPropagation()"></i>
-                  <a class="booking-card__link" href="tel:${picked.phone.replace(/\s+/g, "")}" onclick="event.stopPropagation()">${picked.phone}</a>
+                  <a class="dv-booking-card__link" href="tel:${picked.phone.replace(/\s+/g, "")}" onclick="event.stopPropagation()">${picked.phone}</a>
                 </div>` : ""}
 
               ${picked.email ? `
-                <div class="booking-card__row">
+                <div class="dv-booking-card__row">
                   <i class="fa-regular fa-envelope" onclick="event.stopPropagation()"></i>
-                  <a class="booking-card__link" href="mailto:${picked.email}" onclick="event.stopPropagation()">${picked.email}</a>
+                  <a class="dv-booking-card__link" href="mailto:${picked.email}" onclick="event.stopPropagation()">${picked.email}</a>
                 </div>` : ""}
             </div>
 
-            <div class="booking-card__divider booking-card__divider--bottom"></div>
+            <div class="dv-booking-card__divider dv-booking-card__divider--bottom"></div>
 
-            <div class="booking-card__price">${fmtEUR(amount)}</div>
+            <div class="dv-booking-card__price">${fmtEUR(amount)}</div>
           </div>
           
           <!-- BACK (Settlement) -->
-          <div class="chart-panel booking-card booking-card--v2 booking-card--back">
-            <div class="booking-card__header">
-              <h3 class="booking-card__title">Factuur specificatie</h3>
+          <div class="chart-panel dv-booking-card dv-booking-card--v2 dv-booking-card--back">
+            <div class="dv-booking-card__header">
+              <h3 class="dv-booking-card__title">Factuur specificatie</h3>
             </div>
             
-            <div class="booking-card__divider"></div>
+            <div class="dv-booking-card__divider"></div>
             
             <div class="settlement-table">
               <div class="settlement-row">
@@ -842,13 +846,13 @@ export function renderHomeRevenueChart() {
       scales: {
         y: {
           beginAtZero: true,
-          grid: { color: "rgba(255,255,255,0.05)" },
-          ticks: { color: "#8b949e", font: { size: 13 } },
+          grid: { color: "rgba(51,65,85,0.08)" },
+          ticks: { color: "rgba(51,65,85,0.6)", font: { size: 13 } },
         },
         x: {
           grid: { display: false },
           ticks: {
-            color: "#8b949e",
+            color: "rgba(51,65,85,0.6)",
             font: { size: 13 },
             autoSkip: false,
             maxRotation: 45,
@@ -931,14 +935,14 @@ function renderHomeCumulativeRevenueChart(rows) {
           intersect: true,
 
           // ✅ styling
-          backgroundColor: "rgba(11,18,37,0.95)",
-          borderColor: "rgba(255,255,255,0.10)",
+          backgroundColor: "rgba(255,255,255,0.97)",
+          borderColor: "rgba(51,65,85,0.15)",
           borderWidth: 1,
           cornerRadius: 10,
           padding: 12,
 
-          titleColor: "#ffffff",
-          bodyColor: "#d1d5db",
+          titleColor: "#334155",
+          bodyColor: "#64748b",
           titleFont: { size: 13, weight: "600" },
           bodyFont: { size: 12 },
 
@@ -969,13 +973,22 @@ function renderHomeCumulativeRevenueChart(rows) {
       scales: {
         x: {
           type: "time",
-          time: { unit: "month", displayFormats: { month: "MMM yyyy" } },
-          grid: { color: "rgba(255,255,255,0.05)" },
-          ticks: { color: "#8b949e", font: { size: 13 } },
+          time: {
+            unit: "month",
+            displayFormats: { month: "MMM yyyy" },
+            tooltipFormat: "dd MMM yyyy",
+          },
+          grid: { color: "rgba(51,65,85,0.08)" },
+          ticks: {
+            color: "rgba(51,65,85,0.6)",
+            font: { size: 11 },
+            maxRotation: 0,
+            minRotation: 0,
+          },
         },
         y: {
           beginAtZero: true,
-          grid: { color: "rgba(255,255,255,0.05)" },
+          grid: { color: "rgba(51,65,85,0.08)" },
 
           // ✅ we verbergen de y ticks in de chart zelf
           ticks: { display: false },

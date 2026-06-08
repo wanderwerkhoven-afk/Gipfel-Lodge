@@ -45,7 +45,7 @@
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, filter 0.4s ease;
 }
 
-.booking-slide .booking-card--v2 {
+.booking-slide .dv-booking-card--v2 {
   width: 100%;
   max-width: 520px;
   margin: 0;
@@ -64,15 +64,15 @@
     padding: 20px 0; /* Geen zij-padding meer nodig want we hebben track gap */
   }
 
-  .booking-slide .booking-card--v2 {
+  .booking-slide .dv-booking-card--v2 {
     max-width: 100%;
   }
 
   /* Neighbors dimmen */
   .booking-slide:not(.is-active) {
-    opacity: 0.35;
-    transform: scale(0.92);
-    filter: blur(0.5px) brightness(0.6);
+    opacity: 0.45;
+    transform: scale(0.94);
+    filter: blur(0.3px);
   }
 
   /* Active card focus */
@@ -104,11 +104,9 @@
   height: 22px;
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 10px 26px rgba(0, 0, 0, 0.30);
+  background: var(--panel-light);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   overflow: hidden;
 
@@ -130,7 +128,7 @@
   width: 2px;
   height: 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--border);
 }
 
 .booking-scrollbar__knob {

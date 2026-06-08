@@ -18,14 +18,14 @@
   margin: 0;
   font-size: 18px;
   font-weight: 900;
-  color: #fff;
+  color: var(--text);
   letter-spacing: 0.5px;
 }
 
 .kpi-header__subtitle {
   margin: 6px 0 0;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--text-muted);
 }
 
 
@@ -103,27 +103,21 @@
    Booking Card (v2)
    ============================================================ */
 
-.booking-card--v2 {
+.dv-booking-card--v2 {
   width: 100%;
   height: 100%;
   min-height: 460px;
-  /* Forceert de kaart langer te zijn voor de extra ruimte */
   padding: 20px;
-  border-radius: 28px;
-  background:
-    radial-gradient(1200px 500px at 20% -10%, rgba(59, 130, 246, 0.16), transparent 55%),
-    radial-gradient(900px 600px at 80% 0%, rgba(34, 197, 94, 0.10), transparent 60%),
-    linear-gradient(180deg, rgba(8, 14, 32, 0.92), rgba(6, 10, 24, 0.92));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
 }
 
 /* Header */
-.booking-card__header {
+.dv-booking-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -131,16 +125,16 @@
   flex-wrap: wrap;
 }
 
-.booking-card__title {
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 4px;
+.dv-booking-card__title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: var(--text);
   margin: 0;
 }
 
-.booking-card__badges {
+.dv-booking-card__badges {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -155,45 +149,44 @@
   padding: 5px 10px;
   border-radius: 999px;
   line-height: 1;
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--border);
 }
 
 .badge--now {
   background: #22c55e;
-  color: #0b1225;
+  color: #ffffff;
 }
 
 .badge--next {
-  background: #60a5fa;
-  color: #0b1225;
+  background: #3b82f6;
+  color: #ffffff;
 }
 
 .badge--owner {
   background: #ff8a2a;
-  color: #0b1225;
+  color: #ffffff;
 }
 
 .badge--muted {
-  background: rgba(255, 255, 255, 0.10);
-  color: #cbd5e1;
+  background: var(--panel-light);
+  color: var(--text-muted);
 }
 
 /* Dividers */
-.booking-card__divider {
+.dv-booking-card__divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--border);
   margin: 14px 0 18px;
 }
 
-.booking-card__divider--bottom {
+.dv-booking-card__divider--bottom {
   margin: 18px 0 18px;
   margin-top: auto;
-  /* Push dit lijntje (en de prijs eronder) helemaal naar de onderkant */
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--border);
 }
 
 /* Top area (naam + land) */
-.booking-card__top {
+.dv-booking-card__top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -201,23 +194,22 @@
   margin-bottom: 10px;
 }
 
-.booking-card__guest {
-  font-size: 28px;
+.dv-booking-card__guest {
+  font-size: 26px;
   font-weight: 900;
-  color: #fff;
+  color: var(--text);
   line-height: 1.05;
   margin: 0 0 8px 0;
-  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
-.booking-card__sub {
+.dv-booking-card__sub {
   margin-top: 4px;
-  color: rgba(255, 255, 255, 0.58);
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 /* Country block */
-.booking-card__country {
+.dv-booking-card__country {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -225,24 +217,24 @@
   min-width: 50px;
 }
 
-.booking-card__flag {
+.dv-booking-card__flag {
   width: 42px;
   height: 28px;
   object-fit: cover;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--panel-light);
 }
 
-.booking-card__countryCode {
+.dv-booking-card__countryCode {
   font-weight: 900;
   letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--text);
 }
 
 /* Rows */
-.booking-card__rows {
+.dv-booking-card__rows {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -250,52 +242,51 @@
   /* Meer ruimte tussen gasten-info en de kalender-rijen */
 }
 
-.booking-card__row {
+.dv-booking-card__row {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--text);
+  font-size: 15px;
+}
+
+.dv-booking-card__row i {
+  width: 22px;
+  text-align: center;
+  color: var(--accent);
   font-size: 16px;
 }
 
-.booking-card__row i {
-  width: 22px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 18px;
+.dv-booking-card__row--strong {
+  font-size: 17px;
+  color: var(--text);
 }
 
-.booking-card__row--strong {
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.88);
-}
-
-.booking-card__row--strong strong {
-  font-size: 22px;
+.dv-booking-card__row--strong strong {
+  font-size: 20px;
   font-weight: 900;
-  color: #ffffff;
+  color: var(--text);
 }
 
 /* Links (tel/mail) */
-.booking-card__link {
-  color: rgba(255, 255, 255, 0.78);
+.dv-booking-card__link {
+  color: var(--accent);
   text-decoration: none;
 }
 
-.booking-card__link:hover {
-  color: #ffffff;
+.dv-booking-card__link:hover {
+  color: var(--text);
   text-decoration: underline;
 }
 
 /* Price bottom */
-.booking-card__price {
+.dv-booking-card__price {
   display: flex;
   justify-content: flex-end;
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--accent);
   letter-spacing: 0.5px;
-  text-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
 }
 
 /* ============================================================

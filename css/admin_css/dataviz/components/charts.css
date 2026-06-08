@@ -82,7 +82,7 @@
 .mode-toggle {
   display: flex;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--panel-light);
   border: 1px solid var(--border);
   border-radius: 25px;
   padding: 4px;
@@ -128,7 +128,7 @@
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   border-radius: 12px;
-  background: rgba(11, 18, 37);
+  background: var(--panel-light);
   padding: 12px 12px 12px 0;
   margin: 10px 0;
   cursor: grab;
@@ -163,10 +163,10 @@
   padding-right: 12px;
 
   font-size: 11px;
-  color: #8b949e;
+  color: var(--text-muted);
   border-radius: 0;
-  background: rgb(11, 18, 37);
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--panel-light);
+  border-right: 1px solid var(--border);
 }
 
 .cum-y-axis span {
