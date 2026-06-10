@@ -48,18 +48,20 @@
     <!-- LOGIN SCHERM -->
     <!-- LOGIN SCHERM -->
     <div id="login-screen">
-        <h1 class="admin-logo">Gipfel Lodge</h1>
-        <p class="admin-subtitle">Team Login</p>
+        <div class="login-card">
+            <h1 class="admin-logo">Gipfel Lodge</h1>
+            <p class="admin-subtitle">Team Login</p>
 
-        <div style="margin-bottom: 15px;">
-            <input type="email" id="admin-email" class="form-input" placeholder="E-mailadres"
-                style="text-align: center; margin-bottom: 15px;">
-            <input type="password" id="admin-password" class="password-input" placeholder="Wachtwoord"
-                onkeypress="if(event.key === 'Enter') login()">
+            <div style="margin-bottom: 15px;">
+                <input type="email" id="admin-email" class="form-input" placeholder="E-mailadres"
+                    style="text-align: center; margin-bottom: 15px;">
+                <input type="password" id="admin-password" class="password-input" placeholder="Wachtwoord"
+                    onkeypress="if(event.key === 'Enter') login()">
+            </div>
+
+            <button id="login-btn-el" class="login-btn" onclick="login()">Inloggen</button>
+            <div id="login-error" class="error-msg"></div>
         </div>
-
-        <button id="login-btn-el" class="login-btn" onclick="login()">Inloggen</button>
-        <div id="login-error" class="error-msg"></div>
     </div>
 
     <!-- Mobile Top Bar -->

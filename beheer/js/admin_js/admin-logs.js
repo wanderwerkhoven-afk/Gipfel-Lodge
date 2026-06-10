@@ -170,13 +170,24 @@
         }
 
         function showDashboard() {
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("dashboard-screen").style.display = "block";
-            // Pas flex toe op small screens
-            if (window.innerWidth > 600) {
-                document.body.style.display = 'flex';
-            } else {
+            const loginScreen = document.getElementById("login-screen");
+            const dashboardScreen = document.getElementById("dashboard-screen");
+
+            // On mobile/tablet: animate the overlay away, then hide it
+            if (window.innerWidth <= 992) {
+                dashboardScreen.style.display = "block";
                 document.body.style.display = 'block';
+                // Trigger fade-out animation
+                loginScreen.classList.add('login-hiding');
+                setTimeout(() => {
+                    loginScreen.style.display = "none";
+                    loginScreen.classList.remove('login-hiding');
+                }, 320); // Matches animation duration
+            } else {
+                // Desktop: instant swap as before
+                loginScreen.style.display = "none";
+                dashboardScreen.style.display = "block";
+                document.body.style.display = 'flex';
             }
 
             // Apply role-based UI restrictions

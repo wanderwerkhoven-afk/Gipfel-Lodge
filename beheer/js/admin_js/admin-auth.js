@@ -70,9 +70,20 @@
                     window.currentUserName = '';
                     window.allUsers = [];
 
-                    document.getElementById("dashboard-screen").style.display = "none";
-                    document.getElementById("login-screen").style.display = "block";
-                    document.body.style.display = 'flex';
+                    const loginScreen = document.getElementById("login-screen");
+                    const dashboardScreen = document.getElementById("dashboard-screen");
+
+                    if (window.innerWidth <= 992) {
+                        // Mobile: show login as overlay on top of dashboard
+                        dashboardScreen.style.display = "block";
+                        loginScreen.style.display = "flex";
+                        document.body.style.display = 'block';
+                    } else {
+                        // Desktop: hide dashboard, show login card as before
+                        dashboardScreen.style.display = "none";
+                        loginScreen.style.display = "block";
+                        document.body.style.display = 'flex';
+                    }
                 }
             });
         });
