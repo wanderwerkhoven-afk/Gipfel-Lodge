@@ -116,7 +116,12 @@ export function wireCustomYearSelect({ containerId, displayId, optionsId, hidden
  * GLOBAL UI HANDLERS (Delegated)
  * ============================================================ */
 
+let _globalUIInitialized = false;
+
 export function initGlobalUI() {
+    if (_globalUIInitialized) return;
+    _globalUIInitialized = true;
+
     document.addEventListener("click", (e) => {
         // Custom select toggles (delegated)
         const select = e.target.closest(".custom-select");
