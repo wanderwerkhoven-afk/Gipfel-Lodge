@@ -9,97 +9,88 @@ export const TodoPage = {
   title: "TO-DO's",
   template: () => {
     return `
-    <div class="container slide-up">
-      <div class="page-head">
-        <div>
-          <h2 class="page-title">Actiepunten</h2>
-          <p class="page-subtitle">Beheer je taken en to-do's (Synchroniseert automatisch)</p>
+    <div class="eb2-page-header">
+      <div>
+        <h1>Actiepunten</h1>
+        <p>Beheer je taken en to-do's — synchroniseert automatisch met alle gebruikers.</p>
+      </div>
+    </div>
+
+    <div class="eb2-content-wrapper">
+
+      <!-- User pill selector (superuser only) -->
+      <div id="superuser-select-container"></div>
+
+      <!-- Add task card -->
+      <div class="eb2-section-card todo-add-card">
+        <div class="eb2-section-header" style="padding-bottom: 16px;">
+          <div>
+            <h2 class="eb2-section-title">Nieuwe taak toevoegen</h2>
+          </div>
+        </div>
+        <div class="todo-input-row">
+          <input type="text" id="newTodoInput" class="todo-input" placeholder="Wat moet er gebeuren?" />
+          <select id="newTodoPriority" class="todo-priority-select">
+            <option value="low">⬇ Laag</option>
+            <option value="medium" selected>➡ Normaal</option>
+            <option value="high">⬆ Hoog</option>
+          </select>
+          <button id="addTodoBtn" class="todo-add-btn">
+            <i class="ph ph-plus-circle"></i> Toevoegen
+          </button>
         </div>
       </div>
 
-      <section class="content-section" style="max-width: 600px; margin: 0 auto;">
-        <div class="panel">
-          <div class="panel-header">
-            <h3 class="panel-title">Nieuwe taak toevoegen</h3>
-          </div>
-          <div id="superuser-select-container" style="padding: 0 15px;"></div>
-          <div class="panel__body" style="display: flex; gap: 10px; padding-top: 5px;">
-            <input type="text" id="newTodoInput" class="form-control" placeholder="Wat moet er gebeuren?" style="flex: 1;" />
-            <select id="newTodoPriority" class="form-control" style="width: 120px;">
-              <option value="low">Laag</option>
-              <option value="medium" selected>Normaal</option>
-              <option value="high">Hoog</option>
-            </select>
-            <button id="addTodoBtn" class="btn btn-primary" style="background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">
-              Toevoegen
-            </button>
-          </div>
+      <!-- Task list card -->
+      <div class="eb2-section-card" style="margin-top: 20px; overflow: visible;">
+        <div class="eb2-section-header" style="padding-bottom: 0;">
+          <h2 class="eb2-section-title">Openstaande taken</h2>
+          <span id="todo-count-badge" class="todo-count-badge">0</span>
         </div>
+        <ul id="todoList" class="todo-list">
+          <li class="todo-empty">Laden...</li>
+        </ul>
+      </div>
 
-        <div class="panel" style="margin-top: 20px;">
-          <div class="panel__body" style="padding: 0;">
-            <ul id="todoList" style="list-style: none; padding: 0; margin: 0;">
-              <!-- Todo items come here -->
-              <li style="padding: 20px; text-align: center; color: var(--text-muted);">Laden...</li>
-            </ul>
-          </div>
-        </div>
-      </section>
     </div>
   `;
   },
   init: async () => {
-    // Initial target is the currently logged in user
     targetUserId = window.currentUser?.uid;
-    
+
     if (!targetUserId) {
       console.warn("No user ID found, cannot load todos.");
       return;
     }
 
-    // Check if the user is a superuser and allUsers list is populated, inject dropdown dynamically
     if (window.currentUserRole === 'superuser' && window.allUsers && window.allUsers.length > 0) {
       renderUserPills();
     }
 
-    // Hook up add buttons
     document.getElementById("addTodoBtn")?.addEventListener("click", addTodo);
     document.getElementById("newTodoInput")?.addEventListener("keypress", (e) => {
       if (e.key === "Enter") addTodo();
     });
 
-    // Initial fetch and subscription
     subscribeToFirebase();
   }
 };
 
 function subscribeToFirebase() {
   if (!targetUserId) return;
-  
-  // Unsubscribe from previous user's list if we had one
-  if (unsubscribeSnapshot) {
-    unsubscribeSnapshot();
-  }
+
+  if (unsubscribeSnapshot) unsubscribeSnapshot();
 
   const listEl = document.getElementById("todoList");
-  if (listEl) {
-    listEl.innerHTML = `<li style="padding: 20px; text-align: center; color: var(--text-muted);">Synchroniseren...</li>`;
-  }
+  if (listEl) listEl.innerHTML = `<li class="todo-empty"><i class="ph ph-spinner"></i> Synchroniseren...</li>`;
 
-  // Set up realtime listener. Offline persistence is active, so this works offline too!
   const docRef = doc(db, 'todos', targetUserId);
   unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
-    if (docSnap.exists()) {
-      currentTodos = docSnap.data().items || [];
-    } else {
-      currentTodos = [];
-    }
+    currentTodos = docSnap.exists() ? (docSnap.data().items || []) : [];
     renderTodos();
   }, (error) => {
     console.error("Fout bij ophalen van to-do lijst:", error);
-    if (listEl) {
-      listEl.innerHTML = `<li style="padding: 20px; text-align: center; color: #ef4444;">Fout bij laden van data.</li>`;
-    }
+    if (listEl) listEl.innerHTML = `<li class="todo-empty" style="color:#ef4444;"><i class="ph ph-warning-circle"></i> Fout bij laden van data.</li>`;
   });
 }
 
@@ -112,44 +103,32 @@ function renderUserPills() {
     return `<button
       class="todo-user-pill ${isActive ? 'todo-user-pill--active' : ''}"
       data-uid="${u.uid}"
-      style="
-        display: inline-block;
-        padding: 5px 16px;
-        border-radius: 999px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        cursor: pointer;
-        border: 2px solid ${isActive ? 'var(--accent)' : 'var(--border)'};
-        background: ${isActive ? 'var(--accent)' : 'transparent'};
-        color: ${isActive ? '#fff' : 'var(--text-muted)'};
-        transition: all 0.15s ease;
-        white-space: nowrap;
-      "
     >${u.displayName}</button>`;
   }).join('');
 
-  container.innerHTML = `<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 8px;">${pillsHtml}</div>`;
+  container.innerHTML = `
+    <div class="eb2-section-card todo-user-card">
+      <p class="todo-user-label"><i class="ph ph-users"></i> Weergeven voor:</p>
+      <div class="todo-user-pills">${pillsHtml}</div>
+    </div>`;
 
-  // Hook up click events on pills
   container.querySelectorAll('.todo-user-pill').forEach(btn => {
     btn.addEventListener('click', () => {
       targetUserId = btn.dataset.uid;
-      renderUserPills();        // Refresh to update active state
-      subscribeToFirebase();    // Load the selected user's list
+      renderUserPills();
+      subscribeToFirebase();
     });
   });
 }
 
 async function saveTodosToFirebase() {
   if (!targetUserId) return;
-  
   try {
     const docRef = doc(db, 'todos', targetUserId);
-    // Setting merge:true ensures we don't accidentally overwrite other fields if added later
     await setDoc(docRef, { items: currentTodos }, { merge: true });
   } catch (error) {
     console.error("Kon to-do lijst niet opslaan:", error);
-    alert("Kon taak niet opslaan. Controleer je internetverbinding en probeer het opnieuw.");
+    alert("Kon taak niet opslaan. Controleer je internetverbinding.");
   }
 }
 
@@ -159,7 +138,7 @@ function addTodo() {
   if (!input || !prio || !input.value.trim()) return;
 
   currentTodos.push({
-    id: Date.now().toString() + Math.floor(Math.random() * 1000), // Ensure uniqueness
+    id: Date.now().toString() + Math.floor(Math.random() * 1000),
     text: input.value.trim(),
     priority: prio.value,
     completed: false,
@@ -167,12 +146,9 @@ function addTodo() {
   });
 
   input.value = "";
-  
-  // Firebase will trigger onSnapshot when local write happens, updating UI instantly
   saveTodosToFirebase();
 }
 
-// Make functions available globally so they can be called from inline event handlers
 window.toggleTodoItem = function(id) {
   const todo = currentTodos.find(t => t.id === id);
   if (todo) {
@@ -186,85 +162,71 @@ window.deleteTodoItem = function(id) {
   saveTodosToFirebase();
 };
 
+const PRIO_CONFIG = {
+  high:   { label: 'Hoog',   color: '#ef4444', bg: '#fee2e2', icon: 'ph-arrow-up'    },
+  medium: { label: 'Normaal', color: '#f59e0b', bg: '#fef3c7', icon: 'ph-minus'      },
+  low:    { label: 'Laag',   color: '#64748b', bg: '#f1f5f9', icon: 'ph-arrow-down'  },
+};
+
 function renderTodos() {
   const list = document.getElementById("todoList");
   if (!list) return;
 
-  list.innerHTML = "";
+  // Update count badge
+  const openCount = currentTodos.filter(t => !t.completed).length;
+  const badge = document.getElementById("todo-count-badge");
+  if (badge) badge.textContent = openCount;
 
   if (currentTodos.length === 0) {
-    list.innerHTML = `<li style="padding: 20px; text-align: center; color: var(--text-muted);">Je hebt nog geen openstaande taken.</li>`;
+    list.innerHTML = `<li class="todo-empty"><i class="ph ph-check-circle"></i> Geen openstaande taken. Goed bezig!</li>`;
     return;
   }
 
-  // Sort: open first, then by priority (high > medium > low), then by date
   const prioWeight = { high: 3, medium: 2, low: 1 };
-  
-  // Create a copy to sort
-  const sortedTodos = [...currentTodos].sort((a, b) => {
+  const sorted = [...currentTodos].sort((a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     if (prioWeight[a.priority] !== prioWeight[b.priority]) return prioWeight[b.priority] - prioWeight[a.priority];
     return new Date(b.date) - new Date(a.date);
   });
 
-  sortedTodos.forEach(t => {
+  list.innerHTML = '';
+
+  sorted.forEach(t => {
+    const prio = PRIO_CONFIG[t.priority] || PRIO_CONFIG.low;
+    const dateStr = new Date(t.date).toLocaleDateString('nl-NL', { day: '2-digit', month: 'short', year: 'numeric' });
+
     const li = document.createElement("li");
-    li.style.display = "flex";
-    li.style.alignItems = "center";
-    li.style.padding = "16px";
-    li.style.borderBottom = "1px solid var(--border)";
-    li.style.gap = "12px";
-    
-    if (t.completed) {
-      li.style.opacity = "0.5";
-    }
+    li.className = `todo-item${t.completed ? ' todo-item--done' : ''}`;
+    li.innerHTML = `
+      <label class="todo-checkbox-wrap">
+        <input type="checkbox" class="todo-checkbox" ${t.completed ? 'checked' : ''} data-id="${t.id}">
+        <span class="todo-checkmark"></span>
+      </label>
+      <div class="todo-body">
+        <span class="todo-text">${escapeHtml(t.text)}</span>
+        <div class="todo-meta">
+          <span class="todo-badge" style="color:${prio.color}; background:${prio.bg};">
+            <i class="ph ${prio.icon}"></i> ${prio.label}
+          </span>
+          <span class="todo-date"><i class="ph ph-calendar-blank"></i> ${dateStr}</span>
+        </div>
+      </div>
+      <button class="todo-del-btn" data-id="${t.id}" title="Verwijder taak">
+        <i class="ph ph-trash"></i>
+      </button>
+    `;
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = t.completed;
-    checkbox.style.cursor = "pointer";
-    checkbox.style.width = "18px";
-    checkbox.style.height = "18px";
-    checkbox.style.accentColor = "var(--accent)";
-    // Use the global function
-    checkbox.addEventListener("change", () => window.toggleTodoItem(t.id));
-
-    const textWrap = document.createElement("div");
-    textWrap.style.flex = "1";
-    
-    const text = document.createElement("span");
-    text.textContent = t.text;
-    text.style.color = "var(--text)";
-    text.style.fontWeight = "500";
-    if (t.completed) text.style.textDecoration = "line-through";
-    
-    let prioColor = "var(--text-muted)";
-    let prioText = "Laag";
-    if (t.priority === "high") { prioColor = "#ef4444"; prioText = "Hoog"; }
-    else if (t.priority === "medium") { prioColor = "#f59e0b"; prioText = "Normaal"; }
-
-    const meta = document.createElement("div");
-    meta.innerHTML = `<span style="color: ${prioColor}; font-size: 11px; font-weight: 700; text-transform: uppercase;">${prioText}</span> <span style="color: var(--text-muted); font-size: 11px; margin-left: 8px;">${new Date(t.date).toLocaleDateString('nl-NL')}</span>`;
-
-    textWrap.appendChild(text);
-    textWrap.appendChild(meta);
-
-    const delBtn = document.createElement("button");
-    delBtn.innerHTML = `<i class="fa-solid fa-trash"></i>`;
-    delBtn.style.background = "transparent";
-    delBtn.style.border = "none";
-    delBtn.style.color = "#ef4444";
-    delBtn.style.cursor = "pointer";
-    delBtn.style.padding = "8px";
-    delBtn.style.opacity = "0.6";
-    delBtn.addEventListener("mouseenter", () => delBtn.style.opacity = "1");
-    delBtn.addEventListener("mouseleave", () => delBtn.style.opacity = "0.6");
-    delBtn.addEventListener("click", () => window.deleteTodoItem(t.id));
-
-    li.appendChild(checkbox);
-    li.appendChild(textWrap);
-    li.appendChild(delBtn);
+    li.querySelector('.todo-checkbox').addEventListener('change', () => window.toggleTodoItem(t.id));
+    li.querySelector('.todo-del-btn').addEventListener('click', () => window.deleteTodoItem(t.id));
 
     list.appendChild(li);
   });
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
