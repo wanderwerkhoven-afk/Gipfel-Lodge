@@ -322,6 +322,16 @@ window.importToFirebase = async function() {
                 }
             }, { merge: true });
 
+            // Also write to public_availability so the booking calendar blocks these dates
+            await setDoc(doc(db, 'public_availability', `avail_${b.id}`), {
+                bookingRef: b.id,
+                checkIn: b.checkIn,
+                checkOut: b.checkOut,
+                status: b.type === 'owner' ? 'owner' : 'confirmed',
+                importedAt: new Date().toISOString(),
+                createdAt: serverTimestamp()
+            }, { merge: true });
+
             success++;
             if (window.logActivity) await window.logActivity('Excel Import', `Boeking geïmporteerd via Excel upload`, b.id);
         } catch (err) {

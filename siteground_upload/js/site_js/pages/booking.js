@@ -115,9 +115,9 @@ const GipfelBooking = {
                 const data = doc.data();
                 if (!data.checkIn || !data.checkOut) return;
                 
-                // ONLY process confirmed or pending bookings. 
+                // ONLY process confirmed, owner or pending bookings.
                 // Skip 'rejected', 'cancelled', etc.
-                if (data.status !== 'confirmed' && data.status !== 'pending' && data.status) return;
+                if (data.status !== 'confirmed' && data.status !== 'pending' && data.status !== 'owner' && data.status) return;
 
                 const startStr = data.checkIn;
                 const endStr = data.checkOut;
@@ -127,8 +127,9 @@ const GipfelBooking = {
                 const end = new Date(endStr);
                 end.setHours(12, 0, 0, 0);
                 
-                // Track start/end for confirmed vs pending bookings
-                if (data.status === 'confirmed') {
+                // Track start/end — owner & confirmed both count as fully booked
+                const isFullyBooked = (data.status === 'confirmed' || data.status === 'owner');
+                if (isFullyBooked) {
                     if (!this.confirmedCheckIns.includes(startStr)) this.confirmedCheckIns.push(startStr);
                     if (!this.confirmedCheckOuts.includes(endStr)) this.confirmedCheckOuts.push(endStr);
                 } else {
@@ -141,7 +142,7 @@ const GipfelBooking = {
                 let current = new Date(start);
                 while (current < end) { 
                     const dateStr = this.formatDateLocal(current);
-                    if (data.status === 'confirmed') {
+                    if (isFullyBooked) {
                         if (!this.bookedDates.includes(dateStr)) this.bookedDates.push(dateStr);
                     } else {
                         // This catches 'pending' or missing status
