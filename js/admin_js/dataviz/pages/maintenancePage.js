@@ -40,13 +40,13 @@ export const MaintenancePage = {
 
             <div class="eb2-content-wrapper">
                 <!-- Master Switch -->
-                <div class="eb2-section-card" style="margin-bottom: 24px; border-left: 4px solid #ef4444;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div class="eb2-section-card" style="margin-bottom: 24px; border-left: 5px solid #ef4444;">
+                    <div class="eb2-section-header" style="gap: 15px;">
                         <div>
-                            <h2 style="margin:0; font-size: 1.1rem; color: #1e293b;">Totale Website Blokkeren</h2>
-                            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #64748b;">Zet de hele website op "Onder Constructie". Individuele pagina-instellingen worden genegeerd zolang dit aan staat.</p>
+                            <h2 class="eb2-section-title" style="color: #ef4444;">Totale Website Blokkeren</h2>
+                            <p class="eb2-section-subtitle">Zet de hele website op "Onder Constructie". Individuele pagina-instellingen worden genegeerd zolang dit aan staat.</p>
                         </div>
-                        <label class="eb2-toggle-switch">
+                        <label class="eb2-toggle-switch" style="flex-shrink: 0;">
                             <input type="checkbox" id="maint-master-switch">
                             <span class="eb2-toggle-slider"></span>
                         </label>
@@ -55,44 +55,64 @@ export const MaintenancePage = {
 
                 <!-- Per Page -->
                 <div class="eb2-section-card">
-                    <h2 style="margin-top:0; font-size: 1.1rem; color: #1e293b; margin-bottom: 20px;">Individuele Pagina's</h2>
+                    <div class="eb2-section-header" style="padding-bottom: 15px;">
+                        <div>
+                            <h2 class="eb2-section-title">Individuele Pagina's</h2>
+                            <p class="eb2-section-subtitle">Schakel de onderhoudsmodus per specifieke pagina in of uit.</p>
+                        </div>
+                    </div>
                     
                     <div class="eb2-table-container">
-                        <table class="eb2-table">
+                        <table class="eb2-table" style="min-width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>Pagina</th>
-                                    <th style="width: 100px; text-align: right;">Status</th>
+                                    <th style="padding-left: 24px;">Pagina</th>
+                                    <th style="width: 120px; text-align: right; padding-right: 24px;">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>Home</strong> <br><span style="font-size:0.8rem;color:#64748b;">De hoofdpagina (/#home)</span></td>
-                                    <td style="text-align: right;">
+                                    <td style="padding-left: 24px; padding-top: 16px; padding-bottom: 16px;">
+                                        <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">Home</div>
+                                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">De hoofdpagina (/#home)</div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 24px;">
                                         <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="home"><span class="eb2-toggle-slider"></span></label>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>De Lodge</strong> <br><span style="font-size:0.8rem;color:#64748b;">Lodge details en galerij (/#lodge)</span></td>
-                                    <td style="text-align: right;">
+                                    <td style="padding-left: 24px; padding-top: 16px; padding-bottom: 16px;">
+                                        <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">De Lodge</div>
+                                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Lodge details en galerij (/#lodge)</div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 24px;">
                                         <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="lodge"><span class="eb2-toggle-slider"></span></label>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Activiteiten</strong> <br><span style="font-size:0.8rem;color:#64748b;">Zomer & Winter activiteiten (/#activities)</span></td>
-                                    <td style="text-align: right;">
+                                    <td style="padding-left: 24px; padding-top: 16px; padding-bottom: 16px;">
+                                        <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">Activiteiten</div>
+                                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Zomer & Winter activiteiten (/#activities)</div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 24px;">
                                         <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="activities"><span class="eb2-toggle-slider"></span></label>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Genuss (Nieuw)</strong> <br><span style="font-size:0.8rem;color:#64748b;">Eten & drinken (/#enjoyment)</span></td>
-                                    <td style="text-align: right;">
+                                    <td style="padding-left: 24px; padding-top: 16px; padding-bottom: 16px;">
+                                        <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">Genuss (Nieuw)</div>
+                                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Eten & drinken (/#enjoyment)</div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 24px;">
                                         <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="enjoyment"><span class="eb2-toggle-slider"></span></label>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Boeken</strong> <br><span style="font-size:0.8rem;color:#64748b;">Beschikbaarheid en boeken (/#booking)</span></td>
-                                    <td style="text-align: right;">
+                                    <td style="padding-left: 24px; padding-top: 16px; padding-bottom: 16px;">
+                                        <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;">Boeken</div>
+                                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Beschikbaarheid en boeken (/#booking)</div>
+                                    </td>
+                                    <td style="text-align: right; padding-right: 24px;">
                                         <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="booking"><span class="eb2-toggle-slider"></span></label>
                                     </td>
                                 </tr>
