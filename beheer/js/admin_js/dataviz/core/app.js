@@ -26,10 +26,9 @@ export const state = {
   // charts instances
   charts: {
     homeBar: null,
+    homeCumulativeRevenue: null,
     cumulative: null,
     occTrend: null,
-    // (weekStack mag weg als je weekchart verwijderd hebt)
-    // weekStack: null,
   },
 
   // pricing "database"
