@@ -18,13 +18,12 @@ export const TodoPage = {
       </div>
 
       <section class="content-section" style="max-width: 600px; margin: 0 auto;">
-        <div id="superuser-select-container"></div>
-
         <div class="panel">
           <div class="panel-header">
             <h3 class="panel-title">Nieuwe taak toevoegen</h3>
           </div>
-          <div class="panel__body" style="display: flex; gap: 10px;">
+          <div id="superuser-select-container" style="padding: 0 15px;"></div>
+          <div class="panel__body" style="display: flex; gap: 10px; padding-top: 5px;">
             <input type="text" id="newTodoInput" class="form-control" placeholder="Wat moet er gebeuren?" style="flex: 1;" />
             <select id="newTodoPriority" class="form-control" style="width: 120px;">
               <option value="low">Laag</option>
@@ -59,33 +58,8 @@ export const TodoPage = {
     }
 
     // Check if the user is a superuser and allUsers list is populated, inject dropdown dynamically
-    const container = document.getElementById("superuser-select-container");
-    if (container) {
-      if (window.currentUserRole === 'superuser' && window.allUsers && window.allUsers.length > 0) {
-        const optionsHtml = window.allUsers.map(u => 
-          `<option value="${u.uid}" ${u.uid === targetUserId ? 'selected' : ''}>${u.displayName}'s To-Do's (${u.email})</option>`
-        ).join('');
-        
-        container.innerHTML = `
-          <div class="panel" style="margin-bottom: 20px; padding: 15px;">
-            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Selecteer To-Do Lijst (Superuser)</label>
-            <select id="todo-user-select" class="form-control" style="width: 100%; max-width: 400px; padding: 8px;">
-              ${optionsHtml}
-            </select>
-          </div>
-        `;
-
-        // Hook up superuser dropdown
-        const userSelect = document.getElementById("todo-user-select");
-        if (userSelect) {
-          userSelect.addEventListener("change", (e) => {
-            targetUserId = e.target.value;
-            subscribeToFirebase(); // Re-subscribe to the new user's list
-          });
-        }
-      } else {
-        container.innerHTML = '';
-      }
+    if (window.currentUserRole === 'superuser' && window.allUsers && window.allUsers.length > 0) {
+      renderUserPills();
     }
 
     // Hook up add buttons
@@ -126,6 +100,43 @@ function subscribeToFirebase() {
     if (listEl) {
       listEl.innerHTML = `<li style="padding: 20px; text-align: center; color: #ef4444;">Fout bij laden van data.</li>`;
     }
+  });
+}
+
+function renderUserPills() {
+  const container = document.getElementById("superuser-select-container");
+  if (!container) return;
+
+  const pillsHtml = window.allUsers.map(u => {
+    const isActive = u.uid === targetUserId;
+    return `<button
+      class="todo-user-pill ${isActive ? 'todo-user-pill--active' : ''}"
+      data-uid="${u.uid}"
+      style="
+        display: inline-block;
+        padding: 5px 16px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 2px solid ${isActive ? 'var(--accent)' : 'var(--border)'};
+        background: ${isActive ? 'var(--accent)' : 'transparent'};
+        color: ${isActive ? '#fff' : 'var(--text-muted)'};
+        transition: all 0.15s ease;
+        white-space: nowrap;
+      "
+    >${u.displayName}</button>`;
+  }).join('');
+
+  container.innerHTML = `<div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 8px;">${pillsHtml}</div>`;
+
+  // Hook up click events on pills
+  container.querySelectorAll('.todo-user-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      targetUserId = btn.dataset.uid;
+      renderUserPills();        // Refresh to update active state
+      subscribeToFirebase();    // Load the selected user's list
+    });
   });
 }
 
