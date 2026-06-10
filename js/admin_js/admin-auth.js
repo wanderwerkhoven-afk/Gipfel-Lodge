@@ -76,7 +76,7 @@
                     if (window.innerWidth <= 992) {
                         // Mobile: show login as overlay on top of dashboard
                         dashboardScreen.style.display = "block";
-                        loginScreen.style.display = "flex";
+                        loginScreen.classList.add('login-visible');
                         document.body.style.display = 'block';
                     } else {
                         // Desktop: hide dashboard, show login card as before

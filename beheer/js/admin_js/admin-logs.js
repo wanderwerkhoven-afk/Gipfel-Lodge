@@ -177,10 +177,10 @@
             if (window.innerWidth <= 992) {
                 dashboardScreen.style.display = "block";
                 document.body.style.display = 'block';
-                // Trigger fade-out animation
+                // Trigger fade-out animation, then remove visibility class
                 loginScreen.classList.add('login-hiding');
                 setTimeout(() => {
-                    loginScreen.style.display = "none";
+                    loginScreen.classList.remove('login-visible');
                     loginScreen.classList.remove('login-hiding');
                 }, 320); // Matches animation duration
             } else {

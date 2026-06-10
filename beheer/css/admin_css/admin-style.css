@@ -572,11 +572,12 @@
             }
 
             /* LOGIN SCHERM als modal overlay op mobiel/tablet */
+            /* Standaard verborgen — wordt via JS zichtbaar gemaakt */
             #login-screen {
                 position: fixed;
                 inset: 0;
                 z-index: 9999;
-                display: flex !important;
+                display: none;  /* JS zet dit op flex zodra de auth state uitgelezen is */
                 align-items: center;
                 justify-content: center;
                 padding: 24px;
@@ -589,6 +590,11 @@
                 box-shadow: none;
                 border-top: none;
                 padding-top: 0;
+            }
+
+            /* Zichtbare staat — toegevoegd door JS */
+            #login-screen.login-visible {
+                display: flex;
                 animation: loginFadeIn 0.3s ease-out;
             }
 
