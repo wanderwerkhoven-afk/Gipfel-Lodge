@@ -182,6 +182,7 @@
                 setTimeout(() => {
                     loginScreen.classList.remove('login-visible');
                     loginScreen.classList.remove('login-hiding');
+                    loginScreen.style.display = 'none'; // Guarantee it stays hidden
                 }, 320); // Matches animation duration
             } else {
                 // Desktop: instant swap as before

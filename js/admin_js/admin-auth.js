@@ -76,6 +76,7 @@
                     if (window.innerWidth <= 992) {
                         // Mobile: show login as overlay on top of dashboard
                         dashboardScreen.style.display = "block";
+                        loginScreen.style.display = ""; // Clear inline style if any
                         loginScreen.classList.add('login-visible');
                         document.body.style.display = 'block';
                     } else {
