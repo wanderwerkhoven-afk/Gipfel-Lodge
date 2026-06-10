@@ -41,10 +41,31 @@ async function loadBehaviorStats() {
     }
     
     try {
-        const { db, collection, getDocs, query, orderBy, limit } = await import('../site_js/core/firebase.js');
+        const { db, collection, getDocs, query, orderBy, limit, where, Timestamp } = await import('../site_js/core/firebase.js');
 
-        // Fetch last 1000 page views for analysis
-        const q = query(collection(db, "page_views"), orderBy("timestamp", "desc"), limit(1000));
+        // Check if date filters are set
+        const startDateEl = document.getElementById('behavior-start-date');
+        const endDateEl = document.getElementById('behavior-end-date');
+        let q;
+        
+        if (startDateEl && endDateEl && startDateEl.value && endDateEl.value) {
+            const startD = new Date(startDateEl.value);
+            startD.setHours(0,0,0,0);
+            const endD = new Date(endDateEl.value);
+            endD.setHours(23,59,59,999);
+            
+            q = query(
+                collection(db, "page_views"),
+                where("timestamp", ">=", Timestamp.fromDate(startD)),
+                where("timestamp", "<=", Timestamp.fromDate(endD)),
+                orderBy("timestamp", "desc"),
+                limit(1000)
+            );
+        } else {
+            // Fetch last 1000 page views for analysis
+            q = query(collection(db, "page_views"), orderBy("timestamp", "desc"), limit(1000));
+        }
+        
         const snap = await getDocs(q);
 
         const views = [];
