@@ -1,16 +1,43 @@
+import { db, doc, onSnapshot, setDoc } from '../../../site_js/core/firebase.js';
+
+let currentTodos = [];
+let targetUserId = null;
+let unsubscribeSnapshot = null;
+
 export const TodoPage = {
   id: "todo",
   title: "TO-DO's",
-  template: () => `
+  template: () => {
+    let superuserSelectHtml = '';
+    
+    // Check if the user is a superuser and allUsers list is populated
+    if (window.currentUserRole === 'superuser' && window.allUsers && window.allUsers.length > 0) {
+      const optionsHtml = window.allUsers.map(u => 
+        `<option value="${u.uid}" ${u.uid === window.currentUser?.uid ? 'selected' : ''}>${u.displayName}'s To-Do's (${u.email})</option>`
+      ).join('');
+      
+      superuserSelectHtml = `
+        <div class="panel" style="margin-bottom: 20px; padding: 15px;">
+          <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Selecteer To-Do Lijst (Superuser)</label>
+          <select id="todo-user-select" class="form-control" style="width: 100%; max-width: 400px; padding: 8px;">
+            ${optionsHtml}
+          </select>
+        </div>
+      `;
+    }
+
+    return `
     <div class="container slide-up">
       <div class="page-head">
         <div>
           <h2 class="page-title">Actiepunten</h2>
-          <p class="page-subtitle">Beheer je taken en to-do's</p>
+          <p class="page-subtitle">Beheer je taken en to-do's (Synchroniseert automatisch)</p>
         </div>
       </div>
 
       <section class="content-section" style="max-width: 600px; margin: 0 auto;">
+        ${superuserSelectHtml}
+
         <div class="panel">
           <div class="panel-header">
             <h3 class="panel-title">Nieuwe taak toevoegen</h3>
@@ -32,33 +59,84 @@ export const TodoPage = {
           <div class="panel__body" style="padding: 0;">
             <ul id="todoList" style="list-style: none; padding: 0; margin: 0;">
               <!-- Todo items come here -->
+              <li style="padding: 20px; text-align: center; color: var(--text-muted);">Laden...</li>
             </ul>
           </div>
         </div>
       </section>
     </div>
-  `,
+  `;
+  },
   init: async () => {
-    loadTodos();
+    // Initial target is the currently logged in user
+    targetUserId = window.currentUser?.uid;
+    
+    if (!targetUserId) {
+      console.warn("No user ID found, cannot load todos.");
+      return;
+    }
+
+    // Hook up superuser dropdown
+    const userSelect = document.getElementById("todo-user-select");
+    if (userSelect) {
+      userSelect.addEventListener("change", (e) => {
+        targetUserId = e.target.value;
+        subscribeToFirebase(); // Re-subscribe to the new user's list
+      });
+    }
+
+    // Hook up add buttons
     document.getElementById("addTodoBtn")?.addEventListener("click", addTodo);
     document.getElementById("newTodoInput")?.addEventListener("keypress", (e) => {
       if (e.key === "Enter") addTodo();
     });
+
+    // Initial fetch and subscription
+    subscribeToFirebase();
   }
 };
 
-const STORAGE_KEY = "gipfel_admin_todos";
-
-function getTodos() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch (e) {
-    return [];
+function subscribeToFirebase() {
+  if (!targetUserId) return;
+  
+  // Unsubscribe from previous user's list if we had one
+  if (unsubscribeSnapshot) {
+    unsubscribeSnapshot();
   }
+
+  const listEl = document.getElementById("todoList");
+  if (listEl) {
+    listEl.innerHTML = `<li style="padding: 20px; text-align: center; color: var(--text-muted);">Synchroniseren...</li>`;
+  }
+
+  // Set up realtime listener. Offline persistence is active, so this works offline too!
+  const docRef = doc(db, 'todos', targetUserId);
+  unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      currentTodos = docSnap.data().items || [];
+    } else {
+      currentTodos = [];
+    }
+    renderTodos();
+  }, (error) => {
+    console.error("Fout bij ophalen van to-do lijst:", error);
+    if (listEl) {
+      listEl.innerHTML = `<li style="padding: 20px; text-align: center; color: #ef4444;">Fout bij laden van data.</li>`;
+    }
+  });
 }
 
-function saveTodos(todos) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+async function saveTodosToFirebase() {
+  if (!targetUserId) return;
+  
+  try {
+    const docRef = doc(db, 'todos', targetUserId);
+    // Setting merge:true ensures we don't accidentally overwrite other fields if added later
+    await setDoc(docRef, { items: currentTodos }, { merge: true });
+  } catch (error) {
+    console.error("Kon to-do lijst niet opslaan:", error);
+    alert("Kon taak niet opslaan. Controleer je internetverbinding en probeer het opnieuw.");
+  }
 }
 
 function addTodo() {
@@ -66,45 +144,41 @@ function addTodo() {
   const prio = document.getElementById("newTodoPriority");
   if (!input || !prio || !input.value.trim()) return;
 
-  const todos = getTodos();
-  todos.push({
-    id: Date.now().toString(),
+  currentTodos.push({
+    id: Date.now().toString() + Math.floor(Math.random() * 1000), // Ensure uniqueness
     text: input.value.trim(),
     priority: prio.value,
     completed: false,
     date: new Date().toISOString()
   });
 
-  saveTodos(todos);
   input.value = "";
-  loadTodos();
+  
+  // Firebase will trigger onSnapshot when local write happens, updating UI instantly
+  saveTodosToFirebase();
 }
 
-function toggleTodo(id) {
-  const todos = getTodos();
-  const todo = todos.find(t => t.id === id);
+// Make functions available globally so they can be called from inline event handlers
+window.toggleTodoItem = function(id) {
+  const todo = currentTodos.find(t => t.id === id);
   if (todo) {
     todo.completed = !todo.completed;
-    saveTodos(todos);
-    loadTodos();
+    saveTodosToFirebase();
   }
-}
+};
 
-function deleteTodo(id) {
-  const todos = getTodos();
-  const newTodos = todos.filter(t => t.id !== id);
-  saveTodos(newTodos);
-  loadTodos();
-}
+window.deleteTodoItem = function(id) {
+  currentTodos = currentTodos.filter(t => t.id !== id);
+  saveTodosToFirebase();
+};
 
-function loadTodos() {
+function renderTodos() {
   const list = document.getElementById("todoList");
   if (!list) return;
 
-  const todos = getTodos();
   list.innerHTML = "";
 
-  if (todos.length === 0) {
+  if (currentTodos.length === 0) {
     list.innerHTML = `<li style="padding: 20px; text-align: center; color: var(--text-muted);">Je hebt nog geen openstaande taken.</li>`;
     return;
   }
@@ -112,13 +186,14 @@ function loadTodos() {
   // Sort: open first, then by priority (high > medium > low), then by date
   const prioWeight = { high: 3, medium: 2, low: 1 };
   
-  todos.sort((a, b) => {
+  // Create a copy to sort
+  const sortedTodos = [...currentTodos].sort((a, b) => {
     if (a.completed !== b.completed) return a.completed ? 1 : -1;
     if (prioWeight[a.priority] !== prioWeight[b.priority]) return prioWeight[b.priority] - prioWeight[a.priority];
     return new Date(b.date) - new Date(a.date);
   });
 
-  todos.forEach(t => {
+  sortedTodos.forEach(t => {
     const li = document.createElement("li");
     li.style.display = "flex";
     li.style.alignItems = "center";
@@ -137,7 +212,8 @@ function loadTodos() {
     checkbox.style.width = "18px";
     checkbox.style.height = "18px";
     checkbox.style.accentColor = "var(--accent)";
-    checkbox.addEventListener("change", () => toggleTodo(t.id));
+    // Use the global function
+    checkbox.addEventListener("change", () => window.toggleTodoItem(t.id));
 
     const textWrap = document.createElement("div");
     textWrap.style.flex = "1";
@@ -169,7 +245,7 @@ function loadTodos() {
     delBtn.style.opacity = "0.6";
     delBtn.addEventListener("mouseenter", () => delBtn.style.opacity = "1");
     delBtn.addEventListener("mouseleave", () => delBtn.style.opacity = "0.6");
-    delBtn.addEventListener("click", () => deleteTodo(t.id));
+    delBtn.addEventListener("click", () => window.deleteTodoItem(t.id));
 
     li.appendChild(checkbox);
     li.appendChild(textWrap);

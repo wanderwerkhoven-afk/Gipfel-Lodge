@@ -31,12 +31,45 @@
                     }
 
                     console.log('User role:', currentUserRole);
+                    
+                    // Expose to window for modules
+                    window.currentUser = currentUser;
+                    window.currentUserRole = currentUserRole;
+                    window.currentUserName = currentUserName;
+
+                    // If superuser, fetch all users for dropdowns
+                    if (currentUserRole === 'superuser') {
+                        try {
+                            const { collection, getDocs } = await import('../site_js/core/firebase.js');
+                            const usersSnap = await getDocs(collection(db, 'users'));
+                            window.allUsers = [];
+                            usersSnap.forEach(doc => {
+                                window.allUsers.push({
+                                    uid: doc.id,
+                                    displayName: doc.data().displayName || doc.data().email.split('@')[0],
+                                    email: doc.data().email
+                                });
+                            });
+                        } catch (e) {
+                            console.error("Could not fetch all users list:", e);
+                            window.allUsers = [];
+                        }
+                    } else {
+                        window.allUsers = [];
+                    }
+
                     showDashboard();
                 } else {
                     console.log("No user is logged in.");
                     currentUser = null;
                     currentUserRole = 'user';
                     currentUserName = '';
+                    
+                    window.currentUser = null;
+                    window.currentUserRole = 'user';
+                    window.currentUserName = '';
+                    window.allUsers = [];
+
                     document.getElementById("dashboard-screen").style.display = "none";
                     document.getElementById("login-screen").style.display = "block";
                     document.body.style.display = 'flex';

@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, orderBy, query, doc, updateDoc, setDoc, getDoc, runTransaction, where, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, getDocs, orderBy, query, doc, updateDoc, setDoc, getDoc, runTransaction, where, deleteDoc, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 
 // ============================================================
@@ -42,7 +42,16 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
-console.log("Firestore initialized.");
+import { enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+enableIndexedDbPersistence(db).catch((err) => {
+  if (err.code == 'failed-precondition') {
+    console.warn("Multiple tabs open, offline persistence can only be enabled in one tab at a time.");
+  } else if (err.code == 'unimplemented') {
+    console.warn("The current browser does not support all of the features required to enable persistence.");
+  }
+});
+console.log("Firestore initialized with offline persistence.");
 
 // Initialize Firebase Auth
 const auth = getAuth(app);
@@ -53,4 +62,4 @@ const storage = getStorage(app);
 console.log("Firebase Storage initialized.");
 
 // Export instances to use in other files
-export { db, auth, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, serverTimestamp, getDocs, orderBy, query, doc, updateDoc, setDoc, getDoc, runTransaction, where, deleteDoc, limit, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+export { db, auth, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, serverTimestamp, getDocs, orderBy, query, doc, updateDoc, setDoc, getDoc, runTransaction, where, deleteDoc, limit, signInWithEmailAndPassword, signOut, onAuthStateChanged, onSnapshot };
