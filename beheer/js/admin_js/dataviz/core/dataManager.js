@@ -1,6 +1,6 @@
 // ./JS/core/dataManager.js
 import { CONFIG, state, setState } from "./app.js";
-import { db, collection, getDocs, query, orderBy } from "../../site_js/core/firebase.js";
+import { db, collection, getDocs, query, orderBy } from "../../../site_js/core/firebase.js";
 
 /* ============================================================
  * 2) ROW HELPERS
