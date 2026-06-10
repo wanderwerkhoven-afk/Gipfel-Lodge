@@ -1,5 +1,5 @@
-import { db, doc, onSnapshot, setDoc } from '../../site_js/core/firebase.js';
-import { EventBus } from '../core/eventBus.js';
+import { db, doc, onSnapshot, setDoc } from '../../../site_js/core/firebase.js';
+// No EventBus
 
 export const MaintenancePage = {
     initialized: false,
@@ -112,7 +112,7 @@ export const MaintenancePage = {
         masterSwitch.addEventListener('change', async (e) => {
             this.settings.master_switch = e.target.checked;
             await this.saveSettings();
-            EventBus.emit('notification', { message: 'Master switch ' + (e.target.checked ? 'AAN' : 'UIT'), type: 'success' });
+            console.log('Master switch ' + (e.target.checked ? 'AAN' : 'UIT'));
         });
 
         pageToggles.forEach(toggle => {
@@ -120,7 +120,7 @@ export const MaintenancePage = {
                 const page = e.target.dataset.page;
                 this.settings.pages[page] = e.target.checked;
                 await this.saveSettings();
-                EventBus.emit('notification', { message: 'Pagina ' + page + ' ' + (e.target.checked ? 'Offline' : 'Online'), type: 'success' });
+                console.log('Pagina ' + page + ' ' + (e.target.checked ? 'Offline' : 'Online'));
             });
         });
     },
@@ -159,7 +159,7 @@ export const MaintenancePage = {
             await setDoc(settingsRef, this.settings, { merge: true });
         } catch (error) {
             console.error("Error saving maintenance settings:", error);
-            EventBus.emit('notification', { message: 'Fout bij opslaan: ' + error.message, type: 'error' });
+            console.error('Fout bij opslaan:', error.message);
         }
     },
 
