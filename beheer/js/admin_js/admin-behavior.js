@@ -124,7 +124,7 @@ async function loadBehaviorStats() {
         renderBehaviorCharts(views);
 
         // --- 3. Render Table ---
-        renderBehaviorTable(views.slice(0, 50)); 
+        renderBehaviorTable(views); 
 
     } catch (err) {
         console.error("Error loading behavior stats:", err);
