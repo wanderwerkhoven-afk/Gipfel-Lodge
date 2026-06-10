@@ -84,7 +84,7 @@
             } else if (viewId === 'behavior-view') {
                 loadBehaviorStats();
             } else if (viewId === 'maintenance-view') {
-                import('./dataviz/pages/maintenancePage.js').then(module => {
+                import('./js/admin_js/dataviz/pages/maintenancePage.js').then(module => {
                     module.MaintenancePage.init();
                 }).catch(err => console.error("Failed to load MaintenancePage", err));
             } else if (viewId.startsWith('dataviz-')) {
