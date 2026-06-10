@@ -194,6 +194,24 @@
 
                     <div id="db-test-result"
                         style="margin-top: 10px; font-size: 0.75rem; color: #ff6b6b; display: none;"></div>
+
+                    <!-- Build command copy button -->
+                    <div style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+                        <span style="display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.35); margin-bottom: 8px;">Build commando</span>
+                        <div style="display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; padding: 7px 10px;">
+                            <code id="build-cmd-text" style="flex:1; font-size: 0.72rem; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: monospace;">npm run build:siteground</code>
+                            <button id="copy-build-btn" onclick="
+                                navigator.clipboard.writeText('npm run build:siteground').then(() => {
+                                    const btn = document.getElementById('copy-build-btn');
+                                    btn.innerHTML = '<i class=\'ph ph-check\' style=\'color:#4ade80\'></i>';
+                                    setTimeout(() => btn.innerHTML = '<i class=\'ph ph-copy\'></i>', 2000);
+                                });
+                            " title="Kopieer build commando" style="background: transparent; border: none; color: rgba(255,255,255,0.45); cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: color 0.2s; flex-shrink:0;"
+                              onmouseover="this.style.color='var(--color-gold)'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">
+                                <i class="ph ph-copy"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <button class="logout-btn" onclick="logout()" style="margin-top: 20px;">Veilig Uitloggen</button>
