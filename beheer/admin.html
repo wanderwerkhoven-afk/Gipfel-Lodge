@@ -93,61 +93,35 @@
                 </div>
 
                 <ul class="nav-menu">
-                    <li class="nav-group-title">COMMUNICATIE</li>
+                    <li class="nav-group-title">FRONTDESK</li>
                     <li class="nav-item active" onclick="switchView('bookings-view', this)">
                         <i class="ph ph-envelope-simple"></i> Aanvragen
                     </li>
                     <li class="nav-item" onclick="switchView('mailchain-view', this)">
                         <i class="ph ph-paper-plane-tilt"></i> Mail Chain
                     </li>
-
-                    <li class="nav-group-title">GUEST DATA</li>
-                    <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">
-                        <i class="ph ph-file-arrow-up"></i> Excel Import
+                    <li id="nav-carousel-desktop" class="nav-item" onclick="switchView('carousel-view', this)">
+                        <i class="ph ph-cards"></i> Boekingskaarten
                     </li>
                     <li id="nav-pricing-desktop" class="nav-item" onclick="switchView('pricing-view', this)">
                         <i class="ph ph-tag"></i> Prijzen
                     </li>
-                    <li id="nav-carousel-desktop" class="nav-item" onclick="switchView('carousel-view', this)">
-                        <i class="ph ph-cards"></i> Boekingskaarten
+                    <li id="nav-dataviz-todo" class="nav-item" onclick="switchView('dataviz-todo-view', this)">
+                        <i class="ph ph-check-square-offset"></i> TO-DO's
                     </li>
 
-                    <li class="nav-group-title">WEBSITE CONTENT</li>
-                    <li id="nav-galleries-desktop" class="nav-item" onclick="switchView('galleries-view', this)">
-                        <i class="ph ph-image"></i> Galerijen Beheren
-                    </li>
-
-                    <li class="nav-group-title">FINANCIEN</li>
-                    <li id="nav-bank-desktop" class="nav-item"
-                        onclick="switchView('bank-view', this)">
-                        <i class="ph ph-bank"></i> Bankoverzicht
-                    </li>
-                    <li id="nav-invoices-desktop" class="nav-item"
-                        onclick="switchView('invoices-view', this)">
+                    <li class="nav-group-title">FINANCIËN</li>
+                    <li id="nav-invoices-desktop" class="nav-item" onclick="switchView('invoices-view', this)">
                         <i class="ph ph-file-text"></i> Facturen
                     </li>
-                    <li id="nav-revenue-desktop" class="nav-item"
-                        onclick="switchView('revenue-view', this)">
-                        <i class="ph ph-chart-line-up"></i> Omzet & Rapportages
-                    </li>
-                    <li id="nav-kostenposten-desktop" class="nav-item"
-                        onclick="switchView('kostenposten-view', this)">
-                        <i class="ph ph-coins"></i> Kostenposten
-                    </li>
-                    <li id="nav-debtors-desktop" class="nav-item"
-                        onclick="switchView('debtors-view', this)">
+                    <li id="nav-debtors-desktop" class="nav-item" onclick="switchView('debtors-view', this)">
                         <i class="ph ph-warning-circle"></i> Openstaande Saldi
                     </li>
-
-                    <li class="nav-group-title">SYSTEEM</li>
-                    <li id="nav-behavior-desktop" class="nav-item" onclick="switchView('behavior-view', this)">
-                        <i class="ph ph-globe"></i> Website Verkeer
-                    </li>
-                    <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">
-                        <i class="ph ph-activity"></i> Systeem Logs
+                    <li id="nav-kostenposten-desktop" class="nav-item" onclick="switchView('kostenposten-view', this)">
+                        <i class="ph ph-coins"></i> Kostenposten
                     </li>
 
-                    <li class="nav-group-title">BOEKINGDATA</li>
+                    <li class="nav-group-title">DATA & ANALYTICS</li>
                     <li id="nav-dataviz-home" class="nav-item" onclick="switchView('dataviz-home-view', this)">
                         <i class="ph ph-squares-four"></i> Dashboard (KPIs)
                     </li>
@@ -160,14 +134,25 @@
                     <li id="nav-dataviz-behavior" class="nav-item" onclick="switchView('dataviz-behavior-view', this)">
                         <i class="ph ph-users"></i> Boekingsgedrag
                     </li>
+                    <li id="nav-behavior-desktop" class="nav-item" onclick="switchView('behavior-view', this)">
+                        <i class="ph ph-globe"></i> Website Verkeer
+                    </li>
+
+                    <li class="nav-group-title">BEHEER & SYSTEEM</li>
+                    <li id="nav-maintenance-desktop" class="nav-item" onclick="switchView('maintenance-view', this)">
+                        <i class="ph ph-wrench"></i> Website Status
+                    </li>
+                    <li id="nav-galleries-desktop" class="nav-item" onclick="switchView('galleries-view', this)">
+                        <i class="ph ph-image"></i> Galerijen Beheren
+                    </li>
+                    <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">
+                        <i class="ph ph-file-arrow-up"></i> Excel Import
+                    </li>
                     <li id="nav-dataviz-data" class="nav-item" onclick="switchView('dataviz-data-view', this)">
                         <i class="ph ph-database"></i> Database Browser
                     </li>
-                    <li id="nav-dataviz-todo" class="nav-item" onclick="switchView('dataviz-todo-view', this)">
-                        <i class="ph ph-check-square-offset"></i> TO-DO's
-                    </li>
-                    <li id="nav-maintenance-desktop" class="nav-item" onclick="switchView('maintenance-view', this)">
-                        <i class="ph ph-wrench"></i> Website Status
+                    <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">
+                        <i class="ph ph-activity"></i> Systeem Logs
                     </li>
                 </ul>
 
@@ -784,16 +769,6 @@
 
                 <div id="eb-toast"></div>
 
-                <!-- NEW FINANCE VIEWS (Placeholders) -->
-                <div id="bank-view" class="dashboard-view">
-                    <div class="page-header">
-                        <h1>Bankoverzicht</h1>
-                        <p>Overzicht van binnengekomen betalingen en banktransacties.</p>
-                    </div>
-                    <div class="eb2-section-card" style="padding: 40px; text-align: center; color: #64748b;">
-                        <i class="ph ph-bank" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--color-gold);"></i>
-                    </div>
-                </div>
 
                 <div id="invoices-view" class="dashboard-view">
                     <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
@@ -920,16 +895,6 @@
                     </div>
                 </div>
 
-                <div id="revenue-view" class="dashboard-view">
-                    <div class="page-header">
-                        <h1>Omzet & Rapportages</h1>
-                        <p>Statistieken en financiële prestaties van Gipfel Lodge.</p>
-                    </div>
-                    <div class="eb2-section-card" style="padding: 40px; text-align: center; color: #64748b;">
-                        <i class="ph ph-chart-line-up" style="font-size: 3rem; margin-bottom: 20px; display: block; color: var(--color-gold);"></i>
-                        <p>Interactieve rapportages en jaaroverzichten.</p>
-                    </div>
-                </div>
 
                 <div id="kostenposten-view" class="dashboard-view">
                     <div class="page-header" style="margin-bottom: 30px;">
