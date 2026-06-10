@@ -8,24 +8,6 @@ export const TodoPage = {
   id: "todo",
   title: "TO-DO's",
   template: () => {
-    let superuserSelectHtml = '';
-    
-    // Check if the user is a superuser and allUsers list is populated
-    if (window.currentUserRole === 'superuser' && window.allUsers && window.allUsers.length > 0) {
-      const optionsHtml = window.allUsers.map(u => 
-        `<option value="${u.uid}" ${u.uid === window.currentUser?.uid ? 'selected' : ''}>${u.displayName}'s To-Do's (${u.email})</option>`
-      ).join('');
-      
-      superuserSelectHtml = `
-        <div class="panel" style="margin-bottom: 20px; padding: 15px;">
-          <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Selecteer To-Do Lijst (Superuser)</label>
-          <select id="todo-user-select" class="form-control" style="width: 100%; max-width: 400px; padding: 8px;">
-            ${optionsHtml}
-          </select>
-        </div>
-      `;
-    }
-
     return `
     <div class="container slide-up">
       <div class="page-head">
@@ -36,7 +18,7 @@ export const TodoPage = {
       </div>
 
       <section class="content-section" style="max-width: 600px; margin: 0 auto;">
-        ${superuserSelectHtml}
+        <div id="superuser-select-container"></div>
 
         <div class="panel">
           <div class="panel-header">
@@ -76,13 +58,34 @@ export const TodoPage = {
       return;
     }
 
-    // Hook up superuser dropdown
-    const userSelect = document.getElementById("todo-user-select");
-    if (userSelect) {
-      userSelect.addEventListener("change", (e) => {
-        targetUserId = e.target.value;
-        subscribeToFirebase(); // Re-subscribe to the new user's list
-      });
+    // Check if the user is a superuser and allUsers list is populated, inject dropdown dynamically
+    const container = document.getElementById("superuser-select-container");
+    if (container) {
+      if (window.currentUserRole === 'superuser' && window.allUsers && window.allUsers.length > 0) {
+        const optionsHtml = window.allUsers.map(u => 
+          `<option value="${u.uid}" ${u.uid === targetUserId ? 'selected' : ''}>${u.displayName}'s To-Do's (${u.email})</option>`
+        ).join('');
+        
+        container.innerHTML = `
+          <div class="panel" style="margin-bottom: 20px; padding: 15px;">
+            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Selecteer To-Do Lijst (Superuser)</label>
+            <select id="todo-user-select" class="form-control" style="width: 100%; max-width: 400px; padding: 8px;">
+              ${optionsHtml}
+            </select>
+          </div>
+        `;
+
+        // Hook up superuser dropdown
+        const userSelect = document.getElementById("todo-user-select");
+        if (userSelect) {
+          userSelect.addEventListener("change", (e) => {
+            targetUserId = e.target.value;
+            subscribeToFirebase(); // Re-subscribe to the new user's list
+          });
+        }
+      } else {
+        container.innerHTML = '';
+      }
     }
 
     // Hook up add buttons

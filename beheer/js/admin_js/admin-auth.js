@@ -40,7 +40,7 @@
                     // If superuser, fetch all users for dropdowns
                     if (currentUserRole === 'superuser') {
                         try {
-                            const { collection, getDocs } = await import('../site_js/core/firebase.js');
+                            const { db, collection, getDocs } = await import('../site_js/core/firebase.js');
                             const usersSnap = await getDocs(collection(db, 'users'));
                             window.allUsers = [];
                             usersSnap.forEach(doc => {
