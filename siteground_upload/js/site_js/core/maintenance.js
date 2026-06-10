@@ -12,14 +12,24 @@ class MaintenanceManager {
     init() {
         if (!this.maintenanceScreen) return;
 
-        // Listen for route changes to re-evaluate maintenance screen visibility
+        // Intercept navigateTo to detect page changes seamlessly
+        if (typeof window.navigateTo === 'function') {
+            const originalNavigateTo = window.navigateTo;
+            window.navigateTo = (pageId) => {
+                originalNavigateTo(pageId);
+                this.currentPage = (pageId || 'home').split('?')[0];
+                this.evaluateMaintenanceState();
+            };
+        }
+
+        // Keep hashchange for external navigation or browser back/forward
         window.addEventListener('hashchange', () => {
-            this.currentPage = window.location.hash.replace('#', '') || 'home';
+            this.currentPage = (window.location.hash.replace('#', '') || 'home').split('?')[0];
             this.evaluateMaintenanceState();
         });
 
         // Set initial page
-        this.currentPage = window.location.hash.replace('#', '') || 'home';
+        this.currentPage = (window.location.hash.replace('#', '') || 'home').split('?')[0];
 
         // Connect to Firestore settings
         this.listenToSettings();
