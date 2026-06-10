@@ -69,20 +69,10 @@ export function withPreservedScroll(fn) {
  */
 export function wireCustomYearSelect({ containerId, displayId, optionsId, hiddenId, years, get, set, onChange }) {
   const container = document.getElementById(containerId);
-  if (!container) return;
-
-  // --- Wire trigger directly (remove old listener by cloning) ---
-  const trigger = container.querySelector(".select-trigger");
-  if (trigger) {
-    const newTrigger = trigger.cloneNode(true);
-    trigger.parentNode.replaceChild(newTrigger, trigger);
-  }
-
-  // Nu pas DOM elementen ophalen, anders verwijzen ze naar de oude (verwijderde) node!
   const display = document.getElementById(displayId);
   const options = document.getElementById(optionsId);
   const hidden = document.getElementById(hiddenId);
-  if (!display || !options || !hidden) return;
+  if (!container || !display || !options || !hidden) return;
 
   const initial = get();
   
@@ -118,40 +108,6 @@ export function wireCustomYearSelect({ containerId, displayId, optionsId, hidden
     });
     options.appendChild(div);
   });
-
-  const activeTrigger = container.querySelector(".select-trigger");
-  if (activeTrigger) {
-    activeTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const isOpen = container.classList.contains("open");
-      // Close all other open selects first
-      document.querySelectorAll(".custom-select.open").forEach((c) => {
-        if (c !== container) {
-          c.classList.remove("open");
-          c.querySelector(".select-options")?.classList.remove("show");
-        }
-      });
-      if (isOpen) {
-        container.classList.remove("open");
-        options.classList.remove("show");
-      } else {
-        container.classList.add("open");
-        options.classList.add("show");
-      }
-    });
-  }
-
-  // Close on outside click
-  document.addEventListener("click", (e) => {
-    if (!container.contains(e.target)) {
-      container.classList.remove("open");
-      options.classList.remove("show");
-    }
-  });
-
-  // Set initial display value
-  display.textContent = initial === "ALL" ? "Alle jaren" : String(initial);
-  hidden.value = String(initial);
 }
 
 
