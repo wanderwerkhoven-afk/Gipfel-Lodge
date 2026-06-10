@@ -46,9 +46,15 @@ export const MaintenancePage = {
                             <h2 class="eb2-section-title" style="color: #ef4444;">Totale Website Blokkeren</h2>
                             <p class="eb2-section-subtitle">Zet de hele website op "Onder Constructie". Individuele pagina-instellingen worden genegeerd zolang dit aan staat.</p>
                         </div>
-                        <label class="eb2-toggle-switch" style="flex-shrink: 0;">
+                        <label class="pill-toggle pill-lg pill-danger">
                             <input type="checkbox" id="maint-master-switch">
-                            <span class="eb2-toggle-slider"></span>
+                            <span class="pill-toggle-track">
+                                <span class="pill-toggle-labels">
+                                    <span class="pill-toggle-label-on">AAN</span>
+                                    <span class="pill-toggle-label-off">UIT</span>
+                                </span>
+                                <span class="pill-toggle-thumb"></span>
+                            </span>
                         </label>
                     </div>
                 </div>
@@ -77,7 +83,16 @@ export const MaintenancePage = {
                                         <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">De hoofdpagina (/#home)</div>
                                     </td>
                                     <td style="text-align: right; padding-right: 24px;">
-                                        <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="home"><span class="eb2-toggle-slider"></span></label>
+                                        <label class="pill-toggle">
+                                            <input type="checkbox" class="maint-page-toggle" data-page="home">
+                                            <span class="pill-toggle-track">
+                                                <span class="pill-toggle-labels">
+                                                    <span class="pill-toggle-label-on">AAN</span>
+                                                    <span class="pill-toggle-label-off">UIT</span>
+                                                </span>
+                                                <span class="pill-toggle-thumb"></span>
+                                            </span>
+                                        </label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -86,7 +101,16 @@ export const MaintenancePage = {
                                         <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Lodge details en galerij (/#lodge)</div>
                                     </td>
                                     <td style="text-align: right; padding-right: 24px;">
-                                        <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="lodge"><span class="eb2-toggle-slider"></span></label>
+                                        <label class="pill-toggle">
+                                            <input type="checkbox" class="maint-page-toggle" data-page="lodge">
+                                            <span class="pill-toggle-track">
+                                                <span class="pill-toggle-labels">
+                                                    <span class="pill-toggle-label-on">AAN</span>
+                                                    <span class="pill-toggle-label-off">UIT</span>
+                                                </span>
+                                                <span class="pill-toggle-thumb"></span>
+                                            </span>
+                                        </label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -95,7 +119,16 @@ export const MaintenancePage = {
                                         <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Zomer & Winter activiteiten (/#activities)</div>
                                     </td>
                                     <td style="text-align: right; padding-right: 24px;">
-                                        <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="activities"><span class="eb2-toggle-slider"></span></label>
+                                        <label class="pill-toggle">
+                                            <input type="checkbox" class="maint-page-toggle" data-page="activities">
+                                            <span class="pill-toggle-track">
+                                                <span class="pill-toggle-labels">
+                                                    <span class="pill-toggle-label-on">AAN</span>
+                                                    <span class="pill-toggle-label-off">UIT</span>
+                                                </span>
+                                                <span class="pill-toggle-thumb"></span>
+                                            </span>
+                                        </label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -104,7 +137,16 @@ export const MaintenancePage = {
                                         <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Eten & drinken (/#enjoyment)</div>
                                     </td>
                                     <td style="text-align: right; padding-right: 24px;">
-                                        <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="enjoyment"><span class="eb2-toggle-slider"></span></label>
+                                        <label class="pill-toggle">
+                                            <input type="checkbox" class="maint-page-toggle" data-page="enjoyment">
+                                            <span class="pill-toggle-track">
+                                                <span class="pill-toggle-labels">
+                                                    <span class="pill-toggle-label-on">AAN</span>
+                                                    <span class="pill-toggle-label-off">UIT</span>
+                                                </span>
+                                                <span class="pill-toggle-thumb"></span>
+                                            </span>
+                                        </label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -113,7 +155,16 @@ export const MaintenancePage = {
                                         <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">Beschikbaarheid en boeken (/#booking)</div>
                                     </td>
                                     <td style="text-align: right; padding-right: 24px;">
-                                        <label class="eb2-toggle-switch"><input type="checkbox" class="maint-page-toggle" data-page="booking"><span class="eb2-toggle-slider"></span></label>
+                                        <label class="pill-toggle">
+                                            <input type="checkbox" class="maint-page-toggle" data-page="booking">
+                                            <span class="pill-toggle-track">
+                                                <span class="pill-toggle-labels">
+                                                    <span class="pill-toggle-label-on">AAN</span>
+                                                    <span class="pill-toggle-label-off">UIT</span>
+                                                </span>
+                                                <span class="pill-toggle-thumb"></span>
+                                            </span>
+                                        </label>
                                     </td>
                                 </tr>
                             </tbody>
