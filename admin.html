@@ -150,6 +150,9 @@
                     <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">
                         <i class="ph ph-activity"></i> Systeem Logs
                     </li>
+                    <li id="nav-maintenance-desktop" class="nav-item" onclick="switchView('maintenance-view', this)">
+                        <i class="ph ph-wrench"></i> Website Status
+                    </li>
 
                     <li class="nav-group-title">BOEKINGDATA</li>
                     <li id="nav-dataviz-home" class="nav-item" onclick="switchView('dataviz-home-view', this)">
@@ -201,6 +204,9 @@
             </aside>
 
             <main class="dashboard-main">
+                <!-- Maintenance Admin View -->
+                <div id="maintenance-view" class="dashboard-view dataviz-view"></div>
+
                 <!-- Dataviz Todo View -->
                 <div id="dataviz-todo-view" class="dashboard-view dataviz-view"></div>
 

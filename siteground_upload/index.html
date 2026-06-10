@@ -46,6 +46,7 @@
   <link rel="stylesheet" href="css/site_css/base/style.css" />
   <link rel="stylesheet" href="css/site_css/components/global.css" />
   <link rel="stylesheet" href="css/site_css/components/splash.css" />
+  <link rel="stylesheet" href="css/site_css/components/maintenance.css" />
   <link rel="stylesheet" href="css/site_css/pages/home.css" />
   <link rel="stylesheet" href="css/site_css/pages/lodge.css" />
   <link rel="stylesheet" href="css/site_css/pages/seizoenen.css" />
@@ -121,6 +122,46 @@
         <text x="65" y="270" text-anchor="start" font-size="41" font-weight="700" letter-spacing="1" textLength="270"
           lengthAdjust="spacing" class="text" style="text-transform: uppercase; fill: currentColor;">Gipfel Lodge</text>
       </svg>
+    </div>
+  </div>
+
+  <!-- MAINTENANCE SCREEN -->
+  <div id="maintenance-screen">
+    <div class="maintenance-content">
+      <div class="maintenance-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="gipfel-logo-svg">
+          <path class="line mountain-1" d="M 65 210 L 160 50 L 220 145" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path class="line mountain-2" d="M 180 145 L 240 50 L 335 210" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <g class="stars">
+            <path d="M 155 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <path d="M 185 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <path d="M 215 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <path d="M 245 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <text x="265" y="190" font-size="28" class="text" style="text-transform: none; fill: currentColor;">s</text>
+          </g>
+        </svg>
+      </div>
+      <h2 class="maintenance-title" data-i18n="maint-title">Gipfel Lodge</h2>
+      <div class="maintenance-subtitle" data-i18n="maint-subtitle">Under Construction</div>
+      <p class="maintenance-text" data-i18n="maint-text">Gipfel Lodge is currently being updated. We'll be back shortly.</p>
+      <a href="https://www.villaforyou.com/ho-16679/AT.5531.14" target="_blank" rel="noopener noreferrer" class="maintenance-btn" data-i18n="maint-btn">Book via Villa For You</a>
+      
+      <!-- Lang selector for maintenance mode -->
+      <div class="lang-dropdown" style="margin-top: 30px;">
+        <button class="lang-toggle" aria-haspopup="true" aria-expanded="false" style="color: rgba(255,255,255,0.6); padding: 5px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <span class="active-flag-container"><span class="fi fi-nl"></span></span>
+        </button>
+        <div class="lang-menu" style="bottom: 100%; top: auto; margin-bottom: 10px;">
+          <a href="#" class="lang-link" data-lang-switch="de"><span class="fi fi-de"></span> DEUTSCH</a>
+          <a href="#" class="lang-link" data-lang-switch="en"><span class="fi fi-gb"></span> ENGLISH</a>
+          <a href="#" class="lang-link is-active" data-lang-switch="nl"><span class="fi fi-nl"></span> NEDERLANDS</a>
+          <a href="#" class="lang-link" data-lang-switch="fr"><span class="fi fi-fr"></span> FRANÇAIS</a>
+          <a href="#" class="lang-link" data-lang-switch="it"><span class="fi fi-it"></span> ITALIANO</a>
+          <a href="#" class="lang-link" data-lang-switch="pl"><span class="fi fi-pl"></span> POLSKI</a>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2183,6 +2224,7 @@
   <script explorer src="js/site_js/components/mobile-menu.js"></script>
   <script src="js/site_js/core/entry.js"></script>
   <script src="js/site_js/core/router.js"></script>
+  <script type="module" src="js/site_js/core/maintenance.js"></script>
 
   <!-- 3.4 PAGES -->
   <script src="js/site_js/pages/home.js"></script>

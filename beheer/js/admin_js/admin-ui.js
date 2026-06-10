@@ -33,7 +33,7 @@
 
         function switchView(viewId, navEl) {
             // Block regular users from accessing superuser-only views
-            const superUserViews = ['logs-view', 'import-view'];
+            const superUserViews = ['logs-view', 'import-view', 'maintenance-view'];
             if (superUserViews.includes(viewId) && currentUserRole !== 'superuser') {
                 console.warn('Access denied: ' + viewId + ' requires superuser role.');
                 alert('Geen toegang: Deze pagina is alleen zichtbaar voor beheerders.');
@@ -83,6 +83,10 @@
                 loadInvoices();
             } else if (viewId === 'behavior-view') {
                 loadBehaviorStats();
+            } else if (viewId === 'maintenance-view') {
+                import('./dataviz/pages/maintenancePage.js').then(module => {
+                    module.MaintenancePage.init();
+                }).catch(err => console.error("Failed to load MaintenancePage", err));
             } else if (viewId.startsWith('dataviz-')) {
                 if (typeof window.initDatavizView === 'function') {
                     window.initDatavizView(viewId);

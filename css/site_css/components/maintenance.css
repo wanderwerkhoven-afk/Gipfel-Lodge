@@ -1,0 +1,99 @@
+/* MAINTENANCE SCREEN COMPONENT */
+
+#maintenance-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(26, 40, 48, 0.98);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    display: none; /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    color: #ffffff;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+#maintenance-screen.active {
+    display: flex;
+    opacity: 1;
+}
+
+.maintenance-content {
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: 50px 40px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    border-top: 4px solid var(--color-gold);
+    animation: maintSlideUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.maintenance-logo {
+    margin-bottom: 30px;
+}
+
+.maintenance-logo svg {
+    width: 150px;
+    height: auto;
+    color: var(--color-gold);
+}
+
+.maintenance-title {
+    font-family: var(--font-primary);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--color-sand);
+    margin-bottom: 10px;
+}
+
+.maintenance-subtitle {
+    font-family: var(--font-secondary);
+    font-size: 1.1rem;
+    color: var(--color-gold);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 25px;
+}
+
+.maintenance-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 40px;
+}
+
+.maintenance-btn {
+    display: inline-block;
+    padding: 15px 35px;
+    background: var(--color-gold);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+}
+
+.maintenance-btn:hover {
+    background: #dfc086;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(197, 160, 89, 0.4);
+}
+
+@keyframes maintSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

@@ -161,12 +161,13 @@
                 el.style.display = isSuperUser ? '' : 'none';
             });
 
-            // Show/hide Excel Import tab
+            // Show/hide Superuser tabs
             const importDesktop = document.getElementById('nav-import-desktop');
             const logsDesktop = document.getElementById('nav-logs-desktop');
-            
+            const maintDesktop = document.getElementById('nav-maintenance-desktop');
             if (importDesktop) importDesktop.style.display = isSuperUser ? '' : 'none';
             if (logsDesktop) logsDesktop.style.display = isSuperUser ? '' : 'none';
+            if (maintDesktop) maintDesktop.style.display = isSuperUser ? '' : 'none';
         }
 
         function showDashboard() {

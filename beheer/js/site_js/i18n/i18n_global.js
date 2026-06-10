@@ -18,7 +18,11 @@ Object.assign(window.gipfelTranslations.de, {
     "footer-follow": "Folgen Sie uns",
     "footer-rights": "Alle Rechte vorbehalten.",
     "btn-back": "Zurück",
-    "lang-select": "Sprache wählen"
+    "lang-select": "Sprache wählen",
+    "maint-title": "Gipfel Lodge",
+    "maint-subtitle": "Wartungsarbeiten",
+    "maint-text": "Die Gipfel Lodge wird derzeit aktualisiert. Wir sind bald wieder für Sie da.",
+    "maint-btn": "Buchen Sie über Villa For You"
 });
 
 // FR
@@ -37,7 +41,11 @@ Object.assign(window.gipfelTranslations.fr, {
     "footer-follow": "Suivez-nous",
     "footer-rights": "Tous droits réservés.",
     "btn-back": "Retour",
-    "lang-select": "Choisir la langue"
+    "lang-select": "Choisir la langue",
+    "maint-title": "Gipfel Lodge",
+    "maint-subtitle": "En maintenance",
+    "maint-text": "Le Gipfel Lodge est en cours de mise à jour. Nous serons de retour sous peu.",
+    "maint-btn": "Réserver via Villa For You"
 });
 
 // IT
@@ -56,7 +64,11 @@ Object.assign(window.gipfelTranslations.it, {
     "footer-follow": "Seguici",
     "footer-rights": "Tutti i diritti riservati.",
     "btn-back": "Indietro",
-    "lang-select": "Seleziona lingua"
+    "lang-select": "Seleziona lingua",
+    "maint-title": "Gipfel Lodge",
+    "maint-subtitle": "In manutenzione",
+    "maint-text": "Gipfel Lodge è in fase di aggiornamento. Torneremo a breve.",
+    "maint-btn": "Prenota su Villa For You"
 });
 
 // PL
@@ -75,7 +87,11 @@ Object.assign(window.gipfelTranslations.pl, {
     "footer-follow": "Obserwuj nas",
     "footer-rights": "Wszelkie prawa zastrzeżone.",
     "btn-back": "Powrót",
-    "lang-select": "Wybierz język"
+    "lang-select": "Wybierz język",
+    "maint-title": "Gipfel Lodge",
+    "maint-subtitle": "W przebudowie",
+    "maint-text": "Gipfel Lodge jest obecnie aktualizowany. Wkrótce do Państwa wrócimy.",
+    "maint-btn": "Zarezerwuj przez Villa For You"
 });
 
 // HE (RTL)
@@ -94,7 +110,11 @@ Object.assign(window.gipfelTranslations.he, {
     "footer-follow": "עקבו אחרינו",
     "footer-rights": "כל הזכויות שמורות.",
     "btn-back": "חזרה",
-    "lang-select": "בחר שפה"
+    "lang-select": "בחר שפה",
+    "maint-title": "Gipfel Lodge",
+    "maint-subtitle": "תחת תחזוקה",
+    "maint-text": "Gipfel Lodge עובר כרגע עדכון. נשוב בקרוב.",
+    "maint-btn": "הזמינו דרך Villa For You"
 });
 
 
@@ -114,7 +134,11 @@ Object.assign(window.gipfelTranslations.en, {
     "footer-follow": "Follow us",
     "footer-rights": "All rights reserved.",
     "btn-back": "Back",
-    "lang-select": "Select Language"
+    "lang-select": "Select Language",
+    "maint-title": "Gipfel Lodge",
+    "maint-subtitle": "Under Construction",
+    "maint-text": "Gipfel Lodge is currently being updated. We'll be back shortly.",
+    "maint-btn": "Book via Villa For You"
 });
 
 
@@ -134,5 +158,9 @@ Object.assign(window.gipfelTranslations.nl, {
     "footer-follow": "Volg ons",
     "footer-rights": "Alle rechten voorbehouden.",
     "btn-back": "Terug",
-    "lang-select": "Taal selecteren"
+    "lang-select": "Taal selecteren",
+    "maint-title": "Gipfel Lodge",
+    "maint-subtitle": "Onder Constructie",
+    "maint-text": "Gipfel Lodge is momenteel bezig met een update. We zijn snel weer bereikbaar.",
+    "maint-btn": "Boek via Villa For You"
 });
