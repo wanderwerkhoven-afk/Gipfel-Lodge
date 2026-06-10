@@ -1,4 +1,4 @@
-import { db, doc, onSnapshot, setDoc } from '../../../site_js/core/firebase.js';
+import { db, doc, onSnapshot, setDoc } from '../../site_js/core/firebase.js';
 import { EventBus } from '../core/eventBus.js';
 
 export const MaintenancePage = {
