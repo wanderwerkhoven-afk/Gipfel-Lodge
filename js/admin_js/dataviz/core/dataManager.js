@@ -1,5 +1,6 @@
 // ./JS/core/dataManager.js
 import { CONFIG, state, setState } from "./app.js";
+import { db, collection, getDocs, query, orderBy } from "../../site_js/core/firebase.js";
 
 /* ============================================================
  * 2) ROW HELPERS
@@ -15,33 +16,45 @@ export function getRowsForYear(year, rows = state.rawRows) {
 }
 
 /* ============================================================
- * 3) PRICING (JSON per jaar)
+ * 3) PRICING (Firestore)
  * ============================================================ */
 
 /**
- * Laadt pricing JSON via een repo-safe pad
+ * Haalt de actieve pricing versie op uit Firebase
  */
 export async function loadPricingYear(year) {
-  // In de admin app staan de JSONs waarschijnlijk in /pricing_sources of dergelijke.
-  // Aangezien dit lokaal werkte met ../../pricing_sources, moeten we het pad aanpassen.
-  // In het admin paneel is er nog geen 'pricing_sources' map standaard gepubliceerd voor deze grafieken.
-  // Voor nu simuleren we het met een leeg object als de fetch faalt, 
-  // of we kunnen een hardcoded fallback maken om errors te vermijden als de backend al pricing levert.
   try {
-      const url = `/pricing_sources/pricing_${year}.json`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error(`Pricing file ontbreekt: ${url}`);
-      }
-      return res.json();
+    const q = query(collection(db, 'pricing_versions'), orderBy('effectiveDate', 'asc'));
+    const snap = await getDocs(q);
+    const versions = [];
+    
+    snap.forEach(docSnap => {
+        versions.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    if (versions.length > 0) {
+        const today = new Date().toISOString().split('T')[0];
+        // Pak de laatst actieve versie, of de eerste als er geen in het verleden is
+        const activeVersion = [...versions].reverse().find(v => v.effectiveDate <= today) || versions[0];
+        
+        // Converteer de map naar een array formaat of behoud het als een object.
+        // Eerder verwachtte deze functie een array met { datum: '...', dagprijs: ... }
+        if (activeVersion && activeVersion.prices) {
+            return Object.keys(activeVersion.prices).map(dateKey => ({
+                datum: dateKey,
+                ...activeVersion.prices[dateKey]
+            }));
+        }
+    }
+    return [];
   } catch (err) {
-      console.warn("Pricing file not found, defaulting to empty array.", err);
+      console.warn("Pricing data ophalen mislukt via Firebase.", err);
       return [];
   }
 }
 
 /**
- * Zorgt dat pricing één keer per jaar geladen wordt
+ * Zorgt dat pricing geladen wordt en in state.pricingByDate gezet wordt
  */
 export async function ensurePricingLoadedForYear(year) {
   if (
@@ -53,6 +66,7 @@ export async function ensurePricingLoadedForYear(year) {
   }
 
   try {
+    // We roepen loadPricingYear aan die in dit geval ALLE actieve pricing geeft
     const rows = await loadPricingYear(year);
     state.pricingByDate = Object.fromEntries(
       rows.map(r => [r.datum, r])
