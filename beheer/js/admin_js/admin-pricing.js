@@ -255,6 +255,38 @@ window.addDiscountTierRow = function(days = '', percentage = '') {
     container.appendChild(row);
 };
 
+/**
+ * Generates a URL-safe slug from a preset name.
+ * e.g. "Summer 10/15/20" → "summer-10-15-20"
+ */
+function generateDiscountSlug(name) {
+    return name
+        .toLowerCase()
+        .replace(/[\/\\]/g, '-')   // slashes → dash
+        .replace(/[^a-z0-9\-]/g, '-') // other special chars → dash
+        .replace(/-+/g, '-')       // collapse multiple dashes
+        .replace(/^-|-$/g, '');    // trim leading/trailing dashes
+}
+
+/**
+ * Finds a unique slug in discount_presets by appending -2, -3 etc if needed.
+ */
+async function getUniqueDiscountSlug(db, doc, getDoc, collection, baseSlug) {
+    // Check base slug
+    const baseRef = doc(db, 'discount_presets', baseSlug);
+    const baseSnap = await getDoc(baseRef);
+    if (!baseSnap.exists()) return baseSlug;
+
+    // Try with incrementing counter
+    for (let i = 2; i <= 99; i++) {
+        const candidate = `${baseSlug}-${i}`;
+        const ref = doc(db, 'discount_presets', candidate);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return candidate;
+    }
+    throw new Error('Kon geen unieke slug genereren. Te veel duplicaten.');
+}
+
 window.saveDiscountPresetFromModal = async function() {
     const name = document.getElementById('discount-modal-name').value.trim();
     if (!name) { alert("Voer een naam in."); return; }
@@ -276,20 +308,30 @@ window.saveDiscountPresetFromModal = async function() {
     }
 
     try {
-        const { db, collection, addDoc } = await import('../site_js/core/firebase.js');
-        await addDoc(collection(db, 'discount_presets'), {
+        const { db, doc, getDoc, setDoc } = await import('../site_js/core/firebase.js');
+
+        const baseSlug = generateDiscountSlug(name);
+        if (!baseSlug) {
+            alert("De naam bevat geen geldige tekens voor een ID. Gebruik letters, cijfers of koppeltekens.");
+            return;
+        }
+
+        const slug = await getUniqueDiscountSlug(db, doc, getDoc, null, baseSlug);
+
+        await setDoc(doc(db, 'discount_presets', slug), {
             name,
             tiers,
             createdAt: new Date().toISOString()
         });
 
-        showToast("Succes", "Kortingsregel aangemaakt.");
+        showToast("Succes", `Kortingsregel aangemaakt (ID: ${slug}).`);
         closeDiscountModal();
         loadDiscountPresets();
     } catch (err) {
         alert("Fout bij opslaan: " + err.message);
     }
 };
+
 
 window.openNewDiscountModal = async function() {
     openDiscountModal();

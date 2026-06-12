@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Migratie: Discount Presets → Slug IDs</title>
+    <style>
+        body { font-family: monospace; max-width: 800px; margin: 40px auto; padding: 20px; background: #0f172a; color: #e2e8f0; }
+        h1 { color: #C5A059; }
+        .log { background: #1e293b; border-radius: 8px; padding: 20px; margin: 20px 0; min-height: 200px; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; }
+        .ok   { color: #4ade80; }
+        .warn { color: #fbbf24; }
+        .err  { color: #f87171; }
+        .info { color: #60a5fa; }
+        button { background: #C5A059; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-right: 10px; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button.secondary { background: #334155; }
+    </style>
+</head>
+<body>
+    <h1>🔄 Migratie: discount_presets → Slug-gebaseerde IDs</h1>
+    <p>Dit script converteert bestaande documenten met random Firebase-IDs naar leesbare slug-IDs op basis van de <code>name</code> veld.</p>
+    <p><strong>Veilig om meerdere keren uit te voeren</strong> — documenten die al een correcte slug hebben worden overgeslagen.</p>
+
+    <div>
+        <button id="dryRunBtn" onclick="runMigration(true)">🔍 Dry Run (alleen preview)</button>
+        <button id="migrateBtn" class="secondary" onclick="runMigration(false)">⚡ Migreer nu</button>
+    </div>
+
+    <div class="log" id="log">Klik op "Dry Run" om te starten...\n</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import {
+            getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDDmNAnEIGOsScRJiCQKSfY-DDHu5gKYb8",
+            authDomain: "gipfel-lodge.firebaseapp.com",
+            projectId: "gipfel-lodge",
+            storageBucket: "gipfel-lodge.firebasestorage.app",
+            messagingSenderId: "388067449391",
+            appId: "1:388067449391:web:687304a8403e3d79aa84da"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        function generateSlug(name) {
+            return name
+                .toLowerCase()
+                .replace(/[\/\\]/g, '-')
+                .replace(/[^a-z0-9\-]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
+        function isAlreadySlug(id) {
+            // A slug only contains lowercase letters, digits and hyphens
+            return /^[a-z0-9][a-z0-9\-]*[a-z0-9]$/.test(id) || /^[a-z0-9]$/.test(id);
+        }
+
+        function log(msg, type = 'info') {
+            const el = document.getElementById('log');
+            el.innerHTML += `<span class="${type}">${msg}</span>\n`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        window.runMigration = async function(dryRun) {
+            document.getElementById('dryRunBtn').disabled = true;
+            document.getElementById('migrateBtn').disabled = true;
+            document.getElementById('log').innerHTML = '';
+
+            log(`🚀 ${dryRun ? 'DRY RUN (geen wijzigingen)' : 'LIVE MIGRATIE'} gestart...`, 'info');
+            log('──────────────────────────────────────────', 'info');
+
+            try {
+                const snap = await getDocs(collection(db, 'discount_presets'));
+                let migrated = 0, skipped = 0, errors = 0;
+
+                for (const docSnap of snap.docs) {
+                    const id = docSnap.id;
+                    const data = docSnap.data();
+                    const name = data.name;
+
+                    if (!name) {
+                        log(`⚠️  [SKIP] ${id} — heeft geen 'name' veld`, 'warn');
+                        skipped++;
+                        continue;
+                    }
+
+                    const slug = generateSlug(name);
+
+                    if (!slug) {
+                        log(`⚠️  [SKIP] ${id} — naam "${name}" genereert geen geldige slug`, 'warn');
+                        skipped++;
+                        continue;
+                    }
+
+                    if (id === slug) {
+                        log(`✅ [OK]   ${id} — al correct als slug`, 'ok');
+                        skipped++;
+                        continue;
+                    }
+
+                    // Check if slug looks like it's already a slug (not a random Firebase ID)
+                    if (isAlreadySlug(id) && id !== slug) {
+                        log(`⚠️  [SKIP] ${id} — ziet eruit als slug maar matcht naam niet (slug zou zijn: ${slug})`, 'warn');
+                        skipped++;
+                        continue;
+                    }
+
+                    // Check if target slug already exists
+                    const targetRef = doc(db, 'discount_presets', slug);
+                    const targetSnap = await getDoc(targetRef);
+                    if (targetSnap.exists()) {
+                        log(`⚠️  [SKIP] ${id} → ${slug} — doelslug bestaat al`, 'warn');
+                        skipped++;
+                        continue;
+                    }
+
+                    log(`🔄 [MIGREER] ${id} → ${slug}  (naam: "${name}")`, 'info');
+
+                    if (!dryRun) {
+                        try {
+                            // 1. Schrijf naar nieuw document
+                            await setDoc(doc(db, 'discount_presets', slug), data);
+                            // 2. Verwijder oud document
+                            await deleteDoc(doc(db, 'discount_presets', id));
+                            log(`   ✅ Gemigreerd: ${id} → ${slug}`, 'ok');
+                            migrated++;
+                        } catch (e) {
+                            log(`   ❌ FOUT bij migreren ${id}: ${e.message}`, 'err');
+                            errors++;
+                        }
+                    } else {
+                        migrated++;
+                    }
+                }
+
+                log('──────────────────────────────────────────', 'info');
+                log(`📊 Resultaat:`, 'info');
+                log(`   Te migreren: ${migrated}`, migrated > 0 ? 'warn' : 'ok');
+                log(`   Overgeslagen: ${skipped}`, 'ok');
+                log(`   Fouten: ${errors}`, errors > 0 ? 'err' : 'ok');
+
+                if (dryRun && migrated > 0) {
+                    log(`\n💡 Klik op "Migreer nu" om de ${migrated} document(en) daadwerkelijk te migreren.`, 'warn');
+                } else if (!dryRun && migrated > 0) {
+                    log(`\n✅ Migratie voltooid! Vernieuw de admin pagina om de nieuwe IDs te zien.`, 'ok');
+                } else {
+                    log(`\n✅ Niets te doen — alles is al up-to-date!`, 'ok');
+                }
+
+            } catch (err) {
+                log(`❌ Algemene fout: ${err.message}`, 'err');
+                console.error(err);
+            } finally {
+                document.getElementById('dryRunBtn').disabled = false;
+                document.getElementById('migrateBtn').disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
