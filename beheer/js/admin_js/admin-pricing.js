@@ -96,11 +96,12 @@ window.togglePricingTable = function(id) {
 };
 
 // --- PRICING PAGE & DISCOUNT LOGIC ---
-let _allDiscountPresets = [];
+window._allDiscountPresets = [];
 
 window.initPricingView = async function() {
     console.log("Initializing Pricing & Discounts View...");
     await loadDiscountPresets();
+    if (window.loadScheduledDiscounts) await window.loadScheduledDiscounts();
     window.loadPricingVersions('pricing-view-versions-container');
 };
 
@@ -120,12 +121,12 @@ window.loadDiscountPresets = async function() {
         const q = query(collection(db, 'discount_presets'), orderBy('name', 'asc'));
         const snap = await getDocs(q);
         
-        _allDiscountPresets = [];
+        window._allDiscountPresets = [];
         
         snap.forEach(docSnap => {
             const data = docSnap.data();
             const d = { id: docSnap.id, ...data };
-            _allDiscountPresets.push(d);
+            window._allDiscountPresets.push(d);
         });
 
         renderAllDiscountRules();
@@ -140,14 +141,14 @@ window.renderAllDiscountRules = function() {
     
     const activeId = window._currentActiveDiscountId || 'none';
 
-    if (!_allDiscountPresets || _allDiscountPresets.length === 0) {
+    if (!window._allDiscountPresets || window._allDiscountPresets.length === 0) {
         container.innerHTML = '<div style="color: #94a3b8; text-align:center; padding: 20px;">Geen automatische regels gevonden. Maak er één aan.</div>';
         return;
     }
 
     let html = '<div class="eb2-discount-list">';
     
-    _allDiscountPresets.forEach(preset => {
+    window._allDiscountPresets.forEach(preset => {
         const isActive = preset.id === activeId;
         
         // Sort by days descending

@@ -761,6 +761,26 @@
                         </div>
                     </div>
 
+                    <!-- GEPLANDE DATUMKORTINGEN SECTION -->
+                    <div class="eb2-section-card" style="margin-bottom: 25px;">
+                        <div class="eb2-section-header">
+                            <div>
+                                <h3 class="eb2-section-title">📆 Geplande Datumkortingen</h3>
+                                <p class="eb2-section-subtitle">Stel kortingen in voor specifieke toekomstige periodes.</p>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button class="eb2-action-btn eb2-btn-gold" onclick="openScheduledDiscountModal()">
+                                    <i class="ph ph-plus"></i> Nieuwe Korting
+                                </button>
+                            </div>
+                        </div>
+                        <div style="padding: 24px;">
+                            <div id="scheduled-discounts-container">
+                                <!-- Injected by admin-scheduled-discounts.js -->
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- PRICING VISUALIZATION SECTION -->
                     <div class="eb2-section-card">
                         <div class="eb2-section-header">
@@ -1215,6 +1235,57 @@
         </div>
     </div>
 
+    <!-- GEPLANDE DATUMKORTING MODAL -->
+    <div id="sd-modal-overlay" class="modal-overlay" onclick="if(event.target===this) closeScheduledDiscountModal()">
+        <div class="modal-container" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="sd-modal-title">Datumkorting</h3>
+                <button class="close-modal" onclick="closeScheduledDiscountModal()">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 25px; overflow-y: auto; max-height: 70vh;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label">Naam van de actie</label>
+                    <input type="text" id="sd-modal-name" class="form-input" placeholder="bijv. Meivakantie 2027">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px; display:flex; gap:15px;">
+                    <div style="flex:1;">
+                        <label class="form-label">Korting (%)</label>
+                        <input type="number" id="sd-modal-percentage" class="form-input" placeholder="15" min="1" max="100">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="form-label">Min. nachten (optioneel)</label>
+                        <input type="number" id="sd-modal-minnights" class="form-input" placeholder="3" min="1">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px; display:flex; gap:15px;">
+                    <div style="flex:1;">
+                        <label class="form-label">Startdatum</label>
+                        <input type="date" id="sd-modal-start" class="form-input">
+                    </div>
+                    <div style="flex:1;">
+                        <label class="form-label">Einddatum</label>
+                        <input type="date" id="sd-modal-end" class="form-input">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label class="form-label">Interne Notitie (optioneel)</label>
+                    <textarea id="sd-modal-note" class="form-input" placeholder="Extra informatie voor intern gebruik" style="min-height: 60px;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="sd-modal-active" checked>
+                        <span style="font-size:0.9rem; color:#1e293b; font-weight:600;">Korting is Actief</span>
+                    </label>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <button class="action-btn" style="background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0;" onclick="closeScheduledDiscountModal()">Annuleren</button>
+                    <button class="action-btn" onclick="saveScheduledDiscountFromModal()">Opslaan</button>
+                </div>
+                <button id="sd-modal-delete-btn" class="action-btn" style="width:100%; background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; display:none;" onclick="deleteScheduledDiscount()">Korting Verwijderen</button>
+            </div>
+        </div>
+    </div>
+
     <!-- BETAALSTATUS MODAL -->
     <div id="payment-status-modal" onclick="if(event.target===this) closePaymentModal()">
         <div class="pay-modal__box">
@@ -1284,6 +1355,7 @@
     <script src="js/admin_js/admin-bookings.js"></script>
     <script src="js/admin_js/admin-import.js"></script>
     <script src="js/admin_js/admin-pricing.js"></script>
+    <script src="js/admin_js/admin-scheduled-discounts.js"></script>
     <script src="js/admin_js/admin-invoices.js"></script>
     <script src="js/admin_js/admin-behavior.js"></script>
     <script src="js/admin_js/admin-galleries.js"></script>

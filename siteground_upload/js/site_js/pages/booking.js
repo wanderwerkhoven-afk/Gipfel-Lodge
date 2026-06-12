@@ -230,6 +230,23 @@ const GipfelBooking = {
                 console.warn("Could not load discount preset, continuing without discount.", discountErr);
                 this.activeDiscountPreset = null;
             }
+
+            // --- FETCH SCHEDULED DISCOUNTS ---
+            try {
+                const sdSnap = await getDocs(collection(db, 'scheduled_discounts'));
+                this.scheduledDiscounts = [];
+                const todayStr = new Date().toISOString().split('T')[0];
+                sdSnap.forEach(d => {
+                    const data = d.data();
+                    if (data.active !== false && data.endDate >= todayStr) {
+                        this.scheduledDiscounts.push({ id: d.id, ...data });
+                    }
+                });
+                console.log("Website: Scheduled discounts loaded:", this.scheduledDiscounts.length);
+            } catch(sdErr) {
+                console.warn("Could not load scheduled discounts.", sdErr);
+                this.scheduledDiscounts = [];
+            }
         } catch(e) {
             console.error("Error loading pricing data from Firebase", e);
         }
@@ -972,6 +989,8 @@ const GipfelBooking = {
         let originalRent = 0;
         let totalDiscountAmount = 0;
         let tempDate = new Date(checkIn);
+        this._overallDiscountName = '';
+        this._overallDiscountMaxPct = 0;
 
         // Get minimum payable nights from the start date (used for the whole duration)
         const startPriceObj = this.pricingData[this.selectedCheckIn];
@@ -985,12 +1004,46 @@ const GipfelBooking = {
             const diffNight = tempDate.getTime() - today.getTime();
             const daysUntilNight = Math.max(0, Math.ceil(diffNight / (1000 * 60 * 60 * 24)));
 
-            let nightDiscountPercentage = 0;
+            let lastMinPct = 0;
             if (this.activeDiscountPreset && this.activeDiscountPreset.tiers) {
                 const tiers = [...this.activeDiscountPreset.tiers].sort((a, b) => a.days - b.days);
                 const matchingTier = tiers.find(t => daysUntilNight <= t.days);
                 if (matchingTier) {
-                    nightDiscountPercentage = matchingTier.percentage;
+                    lastMinPct = matchingTier.percentage;
+                }
+            }
+
+            let schedPct = 0;
+            let schedName = '';
+            if (this.scheduledDiscounts && this.scheduledDiscounts.length > 0) {
+                for (const d of this.scheduledDiscounts) {
+                    if (dateStr >= d.startDate && dateStr <= d.endDate) {
+                        if (d.minNights && nights < d.minNights) continue;
+                        if ((d.percentage || 0) > schedPct) {
+                            schedPct = d.percentage;
+                            schedName = `Datumkorting: ${d.name}`;
+                        }
+                    }
+                }
+            }
+
+            let nightDiscountPercentage = 0;
+            let nightDiscountName = '';
+            if (schedPct > lastMinPct) {
+                nightDiscountPercentage = schedPct;
+                nightDiscountName = schedName;
+            } else if (lastMinPct > 0) {
+                nightDiscountPercentage = lastMinPct;
+                nightDiscountName = 'Last Minute Korting';
+            } else if (schedPct === lastMinPct && schedPct > 0) {
+                nightDiscountPercentage = schedPct;
+                nightDiscountName = schedName; // Prefer scheduled name if tied
+            }
+
+            if (nightDiscountPercentage > 0) {
+                if (!this._overallDiscountName || nightDiscountPercentage > this._overallDiscountMaxPct) {
+                    this._overallDiscountName = nightDiscountName;
+                    this._overallDiscountMaxPct = nightDiscountPercentage;
                 }
             }
 
@@ -1025,6 +1078,7 @@ const GipfelBooking = {
             discountAmount: totalDiscountAmount,
             discountPercentage: effectiveDiscountPercentage,
             effectiveDiscountPercentage,
+            appliedDiscountName: this._overallDiscountName,
             cleaning,
             bedLinen,
             touristTax,
@@ -1129,15 +1183,32 @@ const GipfelBooking = {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             
             // Calculate Discount Prefix for Ribbon
-            let discountHTML = '';
+            let lastMinPct = 0;
             if (this.activeDiscountPreset && this.activeDiscountPreset.tiers && cellDate >= today) {
                 const diffTime = cellDate.getTime() - today.getTime();
                 const daysUntil = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
                 const sortedTiers = [...this.activeDiscountPreset.tiers].sort((a, b) => a.days - b.days);
                 const matchingTier = sortedTiers.find(t => daysUntil <= t.days);
                 if (matchingTier) {
-                    discountHTML = `<div class="cal-discount-ribbon">-${matchingTier.percentage}%</div>`;
+                    lastMinPct = matchingTier.percentage;
                 }
+            }
+
+            let schedPct = 0;
+            if (this.scheduledDiscounts && this.scheduledDiscounts.length > 0) {
+                for (const d of this.scheduledDiscounts) {
+                    if (dateStr >= d.startDate && dateStr <= d.endDate) {
+                        if ((d.percentage || 0) > schedPct) {
+                            schedPct = d.percentage;
+                        }
+                    }
+                }
+            }
+
+            const finalPct = Math.max(lastMinPct, schedPct);
+            let discountHTML = '';
+            if (finalPct > 0) {
+                discountHTML = `<div class="cal-discount-ribbon">-${finalPct}%</div>`;
             }
 
             // Structured content
