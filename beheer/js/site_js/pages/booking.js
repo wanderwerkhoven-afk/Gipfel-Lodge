@@ -298,32 +298,67 @@ const GipfelBooking = {
                 let val = parseInt(input.value) || 0;
                 const min = parseInt(input.getAttribute('min')) || 0;
                 const max = parseInt(input.getAttribute('max')) || 10;
-                
+
+                // quick-guests: simple min/max only
+                if (targetId === 'quick-guests') {
+                    if (btn.classList.contains('plus') && val < max) val++;
+                    if (btn.classList.contains('minus') && val > min) val--;
+                    input.value = val;
+                    
+                    // Sync to Step 2
+                    const bAdults = document.getElementById('b-adults');
+                    const bChildren = document.getElementById('b-children');
+                    const bBabies = document.getElementById('b-babies');
+                    if (bAdults && bChildren && bBabies) {
+                        bAdults.value = val;
+                        bChildren.value = 0;
+                        bBabies.value = 0;
+                    }
+                    
+                    this.renderSummary();
+                    return;
+                }
+
                 const adultInput = document.getElementById('b-adults');
                 const childrenInput = document.getElementById('b-children');
+                const babyInput = document.getElementById('b-babies');
                 const msgEl = document.getElementById('guest-limit-msg');
-                const currentTotal = parseInt(adultInput.value) + parseInt(childrenInput.value);
-                
-                if (btn.classList.contains('plus')) {
-                    // Check global limit for adults/children sum
-                    if (targetId === 'b-adults' || targetId === 'b-children') {
-                        if (currentTotal >= 10) {
-                            if (msgEl) msgEl.style.display = 'block';
-                            return;
+
+                if (adultInput && childrenInput && babyInput) {
+                    const currentTotal = parseInt(adultInput.value) + parseInt(childrenInput.value);
+                    
+                    if (btn.classList.contains('plus')) {
+                        if (targetId === 'b-adults' || targetId === 'b-children') {
+                            if (currentTotal >= 10) {
+                                if (msgEl) msgEl.style.display = 'block';
+                                return;
+                            }
                         }
+                        if (val < max) val++;
+                    } else if (btn.classList.contains('minus')) {
+                        if (val > min) val--;
                     }
-                    if (val < max) val++;
-                } else if (btn.classList.contains('minus')) {
-                    if (val > min) val--;
+                    
+                    input.value = val;
+                    
+                    const newTotal = parseInt(adultInput.value) + parseInt(childrenInput.value);
+                    if (newTotal <= 10 && msgEl) {
+                        msgEl.style.display = 'none';
+                    }
+
+                    // Sync back to Step 1 quick-guests
+                    const quickGuests = document.getElementById('quick-guests');
+                    if (quickGuests) {
+                        quickGuests.value = parseInt(adultInput.value) + parseInt(childrenInput.value) + parseInt(babyInput.value);
+                    }
+                } else {
+                    if (btn.classList.contains('plus') && val < max) val++;
+                    if (btn.classList.contains('minus') && val > min) val--;
+                    input.value = val;
                 }
-                
-                input.value = val;
-                
-                // Check if we can hide the message now
-                const newTotal = parseInt(adultInput.value) + parseInt(childrenInput.value);
-                if (newTotal <= 10 && msgEl) {
-                    msgEl.style.display = 'none';
-                }
+
+                // Update sticky summary dynamically
+                this.renderSummary();
             };
         });
 
@@ -359,298 +394,52 @@ const GipfelBooking = {
             };
         }
 
-        // Form Submission (Step 2 -> 3)
+        // Form Submission (Step 2 -> 3 Summary)
         const form = document.getElementById('booking-form');
         if (form) {
             form.onsubmit = (e) => {
                 e.preventDefault();
-                this.renderSummary();
-                this.goToStep(3);
-            }
-        }
+                
+                // --- Gather raw form values to show in summary ---
+                const userName   = document.getElementById('b-name').value;
+                const userEmail  = document.getElementById('b-email').value;
+                const phoneRaw   = document.getElementById('b-phone').value || '-';
+                const userPhone  = phoneRaw !== '-' ? `${this.selectedCountryPrefix || '+31'} ${phoneRaw}` : '-';
+                
+                const checkIn    = this.selectedCheckIn || '-';
+                const checkOut   = this.selectedCheckOut || '-';
+                const adults     = document.getElementById('b-adults').value;
+                const children   = document.getElementById('b-children').value;
+                const babies     = document.getElementById('b-babies').value;
 
-        // Final Confirmation
-        const finalBtn = document.getElementById('final-confirm-btn');
-        if (finalBtn) {
-            finalBtn.onclick = async () => {
-                const originalText = finalBtn.innerText;
-                finalBtn.innerText = "Senden..."; // Or use i18n
-                finalBtn.classList.add('disabled');
-
-                const t = (key) => window.i18n ? window.i18n.t(key) : key;
-
-                // --- Client-side rate limiting guard (30 seconden cooldown) ---
-                const now = Date.now();
-                if (now - (this._lastSubmitTime || 0) < 30000) {
-                    const remaining = Math.ceil((30000 - (now - this._lastSubmitTime)) / 1000);
-                    alert(`Wacht nog ${remaining} seconden voor je opnieuw kunt verzenden.`);
-                    finalBtn.innerText = originalText;
-                    finalBtn.classList.remove('disabled');
-                    return;
-                }
-                this._lastSubmitTime = now;
-                let guestParams, ownerParams;
-
-                // Calculate total amount safely — outside the critical try block
-                // so a failure here never blocks email or Firebase submission
+                // --- Calculate derived values ---
                 let totalAmount = 0;
-                let costs = null;
                 try {
-                    costs = this.calculateCosts();
+                    const costs = this.calculateCosts();
                     totalAmount = costs ? costs.total : 0;
-                } catch (e) {
-                    console.warn('Could not calculate total amount:', e);
+                } catch (err) {
+                    console.warn(err);
                 }
 
-                try {
-                    // --- Gather raw form values ---
-                    const userName   = document.getElementById('b-name').value;
-                    const userEmail  = document.getElementById('b-email').value;
-                    const phoneRaw   = document.getElementById('b-phone').value || '-';
-                    const userPhone  = phoneRaw !== '-' ? `${this.selectedCountryPrefix} ${phoneRaw}` : '-';
-                    
-                    const userAddress = document.getElementById('b-address').value;
-                    const userZipcode = document.getElementById('b-zipcode').value;
-                    const userCity    = document.getElementById('b-city').value;
-                    const userCountry = document.getElementById('b-country').value;
-
-                    const checkIn    = document.getElementById('b-checkin').value;
-                    const checkOut   = document.getElementById('b-checkout').value;
-                    const adults     = document.getElementById('b-adults').value;
-                    const children   = document.getElementById('b-children').value;
-                    const babies     = document.getElementById('b-babies').value;
-                    const message    = document.getElementById('b-message').value || '-';
-
-                    // --- Calculate derived values ---
-                    const msPerDay   = 1000 * 60 * 60 * 24;
-                    const checkInDate = new Date(checkIn);
-                    checkInDate.setHours(12, 0, 0, 0);
-                    const checkOutDate = new Date(checkOut);
-                    checkOutDate.setHours(12, 0, 0, 0);
-                    const nights     = Math.round((checkOutDate - checkInDate) / msPerDay);
-                    const totalGuests = parseInt(adults) + parseInt(children) + parseInt(babies);
-
-                    const now         = new Date();
-                    const receivedDate = now.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
-                    const receivedTime = now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
-
-                    // --- Guest confirmation e-mail params ---
-                    guestParams = {
-                        user_name:           userName,
-                        user_email:          userEmail,
-                        user_phone:          userPhone,
-                        user_address:        userAddress,
-                        user_zipcode:        userZipcode,
-                        user_city:           userCity,
-                        user_country:        userCountry,
-                        check_in:            checkIn,
-                        check_out:           checkOut,
-                        guests:              `${adults} ${t('form-adults')}, ${children} ${t('form-children')}, ${babies} ${t('form-babies')}`,
-                        message:             message,
-
-                        email_tagline:       "Alpine Elegance",
-                        email_heading:       t('success-title'),
-                        email_intro:         t('email-intro'),
-                        label_travel_data:   t('email-travel-data'),
-                        label_guests:        t('email-guests'),
-                        label_message:       t('email-message'),
-                        label_contact:       t('email-contact'),
-                        email_closing:       t('email-closing'),
-                        email_visit_website: t('email-visit-website'),
-
-                        reply_to:            userEmail,
-                        to_email:            userEmail,
-                    };
-
-                    // --- Owner notification e-mail params ---
-                    ownerParams = {
-                        user_name:      userName,
-                        user_email:     userEmail,
-                        user_phone:     userPhone,
-                        user_address:   userAddress,
-                        user_zipcode:   userZipcode,
-                        user_city:      userCity,
-                        user_country:   userCountry,
-                        check_in:       checkIn,
-                        check_out:      checkOut,
-                        nights:         nights,
-                        adults:         adults,
-                        children:       children,
-                        babies:         babies,
-                        total_guests:   totalGuests,
-                        message:        message,
-                        received_date:  receivedDate,
-                        received_time:  receivedTime,
-                        total_amount:   new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(totalAmount || 0),
-
-                        reply_to:       userEmail,
-                    };
-
-                    console.log("Guest params:", guestParams);
-                    console.log("Owner params:", ownerParams);
-
-                } catch (paramError) {
-                    console.error("Form Data Error:", paramError);
-                    alert("Fout bij verzamelen gegevens: " + paramError.message);
-                    finalBtn.innerText = originalText;
-                    finalBtn.classList.remove('disabled');
-                    return;
+                // Populate Review Step (Step 3)
+                if(document.getElementById('review-checkin')) document.getElementById('review-checkin').innerText = checkIn;
+                if(document.getElementById('review-checkout')) document.getElementById('review-checkout').innerText = checkOut;
+                if(document.getElementById('review-guests')) {
+                    document.getElementById('review-guests').innerText = 
+                        `${adults} Volw., ${children} Kind., ${babies} Baby's`;
+                }
+                if(document.getElementById('review-name')) document.getElementById('review-name').innerText = userName;
+                if(document.getElementById('review-email')) document.getElementById('review-email').innerText = userEmail;
+                if(document.getElementById('review-phone')) document.getElementById('review-phone').innerText = userPhone;
+                if(document.getElementById('review-total')) {
+                    document.getElementById('review-total').innerText = 
+                        new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(totalAmount);
                 }
 
-                try {
-                    if (typeof emailjs === 'undefined') {
-                        throw new Error("EmailJS library (SDK) is niet geladen. Controleer je internetverbinding.");
-                    }
-
-                    // --- 1. Optimistic UI Transition ---
-                    // We transition to the success page immediately to provide a fast user experience
-                    this.goToStep(4);
-
-                    // --- 2. Send emails in background ---
-                    // Guest confirmation email
-                    emailjs.send(
-                        'service_rl6qzmr', 
-                        'template_3029w4q',   // Guest confirmation
-                        guestParams
-                    ).then(response => {
-                        console.log("Guest email sent:", response.status, response.text);
-                    }).catch(err => {
-                        console.error("Guest EmailJS Error:", err);
-                    });
-
-                    // Owner notification temporarily disabled
-                    // emailjs.send('service_rl6qzmr', 'template_oy6c1fe', ownerParams, 'WC62OFB5MXpryYO1u');
-
-                    // --- 3. Save to Firebase Database in background ---
-                    // Using a small timeout to ensure UI transition finishes first
-                    setTimeout(async () => {
-                        try {
-                            console.log("Attempting Firestore Archive with Sequential ID...");
-                            const counterRef = doc(db, "metadata", "counters");
-
-                            // 1. Get next sequential ID via transaction
-                            const generateData = await runTransaction(db, async (transaction) => {
-                                const counterDoc = await transaction.get(counterRef);
-                                const bookingYear = new Date().getFullYear();
-                                const invYearKey = `lastInvoiceNumber_${bookingYear}`;
-
-                                // If counter doesn't exist, start high (e.g., from 615)
-                                let currentNum = counterDoc.exists() ? (counterDoc.data().lastBookingNumber || 0) : 615;
-                                let currentInv = counterDoc.exists() ? (counterDoc.data()[invYearKey] || 1000) : 1000;
-                                
-                                let uniqueFound = false;
-                                let attemptNum = currentNum + 1;
-                                
-                                // Robust logic: skip any manually created IDs or prior collisions
-                                // We check 'public_availability' instead of 'bookings' because public users have read access to it
-                                while (!uniqueFound) {
-                                    const candidateId = `Gipfel-${String(attemptNum).padStart(6, '0')}`;
-                                    const checkDoc = await transaction.get(doc(db, "public_availability", `avail_${candidateId}`));
-                                    if (!checkDoc.exists()) {
-                                        uniqueFound = true;
-                                    } else {
-                                        console.log("Collision detected for ID: " + candidateId + ". Skipping...");
-                                        attemptNum++;
-                                    }
-                                }
-                                
-                                const nextInv = currentInv + 1;
-
-                                transaction.set(counterRef, { 
-                                    lastBookingNumber: attemptNum,
-                                    [invYearKey]: nextInv 
-                                }, { merge: true });
-                                
-                                return { bookingNum: attemptNum, invoiceNum: nextInv, year: bookingYear };
-                            });
-
-                            const bookingId = `Gipfel-${String(generateData.bookingNum).padStart(6, '0')}`;
-                            const invoiceId = `F${generateData.year}-${String(generateData.invoiceNum).padStart(4, '0')}`;
-                            console.log("Generated Booking ID:", bookingId, "Invoice ID:", invoiceId);
-
-                            // 2. Generate Secret Token for hosted invoice
-                            const secretToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
-
-                            const rawCountry = ownerParams.user_country || '';
-                            const mappedCountry = countries.find(c => c.name.toLowerCase() === rawCountry.toLowerCase());
-                            const finalCountryCode = mappedCountry ? mappedCountry.code : '';
-                            
-                            console.log(`[Firebase Save] Resolving country ${rawCountry} to code: ${finalCountryCode}`);
-
-                            // 3. Save booking with custom ID
-                            try {
-                                await setDoc(doc(db, "bookings", bookingId), {
-                                    bookingId: bookingId,
-                                    invoiceId: invoiceId,
-                                    guestName: ownerParams.user_name || 'Anoniem',
-                                    guestEmail: ownerParams.user_email || '',
-                                    guestPhone: ownerParams.user_phone || '-',
-                                    guestAddress: ownerParams.user_address || '',
-                                    guestZipcode: ownerParams.user_zipcode || '',
-                                    guestCity: ownerParams.user_city || '',
-                                    guestCountry: finalCountryCode || ownerParams.user_country || '',
-                                    country: finalCountryCode,
-                                    checkIn: ownerParams.check_in || '',
-                                    checkOut: ownerParams.check_out || '',
-                                    nights: ownerParams.nights || 0,
-                                    totalGuests: ownerParams.total_guests || 0,
-                                    adults: ownerParams.adults || 0,
-                                    children: ownerParams.children || 0,
-                                    babies: ownerParams.babies || 0,
-                                    message: ownerParams.message || '-',
-                                    totalAmount: totalAmount,
-                                    // Breakdown
-                                    rent: costs ? (costs.originalRent || costs.rent || 0) : 0, // Store original if available
-                                    discountAmount: costs ? (costs.discountAmount || 0) : 0,
-                                    discountPercentage: costs ? (costs.discountPercentage || 0) : 0,
-                                    discountName: costs ? (costs.appliedDiscountName || '') : '',
-                                    
-                                    cleaning: costs ? (costs.cleaning || 0) : 0,
-                                    bedLinen: costs ? (costs.bedLinen || 0) : 0,
-                                    touristTax: costs ? (costs.touristTax || 0) : 0,
-                                    mobilityFee: costs ? (costs.mobilityFee || 0) : 0,
-                                    
-                                    depositPaid: false,
-                                    balancePaid: false,
-                                    status: "pending", 
-                                    receivedDate: ownerParams.received_date || '',
-                                    receivedTime: ownerParams.received_time || '',
-                                    secretToken: secretToken,
-                                    createdAt: serverTimestamp() 
-                                });
-                                console.log("[OK] Booking saved to /bookings:", bookingId);
-                            } catch (dbError) {
-                                console.error("[FAIL] Could not write to /bookings:", dbError.code, dbError.message);
-                            }
-
-                            // 4. Save public availability record (without PII) to immediately block the calendar
-                            try {
-                                await setDoc(doc(db, "public_availability", `avail_${bookingId}`), {
-                                    bookingRef: bookingId,
-                                    checkIn: ownerParams.check_in || '',
-                                    checkOut: ownerParams.check_out || '',
-                                    status: "pending",
-                                    createdAt: serverTimestamp()
-                                });
-                                console.log("[OK] Availability saved to /public_availability:", `avail_${bookingId}`);
-                            } catch (dbError) {
-                                console.error("[FAIL] Could not write to /public_availability:", dbError.code, dbError.message);
-                            }
-
-                            console.log("Booking successfully archived in Firestore with ID:", bookingId);
-                        } catch (dbError) {
-                            console.error("Firestore Archiving Error:", dbError);
-                        }
-                    }, 800);
-
-                } catch (error) {
-                    console.error("Critical Submission Error:", error);
-                    alert("Er is een fout opgetreden bij het verwerken van je aanvraag: " + (error.message || "Onbekende fout"));
-                    finalBtn.innerText = originalText;
-                    finalBtn.classList.remove('disabled');
-                }
-            }
+                this.goToStep(3);
+            };
         }
+
 
         // Progress Step Clicks (Interactive Navigation)
         if (this.steps) {
@@ -796,7 +585,7 @@ const GipfelBooking = {
         if (!this.slider) return;
         this.currentStep = n;
         
-        // Slide the track
+        // Slide the track (4 steps -> 25% offset per step)
         const offset = (n - 1) * -25;
         this.slider.style.transform = `translateX(${offset}%)`;
         
@@ -812,6 +601,15 @@ const GipfelBooking = {
             });
         }
         
+        const grid = document.querySelector('.booking-grid-layout');
+        if (grid) {
+            if (n === 4) {
+                grid.classList.add('step-4-layout');
+            } else {
+                grid.classList.remove('step-4-layout');
+            }
+        }
+        
         // Precise scroll to focus on the white booking card
         const card = document.querySelector('.booking-flow-card');
         if (card) {
@@ -819,124 +617,375 @@ const GipfelBooking = {
             const targetY = card.getBoundingClientRect().top + window.pageYOffset - headerH;
             window.scrollTo({ top: targetY, behavior: 'smooth' });
         }
+    },
 
-        // Always re-render summary when entering Step 3
-        if (n === 3) {
-            this.renderSummary();
+    async submitFinal() {
+        const finalBtn = document.getElementById('definitief-btn');
+        const originalText = finalBtn ? finalBtn.innerText : "Abschließen";
+        if (finalBtn) {
+            finalBtn.innerText = "Verzenden..."; 
+            finalBtn.classList.add('disabled');
+            finalBtn.disabled = true;
+        }
+
+        const t = (key) => window.i18n ? window.i18n.t(key) : key;
+
+        // --- Client-side rate limiting guard (30 seconden cooldown) ---
+        const nowMs = Date.now();
+        if (nowMs - (this._lastSubmitTime || 0) < 30000) {
+            const remaining = Math.ceil((30000 - (nowMs - this._lastSubmitTime)) / 1000);
+            alert(`Wacht nog ${remaining} seconden voor je opnieuw kunt verzenden.`);
+            if (finalBtn) {
+                finalBtn.innerText = originalText;
+                finalBtn.classList.remove('disabled');
+                finalBtn.disabled = false;
+            }
+            return;
+        }
+        this._lastSubmitTime = nowMs;
+        let guestParams, ownerParams;
+
+        // Calculate total amount safely — outside the critical try block
+        // so a failure here never blocks email or Firebase submission
+        let totalAmount = 0;
+        let costs = null;
+        try {
+            costs = this.calculateCosts();
+            totalAmount = costs ? costs.total : 0;
+        } catch (e) {
+            console.warn('Could not calculate total amount:', e);
+        }
+
+        try {
+            // --- Gather raw form values ---
+            const userName   = document.getElementById('b-name').value;
+            const userEmail  = document.getElementById('b-email').value;
+            const phoneRaw   = document.getElementById('b-phone').value || '-';
+            const userPhone  = phoneRaw !== '-' ? `${this.selectedCountryPrefix} ${phoneRaw}` : '-';
+            
+            const userAddress = document.getElementById('b-address').value;
+            const userZipcode = document.getElementById('b-zipcode').value;
+            const userCity    = document.getElementById('b-city').value;
+            const userCountry = document.getElementById('b-country').value;
+
+            const checkIn    = this.selectedCheckIn || '-';
+            const checkOut   = this.selectedCheckOut || '-';
+            const adults     = document.getElementById('b-adults').value;
+            const children   = document.getElementById('b-children').value;
+            const babies     = document.getElementById('b-babies').value;
+            const message    = document.getElementById('b-message').value || '-';
+
+            // --- Calculate derived values ---
+            const msPerDay   = 1000 * 60 * 60 * 24;
+            const checkInDate = new Date(checkIn);
+            checkInDate.setHours(12, 0, 0, 0);
+            const checkOutDate = new Date(checkOut);
+            checkOutDate.setHours(12, 0, 0, 0);
+            const nights     = Math.round((checkOutDate - checkInDate) / msPerDay);
+            const totalGuests = parseInt(adults) + parseInt(children) + parseInt(babies);
+
+            const receivedDateObj = new Date(nowMs);
+            const receivedDate = receivedDateObj.toLocaleDateString('nl-NL', { day: '2-digit', month: 'long', year: 'numeric' });
+            const receivedTime = receivedDateObj.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+
+            // --- Guest confirmation e-mail params ---
+            guestParams = {
+                user_name:           userName,
+                user_email:          userEmail,
+                user_phone:          userPhone,
+                user_address:        userAddress,
+                user_zipcode:        userZipcode,
+                user_city:           userCity,
+                user_country:        userCountry,
+                check_in:            checkIn,
+                check_out:           checkOut,
+                guests:              `${adults} ${t('form-adults')}, ${children} ${t('form-children')}, ${babies} ${t('form-babies')}`,
+                message:             message,
+
+                email_tagline:       "Alpine Elegance",
+                email_heading:       t('success-title'),
+                email_intro:         t('email-intro'),
+                label_travel_data:   t('email-travel-data'),
+                label_guests:        t('email-guests'),
+                label_message:       t('email-message'),
+                label_contact:       t('email-contact'),
+                email_closing:       t('email-closing'),
+                email_visit_website: t('email-visit-website'),
+
+                reply_to:            userEmail,
+                to_email:            userEmail,
+            };
+
+            // --- Owner notification e-mail params ---
+            ownerParams = {
+                user_name:      userName,
+                user_email:     userEmail,
+                user_phone:     userPhone,
+                user_address:   userAddress,
+                user_zipcode:   userZipcode,
+                user_city:      userCity,
+                user_country:   userCountry,
+                check_in:       checkIn,
+                check_out:      checkOut,
+                nights:         nights,
+                adults:         adults,
+                children:       children,
+                babies:         babies,
+                total_guests:   totalGuests,
+                message:        message,
+                received_date:  receivedDate,
+                received_time:  receivedTime,
+                total_amount:   new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(totalAmount || 0),
+
+                reply_to:       userEmail,
+            };
+
+        } catch (paramError) {
+            console.error("Form Data Error:", paramError);
+            alert("Fout bij verzamelen gegevens: " + paramError.message);
+            if (finalBtn) {
+                finalBtn.innerText = originalText;
+                finalBtn.classList.remove('disabled');
+                finalBtn.disabled = false;
+            }
+            return;
+        }
+
+        try {
+            if (typeof emailjs === 'undefined') {
+                throw new Error("EmailJS library (SDK) is niet geladen. Controleer je internetverbinding.");
+            }
+
+            // --- 1. Optimistic UI Transition ---
+            // We transition to the success page immediately to provide a fast user experience
+            this.goToStep(4);
+
+            // --- 2. Send emails in background ---
+            emailjs.send(
+                'service_rl6qzmr', 
+                'template_3029w4q',   // Guest confirmation
+                guestParams
+            ).then(response => {
+                console.log("Guest email sent:", response.status, response.text);
+            }).catch(err => {
+                console.error("Guest EmailJS Error:", err);
+            });
+
+            // --- 3. Save to Firebase Database in background ---
+            setTimeout(async () => {
+                try {
+                    const counterRef = doc(db, "metadata", "counters");
+
+                    // 1. Get next sequential ID via transaction
+                    const generateData = await runTransaction(db, async (transaction) => {
+                        const counterDoc = await transaction.get(counterRef);
+                        const bookingYear = new Date().getFullYear();
+                        const invYearKey = `lastInvoiceNumber_${bookingYear}`;
+
+                        let currentNum = counterDoc.exists() ? (counterDoc.data().lastBookingNumber || 0) : 615;
+                        let currentInv = counterDoc.exists() ? (counterDoc.data()[invYearKey] || 1000) : 1000;
+                        
+                        let uniqueFound = false;
+                        let attemptNum = currentNum + 1;
+                        
+                        while (!uniqueFound) {
+                            const candidateId = `Gipfel-${String(attemptNum).padStart(6, '0')}`;
+                            const checkDoc = await transaction.get(doc(db, "public_availability", `avail_${candidateId}`));
+                            if (!checkDoc.exists()) {
+                                uniqueFound = true;
+                            } else {
+                                attemptNum++;
+                            }
+                        }
+                        
+                        const nextInv = currentInv + 1;
+
+                        transaction.set(counterRef, { 
+                            lastBookingNumber: attemptNum,
+                            [invYearKey]: nextInv 
+                        }, { merge: true });
+                        
+                        return { bookingNum: attemptNum, invoiceNum: nextInv, year: bookingYear };
+                    });
+
+                    const bookingId = `Gipfel-${String(generateData.bookingNum).padStart(6, '0')}`;
+                    const invoiceId = `F${generateData.year}-${String(generateData.invoiceNum).padStart(4, '0')}`;
+
+                    // 2. Generate Secret Token
+                    const secretToken = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+
+                    const rawCountry = ownerParams.user_country || '';
+                    const mappedCountry = countries.find(c => c.name.toLowerCase() === rawCountry.toLowerCase());
+                    const finalCountryCode = mappedCountry ? mappedCountry.code : '';
+
+                    // 3. Save booking with custom ID
+                    try {
+                        await setDoc(doc(db, "bookings", bookingId), {
+                            bookingId: bookingId,
+                            invoiceId: invoiceId,
+                            guestName: ownerParams.user_name || 'Anoniem',
+                            guestEmail: ownerParams.user_email || '',
+                            guestPhone: ownerParams.user_phone || '-',
+                            guestAddress: ownerParams.user_address || '',
+                            guestZipcode: ownerParams.user_zipcode || '',
+                            guestCity: ownerParams.user_city || '',
+                            guestCountry: finalCountryCode || ownerParams.user_country || '',
+                            country: finalCountryCode,
+                            checkIn: ownerParams.check_in || '',
+                            checkOut: ownerParams.check_out || '',
+                            nights: ownerParams.nights || 0,
+                            totalGuests: ownerParams.total_guests || 0,
+                            adults: ownerParams.adults || 0,
+                            children: ownerParams.children || 0,
+                            babies: ownerParams.babies || 0,
+                            message: ownerParams.message || '-',
+                            totalAmount: totalAmount,
+                            // Breakdown
+                            rent: costs ? (costs.originalRent || costs.rent || 0) : 0, 
+                            discountAmount: costs ? (costs.discountAmount || 0) : 0,
+                            discountPercentage: costs ? (costs.discountPercentage || 0) : 0,
+                            discountName: costs ? (costs.appliedDiscountName || '') : '',
+                            
+                            cleaning: costs ? (costs.cleaning || 0) : 0,
+                            bedLinen: costs ? (costs.bedLinen || 0) : 0,
+                            touristTax: costs ? (costs.touristTax || 0) : 0,
+                            mobilityFee: costs ? (costs.mobilityFee || 0) : 0,
+                            
+                            depositPaid: false,
+                            balancePaid: false,
+                            status: "pending", 
+                            receivedDate: ownerParams.received_date || '',
+                            receivedTime: ownerParams.received_time || '',
+                            secretToken: secretToken,
+                            createdAt: serverTimestamp() 
+                        });
+                    } catch (dbError) {
+                        console.error("[FAIL] Could not write to /bookings:", dbError.code, dbError.message);
+                    }
+
+                    // 4. Save public availability record
+                    try {
+                        await setDoc(doc(db, "public_availability", `avail_${bookingId}`), {
+                            bookingRef: bookingId,
+                            checkIn: ownerParams.check_in || '',
+                            checkOut: ownerParams.check_out || '',
+                            status: "pending",
+                            createdAt: serverTimestamp()
+                        });
+                    } catch (dbError) {
+                        console.error("[FAIL] Could not write to /public_availability:", dbError.code, dbError.message);
+                    }
+
+                } catch (dbError) {
+                    console.error("Firestore Archiving Error:", dbError);
+                }
+            }, 800);
+
+        } catch (error) {
+            console.error("Critical Submission Error:", error);
+            alert("Er is een fout opgetreden bij het verwerken van je aanvraag: " + (error.message || "Onbekende fout"));
+            if (finalBtn) {
+                finalBtn.innerText = originalText;
+                finalBtn.classList.remove('disabled');
+                finalBtn.disabled = false;
+            }
         }
     },
 
     renderSummary() {
-        const summaryGrid = document.getElementById('booking-summary-content');
-        if (!summaryGrid) return;
-
-        const name = document.getElementById('b-name').value;
-        const email = document.getElementById('b-email').value;
-        
-        const phoneRaw = document.getElementById('b-phone').value || '';
-        const phone = phoneRaw ? `${this.selectedCountryPrefix} ${phoneRaw}` : '-';
-
-        const address = document.getElementById('b-address').value;
-        const zipcode = document.getElementById('b-zipcode').value;
-        const city = document.getElementById('b-city').value;
-        const country = document.getElementById('b-country').value;
-
-        const checkin = document.getElementById('b-checkin').value;
-        const checkout = document.getElementById('b-checkout').value;
-        const adults = document.getElementById('b-adults').value;
-        const children = document.getElementById('b-children').value;
-        const babies = document.getElementById('b-babies').value;
-        const message = document.getElementById('b-message').value || '-';
-
         const t = (k) => window.i18n ? window.i18n.t(k) : k;
 
-        summaryGrid.innerHTML = `
-            <div class="summary-item">
-                <span class="summary-label">${t('form-name')}</span>
-                <span class="summary-value">${name}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">${t('form-email')} / ${t('form-phone')}</span>
-                <span class="summary-value">${email} <br> ${phone}</span>
-            </div>
-            <div class="summary-item summary-full">
-                <span class="summary-label">${t('form-address')} & ${t('form-country')}</span>
-                <span class="summary-value">${address}, ${zipcode} ${city} — ${country}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">${t('step-date')}</span>
-                <span class="summary-value">${checkin} — ${checkout}</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">${t('form-guests')}</span>
-                <span class="summary-value">${adults} ${t('form-adults')}, ${children} ${t('form-children')}, ${babies} ${t('form-babies')}</span>
-            </div>
-            <div class="summary-item summary-full">
-                <span class="summary-label">${t('form-message')}</span>
-                <span class="summary-value">${message}</span>
-            </div>
-        `;
+        const checkinEl = document.getElementById('summary-date-in');
+        const checkoutEl = document.getElementById('summary-date-out');
+        const nightsEl = document.getElementById('summary-nights');
+        const guestsEl = document.getElementById('summary-guests');
+        const breakdownEl = document.getElementById('summary-price-breakdown');
+        const totalEl = document.getElementById('summary-total-price');
+        const stickyCta = document.getElementById('sticky-cta-btn');
 
-        const costs = this.calculateCosts();
-        const priceContainer = document.getElementById('booking-price-breakdown');
-        if (costs && priceContainer) {
-            const t = (key) => window.i18n ? window.i18n.t(key) : key;
-            
-            let rentHtml = `
-                <div class="settlement-row">
-                    <span class="settle-label">${t('settle-rent')} (${costs.nights} ${t('unit-nights')})</span>
-                    <span class="settle-val">${this.fmtEUR(costs.rent)}</span>
-                </div>
-            `;
+        if (!checkinEl) return; // not on page
 
-            if (costs.discountPercentage > 0) {
-                rentHtml = `
-                    <div class="settlement-row">
-                        <span class="settle-label">${t('settle-rent')} (${costs.nights} ${t('unit-nights')})</span>
-                        <span class="settle-val" style="text-decoration: line-through; opacity: 0.6; font-size: 0.9em;">${this.fmtEUR(costs.originalRent)}</span>
-                    </div>
-                    <div class="settlement-row" style="color: #c47e09; font-weight: 600;">
-                        <span class="settle-label">${costs.appliedDiscountName} (-${costs.discountPercentage}%)</span>
-                        <span class="settle-val">-${this.fmtEUR(costs.discountAmount)}</span>
-                    </div>
-                    <div class="settlement-row" style="padding-top: 0; margin-top: -8px; margin-bottom: 8px;">
-                        <span class="settle-label" style="font-size: 0.85em; opacity: 0.8;">${t('settle-rent-discounted') || 'Gereduceerde Huurprijs'}</span>
-                        <span class="settle-val" style="font-weight: 700;">${this.fmtEUR(costs.rent)}</span>
-                    </div>
-                `;
+        const checkin = this.selectedCheckIn;
+        const checkout = this.selectedCheckOut;
+        
+        let adults = 2, children = 0, babies = 0;
+        if (document.getElementById('b-adults')) {
+            adults = parseInt(document.getElementById('b-adults').value) || 0;
+            children = parseInt(document.getElementById('b-children').value) || 0;
+            babies = parseInt(document.getElementById('b-babies').value) || 0;
+        }
+
+        const totalGuests = adults + children + babies;
+
+        if (checkin && !checkout) {
+            checkinEl.innerText = checkin;
+            checkoutEl.innerText = "Selecteer vertrekdatum";
+            nightsEl.innerText = '-';
+            guestsEl.innerText = `${totalGuests} Gasten`;
+            breakdownEl.innerHTML = `<div class="breakdown-placeholder">Selecteer vertrekdatum in de kalender voor een prijsopgave.</div>`;
+            totalEl.innerText = '€ 0.00';
+            if (stickyCta) {
+                stickyCta.innerText = "NU BOEKEN";
+                stickyCta.disabled = true;
+                stickyCta.classList.add('disabled');
             }
+        } else if (checkin && checkout) {
+            checkinEl.innerText = checkin;
+            checkoutEl.innerText = checkout;
+            
+            const msPerDay = 1000 * 60 * 60 * 24;
+            const ciDate = new Date(checkin);
+            ciDate.setHours(12, 0, 0, 0);
+            const coDate = new Date(checkout);
+            coDate.setHours(12, 0, 0, 0);
+            const nights = Math.round((coDate - ciDate) / msPerDay);
+            
+            nightsEl.innerText = `${nights} ${t('unit-nights')}`;
+            guestsEl.innerText = `${totalGuests} Gasten`; // Or i18n
+            
+            // Re-calculate costs to be safe
+            const costs = this.calculateCosts();
+            
+            if (costs) {
+                breakdownEl.innerHTML = '';
 
-            priceContainer.innerHTML = `
-                <h4 class="settlement-title">${t('settle-title')}</h4>
-                <div class="settlement-table">
-                    ${rentHtml}
-                    <div class="settlement-row">
-                        <span class="settle-label">${t('settle-cleaning')}</span>
-                        <span class="settle-val">${this.fmtEUR(costs.cleaning)}</span>
-                    </div>
-                    <div class="settlement-row">
-                        <span class="settle-label">${t('settle-linen')} (${costs.chargeableGuests}x)</span>
-                        <span class="settle-val">${this.fmtEUR(costs.bedLinen)}</span>
-                    </div>
-                    <div class="settlement-row">
-                        <span class="settle-label">${t('settle-tax')}</span>
-                        <span class="settle-val">${this.fmtEUR(costs.touristTax)}</span>
-                    </div>
-                    <div class="settlement-row">
-                        <span class="settle-label">${t('settle-mobility')}</span>
-                        <span class="settle-val">${this.fmtEUR(costs.mobilityFee)}</span>
-                    </div>
-                    <div class="settlement-row settlement-row--total">
-                        <span class="settle-label">${t('settle-total')}</span>
-                        <span class="settle-val">${this.fmtEUR(costs.total)}</span>
-                    </div>
-                </div>
-            `;
+                totalEl.innerText = this.fmtEUR(costs.total);
+
+                if (stickyCta) {
+                    stickyCta.innerText = "NU BOEKEN ›";
+                    stickyCta.disabled = false;
+                    stickyCta.classList.remove('disabled');
+                    // Hide step1 preview
+                    const preview = document.getElementById('step1-price-preview');
+                    if (preview) preview.style.display = 'none';
+                }
+            } else {
+                breakdownEl.innerHTML = `<div class="breakdown-placeholder">Selecteer reisdata in de kalender voor een prijsopgave.</div>`;
+                totalEl.innerText = '€ 0.00';
+                if (stickyCta) {
+                    stickyCta.innerText = "NU BOEKEN";
+                    stickyCta.disabled = true;
+                    stickyCta.classList.add('disabled');
+                }
+            }
+        } else {
+            checkinEl.innerText = '-';
+            checkoutEl.innerText = '-';
+            nightsEl.innerText = '-';
+            guestsEl.innerText = '-';
+            breakdownEl.innerHTML = `<div class="breakdown-placeholder">Selecteer reisdata in de kalender voor een prijsopgave.</div>`;
+            totalEl.innerText = '€ 0.00';
+            if (stickyCta) {
+                stickyCta.innerText = "NU BOEKEN";
+                stickyCta.disabled = true;
+                stickyCta.classList.add('disabled');
+            }
         }
     },
 
     renderAll() {
         this.renderMonthNav();
+        this.renderHorizontalMonthNav();
         
         // Render Left Calendar (Current Month)
         this.renderMonth(this.currentDate, this.cal1Title, this.cal1Grid);
@@ -949,10 +998,38 @@ const GipfelBooking = {
         this.renderDiscountBanner();
         this.updateNavigationButtons();
         this.updateContinueButton();
+        this.renderSummary(); // Always render summary on every refresh
+    },
 
-        // If we are on the summary step, re-render it to update translations
-        if (this.currentStep === 3) {
-            this.renderSummary();
+    renderHorizontalMonthNav() {
+        const track = document.getElementById('horizontal-month-track');
+        if (!track) return;
+        
+        track.innerHTML = '';
+        
+        // Generate 12 months starting from current month
+        const today = new Date();
+        const startMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        for (let i = 0; i < 12; i++) {
+            const iterMonth = new Date(startMonth.getFullYear(), startMonth.getMonth() + i, 1);
+            const mName = this.monthNames[iterMonth.getMonth()];
+            const yName = iterMonth.getFullYear();
+            
+            const btn = document.createElement('button');
+            btn.className = 'h-month-btn';
+            if (this.currentDate.getMonth() === iterMonth.getMonth() && this.currentDate.getFullYear() === iterMonth.getFullYear()) {
+                btn.classList.add('active');
+            }
+            btn.innerText = `${mName} ${yName}`;
+            
+            btn.onclick = (e) => {
+                e.preventDefault();
+                this.currentDate = new Date(iterMonth);
+                this.renderAll();
+            };
+            
+            track.appendChild(btn);
         }
     },
 
@@ -976,9 +1053,12 @@ const GipfelBooking = {
         const diffArrival = checkIn.getTime() - today.getTime();
         const daysUntilArrival = Math.max(0, Math.ceil(diffArrival / (1000 * 60 * 60 * 24)));
 
-        const adults = parseInt(document.getElementById('b-adults').value) || 0;
-        const children = parseInt(document.getElementById('b-children').value) || 0;
-        const babies = parseInt(document.getElementById('b-babies').value) || 0;
+        let adults = 0, children = 0, babies = 0;
+        if (document.getElementById('b-adults')) {
+            adults = parseInt(document.getElementById('b-adults').value) || 0;
+            children = parseInt(document.getElementById('b-children').value) || 0;
+            babies = parseInt(document.getElementById('b-babies').value) || 0;
+        }
         const totalGuests = adults + children + babies;
         const chargeableGuests = adults + children;
 

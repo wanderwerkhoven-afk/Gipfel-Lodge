@@ -1903,251 +1903,312 @@
 
     <!-- Booking Flow Container -->
     <section class="section-booking-flow container">
-
-      <!-- 1. Progress Steps (Fixed at top) -->
-      <div class="booking-steps">
+      <!-- 1. Progress Steps (Full Width) -->
+      <div class="booking-steps" style="margin-bottom: 2rem;">
         <div class="step active" data-step="1">
           <span class="step-icon">📅</span>
-          <span class="step-label" data-i18n="step-date">Reisedaten</span>
+          <span class="step-label">Reisdata</span>
         </div>
         <div class="step-line"></div>
         <div class="step" data-step="2">
           <span class="step-icon">👤</span>
-          <span class="step-label" data-i18n="step-personal">Persönliche Info</span>
+          <span class="step-label">Persoonlijke info</span>
         </div>
         <div class="step-line"></div>
         <div class="step" data-step="3">
-          <span class="step-icon">✨</span>
-          <span class="step-label" data-i18n="step-summary">Bestätigung</span>
+          <span class="step-icon">📋</span>
+          <span class="step-label">Samenvatting</span>
         </div>
         <div class="step-line"></div>
         <div class="step" data-step="4">
           <span class="step-icon">🎉</span>
-          <span class="step-label" data-i18n="step-finished">Fertig</span>
+          <span class="step-label">Klaar</span>
         </div>
       </div>
 
-      <div class="booking-viewport">
-        <div class="booking-slider">
+      <div class="booking-grid-layout">
+        
+        <!-- LEFT COLUMN -->
+        <div class="booking-left-column">
+          <div class="booking-viewport">
+            <div class="booking-slider">
 
-          <!-- STEP 1: CALENDAR -->
-          <div class="booking-step" id="step-1">
-            <div class="booking-flow-card">
-              <div class="booking-header-bar">
-                <div class="booking-title-area">
-                  <h2 data-i18n="booking-calendar-title">Reisedatum</h2>
-                  <p data-i18n="booking-calendar-text">Wählen Sie Ihr Anreisedatum</p>
-                </div>
-                <div class="month-navigator">
-                  <button class="month-nav-prev" aria-label="Previous Month">‹</button>
-                  <div id="month-nav-track" class="month-nav-track"></div>
-                  <button class="month-nav-next" aria-label="Next Month">›</button>
+              <!-- STEP 1: CALENDAR -->
+              <div class="booking-step" id="step-1">
+                <div class="booking-flow-card">
+                  <div class="booking-header-bar">
+                    <div class="booking-title-area">
+                      <h2 data-i18n="booking-calendar-title">Reisdata</h2>
+                      <p data-i18n="booking-calendar-text">Selecteer uw aankomst- en vertrekdatum</p>
+                    </div>
+                  </div>
+
+                  <!-- Quick Guest Picker -->
+                  <div class="quick-guest-picker">
+                    <span class="quick-guest-label">👥 Aantal gasten</span>
+                    <div class="quick-guest-counter">
+                      <button type="button" class="counter-btn minus" data-target="quick-guests" aria-label="Decrease">−</button>
+                      <input type="number" id="quick-guests" value="2" min="1" max="10" readonly>
+                      <button type="button" class="counter-btn plus" data-target="quick-guests" aria-label="Increase">+</button>
+                    </div>
+                    <span class="quick-guest-hint">max. 10 personen</span>
+                  </div>
+
+                  <div class="horizontal-months-container">
+                    <button class="h-month-nav-prev" aria-label="Previous Month">‹</button>
+                    <div class="horizontal-month-track" id="horizontal-month-track"></div>
+                    <button class="h-month-nav-next" aria-label="Next Month">›</button>
+                  </div>
+
+                  <div class="double-calendar-wrapper">
+                    <div class="kalender-box">
+                      <div class="kalender-header premium-header">
+                        <button class="cal-nav-prev">◀</button>
+                        <span id="cal1-title" class="cal-title"></span>
+                        <button class="cal-nav-next-hidden" style="visibility:hidden;">▶</button>
+                      </div>
+                      <div id="cal1-grid" class="cal-grid premium-grid"></div>
+                    </div>
+                    <div class="kalender-box">
+                      <div class="kalender-header premium-header">
+                        <button class="cal-nav-prev-hidden" style="visibility:hidden;">◀</button>
+                        <span id="cal2-title" class="cal-title"></span>
+                        <button class="cal-nav-next">▶</button>
+                      </div>
+                      <div id="cal2-grid" class="cal-grid premium-grid"></div>
+                    </div>
+                  </div>
+
+                  <div class="calendar-actions">
+                    <div class="calendar-legend">
+                      <span class="legend-item"><span class="legend-color available"></span> <span data-i18n="cal-available">Beschikbaar</span></span>
+                      <span class="legend-item"><span class="legend-color selected"></span> <span data-i18n="cal-selected">Geselecteerd</span></span>
+                      <span class="legend-item"><span class="legend-color on-request"></span> <span data-i18n="cal-request">Gereserveerd</span></span>
+                      <span class="legend-item"><span class="legend-color booked"></span> <span data-i18n="cal-booked">Reeds geboekt</span></span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="double-calendar-wrapper">
-                <div class="kalender-box">
-                  <div class="kalender-header">
-                    <button class="cal-nav-prev">‹</button>
-                    <span id="cal1-title" class="cal-title"></span>
-                    <button class="cal-nav-next" aria-label="Next Month">›</button>
+              <!-- STEP 2: PERSONAL INFO -->
+              <div class="booking-step" id="step-2">
+                <div class="booking-flow-card">
+                  <div class="booking-header-bar">
+                    <div class="booking-title-area">
+                      <h2>Persoonlijke info</h2>
+                      <p>Vul uw gegevens in voor de boeking</p>
+                    </div>
                   </div>
-                  <div id="cal1-grid" class="cal-grid premium-grid"></div>
-                </div>
-                <div class="kalender-box">
-                  <div class="kalender-header">
-                    <button class="cal-nav-prev" aria-label="Previous Month">‹</button>
-                    <span id="cal2-title" class="cal-title"></span>
-                    <button class="cal-nav-next">›</button>
-                  </div>
-                  <div id="cal2-grid" class="cal-grid premium-grid"></div>
-                </div>
-              </div>
-
-              <div class="calendar-actions">
-                <div class="calendar-legend">
-                  <span class="legend-item"><span class="legend-color available"></span> <span
-                      data-i18n="cal-available">Online buchbar</span></span>
-                  <span class="legend-item"><span class="legend-color on-request"></span> <span
-                      data-i18n="cal-request">Reserviert</span></span>
-                  <span class="legend-item"><span class="legend-color unavailable"></span> <span
-                      data-i18n="cal-unavailable">Nicht verfügbar</span></span>
-                  <span class="legend-item"><span class="legend-color booked"></span> <span data-i18n="cal-booked">Reeds
-                      geboekt</span></span>
-                </div>
-
-                <div class="calendar-action-right" style="display: flex; align-items: center;">
-                  <div id="step1-price-preview"
-                    style="display: none; text-align: right; margin-right: 20px; font-weight: 600; color: var(--color-primary); white-space: nowrap;">
-                  </div>
-                  <button id="cal-continue-btn" class="btn btn-primary btn-booking-next disabled"
-                    data-i18n="btn-continue">Weiter ›</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 2: PERSONAL INFO -->
-          <div class="booking-step" id="step-2">
-            <div class="booking-flow-card">
-              <h3 data-i18n="booking-form-title" style="margin-bottom: 30px;">Ihre Daten</h3>
-              <form id="booking-form" class="gipfel-form">
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="b-name" data-i18n="form-name">Name</label>
-                    <input type="text" id="b-name" required>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="b-address" data-i18n="form-address">Adres (Straat & Huisnummer)</label>
-                    <input type="text" id="b-address" required>
-                  </div>
-                </div>
-                <div class="form-row split">
-                  <div class="form-group">
-                    <label for="b-zipcode" data-i18n="form-zipcode">Postcode</label>
-                    <input type="text" id="b-zipcode" required>
-                  </div>
-                  <div class="form-group">
-                    <label for="b-city" data-i18n="form-city">Woonplaats</label>
-                    <input type="text" id="b-city" required>
-                  </div>
-                </div>
-                <div class="form-row split">
-                  <div class="form-group">
-                    <label for="b-country" data-i18n="form-country">Land</label>
-                    <select id="b-country" required>
-                      <option value="" disabled selected>Kies een land</option>
-                      <!-- Populated via JS -->
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label for="b-phone" data-i18n="form-phone">Telefoonnummer</label>
-                    <div class="phone-input-group">
-                      <div class="country-code-select" id="country-code-select">
-                        <div class="selected-code">
-                          <div class="flag-container"><span class="fi fi-nl"></span></div>
-                          <span class="prefix">+31</span>
-                        </div>
-                        <div class="code-dropdown" id="code-dropdown">
+                  <form id="booking-form" class="gipfel-form">
+                    <!-- hidden date fields for email submission -->
+                    <input type="hidden" id="b-checkin">
+                    <input type="hidden" id="b-checkout">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="b-name">Voor- en achternaam</label>
+                        <input type="text" id="b-name" required>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="b-address">Adres (Straat & Huisnummer)</label>
+                        <input type="text" id="b-address" required>
+                      </div>
+                    </div>
+                    <div class="form-row split">
+                      <div class="form-group">
+                        <label for="b-zipcode">Postcode</label>
+                        <input type="text" id="b-zipcode" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="b-city">Woonplaats</label>
+                        <input type="text" id="b-city" required>
+                      </div>
+                    </div>
+                    <div class="form-row split">
+                      <div class="form-group">
+                        <label for="b-country">Land</label>
+                        <select id="b-country" required>
+                          <option value="" disabled selected>Kies een land</option>
                           <!-- Populated via JS -->
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="b-phone">Telefoonnummer</label>
+                        <div class="phone-input-group">
+                          <div class="country-code-select" id="country-code-select">
+                            <div class="selected-code">
+                              <div class="flag-container"><span class="fi fi-nl"></span></div>
+                              <span class="prefix">+31</span>
+                            </div>
+                            <div class="code-dropdown" id="code-dropdown">
+                              <!-- Populated via JS -->
+                            </div>
+                          </div>
+                          <input type="tel" id="b-phone" required placeholder="06 12345678">
                         </div>
                       </div>
-                      <input type="tel" id="b-phone" required placeholder="06 12345678">
+                    </div>
+                    <div class="form-row split">
+                      <div class="form-group">
+                        <label for="b-email">E-mailadres</label>
+                        <input type="email" id="b-email" required>
+                      </div>
+                    </div>
+                    <div class="form-row split-3">
+                      <div class="form-group">
+                        <label>Volwassenen</label>
+                        <div class="guest-counter">
+                          <button type="button" class="counter-btn minus" data-target="b-adults" aria-label="Decrease">&minus;</button>
+                          <input type="number" id="b-adults" value="2" min="2" max="10" readonly>
+                          <button type="button" class="counter-btn plus" data-target="b-adults" aria-label="Increase">+</button>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Kinderen (2-14 jr)</label>
+                        <div class="guest-counter">
+                          <button type="button" class="counter-btn minus" data-target="b-children" aria-label="Decrease">&minus;</button>
+                          <input type="number" id="b-children" value="0" min="0" max="8" readonly>
+                          <button type="button" class="counter-btn plus" data-target="b-children" aria-label="Increase">+</button>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Baby's (0-1 jr)</label>
+                        <div class="guest-counter">
+                          <button type="button" class="counter-btn minus" data-target="b-babies" aria-label="Decrease">&minus;</button>
+                          <input type="number" id="b-babies" value="0" min="0" max="1" readonly>
+                          <button type="button" class="counter-btn plus" data-target="b-babies" aria-label="Increase">+</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="guest-limit-msg" style="color: #d9534f; font-size: 0.82rem; margin-top: -5px; margin-bottom: 20px; display: none;">Maximaal 10 personen toegestaan.</div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="b-message">Bericht of speciale wensen</label>
+                        <textarea id="b-message" rows="4"></textarea>
+                      </div>
+                    </div>
+                    <div class="form-actions-between">
+                      <button type="button" class="btn-back" onclick="GipfelBooking.goToStep(1)">‹ Terug</button>
+                      <button type="submit" id="final-confirm-btn" class="btn btn-primary">Volgende: samenvatting ›</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- STEP 3: SUMMARY -->
+              <div class="booking-step" id="step-3">
+                <div class="booking-flow-card">
+                  <div class="booking-header-bar">
+                    <div class="booking-title-area">
+                      <h2>Samenvatting</h2>
+                      <p>Controleer uw boeking en maak deze definitief</p>
+                    </div>
+                  </div>
+                  <div class="summary-review-block">
+                    <div class="review-row"><span class="review-label">Aankomst</span><span class="review-value" id="review-checkin">-</span></div>
+                    <div class="review-row"><span class="review-label">Vertrek</span><span class="review-value" id="review-checkout">-</span></div>
+                    <div class="review-row"><span class="review-label">Gasten</span><span class="review-value" id="review-guests">-</span></div>
+                    <div class="review-row"><span class="review-label">Naam</span><span class="review-value" id="review-name">-</span></div>
+                    <div class="review-row"><span class="review-label">E-mail</span><span class="review-value" id="review-email">-</span></div>
+                    <div class="review-row"><span class="review-label">Telefoon</span><span class="review-value" id="review-phone">-</span></div>
+                    <div class="review-row"><span class="review-label">Totaalbedrag</span><span class="review-value review-total" id="review-total">-</span></div>
+                  </div>
+                  <div class="form-actions-between" style="margin-top: 2rem;">
+                    <button type="button" class="btn-back" onclick="GipfelBooking.goToStep(2)">‹ Terug</button>
+                    <button type="button" id="definitief-btn" class="btn btn-primary" onclick="GipfelBooking.submitFinal()">Maak boeking definitief ›</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STEP 4: SUCCESS -->
+              <div class="booking-step" id="step-4">
+                <div class="booking-flow-card">
+                  <div class="success-step-content">
+                    <span class="success-tag">Boeking Succesvol</span>
+                    <h2 class="success-title">Wat fijn dat u heeft geboekt!</h2>
+                    <p class="success-subtitle">We verwerken uw aanvraag zo spoedig mogelijk.</p>
+                    <p class="success-body">
+                      U ontvangt binnenkort een bevestigingsmail met alle details, inclusief informatie over de aanbetaling en de verdere stappen voor uw verblijf in de Gipfel Lodge.
+                    </p>
+                    <div class="success-actions">
+                      <a href="#home" class="btn btn-primary" onclick="window.navigateTo('home')">Terug naar de homepage</a>
                     </div>
                   </div>
                 </div>
-                <div class="form-row split">
-                  <div class="form-group">
-                    <label for="b-email" data-i18n="form-email">E-mailadres</label>
-                    <input type="email" id="b-email" required>
-                  </div>
+              </div>
+
+            </div> <!-- /.booking-slider -->
+          </div> <!-- /.booking-viewport -->
+        </div> <!-- /.booking-left-column -->
+
+        <!-- RIGHT COLUMN: Sticky Summary -->
+        <div class="booking-right-column">
+          <aside class="sticky-booking-summary" id="sticky-booking-summary">
+            <h3 class="summary-title" data-i18n="summary-title">Prijsdetails</h3>
+            
+            <div class="summary-dates-container">
+              <div class="summary-date-box">
+                <span class="icon">📅</span>
+                <div class="summary-date-texts">
+                  <span class="summary-date-label">Aankomst</span>
+                  <span class="summary-date-value" id="summary-date-in">-</span>
                 </div>
-                <div class="form-row split">
-                  <div class="form-group">
-                    <label for="b-checkin" data-i18n="form-checkin">Anreise</label>
-                    <input type="text" id="b-checkin" readonly required>
-                  </div>
-                  <div class="form-group">
-                    <label for="b-checkout" data-i18n="form-checkout">Abreise</label>
-                    <input type="text" id="b-checkout" readonly required>
-                  </div>
+              </div>
+              <div class="summary-date-arrow">→</div>
+              <div class="summary-date-box">
+                <span class="icon">📅</span>
+                <div class="summary-date-texts">
+                  <span class="summary-date-label">Vertrek</span>
+                  <span class="summary-date-value" id="summary-date-out">-</span>
                 </div>
-                <div class="form-row split-3">
-                  <div class="form-group">
-                    <label data-i18n="form-adults">Erwachsene</label>
-                    <div class="guest-counter">
-                      <button type="button" class="counter-btn minus" data-target="b-adults"
-                        aria-label="Decrease">&minus;</button>
-                      <input type="number" id="b-adults" value="2" min="2" max="10" readonly>
-                      <button type="button" class="counter-btn plus" data-target="b-adults"
-                        aria-label="Increase">+</button>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label data-i18n="form-children">Kinder (2-14)</label>
-                    <div class="guest-counter">
-                      <button type="button" class="counter-btn minus" data-target="b-children"
-                        aria-label="Decrease">&minus;</button>
-                      <input type="number" id="b-children" value="0" min="0" max="8" readonly>
-                      <button type="button" class="counter-btn plus" data-target="b-children"
-                        aria-label="Increase">+</button>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label data-i18n="form-babies">Babys (0-1)</label>
-                    <div class="guest-counter">
-                      <button type="button" class="counter-btn minus" data-target="b-babies"
-                        aria-label="Decrease">&minus;</button>
-                      <input type="number" id="b-babies" value="0" min="0" max="1" readonly>
-                      <button type="button" class="counter-btn plus" data-target="b-babies"
-                        aria-label="Increase">+</button>
-                    </div>
-                  </div>
-                </div>
-                <div id="guest-limit-msg"
-                  style="color: #d9534f; font-size: 0.82rem; margin-top: -5px; margin-bottom: 20px; display: none;"
-                  data-i18n="form-guest-limit-msg">Gesamtzahl der Gäste mag niet meer dan 10 personen zijn.</div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="b-message" data-i18n="form-message">Nachricht / Wünsche</label>
-                    <textarea id="b-message" rows="4"></textarea>
-                  </div>
-                </div>
-                <div class="form-actions-between">
-                  <button type="button" class="btn-back" onclick="GipfelBooking.goToStep(1)">‹ <span
-                      data-i18n="btn-back">Zurück</span></button>
-                  <button type="submit" class="btn btn-primary" data-i18n="form-submit">Weiter zur Übersicht ›</button>
-                </div>
-              </form>
+              </div>
             </div>
-          </div>
 
-          <!-- STEP 3: SUMMARY -->
-          <div class="booking-step" id="step-3">
-            <div class="booking-flow-card">
-              <h3 data-i18n="booking-summary-title" style="margin-bottom: 30px;">Zusammenfassung</h3>
-
-              <div id="booking-summary-content" class="booking-summary-grid">
-                <!-- Populated by JS -->
+            <div class="summary-guests-nights">
+              <div class="sgn-item">
+                <span class="sgn-label">Verblijfsduur</span>
+                <span class="sgn-value" id="summary-nights">-</span>
               </div>
-
-              <div id="booking-price-breakdown" class="booking-price-breakdown-container">
-                <!-- Populated by JS -->
-              </div>
-
-              <div class="form-actions-between" style="margin-top: 50px;">
-                <button type="button" class="btn-back" onclick="GipfelBooking.goToStep(2)">‹ <span
-                    data-i18n="btn-back">Zurück</span></button>
-                <button type="button" id="final-confirm-btn" class="btn btn-primary"
-                  data-i18n="form-confirm">Buchungsanfrage abschließen ›</button>
+              <div class="sgn-item">
+                <span class="sgn-label">Gasten</span>
+                <span class="sgn-value" id="summary-guests">-</span>
               </div>
             </div>
-          </div>
 
-          <!-- STEP 4: SUCCESS -->
-          <div class="booking-step" id="step-4">
-            <div class="booking-flow-card">
-              <div class="success-step-content">
-                <span class="success-tag" data-i18n="success-tag">Buchung Erfolgreich</span>
-                <h2 class="success-title" data-i18n="success-title">Was für ein Glück, dass Sie gebucht haben!</h2>
-                <h3 class="success-subtitle" data-i18n="success-subtitle">Wir werden Ihre Anfrage umgehend bearbeiten.
-                </h3>
-                <p class="success-body" data-i18n="success-text">
-                  In Kürze erhalten Sie von uns eine Bestätigungs-E-Mail mit allen Details. Dort finden Sie auch die
-                  Informationen zur Anzahlung sowie die weiteren Schritte für Ihren Aufenthalt in der Gipfel Lodge.
-                </p>
-                <div class="success-actions">
-                  <a href="#home" class="btn btn-primary" data-i18n="success-btn"
-                    onclick="window.navigateTo('home')">Zurück zur Startseite</a>
-                </div>
+            <div class="summary-price-breakdown" id="summary-price-breakdown">
+              <!-- JS rendered -->
+              <div class="breakdown-placeholder">Selecteer reisdata in de kalender voor een prijsopgave.</div>
+            </div>
+
+            <div class="summary-total-container">
+              <div class="summary-total-label">Totaal</div>
+              <div class="summary-total-price" id="summary-total-price">€ 0.00</div>
+            </div>
+
+            <button id="sticky-cta-btn" class="btn btn-primary sticky-cta disabled" disabled onclick="GipfelBooking.goToStep(2)">Nu boeken ›</button>
+
+            <div class="summary-included-trust">
+              <h4>Wat is inbegrepen?</h4>
+              <ul class="included-list">
+                <li>✓ Eindschoonmaak</li>
+                <li>✓ Bedlinnen</li>
+                <li>✓ Handdoeken</li>
+                <li>✓ Sauna</li>
+                <li>✓ WiFi</li>
+                <li>✓ Parkeren</li>
+              </ul>
+              
+              <div class="trust-elements">
+                <div class="trust-item">⭐ Luxe lodge voor max. 10 personen</div>
+                <div class="trust-item">🤝 Direct boeken bij eigenaar</div>
+                <div class="trust-item">💰 Geen externe boekingskosten</div>
               </div>
             </div>
-          </div>
+          </aside>
+        </div> <!-- /.booking-right-column -->
 
-        </div> <!-- /.booking-slider -->
-      </div> <!-- /.booking-viewport -->
+      </div> <!-- /.booking-grid-layout -->
     </section>
   </main>
 
