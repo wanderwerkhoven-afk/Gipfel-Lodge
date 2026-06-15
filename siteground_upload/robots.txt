@@ -1,4 +1,4 @@
 ﻿User-agent: *
 Allow: /
 
-Sitemap: https://gipfellodge.at/sitemap.xml
+Sitemap: https://gipfellodge.com/sitemap.xml
