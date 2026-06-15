@@ -101,33 +101,194 @@ if (-not $BeheerOnly) {
     Copy-Item "$favSrc\site.webmanifest"             "$Dist\site.webmanifest"
     Write-Ok "Favicon bestanden"
 
+    # -- .htaccess (SPA routing + internationale redirects) --
+    Write-Step "Kopieren van .htaccess..."
+    Copy-Item "$Root\.htaccess" "$Dist\.htaccess"
+    Write-Ok ".htaccess (SPA rewrite + 301 domein redirects)"
+
     # -- robots.txt --
     Write-Step "Aanmaken van robots.txt..."
     $robotsTxt = @"
 User-agent: *
 Allow: /
 
-Sitemap: https://gipfellodge.com/sitemap.xml
+Sitemap: https://gipfellodge.at/sitemap.xml
 "@
     $robotsTxt | Set-Content "$Dist\robots.txt" -Encoding UTF8
     Write-Ok "robots.txt"
 
-    # -- sitemap.xml --
-    Write-Step "Aanmaken van sitemap.xml..."
+    # -- sitemap.xml (meertalig: DE / NL / EN) --
+    Write-Step "Aanmaken van sitemap.xml (internationaal, met hreflang)..."
     $today = Get-Date -Format "yyyy-MM-dd"
     $sitemapXml = @"
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- HOME -->
   <url>
-    <loc>https://gipfellodge.com/</loc>
+    <loc>https://gipfellodge.at/</loc>
     <lastmod>$today</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/"/>
   </url>
+  <url>
+    <loc>https://gipfellodge.at/nl/</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/en/</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/"/>
+  </url>
+
+  <!-- LODGE -->
+  <url>
+    <loc>https://gipfellodge.at/de/lodge</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/lodge"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/lodge"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/lodge"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/lodge"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/nl/lodge</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/lodge"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/lodge"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/lodge"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/lodge"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/en/lodge</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/lodge"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/lodge"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/lodge"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/lodge"/>
+  </url>
+
+  <!-- OMGEVING / UMGEBUNG / SURROUNDINGS -->
+  <url>
+    <loc>https://gipfellodge.at/de/umgebung</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/umgebung"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/omgeving"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/surroundings"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/umgebung"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/nl/omgeving</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/umgebung"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/omgeving"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/surroundings"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/umgebung"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/en/surroundings</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/umgebung"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/omgeving"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/surroundings"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/umgebung"/>
+  </url>
+
+  <!-- GENIETEN / GENUSS / ENJOYMENT -->
+  <url>
+    <loc>https://gipfellodge.at/de/genuss</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/genuss"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/genieten"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/enjoyment"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/genuss"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/nl/genieten</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/genuss"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/genieten"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/enjoyment"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/genuss"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/en/enjoyment</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/genuss"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/genieten"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/enjoyment"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/genuss"/>
+  </url>
+
+  <!-- BOEKEN / BOOKING -->
+  <url>
+    <loc>https://gipfellodge.at/de/booking</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/booking"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/booking"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/booking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/booking"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/nl/booking</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/booking"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/booking"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/booking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/booking"/>
+  </url>
+  <url>
+    <loc>https://gipfellodge.at/en/booking</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://gipfellodge.at/de/booking"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://gipfellodge.at/nl/booking"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://gipfellodge.at/en/booking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://gipfellodge.at/de/booking"/>
+  </url>
+
 </urlset>
 "@
     $sitemapXml | Set-Content "$Dist\sitemap.xml" -Encoding UTF8
-    Write-Ok "sitemap.xml"
+    Write-Ok "sitemap.xml (15 URL-entries, 3 talen x 5 pagina's)"
 
     # -- Beveiligingscheck --
     Write-Step "Beveiligingscheck: scannen op gevoelige data..."
@@ -225,8 +386,10 @@ Write-Host ""
 Write-Host "  [DIR] siteground_upload/  -> upload naar public_html" -ForegroundColor Cyan
 Write-Host "  [DIR] beheer/             -> alleen lokaal gebruiken" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "  Vergeet niet:" -ForegroundColor White
-Write-Host "  1. Firebase API key beperken in Google Cloud Console" -ForegroundColor Gray
-Write-Host "  2. EmailJS allowed domains instellen: https://gipfellodge.com" -ForegroundColor Gray
-Write-Host "  3. SiteGround: Password Protect beheer/ als je het upload" -ForegroundColor Gray
+  Write-Host "  Vergeet niet:" -ForegroundColor White
+  Write-Host "  1. Firebase API key beperken in Google Cloud Console" -ForegroundColor Gray
+  Write-Host "  2. EmailJS allowed domains instellen: https://gipfellodge.at" -ForegroundColor Gray
+  Write-Host "  3. SiteGround: Password Protect beheer/ als je het upload" -ForegroundColor Gray
+  Write-Host "  4. SiteGround: Controleer of .htaccess is geupload (SPA routing!)" -ForegroundColor Gray
+  Write-Host "  5. Google Search Console: sitemap indienen via https://gipfellodge.at/sitemap.xml" -ForegroundColor Gray
 Write-Host ""
