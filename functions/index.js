@@ -75,22 +75,34 @@ exports.onNewBooking = functions.firestore
         }
     });
 
-// 2. Nieuwe To-Do Trigger
-exports.onNewTodo = functions.firestore
-    .document('todos/{todoId}')
-    .onCreate(async (snap, context) => {
-        const todoData = snap.data();
-        const assignedUserId = todoData.assignedUserId;
+// 2. Nieuwe To-Do Trigger (luistert naar updates op het document per gebruiker)
+exports.onTodoWrite = functions.firestore
+    .document('todos/{userId}')
+    .onWrite(async (change, context) => {
+        const userId = context.params.userId;
+        
+        // Als het document verwijderd is, hoeven we niks te doen
+        if (!change.after.exists) {
+            return null;
+        }
 
-        if (!assignedUserId) {
-            console.log('Geen assignedUserId voor deze todo. Geen push gestuurd.');
+        const beforeItems = change.before.exists ? (change.before.data().items || []) : [];
+        const afterItems = change.after.data().items || [];
+
+        // Zoek naar nieuw toegevoegde taken (items die in afterItems zitten maar niet in beforeItems)
+        const newItems = afterItems.filter(afterItem => 
+            !beforeItems.some(beforeItem => beforeItem.id === afterItem.id)
+        );
+
+        if (newItems.length === 0) {
+            console.log('Geen nieuwe to-do items toegevoegd.');
             return null;
         }
 
         try {
-            const userDoc = await db.collection('users').doc(assignedUserId).get();
+            const userDoc = await db.collection('users').doc(userId).get();
             if (!userDoc.exists) {
-                console.log('Assigned user bestaat niet.');
+                console.log('Gebruiker bestaat niet.');
                 return null;
             }
 
@@ -100,27 +112,30 @@ exports.onNewTodo = functions.firestore
             if (userData.notification_preferences && userData.notification_preferences.newTodo === true) {
                 const tokens = userData.fcmTokens || [];
                 if (tokens.length > 0) {
-                    const payload = {
-                        notification: {
-                            title: 'Nieuwe to-do',
-                            body: 'Er is een nieuwe taak aan jou toegewezen.',
-                        },
-                        data: {
-                            type: 'new_todo',
-                            todoId: context.params.todoId
-                        }
-                    };
+                    for (const item of newItems) {
+                        const payload = {
+                            notification: {
+                                title: 'Nieuwe to-do',
+                                body: `Nieuwe taak toegewezen: ${item.text || 'Taak details'}`,
+                            },
+                            data: {
+                                type: 'new_todo',
+                                todoId: item.id,
+                                userId: userId
+                            }
+                        };
 
-                    const response = await admin.messaging().sendEachForMulticast({
-                        tokens: tokens,
-                        ...payload
-                    });
-                    console.log(`To-do push gestuurd naar ${assignedUserId}: ${response.successCount} gelukt.`);
+                        const response = await admin.messaging().sendEachForMulticast({
+                            tokens: tokens,
+                            ...payload
+                        });
+                        console.log(`To-do push gestuurd naar ${userId}: ${response.successCount} gelukt.`);
+                    }
                 }
             }
             return null;
         } catch (error) {
-            console.error('Fout bij verzenden onNewTodo push:', error);
+            console.error('Fout bij verzenden onTodoWrite push:', error);
             return null;
         }
     });
@@ -202,23 +217,24 @@ exports.sendTodoReminder = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('permission-denied', 'Alleen superusers mogen reminders sturen.');
     }
 
-    const { todoId } = data;
-    if (!todoId) {
-        throw new functions.https.HttpsError('invalid-argument', 'todoId is verplicht.');
+    const { targetUserId, todoId } = data;
+    if (!targetUserId || !todoId) {
+        throw new functions.https.HttpsError('invalid-argument', 'targetUserId en todoId zijn verplicht.');
     }
 
     try {
-        const todoDoc = await db.collection('todos').doc(todoId).get();
+        const todoDoc = await db.collection('todos').doc(targetUserId).get();
         if (!todoDoc.exists) {
-            throw new functions.https.HttpsError('not-found', 'To-do niet gevonden.');
+            throw new functions.https.HttpsError('not-found', 'To-do lijst niet gevonden.');
         }
 
-        const assignedUserId = todoDoc.data().assignedUserId;
-        if (!assignedUserId) {
-            return { success: false, message: 'Deze to-do heeft geen toegewezen gebruiker.' };
+        const items = todoDoc.data().items || [];
+        const todoItem = items.find(item => item.id === todoId);
+        if (!todoItem) {
+            throw new functions.https.HttpsError('not-found', 'To-do item niet gevonden.');
         }
 
-        const userDoc = await db.collection('users').doc(assignedUserId).get();
+        const userDoc = await db.collection('users').doc(targetUserId).get();
         if (!userDoc.exists) {
             return { success: false, message: 'Toegewezen gebruiker niet gevonden in de database.' };
         }
@@ -231,11 +247,12 @@ exports.sendTodoReminder = functions.https.onCall(async (data, context) => {
         const payload = {
             notification: {
                 title: 'To-do Reminder',
-                body: `Vergeet niet: ${todoDoc.data().title || 'Je hebt een openstaande taak.'}`,
+                body: `Vergeet niet: ${todoItem.text || 'Je hebt een openstaande taak.'}`,
             },
             data: {
                 type: 'todo_reminder',
-                todoId: todoId
+                todoId: todoId,
+                userId: targetUserId
             }
         };
 

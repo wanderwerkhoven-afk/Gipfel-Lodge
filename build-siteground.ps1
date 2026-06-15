@@ -171,7 +171,8 @@ New-Item -ItemType Directory -Path $Beheer | Out-Null
 # -- Admin HTML --
 Copy-Item "$Root\admin.html"   "$Beheer\admin.html"
 Copy-Item "$Root\admin-sw.js"  "$Beheer\admin-sw.js"
-Write-Ok "admin.html + admin-sw.js"
+Copy-Item "$Root\firebase-messaging-sw.js" "$Beheer\firebase-messaging-sw.js"
+Write-Ok "admin.html + admin-sw.js + firebase-messaging-sw.js"
 
 # -- Admin JS (inclusief gedeelde firebase.js dependency) --
 $beheerJs = Join-Path $Beheer "js"
