@@ -87,8 +87,6 @@
                 import('./dataviz/pages/maintenancePage.js').then(module => {
                     module.MaintenancePage.init();
                 }).catch(err => console.error("Failed to load MaintenancePage", err));
-            } else if (viewId === 'push-notifications-view') {
-                if (typeof initPushNotificationsView === 'function') initPushNotificationsView();
             } else if (viewId.startsWith('dataviz-')) {
                 if (typeof window.initDatavizView === 'function') {
                     window.initDatavizView(viewId);

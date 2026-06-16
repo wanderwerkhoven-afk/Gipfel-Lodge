@@ -211,11 +211,6 @@ function renderTodos() {
           <span class="todo-date"><i class="ph ph-calendar-blank"></i> ${dateStr}</span>
         </div>
       </div>
-      ${window.currentUserRole === 'superuser' && !t.completed ? `
-      <button class="todo-remind-btn" data-id="${t.id}" title="Stuur push herinnering" style="background: rgba(197, 160, 89, 0.1); color: var(--color-gold); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; margin-right: 8px; transition: all 0.2s;" onmouseover="this.style.background='var(--color-gold)'; this.style.color='white';" onmouseout="this.style.background='rgba(197, 160, 89, 0.1)'; this.style.color='var(--color-gold)';">
-        <i class="ph ph-bell"></i> Push reminder sturen
-      </button>
-      ` : ''}
       <button class="todo-del-btn" data-id="${t.id}" title="Verwijder taak">
         <i class="ph ph-trash"></i>
       </button>
@@ -223,40 +218,6 @@ function renderTodos() {
 
     li.querySelector('.todo-checkbox').addEventListener('change', () => window.toggleTodoItem(t.id));
     li.querySelector('.todo-del-btn').addEventListener('click', () => window.deleteTodoItem(t.id));
-
-    if (window.currentUserRole === 'superuser' && !t.completed) {
-      li.querySelector('.todo-remind-btn').addEventListener('click', async () => {
-        const btn = li.querySelector('.todo-remind-btn');
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = `<i class="ph ph-spinner spinner"></i> Bezig...`;
-        try {
-          const { functions, httpsCallable } = await import('../../../site_js/core/firebase.js');
-          const sendTodoReminder = httpsCallable(functions, 'sendTodoReminder');
-          const result = await sendTodoReminder({ targetUserId: targetUserId, todoId: t.id });
-          if (result.data && result.data.success) {
-            btn.innerHTML = `<i class="ph ph-check"></i> Gestuurd!`;
-            btn.style.background = '#22c55e';
-            btn.style.color = '#fff';
-            setTimeout(() => {
-              btn.innerHTML = originalText;
-              btn.style.background = 'rgba(197, 160, 89, 0.1)';
-              btn.style.color = 'var(--color-gold)';
-              btn.disabled = false;
-            }, 3000);
-          } else {
-            alert("Reminder mislukt: " + (result.data ? result.data.message : "onbekende fout"));
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-          }
-        } catch (err) {
-          console.error("Fout bij versturen reminder:", err);
-          alert("Fout bij versturen reminder: " + err.message);
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-        }
-      });
-    }
 
     list.appendChild(li);
   });

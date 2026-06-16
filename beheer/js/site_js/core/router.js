@@ -2,8 +2,76 @@
  * SPA Router - Gipfel Lodge (Maestro Pattern)
  */
 
+const routerConfig = {
+    'gipfellodge.nl': {
+        'home': '/',
+        'lodge': '/lodge',
+        'activities': '/activiteiten',
+        'enjoyment': '/genieten',
+        'booking': '/booking'
+    },
+    'gipfellodge.de': {
+        'home': '/',
+        'lodge': '/lodge',
+        'activities': '/aktivitaeten',
+        'enjoyment': '/genuss',
+        'booking': '/buchen'
+    },
+    'gipfellodge.at': {
+        'home': '/',
+        'lodge': '/lodge',
+        'activities': '/aktivitaeten',
+        'enjoyment': '/genuss',
+        'booking': '/booking'
+    },
+    'gipfellodge.eu': {
+        'home': '/',
+        'lodge': '/lodge',
+        'activities': '/activities',
+        'enjoyment': '/enjoyment',
+        'booking': '/booking'
+    }
+};
+
+function getPageIdFromPath(path) {
+    const domain = (window.i18n && window.i18n.domain) || 'gipfellodge.eu';
+    const config = routerConfig[domain] || routerConfig['gipfellodge.eu'];
+    
+    // Normalize path (remove leading/trailing slashes and query params/hashes)
+    const cleanPath = path.split('?')[0].split('#')[0];
+    const normPath = '/' + cleanPath.replace(/^\/+|\/+$/g, '');
+    
+    for (const [pageId, pagePath] of Object.entries(config)) {
+        if (pagePath === normPath) {
+            return pageId;
+        }
+    }
+    
+    // If no match found and path is empty, default to home
+    if (normPath === '/' || normPath === '') {
+        return 'home';
+    }
+    return null;
+}
+
+function updateNavigationHrefs() {
+    const domain = (window.i18n && window.i18n.domain) || 'gipfellodge.eu';
+    const config = routerConfig[domain] || routerConfig['gipfellodge.eu'];
+    
+    document.querySelectorAll('a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('#')) {
+            const pageId = href.substring(1) || 'home';
+            if (config[pageId]) {
+                link.setAttribute('href', config[pageId]);
+            }
+        }
+    });
+}
+
 window.navigateTo = function(pageId) {
     console.log('Navigating to:', pageId);
+    window.router.currentPageId = pageId;
 
     // Track analytics (Async)
     import('../utils/analytics.js').then(m => {
@@ -13,6 +81,11 @@ window.navigateTo = function(pageId) {
     // Save to local storage
     if (pageId) {
         localStorage.setItem('gipfel_last_page', pageId);
+    }
+
+    // Update SEO metadata
+    if (window.seoManager && typeof window.seoManager.update === 'function') {
+        window.seoManager.update(pageId);
     }
 
     // 1. Update active page classes
@@ -27,19 +100,23 @@ window.navigateTo = function(pageId) {
     }
 
     // 2. Update navigation link states
-    const navLinks = document.querySelectorAll('.menu-link, .menu-btn');
+    const domain = (window.i18n && window.i18n.domain) || 'gipfellodge.eu';
+    const config = routerConfig[domain] || routerConfig['gipfellodge.eu'];
+    const activePath = config[pageId] || '/';
+
+    const navLinks = document.querySelectorAll('.menu-link, .menu-btn, .topbar-book, .topbar-logo');
     navLinks.forEach(link => {
         const href = link.getAttribute('href');
-        if (href && (href === '#' + pageId || (pageId === 'home' && href === '#'))) {
+        if (href === activePath || (pageId === 'home' && href === '/')) {
             link.classList.add('is-active');
         } else {
             link.classList.remove('is-active');
         }
     });
 
-    // 3. Update URL hash (without triggering hashchange if we're already handling it)
-    if (window.location.hash !== '#' + pageId) {
-        window.history.pushState(null, null, '#' + pageId);
+    // 3. Update URL pathname (without triggering popstate)
+    if (window.location.pathname !== activePath) {
+        window.history.pushState(null, null, activePath + window.location.search);
     }
 
     // 4. Scroll to top
@@ -51,9 +128,24 @@ window.navigateTo = function(pageId) {
 
 // Handle browser back/forward buttons
 window.addEventListener('popstate', () => {
-    const pageId = window.location.hash.replace('#', '') || 'home';
-    window.navigateTo(pageId);
+    handleUrlChange();
 });
+
+function handleUrlChange() {
+    const pageId = getPageIdFromPath(window.location.pathname) || 'home';
+    window.navigateTo(pageId);
+}
+
+// Global router state and helpers
+window.router = {
+    currentPageId: 'home',
+    getPathForPage: function(pageId, domain) {
+        const config = routerConfig[domain] || routerConfig['gipfellodge.eu'];
+        return config[pageId] || '/';
+    },
+    handleUrlChange: handleUrlChange,
+    updateNavigationHrefs: updateNavigationHrefs
+};
 
 function reInitPageContent(pageId) {
     // Reveal animations
@@ -82,22 +174,28 @@ function reInitPageContent(pageId) {
 
 // Global initialization
 document.addEventListener('DOMContentLoaded', () => {
-    const hashPage = window.location.hash.replace('#', '');
-    const savedPage = localStorage.getItem('gipfel_last_page');
-    const initialPage = hashPage || savedPage || 'home';
-    
+    // 1. Rewrite all hash-based links to domain-specific clean paths
+    updateNavigationHrefs();
+
+    // 2. Load the initial page based on URL path
+    const initialPage = getPageIdFromPath(window.location.pathname) || 'home';
     window.navigateTo(initialPage);
 
-    // Intercept clicks on links with hashes
+    // 3. Intercept clicks on links for routing
     document.addEventListener('click', (e) => {
         const link = e.target.closest('a');
-        if (link && link.hash) {
-            const pageId = link.hash.replace('#', '');
-            // Only handle if it's one of our SPA pages
-            if (document.getElementById(pageId + '-page')) {
-                e.preventDefault();
-                window.navigateTo(pageId);
-            }
+        if (!link) return;
+
+        // Skip absolute external links or target="_blank"
+        if (link.target === '_blank' || (link.hostname && link.hostname !== window.location.hostname)) {
+            return;
+        }
+
+        const pageId = getPageIdFromPath(link.pathname);
+        if (pageId) {
+            e.preventDefault();
+            window.navigateTo(pageId);
         }
     });
 });
+

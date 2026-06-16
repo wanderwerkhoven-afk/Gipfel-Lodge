@@ -2,8 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebas
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp, getDocs, orderBy, query, doc, updateDoc, setDoc, getDoc, runTransaction, where, deleteDoc, limit, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
-import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-messaging.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-functions.js";
 
 // ============================================================
 // FIREBASE CONFIGURATIE — BEVEILIGINGSNOTA
@@ -63,9 +61,5 @@ console.log("Firebase Auth initialized.");
 const storage = getStorage(app);
 console.log("Firebase Storage initialized.");
 
-const functions = getFunctions(app);
-console.log("Firebase Functions initialized.");
-
 // Export instances to use in other files
-export { db, auth, storage, functions, app, getMessaging, getToken, onMessage, isSupported, httpsCallable, ref, uploadBytes, getDownloadURL, collection, addDoc, serverTimestamp, getDocs, orderBy, query, doc, updateDoc, setDoc, getDoc, runTransaction, where, deleteDoc, limit, signInWithEmailAndPassword, signOut, onAuthStateChanged, onSnapshot, Timestamp };
-
+export { db, auth, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, serverTimestamp, getDocs, orderBy, query, doc, updateDoc, setDoc, getDoc, runTransaction, where, deleteDoc, limit, signInWithEmailAndPassword, signOut, onAuthStateChanged, onSnapshot, Timestamp };

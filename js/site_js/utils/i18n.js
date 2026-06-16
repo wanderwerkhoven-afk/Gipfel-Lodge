@@ -3,15 +3,71 @@
  * Loads translations from window.gipfelTranslations (populated by i18n_*.js files)
  */
 
+const domainConfig = {
+    'gipfellodge.at': { lang: 'de', locale: 'de-AT' },
+    'gipfellodge.de': { lang: 'de', locale: 'de-DE' },
+    'gipfellodge.nl': { lang: 'nl', locale: 'nl-NL' },
+    'gipfellodge.eu': { lang: 'en', locale: 'en' }
+};
+
+const languageDomainMap = {
+    nl: 'gipfellodge.nl',
+    de: 'gipfellodge.de',
+    en: 'gipfellodge.eu'
+};
+
 class I18n {
     constructor() {
-        this.lang = localStorage.getItem('gipfel-lang') || 'de';
+        const config = this.detectDomainConfig();
+        this.domain = config.domain;
+        this.lang = config.lang;
+        this.locale = config.locale;
         this.init();
+    }
+
+    detectDomainConfig() {
+        const hostname = window.location.hostname;
+        
+        // Support local development parameters
+        const params = new URLSearchParams(window.location.search);
+        const debugDomain = params.get('domain');
+        const debugLang = params.get('lang');
+        
+        const activeHost = debugDomain || hostname;
+        
+        for (const domain of Object.keys(domainConfig)) {
+            if (activeHost.endsWith(domain)) {
+                const config = domainConfig[domain];
+                return {
+                    domain,
+                    lang: debugLang || config.lang,
+                    locale: config.locale
+                };
+            }
+        }
+        
+        // Fallback for localhost / local files
+        const defaultLang = debugLang || localStorage.getItem('gipfel-lang') || 'nl';
+        let defaultLocale = 'nl-NL';
+        let defaultDomain = 'gipfellodge.nl';
+        if (defaultLang === 'de') {
+            defaultLocale = 'de-DE';
+            defaultDomain = 'gipfellodge.de';
+        } else if (defaultLang === 'en') {
+            defaultLocale = 'en';
+            defaultDomain = 'gipfellodge.eu';
+        }
+        
+        return {
+            domain: defaultDomain,
+            lang: defaultLang,
+            locale: defaultLocale
+        };
     }
 
     init() {
         document.addEventListener('DOMContentLoaded', () => {
-            this.setLanguage(this.lang);
+            this.setLanguage(this.lang, false);
             this.setupListeners();
         });
     }
@@ -40,13 +96,46 @@ class I18n {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const lang = btn.getAttribute('data-lang-switch');
-                this.setLanguage(lang);
+                this.setLanguage(lang, true);
                 if (dropdown) dropdown.classList.remove('is-open');
             });
         });
     }
 
-    setLanguage(lang) {
+    setLanguage(lang, userTriggered = false) {
+        // Redirection logic for production domains
+        if (userTriggered) {
+            const isLocal = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1');
+            const targetDomain = languageDomainMap[lang];
+            
+            if (targetDomain && !isLocal && !window.location.hostname.endsWith(targetDomain)) {
+                const currentPageId = (window.router && window.router.currentPageId) || 'home';
+                const targetPath = (window.router && window.router.getPathForPage(currentPageId, targetDomain)) || '/';
+                window.location.href = `https://${targetDomain}${targetPath}`;
+                return;
+            } else if (isLocal) {
+                // Local dev: update query params without reload to simulate language change
+                const url = new URL(window.location.href);
+                url.searchParams.set('lang', lang);
+                // Also simulate domain change via param if it maps
+                if (targetDomain) {
+                    url.searchParams.set('domain', targetDomain);
+                }
+                window.history.pushState(null, '', url.toString());
+                
+                // Update properties in-place for simulation
+                const config = this.detectDomainConfig();
+                this.domain = config.domain;
+                this.lang = config.lang;
+                this.locale = config.locale;
+                
+                // Re-trigger router routing if available
+                if (window.router && typeof window.router.handleUrlChange === 'function') {
+                    window.router.handleUrlChange();
+                }
+            }
+        }
+
         this.lang = lang;
         localStorage.setItem('gipfel-lang', lang);
         

@@ -17,19 +17,19 @@ class MaintenanceManager {
             const originalNavigateTo = window.navigateTo;
             window.navigateTo = (pageId) => {
                 originalNavigateTo(pageId);
-                this.currentPage = (pageId || 'home').split('?')[0];
                 this.evaluateMaintenanceState();
             };
         }
 
-        // Keep hashchange for external navigation or browser back/forward
-        window.addEventListener('hashchange', () => {
-            this.currentPage = (window.location.hash.replace('#', '') || 'home').split('?')[0];
+        // Listen for browser navigation / popstate
+        window.addEventListener('popstate', () => {
             this.evaluateMaintenanceState();
         });
 
-        // Set initial page
-        this.currentPage = (window.location.hash.replace('#', '') || 'home').split('?')[0];
+        // Listen for languageChanged to update translations in-place
+        document.addEventListener('languageChanged', () => {
+            this.evaluateMaintenanceState();
+        });
 
         // Connect to Firestore settings
         this.listenToSettings();
@@ -40,8 +40,8 @@ class MaintenanceManager {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const lang = link.getAttribute('data-lang-switch');
-                if (window.gipfelI18n) {
-                    window.gipfelI18n.setLanguage(lang);
+                if (window.i18n) {
+                    window.i18n.setLanguage(lang, true);
                 }
             });
         });
@@ -69,8 +69,9 @@ class MaintenanceManager {
     evaluateMaintenanceState() {
         if (!this.maintenanceData) return;
 
+        const currentPage = (window.router && window.router.currentPageId) || 'home';
         const isMasterOn = this.maintenanceData.master_switch === true;
-        const isPageOn = this.maintenanceData.pages && this.maintenanceData.pages[this.currentPage] === true;
+        const isPageOn = this.maintenanceData.pages && this.maintenanceData.pages[currentPage] === true;
 
         if (isMasterOn || isPageOn) {
             this.showMaintenanceScreen();
