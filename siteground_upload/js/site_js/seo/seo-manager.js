@@ -264,6 +264,129 @@ class SEOManager {
         
         document.head.appendChild(script);
     }
+
+    updateFromFirebase(pageData) {
+        if (!pageData) return;
+
+        // 1. Update Document Title
+        if (pageData.title) {
+            document.title = pageData.title;
+            this.setMetaTag('property', 'og:title', pageData.title);
+            this.setMetaTag('name', 'twitter:title', pageData.title);
+        }
+
+        // 2. Update Meta Description
+        if (pageData.metaDescription) {
+            this.setMetaTag('name', 'description', pageData.metaDescription);
+            this.setMetaTag('property', 'og:description', pageData.metaDescription);
+            this.setMetaTag('name', 'twitter:description', pageData.metaDescription);
+        }
+
+        // 3. Update OG Image
+        if (pageData.ogImage) {
+            this.setMetaTag('property', 'og:image', pageData.ogImage);
+            this.setMetaTag('name', 'twitter:image', pageData.ogImage);
+        }
+
+        // 4. Update Canonical (should be based on domain + pageData.path)
+        const domain = this.normalizeHostname(window.location.hostname);
+        const activeDomain = this.config.domains[domain] ? domain : 'gipfellodge.eu';
+        const canonicalUrl = `https://${activeDomain}${pageData.path}`;
+        this.setLinkTag('canonical', canonicalUrl);
+
+        // 5. Update Robots
+        if (pageData.noindex) {
+            this.setMetaTag('name', 'robots', 'noindex, follow');
+        } else {
+            const el = document.querySelector('meta[name="robots"]');
+            if (el) el.remove();
+        }
+
+        // 6. Custom Hreflang Translations for Landing Pages
+        if (pageData.type === 'landing') {
+            this.updateLandingHreflang(pageData);
+        }
+
+        // 7. Update JSON-LD for FAQ
+        if (Array.isArray(pageData.faq) && pageData.faq.length > 0) {
+            this.appendFAQStructuredData(pageData.faq, canonicalUrl);
+        }
+    }
+
+    setNotFoundSEO() {
+        document.title = '404 - Pagina niet gevonden | Gipfel Lodge';
+        this.setMetaTag('name', 'robots', 'noindex, follow');
+    }
+
+    updateLandingHreflang(pageData) {
+        // Remove existing alternate links
+        document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
+
+        if (!pageData.translations) return;
+
+        const urlCache = {}; // keep track of added urls to avoid duplicates
+
+        Object.entries(pageData.translations).forEach(([marketKey, path]) => {
+            let configDomain = null;
+            let locale = null;
+            
+            // Find corresponding domain
+            Object.entries(this.config.domains).forEach(([domain, cfg]) => {
+                if ((marketKey === 'nl' && domain.endsWith('.nl')) ||
+                    (marketKey === 'de' && domain.endsWith('.de')) ||
+                    (marketKey === 'at' && domain.endsWith('.at')) ||
+                    (marketKey === 'eu' && domain.endsWith('.eu'))) {
+                    configDomain = domain;
+                    locale = cfg.locale;
+                }
+            });
+
+            if (configDomain && locale) {
+                const url = `https://${configDomain}${path}`;
+                if (!urlCache[url]) {
+                    urlCache[url] = true;
+                    const link = document.createElement('link');
+                    link.rel = 'alternate';
+                    link.hreflang = locale;
+                    link.href = url;
+                    document.head.appendChild(link);
+
+                    if (marketKey === 'eu') {
+                        const xDefaultLink = document.createElement('link');
+                        xDefaultLink.rel = 'alternate';
+                        xDefaultLink.hreflang = 'x-default';
+                        xDefaultLink.href = url;
+                        document.head.appendChild(xDefaultLink);
+                    }
+                }
+            }
+        });
+    }
+
+    appendFAQStructuredData(faqItems, url) {
+        const existingScript = document.getElementById('gipfel-seo-jsonld');
+        if (!existingScript) return;
+
+        try {
+            const data = JSON.parse(existingScript.text);
+            const faqSchema = {
+                "@type": "FAQPage",
+                "@id": `${url}#faq`,
+                "mainEntity": faqItems.map(item => ({
+                    "@type": "Question",
+                    "name": item.question,
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": item.answer
+                    }
+                }))
+            };
+            data['@graph'].push(faqSchema);
+            existingScript.text = JSON.stringify(data, null, 2);
+        } catch(e) {
+            console.error("Error appending FAQ structured data", e);
+        }
+    }
 }
 
 // Initialize SEO Manager immediately

@@ -83,6 +83,8 @@
                 loadInvoices();
             } else if (viewId === 'behavior-view') {
                 loadBehaviorStats();
+            } else if (viewId === 'seo-pages-view') {
+                if (window.adminSeo) window.adminSeo.init();
             } else if (viewId === 'maintenance-view') {
                 import('./dataviz/pages/maintenancePage.js').then(module => {
                     module.MaintenancePage.init();

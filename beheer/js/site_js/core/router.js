@@ -51,7 +51,9 @@ function getPageIdFromPath(path) {
     if (normPath === '/' || normPath === '') {
         return 'home';
     }
-    return null;
+    
+    // For unknown paths, we'll return 'seo-landing' to trigger the loader
+    return 'seo-landing';
 }
 
 function updateNavigationHrefs() {
@@ -83,20 +85,66 @@ window.navigateTo = function(pageId) {
         localStorage.setItem('gipfel_last_page', pageId);
     }
 
-    // Update SEO metadata
-    if (window.seoManager && typeof window.seoManager.update === 'function') {
-        window.seoManager.update(pageId);
-    }
-
     // 1. Update active page classes
     const pages = document.querySelectorAll('.page');
     pages.forEach(page => {
         page.classList.remove('active');
     });
 
-    const activePage = document.getElementById(pageId + '-page');
-    if (activePage) {
-        activePage.classList.add('active');
+    if (pageId === 'seo-landing') {
+        const landingPage = document.getElementById('seo-landing-page');
+        if (landingPage) landingPage.classList.add('active');
+        
+        // Show loading state while fetching content
+        if (window.seoPageRenderer) window.seoPageRenderer.showLoading();
+        
+        // Fetch content
+        if (window.seoContentLoader) {
+            const domain = (window.i18n && window.i18n.domain) || 'gipfellodge.eu';
+            let marketKey = 'eu';
+            if (domain.endsWith('.nl')) marketKey = 'nl';
+            else if (domain.endsWith('.de')) marketKey = 'de';
+            else if (domain.endsWith('.at')) marketKey = 'at';
+            
+            window.seoContentLoader.loadPage(marketKey, window.location.pathname).then(pageData => {
+                if (pageData) {
+                    if (window.seoPageRenderer) window.seoPageRenderer.render(pageData);
+                    if (window.seoManager) window.seoManager.updateFromFirebase(pageData);
+                } else {
+                    // Not found
+                    landingPage.classList.remove('active');
+                    const notFoundPage = document.getElementById('not-found-page');
+                    if (notFoundPage) notFoundPage.classList.add('active');
+                    if (window.seoManager) window.seoManager.setNotFoundSEO();
+                }
+            });
+        }
+    } else {
+        const activePage = document.getElementById(pageId + '-page');
+        if (activePage) {
+            activePage.classList.add('active');
+        }
+        
+        // Update SEO metadata for core pages, optionally fetching Firebase enrichment
+        if (window.seoManager && typeof window.seoManager.update === 'function') {
+            window.seoManager.update(pageId);
+            
+            // Try enrichment
+            if (window.seoContentLoader) {
+                const domain = (window.i18n && window.i18n.domain) || 'gipfellodge.eu';
+                let marketKey = 'eu';
+                if (domain.endsWith('.nl')) marketKey = 'nl';
+                else if (domain.endsWith('.de')) marketKey = 'de';
+                else if (domain.endsWith('.at')) marketKey = 'at';
+                
+                window.seoContentLoader.loadPage(marketKey, window.location.pathname).then(pageData => {
+                    if (pageData) {
+                        if (window.seoPageRenderer) window.seoPageRenderer.render(pageData); // If we added an enrichment container in core pages later
+                        if (window.seoManager) window.seoManager.updateFromFirebase(pageData);
+                    }
+                });
+            }
+        }
     }
 
     // 2. Update navigation link states

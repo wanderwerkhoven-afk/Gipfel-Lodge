@@ -73,6 +73,12 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // [SEO PAGES] Public website can read published pages. Admin can manage all.
+    match /seo_pages/{pageId} {
+      allow read: if resource.data.status == "published" || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
     // DEFAULT: Deny everything else
     match /{document=**} {
       allow read, write: if false;

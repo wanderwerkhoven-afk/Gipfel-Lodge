@@ -145,6 +145,9 @@
                     <li id="nav-maintenance-desktop" class="nav-item" onclick="switchView('maintenance-view', this)">
                         <i class="ph ph-wrench"></i> Website Status
                     </li>
+                    <li id="nav-seo-desktop" class="nav-item" onclick="switchView('seo-pages-view', this)">
+                        <i class="ph ph-magnifying-glass"></i> SEO & Landingspagina's
+                    </li>
                     <li id="nav-galleries-desktop" class="nav-item" onclick="switchView('galleries-view', this)">
                         <i class="ph ph-image"></i> Galerijen Beheren
                     </li>
@@ -502,6 +505,54 @@
                 </div>
 
                 <!-- EXCEL IMPORT VIEW (Superuser only) -->
+                <!-- SEO PAGES VIEW -->
+                <div id="seo-pages-view" class="dashboard-view">
+                    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div>
+                            <h1>SEO & Landingspagina's</h1>
+                            <p style="margin: 0;">Beheer Firebase content voor SEO routes.</p>
+                        </div>
+                        <button class="eb2-action-btn eb2-btn-primary" onclick="if(window.adminSeo) window.adminSeo.showCreateModal()">
+                            <i class="ph ph-plus"></i> Nieuwe Pagina
+                        </button>
+                    </div>
+                    
+                    <div class="eb2-section-card">
+                        <div class="eb2-section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 class="eb2-section-title" style="margin:0;">Alle Pagina's</h3>
+                            <select id="seo-market-filter" onchange="if(window.adminSeo) window.adminSeo.loadPages()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.85rem;">
+                                <option value="all">Alle markten</option>
+                                <option value="nl">Nederland (.nl)</option>
+                                <option value="de">Duitsland (.de)</option>
+                                <option value="at">Oostenrijk (.at)</option>
+                                <option value="eu">Internationaal (.eu)</option>
+                            </select>
+                        </div>
+                        <div class="eb2-table-wrap">
+                            <table class="eb2-table">
+                                <thead>
+                                    <tr>
+                                        <th>Markt</th>
+                                        <th>Type</th>
+                                        <th>Path / Slug</th>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th style="text-align:right;">Acties</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="seo-pages-list">
+                                    <tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">Laden...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Editor / Form Container (hidden by default) -->
+                    <div id="seo-editor-container" style="display:none; margin-top:20px;">
+                        <!-- React/Vanilla UI for editing will be mounted or drawn here by admin-seo.js -->
+                    </div>
+                </div>
+
                 <!-- EXCEL IMPORT VIEW (Superuser only) -->
                 <div id="import-view" class="dashboard-view">
                     <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
@@ -1339,6 +1390,7 @@
     <script src="js/admin_js/admin-auth.js"></script>
     <script src="js/admin_js/admin-logs.js"></script>
     <script src="js/admin_js/admin-behavior.js"></script>
+    <script src="js/admin_js/admin-seo.js"></script>
     <script src="js/admin_js/admin-ui.js"></script>
     
     <script type="module">
