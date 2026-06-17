@@ -73,31 +73,34 @@ class I18n {
     }
 
     setupListeners() {
-        const toggle = document.querySelector('.lang-toggle');
-        const dropdown = document.querySelector('.lang-dropdown');
+        document.querySelectorAll('.lang-dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.lang-toggle');
+            if (toggle) {
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('is-open');
+                    const isOpen = dropdown.classList.contains('is-open');
+                    toggle.setAttribute('aria-expanded', isOpen);
+                });
+            }
+        });
 
-        if (toggle && dropdown) {
-            toggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdown.classList.toggle('is-open');
-                const isOpen = dropdown.classList.contains('is-open');
-                toggle.setAttribute('aria-expanded', isOpen);
-            });
-
-            document.addEventListener('click', (e) => {
+        document.addEventListener('click', (e) => {
+            document.querySelectorAll('.lang-dropdown').forEach(dropdown => {
+                const toggle = dropdown.querySelector('.lang-toggle');
                 if (!dropdown.contains(e.target)) {
                     dropdown.classList.remove('is-open');
-                    toggle.setAttribute('aria-expanded', 'false');
+                    if (toggle) toggle.setAttribute('aria-expanded', 'false');
                 }
             });
-        }
+        });
 
         document.querySelectorAll('[data-lang-switch]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const lang = btn.getAttribute('data-lang-switch');
                 this.setLanguage(lang, true);
-                if (dropdown) dropdown.classList.remove('is-open');
+                document.querySelectorAll('.lang-dropdown').forEach(d => d.classList.remove('is-open'));
             });
         });
     }
@@ -158,12 +161,11 @@ class I18n {
             el.innerText = lang.toUpperCase();
         });
 
-        // Update Active Flag in Topbar
-        const activeFlagContainer = document.querySelector('.active-flag-container');
-        if (activeFlagContainer) {
+        // Update Active Flag in Topbar & Maintenance
+        document.querySelectorAll('.active-flag-container').forEach(activeFlagContainer => {
             const flagCode = flagMap[lang] || lang;
             activeFlagContainer.innerHTML = `<span class="fi fi-${flagCode}"></span>`;
-        }
+        });
 
         // Update all translatable elements
         const translations = window.gipfelTranslations || {};

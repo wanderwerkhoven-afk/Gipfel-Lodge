@@ -96,6 +96,22 @@ class SEOManager {
 
         // 8. Update JSON-LD Structured Data Graph
         this.updateStructuredData(pageId, activeDomain, pageCfg, domainCfg);
+
+        // 9. Update the H1 element directly for domain-specific target keywords if it is homepage
+        if (pageId === 'home') {
+            const h1Element = document.querySelector('.hero-v3-title');
+            if (h1Element) {
+                if (activeDomain === 'gipfellodge.at') {
+                    h1Element.textContent = 'Luxus Chalet im Salzburgerland';
+                } else if (activeDomain === 'gipfellodge.de') {
+                    h1Element.textContent = 'Luxus Chalet in Österreich';
+                } else if (activeDomain === 'gipfellodge.nl') {
+                    h1Element.textContent = 'Luxe Chalet in Oostenrijk';
+                } else if (activeDomain === 'gipfellodge.eu') {
+                    h1Element.textContent = 'Luxury Chalet in the Austrian Alps';
+                }
+            }
+        }
     }
 
     setMetaTag(keyType, keyValue, contentValue) {
@@ -159,23 +175,25 @@ class SEOManager {
             de: {
                 name: 'Gipfel Lodge',
                 description: 'Luxus Chalet in Eben im Pongau nahe Flachau für 8-10 Personen. Mit privater Sauna, erstklassiger Lage in Ski Amadé, 4 Schlafzimmern und anspruchsvollem Alpin-Design.',
-                amenities: ['Private Sauna', 'Weinklimaschrank', 'Skiraum', 'Vollausgestattete Küche', 'Balkon & Terrasse', '2 Parkplätze']
+                amenities: ['Private Sauna', 'Weinklimaschrank', 'Skiraum', 'Vollausgestattete Küche', 'Balkon & Terrasse', '2 Parkplätze'],
+                keywords: 'Luxus Chalet Österreich mieten, Ferienhaus Alpen 10 Personen, Chalet Ski Amadé, Ferienhaus mit privater Sauna, Eben im Pongau Unterkunft'
             },
             nl: {
                 name: 'Gipfel Lodge',
                 description: 'Luxe chalet in Eben im Pongau nabij Flachau voor 8-10 personen. Met privé sauna, wijnklimaatkast, 4 slaapkamers en een perfecte ligging in wintersportgebied Ski Amadé.',
-                amenities: ['Privé sauna', 'Wijnklimaatkast', 'Skiruimte', 'Volledig uitgeruste keuken', 'Balkon & terras', '2 parkeerplaatsen']
+                amenities: ['Privé sauna', 'Wijnklimaatkast', 'Skiruimte', 'Volledig uitgeruste keuken', 'Balkon & terras', '2 parkeerplaatsen'],
+                keywords: 'luxe chalet huren oostenrijk, chalet 8 10 personen oostenrijk, vakantiewoning ski amadé, privé sauna chalet alpen, chalet flachau huren, wintersport groep chalet'
             },
             en: {
                 name: 'Gipfel Lodge',
                 description: 'Luxury chalet in Eben im Pongau near Flachau for 8-10 guests. Features 4 bedrooms, private sauna, ski room, dual-zone wine cooler, and premium alpine design.',
-                amenities: ['Private sauna', 'Wine cabinet', 'Ski room', 'Fully equipped kitchen', 'Balcony & terrace', '2 parking spaces']
+                amenities: ['Private sauna', 'Wine cabinet', 'Ski room', 'Fully equipped kitchen', 'Balcony & terrace', '2 parking spaces'],
+                keywords: 'luxury chalet austria rent, ski chalet salzburg 10 guests, austrian alps private chalet, flachau ski chalet rental, ski amadé accommodation group'
             }
         };
 
         const currentLang = domainCfg.lang;
         const keywords = localKeywords[currentLang] || localKeywords['en'];
-
         const graph = [
             {
                 '@type': 'WebSite',
@@ -183,7 +201,8 @@ class SEOManager {
                 'url': rootUrl,
                 'name': 'Gipfel Lodge',
                 'description': keywords.description,
-                'inLanguage': domainCfg.locale
+                'inLanguage': domainCfg.locale,
+                'keywords': keywords.keywords
             },
             {
                 '@type': 'WebPage',
@@ -192,10 +211,11 @@ class SEOManager {
                 'name': pageCfg.title,
                 'isPartOf': { '@id': `${rootUrl}#website` },
                 'description': pageCfg.description,
-                'inLanguage': domainCfg.locale
+                'inLanguage': domainCfg.locale,
+                'keywords': keywords.keywords
             }
         ];
-
+ 
         // Add Breadcrumbs if not homepage
         if (pageId !== 'home') {
             graph.push({
@@ -217,7 +237,7 @@ class SEOManager {
                 ]
             });
         }
-
+ 
         // Add VacationRental / LodgingBusiness / TouristAccommodation
         graph.push({
             '@type': ['VacationRental', 'LodgingBusiness', 'TouristAccommodation'],
@@ -226,6 +246,7 @@ class SEOManager {
             'url': rootUrl,
             'image': `https://${domain}/assets/images/og/gipfel-lodge-og.jpg`,
             'description': keywords.description,
+            'keywords': keywords.keywords,
             'address': {
                 '@type': 'PostalAddress',
                 'addressLocality': 'Eben im Pongau',
@@ -263,129 +284,6 @@ class SEOManager {
         }, null, 2);
         
         document.head.appendChild(script);
-    }
-
-    updateFromFirebase(pageData) {
-        if (!pageData) return;
-
-        // 1. Update Document Title
-        if (pageData.title) {
-            document.title = pageData.title;
-            this.setMetaTag('property', 'og:title', pageData.title);
-            this.setMetaTag('name', 'twitter:title', pageData.title);
-        }
-
-        // 2. Update Meta Description
-        if (pageData.metaDescription) {
-            this.setMetaTag('name', 'description', pageData.metaDescription);
-            this.setMetaTag('property', 'og:description', pageData.metaDescription);
-            this.setMetaTag('name', 'twitter:description', pageData.metaDescription);
-        }
-
-        // 3. Update OG Image
-        if (pageData.ogImage) {
-            this.setMetaTag('property', 'og:image', pageData.ogImage);
-            this.setMetaTag('name', 'twitter:image', pageData.ogImage);
-        }
-
-        // 4. Update Canonical (should be based on domain + pageData.path)
-        const domain = this.normalizeHostname(window.location.hostname);
-        const activeDomain = this.config.domains[domain] ? domain : 'gipfellodge.eu';
-        const canonicalUrl = `https://${activeDomain}${pageData.path}`;
-        this.setLinkTag('canonical', canonicalUrl);
-
-        // 5. Update Robots
-        if (pageData.noindex) {
-            this.setMetaTag('name', 'robots', 'noindex, follow');
-        } else {
-            const el = document.querySelector('meta[name="robots"]');
-            if (el) el.remove();
-        }
-
-        // 6. Custom Hreflang Translations for Landing Pages
-        if (pageData.type === 'landing') {
-            this.updateLandingHreflang(pageData);
-        }
-
-        // 7. Update JSON-LD for FAQ
-        if (Array.isArray(pageData.faq) && pageData.faq.length > 0) {
-            this.appendFAQStructuredData(pageData.faq, canonicalUrl);
-        }
-    }
-
-    setNotFoundSEO() {
-        document.title = '404 - Pagina niet gevonden | Gipfel Lodge';
-        this.setMetaTag('name', 'robots', 'noindex, follow');
-    }
-
-    updateLandingHreflang(pageData) {
-        // Remove existing alternate links
-        document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
-
-        if (!pageData.translations) return;
-
-        const urlCache = {}; // keep track of added urls to avoid duplicates
-
-        Object.entries(pageData.translations).forEach(([marketKey, path]) => {
-            let configDomain = null;
-            let locale = null;
-            
-            // Find corresponding domain
-            Object.entries(this.config.domains).forEach(([domain, cfg]) => {
-                if ((marketKey === 'nl' && domain.endsWith('.nl')) ||
-                    (marketKey === 'de' && domain.endsWith('.de')) ||
-                    (marketKey === 'at' && domain.endsWith('.at')) ||
-                    (marketKey === 'eu' && domain.endsWith('.eu'))) {
-                    configDomain = domain;
-                    locale = cfg.locale;
-                }
-            });
-
-            if (configDomain && locale) {
-                const url = `https://${configDomain}${path}`;
-                if (!urlCache[url]) {
-                    urlCache[url] = true;
-                    const link = document.createElement('link');
-                    link.rel = 'alternate';
-                    link.hreflang = locale;
-                    link.href = url;
-                    document.head.appendChild(link);
-
-                    if (marketKey === 'eu') {
-                        const xDefaultLink = document.createElement('link');
-                        xDefaultLink.rel = 'alternate';
-                        xDefaultLink.hreflang = 'x-default';
-                        xDefaultLink.href = url;
-                        document.head.appendChild(xDefaultLink);
-                    }
-                }
-            }
-        });
-    }
-
-    appendFAQStructuredData(faqItems, url) {
-        const existingScript = document.getElementById('gipfel-seo-jsonld');
-        if (!existingScript) return;
-
-        try {
-            const data = JSON.parse(existingScript.text);
-            const faqSchema = {
-                "@type": "FAQPage",
-                "@id": `${url}#faq`,
-                "mainEntity": faqItems.map(item => ({
-                    "@type": "Question",
-                    "name": item.question,
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": item.answer
-                    }
-                }))
-            };
-            data['@graph'].push(faqSchema);
-            existingScript.text = JSON.stringify(data, null, 2);
-        } catch(e) {
-            console.error("Error appending FAQ structured data", e);
-        }
     }
 }
 

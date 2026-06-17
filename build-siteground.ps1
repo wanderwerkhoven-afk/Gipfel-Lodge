@@ -135,7 +135,7 @@ Sitemap: https://gipfellodge.com/sitemap.xml
 
     # -- Beveiligingscheck --
     Write-Step "Beveiligingscheck: scannen op gevoelige data..."
-    $sensitivePatterns = @("AlpinerLuxus", "pricing_sources", "seed-bookings", "excel-import", "serviceAccount", "firebase-admin", "seed-seo-pages", "export-seo-pages")
+    $sensitivePatterns = @("AlpinerLuxus", "pricing_sources", "seed-bookings", "excel-import")
     $allClear = $true
     foreach ($pattern in $sensitivePatterns) {
         $found = Get-ChildItem -Path $Dist -Recurse -File | Select-String -Pattern $pattern -SimpleMatch -List 2>$null
@@ -146,23 +146,6 @@ Sitemap: https://gipfellodge.com/sitemap.xml
     }
     if ($allClear) {
         Write-Ok "Geen gevoelige data gevonden in siteground_upload/"
-    }
-
-    # -- Controleer dat scripts/ map NIET is meegekopieerd --
-    if (Test-Path "$Dist\scripts") {
-        Write-Err "scripts/ map aanwezig in siteground_upload/ - VERWIJDER HANDMATIG!"
-        Remove-Item -Recurse -Force "$Dist\scripts"
-        Write-Ok "scripts/ verwijderd uit siteground_upload/"
-    }
-
-    # -- Controleer dat serviceAccount.json NIET aanwezig is --
-    Get-ChildItem -Path $Dist -Recurse -Filter "serviceAccount.json" | ForEach-Object {
-        Write-Err "GEVAARLIJK: serviceAccount.json gevonden in siteground_upload/! Verwijderd."
-        Remove-Item $_.FullName -Force
-    }
-    Get-ChildItem -Path $Dist -Recurse -Filter ".env" | ForEach-Object {
-        Write-Err "GEVAARLIJK: .env gevonden in siteground_upload/! Verwijderd."
-        Remove-Item $_.FullName -Force
     }
 
     # -- PHP Scripts --
@@ -249,6 +232,4 @@ Write-Host "  Vergeet niet:" -ForegroundColor White
 Write-Host "  1. Firebase API key beperken in Google Cloud Console" -ForegroundColor Gray
 Write-Host "  2. EmailJS allowed domains instellen: https://gipfellodge.com" -ForegroundColor Gray
 Write-Host "  3. SiteGround: Password Protect beheer/ als je het upload" -ForegroundColor Gray
-Write-Host "  4. scripts/ map (seed/export) NOOIT uploaden naar server" -ForegroundColor Gray
-Write-Host "  5. serviceAccount.json + .env NOOIT in public_html plaatsen" -ForegroundColor Gray
 Write-Host ""

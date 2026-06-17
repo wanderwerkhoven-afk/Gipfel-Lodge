@@ -4,11 +4,11 @@
 
 // DE
 Object.assign(window.gipfelTranslations.de, {
-    "booking-title": "Ihre Auszeit",
-    "booking-subtitle": "Stellen Sie eine unverbindliche Buchungsanfrage.",
-    "booking-calendar-title": "Reisedatum",
-    "booking-calendar-text": "Wählen Sie Ihr Anreisedatum",
-    "cal-available": "Online buchbar",
+    "booking-title": "Chalet direkt beim Eigentümer buchen",
+    "booking-subtitle": "Stellen Sie eine unverbindliche Buchungsanfrage für Ihren Urlaub ohne Vermittlungsgebühr.",
+    "booking-calendar-title": "Reisedatum & Verfügbarkeit des Ferienhauses",
+    "booking-calendar-text": "Wählen Sie Ihr Anreisedatum für Ihren Skiurlaub oder Sommerurlaub in Eben im Pongau.",
+    "cal-available": "Frei / Online buchbar",
     "cal-request": "Reserviert",
     "cal-booked": "Bereits gebucht",
     "cal-unavailable": "Nicht verfügbar",
@@ -72,11 +72,11 @@ Object.assign(window.gipfelTranslations.de, {
 
 // EN
 Object.assign(window.gipfelTranslations.en, {
-    "booking-title": "Your Escape",
-    "booking-subtitle": "Send us a non-binding booking request.",
-    "booking-calendar-title": "Travel date",
-    "booking-calendar-text": "Select arrival date",
-    "cal-available": "Book online",
+    "booking-title": "Book Chalet Directly with Owner in Austria",
+    "booking-subtitle": "Send us a non-binding booking inquiry with no booking fees or service charges.",
+    "booking-calendar-title": "Travel Dates & Chalet Availability",
+    "booking-calendar-text": "Select your arrival date for your winter ski holiday or summer trip to Eben im Pongau.",
+    "cal-available": "Available / Book online",
     "cal-request": "Reserved",
     "cal-booked": "Already booked",
     "cal-unavailable": "Not available",
@@ -140,11 +140,11 @@ Object.assign(window.gipfelTranslations.en, {
 
 // NL
 Object.assign(window.gipfelTranslations.nl, {
-    "booking-title": "Uw Verblijf",
-    "booking-subtitle": "Stuur ons een vrijblijvende boekingsaanvraag.",
-    "booking-calendar-title": "Reisdata",
-    "booking-calendar-text": "Selecteer aankomstdatum",
-    "cal-available": "Online te boeken",
+    "booking-title": "Chalet Direct Boeken bij Eigenaar in Oostenrijk",
+    "booking-subtitle": "Stuur ons een vrijblijvende boekingsaanvraag om uw chalet te huren zonder bemiddelingskosten.",
+    "booking-calendar-title": "Reisdata & Beschikbaarheid Chalet",
+    "booking-calendar-text": "Selecteer de aankomstdatum van uw wintersport of zomervakantie in Eben im Pongau.",
+    "cal-available": "Vrij / Online te boeken",
     "cal-request": "Gereserveerd",
     "cal-booked": "Reeds geboekt",
     "cal-unavailable": "Niet beschikbaar",

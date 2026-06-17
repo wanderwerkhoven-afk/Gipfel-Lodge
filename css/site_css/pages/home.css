@@ -119,16 +119,30 @@
   padding: 0 5%;
 }
 
-.hero-v3-title {
+.hero-brand-name {
   font-family: var(--font-heading);
   font-size: clamp(3rem, 8vw, 6.5rem);
   line-height: 1.0;
-  margin-bottom: 15px;
+  margin-bottom: 15px; /* Reverted to original spacing */
   letter-spacing: -0.02em;
+  color: var(--color-white);
   text-shadow:
     0 2px 4px rgba(0, 0, 0, 0.6),
     0 6px 20px rgba(0, 0, 0, 0.5),
     0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.hero-v3-title {
+  /* Screen-reader and search bot accessible styling: invisible for visitors */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .hero-v3-subtitle {

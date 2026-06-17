@@ -7,8 +7,8 @@ const seoConfig = {
             defaultDescription: 'Luxus Chalet in Eben im Pongau nahe Flachau für 8-10 Personen. Mit privater Sauna, 4 Schlafzimmern & erstklassiger Lage in Ski Amadé.',
             pages: {
                 home: {
-                    title: 'Luxus Chalet im Salzburgerland | Gipfel Lodge',
-                    description: 'Luxus Chalet in Eben im Pongau nahe Flachau für 8-10 Personen. Mit privater Sauna, 4 Schlafzimmern & erstklassiger Lage in Ski Amadé.',
+                    title: 'Luxus Chalet Salzburgerland | Gipfel Lodge',
+                    description: 'Exklusives Luxus Chalet in Eben im Pongau, Salzburgerland. 135 m², private Sauna, Ski amadé, Platz für 8-10 Personen. Jetzt direkt buchen.',
                     path: '/'
                 },
                 lodge: {
@@ -40,8 +40,8 @@ const seoConfig = {
             defaultDescription: 'Ihr exklusives Luxus Chalet in Eben im Pongau. 135 m² für 8-10 Personen, private Sauna, Skiraum, nahe Flachau & Ski Amadé.',
             pages: {
                 home: {
-                    title: 'Luxus Chalet in Österreich | Gipfel Lodge',
-                    description: 'Ihr exklusives Luxus Chalet in Eben im Pongau. 135 m² für 8-10 Personen, private Sauna, Skiraum, nahe Flachau & Ski Amadé.',
+                    title: 'Luxus Chalet Österreich – 8-10 Pers. | Gipfel Lodge',
+                    description: 'Luxus Ferienhaus in den österreichischen Alpen für 8-10 Personen. Private Sauna, 4 Schlafzimmer, Ski amadé – direkt beim Eigentümer buchen.',
                     path: '/'
                 },
                 lodge: {
@@ -73,8 +73,8 @@ const seoConfig = {
             defaultDescription: 'Luxe chalet in Eben im Pongau nabij Flachau voor 8-10 personen. Met privé sauna, 4 slaapkamers en direct boeken bij de eigenaar.',
             pages: {
                 home: {
-                    title: 'Luxe Chalet in Oostenrijk | Gipfel Lodge',
-                    description: 'Luxe chalet in Eben im Pongau nabij Flachau voor 8-10 personen. Met privé sauna, 4 slaapkamers en direct boeken bij de eigenaar.',
+                    title: 'Luxe Chalet Oostenrijk – 8-10 pers. | Gipfel Lodge',
+                    description: 'Huur een luxe chalet in Eben im Pongau voor 8-10 personen. Privé sauna, 4 slaapkamers, ski-in/ski-out nabij Flachau. Direct boeken bij eigenaar.',
                     path: '/'
                 },
                 lodge: {
@@ -106,8 +106,8 @@ const seoConfig = {
             defaultDescription: 'Luxury chalet in Eben im Pongau near Flachau for 8-10 guests. Features 4 bedrooms, private sauna, and premium alpine design.',
             pages: {
                 home: {
-                    title: 'Luxury Chalet in Austria | Gipfel Lodge',
-                    description: 'Luxury chalet in Eben im Pongau near Flachau for 8-10 guests. Features 4 bedrooms, private sauna, and premium alpine design.',
+                    title: 'Luxury Chalet in Austria – up to 10 guests | Gipfel Lodge',
+                    description: 'Exclusive luxury chalet in Eben im Pongau, Austria. Sleeps 8-10, private sauna, 4 bedrooms, ski-in access to Ski Amadé. Book direct with the owner.',
                     path: '/'
                 },
                 lodge: {
