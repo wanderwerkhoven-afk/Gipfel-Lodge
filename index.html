@@ -52,6 +52,7 @@
   <link rel="stylesheet" href="css/site_css/pages/seizoenen.css" />
   <link rel="stylesheet" href="css/site_css/pages/booking.css" />
   <link rel="stylesheet" href="css/site_css/pages/enjoyment.css" />
+  <link rel="stylesheet" href="css/site_css/pages/seo-blocks.css" />
 
   <!-- Flag Icons for Phone Selector -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
@@ -274,9 +275,9 @@
     <!-- SECTION 1: HERO (CINEMA) -->
     <section class="hero-v3">
       <div class="hero-v3-carousel">
-        <div class="hero-v3-slide active" style="background-image: url('assets/images/pictures/winter-outside.png');">
+        <div class="hero-v3-slide active" data-img-key="hero-slide-1" style="background-image: url('assets/images/pictures/winter-outside.png');">
         </div>
-        <div class="hero-v3-slide" style="background-image: url('assets/images/pictures/summer-outside.png');"></div>
+        <div class="hero-v3-slide" data-img-key="hero-slide-2" style="background-image: url('assets/images/pictures/summer-outside.png');"></div>
       </div>
       <div class="hero-v3-overlay"></div>
 
@@ -365,37 +366,37 @@
         </div>
         <div class="visual-grid-v3">
           <div class="reveal visual-item colspan-2 rowspan-2">
-            <img src="assets/images/pictures/livingroom.png" alt="Luxe Woonkamer Gipfel Lodge Chalet Oostenrijk">
+            <img data-img-key="home-accommodatie-1" src="assets/images/pictures/livingroom.png" alt="Luxe Woonkamer Gipfel Lodge Chalet Oostenrijk">
             <div class="visual-overlay">
               <span data-i18n="visual-1">Wonen</span>
             </div>
           </div>
           <div class="reveal visual-item colspan-2" style="transition-delay: 0.1s;">
-            <img src="assets/images/pictures/kitchen-1.png" alt="Design gourmet keuken in luxe vakantiewoning Eben im Pongau">
+            <img data-img-key="home-accommodatie-2" src="assets/images/pictures/kitchen-1.png" alt="Design gourmet keuken in luxe vakantiewoning Eben im Pongau">
             <div class="visual-overlay">
               <span data-i18n="visual-2">Genieten</span>
             </div>
           </div>
           <div class="reveal visual-item" style="transition-delay: 0.2s;">
-            <img src="assets/images/pictures/bedroom-2.png" alt="Comfortabele alpiene slaapkamer in luxe chalet 8-10 personen">
+            <img data-img-key="home-accommodatie-3" src="assets/images/pictures/bedroom-2.png" alt="Comfortabele alpiene slaapkamer in luxe chalet 8-10 personen">
             <div class="visual-overlay">
               <span data-i18n="visual-3">Ontspannen</span>
             </div>
           </div>
           <div class="reveal visual-item" style="transition-delay: 0.3s;">
-            <img src="assets/images/pictures/summer-outside-terrace.png" alt="Balkon met panoramisch berguitzicht in Salzburgerland">
+            <img data-img-key="home-accommodatie-4" src="assets/images/pictures/summer-outside-terrace.png" alt="Balkon met panoramisch berguitzicht in Salzburgerland">
             <div class="visual-overlay">
               <span data-i18n="visual-4">Balkon uitzicht</span>
             </div>
           </div>
           <div class="reveal visual-item colspan-2" style="transition-delay: 0.4s;">
-            <img src="assets/images/pictures/bathroom-1.png" alt="Luxe wellness badkamer met regendouche in Oostenrijks chalet">
+            <img data-img-key="home-accommodatie-5" src="assets/images/pictures/bathroom-1.png" alt="Luxe wellness badkamer met regendouche in Oostenrijks chalet">
             <div class="visual-overlay">
               <span data-i18n="visual-5">Wellness</span>
             </div>
           </div>
           <div class="reveal visual-item colspan-2" style="transition-delay: 0.5s;">
-            <img src="assets/images/pictures/hallways.png" alt="Luxe interieur details en alpiene sfeer van de Tauernlodge">
+            <img data-img-key="home-accommodatie-6" src="assets/images/pictures/hallways.png" alt="Luxe interieur details en alpiene sfeer van de Tauernlodge">
             <div class="visual-overlay">
               <span data-i18n="visual-6">Details</span>
             </div>
@@ -443,7 +444,7 @@
         </div>
         <div class="activities-grid-v3">
           <div class="reveal act-card-v3 featured">
-            <div class="act-card-img"><img src="assets/images/pictures/winter-outside.png" alt="Skiën in Ski amadé Oostenrijk wintersport chalet"></div>
+            <div class="act-card-img"><img data-img-key="home-act-1" src="assets/images/pictures/winter-outside.png" alt="Skiën in Ski amadé Oostenrijk wintersport chalet"></div>
             <div class="act-card-body">
               <span class="badge-featured" data-i18n="act-card-featured">Winter Top-Tipp</span>
               <h3 data-i18n="act-card-1-t">Skiën in Ski amadé</h3>
@@ -453,7 +454,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.1s;">
-            <div class="act-card-img"><img src="assets/images/pictures/summer-outside-2.png" alt="Wandelen in Eben im Pongau Salzburgerland"></div>
+            <div class="act-card-img"><img data-img-key="home-act-2" src="assets/images/pictures/summer-outside-2.png" alt="Wandelen in Eben im Pongau Salzburgerland"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-2-t">Wandelen</h3>
               <p data-i18n="act-card-2-p">Ontdek de mooiste bergroutes rondom Eben.</p>
@@ -461,7 +462,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.2s;">
-            <div class="act-card-img"><img src="assets/images/Foto-collage-woning/sauna-estatic.jpg" alt="Ontspan in de privé sauna van de Gipfel Lodge"></div>
+            <div class="act-card-img"><img data-img-key="home-act-3" src="assets/images/Foto-collage-woning/sauna-estatic.jpg" alt="Ontspan in de privé sauna van de Gipfel Lodge"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-3-t">Sauna</h3>
               <p data-i18n="act-card-3-p">Ontspanning in uw privé lodge sauna.</p>
@@ -469,7 +470,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.3s;">
-            <div class="act-card-img"><img src="assets/images/pictures/summer-outside.png" alt="Natuur en alpenweides in Oostenrijk"></div>
+            <div class="act-card-img"><img data-img-key="home-act-4" src="assets/images/pictures/summer-outside.png" alt="Natuur en alpenweides in Oostenrijk"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-4-t">Natuurbeleving</h3>
               <p data-i18n="act-card-4-p">Ervaar de Alpen in hun puurste vorm.</p>
@@ -477,7 +478,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.4s;">
-            <div class="act-card-img"><img src="assets/images/pictures/winter-outside-2.png" alt="Omgeving Eben im Pongau nabij Flachau en Ski amadé"></div>
+            <div class="act-card-img"><img data-img-key="home-act-5" src="assets/images/pictures/winter-outside-2.png" alt="Omgeving Eben im Pongau nabij Flachau en Ski amadé"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-6-t">Omgeving</h3>
               <p data-i18n="act-card-6-p">Centraal gelegen voor alle uitstapjes.</p>
@@ -608,7 +609,7 @@
 
     <!-- SECTION 9: BOEKINGS CTA -->
     <section class="booking-cta-v3">
-      <div class="booking-cta-bg" style="background-image: url('assets/images/pictures/winter-outside-2.png');"></div>
+      <div class="booking-cta-bg" data-img-key="booking-cta-bg" style="background-image: url('assets/images/pictures/winter-outside-2.png');"></div>
       <div class="booking-cta-overlay"></div>
       <div class="container booking-cta-content">
         <div class="reveal text-center">
@@ -934,7 +935,7 @@
 
     <!-- LODGE FOOTER CTA -->
     <section class="booking-cta-v3">
-      <div class="booking-cta-bg" style="background-image: url('assets/images/pictures/summer-outside-terrace.png');">
+      <div class="booking-cta-bg" data-img-key="lodge-cta-bg" style="background-image: url('assets/images/pictures/summer-outside-terrace.png');">
       </div>
       <div class="booking-cta-overlay"></div>
       <div class="container booking-cta-content">
@@ -1600,7 +1601,7 @@
 
     <!-- SECTION 1: HERO -->
     <section class="enjoyment-hero">
-      <div class="enjoyment-hero-bg" style="background-image: url('assets/images/enjoyment/hero_enjoyment.png');"></div>
+      <div class="enjoyment-hero-bg" data-img-key="enjoyment-hero-bg" style="background-image: url('assets/images/enjoyment/hero_enjoyment.png');"></div>
       <div class="enjoyment-hero-overlay"></div>
       <div class="container enjoyment-hero-content">
         <div class="reveal">
@@ -1664,7 +1665,7 @@
     <section class="mega-grid container enjoyment-grid" id="grid-enjoyment">
       <!-- Habersatter -->
       <article class="tcard reveal" data-categories="ontbijt">
-        <div class="tcard-img"><img src="assets/images/enjoyment/bakery_habersatter.png" alt="Bäckerei Habersatter">
+        <div class="tcard-img"><img data-img-key="enjoyment-loc-3" src="assets/images/enjoyment/bakery_habersatter.png" alt="Bäckerei Habersatter">
         </div>
         <div class="tcard-body">
           <span class="tcard-cat reveal" data-i18n="enj-sect2-title">Ontbijt & koffie</span>
@@ -1679,7 +1680,7 @@
 
       <!-- Freiraum -->
       <article class="tcard reveal" data-categories="ontbijt,borrel">
-        <div class="tcard-img"><img src="assets/images/enjoyment/cafe_freiraum.png" alt="Café Freiraum"></div>
+        <div class="tcard-img"><img data-img-key="enjoyment-loc-2" src="assets/images/enjoyment/cafe_freiraum.png" alt="Café Freiraum"></div>
         <div class="tcard-body">
           <span class="tcard-cat" data-i18n="enj-sect2-title">Ontbijt & koffie</span>
           <h3 data-i18n="enj-frei-name">Café Freiraum (Flachau)</h3>
@@ -1693,7 +1694,7 @@
 
       <!-- Jandlalm -->
       <article class="tcard reveal" data-categories="lunch">
-        <div class="tcard-img"><img src="assets/images/enjoyment/jandlalm.png" alt="Jandlalm"></div>
+        <div class="tcard-img"><img data-img-key="enjoyment-loc-4" src="assets/images/enjoyment/jandlalm.png" alt="Jandlalm"></div>
         <div class="tcard-body">
           <span class="tcard-cat" data-i18n="enj-sect3-title">Lunch in de bergen</span>
           <h3 data-i18n="enj-jan-name">Jandlalm (Flachau)</h3>
@@ -1707,8 +1708,8 @@
 
       <!-- Hofstadl -->
       <article class="tcard reveal" data-categories="lunch,borrel">
-        <div class="tcard-img"><img
-            src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=2000"
+        <div class="tcard-img"><img data-img-key="enjoyment-loc-1"
+            src="assets/images/enjoyment/genussplatzl_eben.png"
             alt="Hofstadl"></div>
         <div class="tcard-body">
           <span class="tcard-cat" data-i18n="enj-sect3-title">Lunch in de bergen</span>
@@ -1739,7 +1740,7 @@
 
       <!-- Römerkeller -->
       <article class="tcard reveal" data-categories="diner">
-        <div class="tcard-img"><img src="assets/images/enjoyment/romerkeller.png" alt="Restaurant Römerkeller"></div>
+        <div class="tcard-img"><img data-img-key="enjoyment-loc-5" src="assets/images/enjoyment/romerkeller.png" alt="Restaurant Römerkeller"></div>
         <div class="tcard-body">
           <span class="tcard-cat" data-i18n="enj-sect4-title">Diner & culinaire avonden</span>
           <h3 data-i18n="enj-rom-name">Restaurant Römerkeller (Altenmarkt)</h3>
@@ -2279,6 +2280,7 @@
   <!-- 3.2 COMPONENTS -->
   <!-- Dynamic Gallery Loader — must run BEFORE carousel init -->
   <script type="module" src="js/site_js/utils/gallery-loader.js"></script>
+  <script type="module" src="js/site_js/utils/single-image-loader.js"></script>
   <script src="js/site_js/components/hero-carousel.js"></script>
   <script src="js/site_js/components/gallery-carousel.js"></script>
   <script src="js/site_js/components/lightbox.js"></script>
@@ -2287,6 +2289,9 @@
   <!-- SEO Configuration & Manager -->
   <script src="js/site_js/seo/seo-config.js"></script>
   <script src="js/site_js/seo/seo-manager.js"></script>
+  <!-- FAQ SEO Blocks -->
+  <script src="js/site_js/seo/faq-config.js"></script>
+  <script src="js/site_js/seo/faq-renderer.js"></script>
   <script src="js/site_js/core/router.js"></script>
   <script type="module" src="js/site_js/core/maintenance.js"></script>
 

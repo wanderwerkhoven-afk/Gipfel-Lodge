@@ -4,7 +4,12 @@
   "description": "Gipfel Lodge publicatie build-scripts",
   "scripts": {
     "build:siteground": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1",
-    "build:beheer": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1 -BeheerOnly"
+    "build:beheer": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1 -BeheerOnly",
+    "optimize-images": "node ./scripts/optimize-images.js"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "glob": "^13.0.6",
+    "sharp": "^0.35.1"
+  }
 }

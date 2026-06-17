@@ -1,0 +1,130 @@
+/* ============================================================
+   SEO BLOCKS — FAQ Accordion
+   Subtiel, toegankelijk, en consistent met het Gipfel design.
+   ============================================================ */
+
+.faq-section {
+  padding: 80px 0 60px;
+  background: var(--color-sand, #f5f0e8);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.faq-section .faq-inner {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.faq-section .faq-heading {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 600;
+  color: var(--color-dark, #1a1a1a);
+  margin: 0 0 8px;
+  letter-spacing: 0.02em;
+}
+
+.faq-section .faq-subheading {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.45);
+  margin: 0 0 40px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Accordion list */
+.faq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Individual item */
+.faq-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Native <details> */
+.faq-item details {
+  /* no extra styling needed here */
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  padding: 22px 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.82);
+  line-height: 1.4;
+  list-style: none;
+  outline: none;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary:hover {
+  color: var(--color-gold, #C5A059);
+}
+
+/* Toggle icon */
+.faq-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, background 0.2s ease;
+  color: var(--color-gold, #C5A059);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.faq-item details[open] .faq-icon {
+  transform: rotate(45deg);
+  background: var(--color-gold, #C5A059);
+  color: #fff;
+}
+
+/* Answer */
+.faq-answer {
+  padding: 0 4px 22px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.6);
+  max-width: 720px;
+  animation: faqFadeIn 0.25s ease;
+}
+
+@keyframes faqFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .faq-section {
+    padding: 60px 0 40px;
+  }
+  .faq-item summary {
+    font-size: 0.95rem;
+    padding: 18px 4px;
+  }
+}
