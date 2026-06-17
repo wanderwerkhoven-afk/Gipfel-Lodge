@@ -145,6 +145,7 @@
     "assets/images/pictures/map.webp",
     "assets/images/pictures/readingcorner.png",
     "assets/images/pictures/readingcorner.webp",
+    "assets/images/pictures/summer-landscape.avif",
     "assets/images/pictures/summer-outside-2.png",
     "assets/images/pictures/summer-outside-2.webp",
     "assets/images/pictures/summer-outside-terrace-zoom.png",
@@ -153,6 +154,7 @@
     "assets/images/pictures/summer-outside-terrace.webp",
     "assets/images/pictures/summer-outside.png",
     "assets/images/pictures/summer-outside.webp",
+    "assets/images/pictures/winter-landscape.avif",
     "assets/images/pictures/winter-outside-2.png",
     "assets/images/pictures/winter-outside-2.webp",
     "assets/images/pictures/winter-outside.png",
@@ -160,5 +162,5 @@
     "assets/images/room.png",
     "assets/images/room.webp"
   ],
-  "generated": "2026-06-17T21:09:38.359Z"
+  "generated": "2026-06-17T21:30:36.187Z"
 }
