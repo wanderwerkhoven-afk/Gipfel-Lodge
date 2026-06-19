@@ -41,6 +41,12 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&family=Mrs+Saint+Delafield&display=swap"
     rel="stylesheet">
 
+
+  <!-- SEO: Preload eerste hero-afbeelding voor LCP-verbetering -->
+  <link rel="preload" as="image" type="image/webp"
+    href="assets/images/pictures/winter-outside.webp"
+    fetchpriority="high">
+
   <!-- 1.2 STYLESHEETS -->
   <link rel="stylesheet" href="css/site_css/base/variables.css" />
   <link rel="stylesheet" href="css/site_css/base/style.css" />
@@ -84,6 +90,62 @@
       }
     }
   </style>
+
+  <!-- SEO: Structured Data — LodgingBusiness / VacationRental -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["LodgingBusiness", "VacationRental"],
+    "name": "Gipfel Lodge",
+    "description": "Luxe chalet voor 8-10 personen in Eben im Pongau, Oostenrijk. Met privé sauna, regendouche, 4 slaapkamers en panoramisch uitzicht. Direct nabij Flachau en Ski Amadé.",
+    "url": "https://gipfellodge.nl",
+    "telephone": "+31-6-12345678",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Eben im Pongau",
+      "addressLocality": "Eben im Pongau",
+      "addressRegion": "Salzburg",
+      "postalCode": "5531",
+      "addressCountry": "AT"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 47.4167,
+      "longitude": 13.3833
+    },
+    "image": [
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-luxe-chalet-oostenrijk.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-woonkamer-alpine-interieur.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-prive-sauna-salzburgerland.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-slaapkamer-luxe-chalet.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-keuken-eethoek-groep.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-terras-uitzicht-alpen.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-badkamer-regendouche.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-exterieur-winter-ski-amade.webp",
+      "https://gipfellodge.nl/assets/images/seo/gipfel-lodge-villa-flachau-zomer.webp"
+    ],
+    "numberOfRooms": 4,
+    "amenityFeature": [
+      { "@type": "LocationFeatureSpecification", "name": "Privé sauna", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Regendouche", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Panoramaterras", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Skikelder", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Vrije WiFi", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Parkeren", "value": true }
+    ],
+    "starRating": { "@type": "Rating", "ratingValue": "5" },
+    "priceRange": "€€€",
+    "checkinTime": "15:00",
+    "checkoutTime": "10:00",
+    "petsAllowed": false,
+    "tourBookingPage": "https://gipfellodge.nl/#booking",
+    "containedInPlace": {
+      "@type": "TouristDestination",
+      "name": "Ski Amadé",
+      "url": "https://www.skiamadc.com"
+    }
+  }
+  </script>
 </head>
 
 <body>
@@ -366,37 +428,37 @@
         </div>
         <div class="visual-grid-v3">
           <div class="reveal visual-item colspan-2 rowspan-2">
-            <img data-img-key="home-accommodatie-1" src="assets/images/pictures/livingroom.png" alt="Luxe Woonkamer Gipfel Lodge Chalet Oostenrijk">
+            <img data-img-key="home-accommodatie-1" src="assets/images/pictures/livingroom.png" alt="Luxe woonkamer van Gipfel Lodge met alpien interieur en panoramaramen" loading="lazy">
             <div class="visual-overlay">
               <span data-i18n="visual-1">Wonen</span>
             </div>
           </div>
           <div class="reveal visual-item colspan-2" style="transition-delay: 0.1s;">
-            <img data-img-key="home-accommodatie-2" src="assets/images/pictures/kitchen-1.png" alt="Design gourmet keuken in luxe vakantiewoning Eben im Pongau">
+            <img data-img-key="home-accommodatie-2" src="assets/images/pictures/kitchen-1.png" alt="Open gourmetkeuken in Gipfel Lodge, luxe chalet voor groepen tot 10 personen" loading="lazy">
             <div class="visual-overlay">
               <span data-i18n="visual-2">Genieten</span>
             </div>
           </div>
           <div class="reveal visual-item" style="transition-delay: 0.2s;">
-            <img data-img-key="home-accommodatie-3" src="assets/images/pictures/bedroom-2.png" alt="Comfortabele alpiene slaapkamer in luxe chalet 8-10 personen">
+            <img data-img-key="home-accommodatie-3" src="assets/images/pictures/bedroom-2.png" alt="Comfortabele slaapkamer in Gipfel Lodge met alpien design en eigen badkamer" loading="lazy">
             <div class="visual-overlay">
               <span data-i18n="visual-3">Ontspannen</span>
             </div>
           </div>
           <div class="reveal visual-item" style="transition-delay: 0.3s;">
-            <img data-img-key="home-accommodatie-4" src="assets/images/pictures/summer-outside-terrace.png" alt="Balkon met panoramisch berguitzicht in Salzburgerland">
+            <img data-img-key="home-accommodatie-4" src="assets/images/pictures/summer-outside-terrace.png" alt="Terras van Gipfel Lodge met panoramisch uitzicht op de Oostenrijkse Alpen in Salzburgerland" loading="lazy">
             <div class="visual-overlay">
               <span data-i18n="visual-4">Balkon uitzicht</span>
             </div>
           </div>
           <div class="reveal visual-item colspan-2" style="transition-delay: 0.4s;">
-            <img data-img-key="home-accommodatie-5" src="assets/images/pictures/bathroom-1.png" alt="Luxe wellness badkamer met regendouche in Oostenrijks chalet">
+            <img data-img-key="home-accommodatie-5" src="assets/images/pictures/bathroom-1.png" alt="Design badkamer met regendouche in Gipfel Lodge, luxe vakantiewoning Oostenrijk" loading="lazy">
             <div class="visual-overlay">
               <span data-i18n="visual-5">Wellness</span>
             </div>
           </div>
           <div class="reveal visual-item colspan-2" style="transition-delay: 0.5s;">
-            <img data-img-key="home-accommodatie-6" src="assets/images/pictures/hallways.png" alt="Luxe interieur details en alpiene sfeer van de Tauernlodge">
+            <img data-img-key="home-accommodatie-6" src="assets/images/pictures/hallways.png" alt="Stijlvolle gangen en interieurdetails van Gipfel Lodge in Eben im Pongau" loading="lazy">
             <div class="visual-overlay">
               <span data-i18n="visual-6">Details</span>
             </div>
@@ -444,7 +506,7 @@
         </div>
         <div class="activities-grid-v3">
           <div class="reveal act-card-v3 featured">
-            <div class="act-card-img"><img data-img-key="home-act-1" src="assets/images/pictures/winter-outside.png" alt="Skiën in Ski amadé Oostenrijk wintersport chalet"></div>
+            <div class="act-card-img"><img data-img-key="home-act-1" src="assets/images/pictures/winter-outside.png" alt="Gipfel Lodge in de winter — startpunt voor skiën in Ski Amadé Flachau" loading="lazy"></div>
             <div class="act-card-body">
               <span class="badge-featured" data-i18n="act-card-featured">Winter Top-Tipp</span>
               <h3 data-i18n="act-card-1-t">Skiën in Ski amadé</h3>
@@ -454,7 +516,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.1s;">
-            <div class="act-card-img"><img data-img-key="home-act-2" src="assets/images/pictures/summer-outside-2.png" alt="Wandelen in Eben im Pongau Salzburgerland"></div>
+            <div class="act-card-img"><img data-img-key="home-act-2" src="assets/images/pictures/summer-outside-2.png" alt="Wandelen en zomervakantie vanuit Gipfel Lodge in Eben im Pongau, Salzburgerland" loading="lazy"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-2-t">Wandelen</h3>
               <p data-i18n="act-card-2-p">Ontdek de mooiste bergroutes rondom Eben.</p>
@@ -462,7 +524,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.2s;">
-            <div class="act-card-img"><img data-img-key="home-act-3" src="assets/images/Foto-collage-woning/sauna-estatic.jpg" alt="Ontspan in de privé sauna van de Gipfel Lodge"></div>
+            <div class="act-card-img"><img data-img-key="home-act-3" src="assets/images/Foto-collage-woning/sauna-estatic.jpg" alt="Privé sauna in Gipfel Lodge — wellness na een dag skiën of wandelen in Salzburgerland" loading="lazy"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-3-t">Sauna</h3>
               <p data-i18n="act-card-3-p">Ontspanning in uw privé lodge sauna.</p>
@@ -470,7 +532,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.3s;">
-            <div class="act-card-img"><img data-img-key="home-act-4" src="assets/images/pictures/summer-outside.png" alt="Natuur en alpenweides in Oostenrijk"></div>
+            <div class="act-card-img"><img data-img-key="home-act-4" src="assets/images/pictures/summer-outside.png" alt="Natuur en alpenweides rondom Gipfel Lodge in Eben im Pongau, Oostenrijk" loading="lazy"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-4-t">Natuurbeleving</h3>
               <p data-i18n="act-card-4-p">Ervaar de Alpen in hun puurste vorm.</p>
@@ -478,7 +540,7 @@
             </div>
           </div>
           <div class="reveal act-card-v3" style="transition-delay: 0.4s;">
-            <div class="act-card-img"><img data-img-key="home-act-5" src="assets/images/pictures/winter-outside-2.png" alt="Omgeving Eben im Pongau nabij Flachau en Ski amadé"></div>
+            <div class="act-card-img"><img data-img-key="home-act-5" src="assets/images/pictures/winter-outside-2.png" alt="Winterse omgeving van Gipfel Lodge nabij Flachau en Ski Amadé in het Salzburgerland" loading="lazy"></div>
             <div class="act-card-body">
               <h3 data-i18n="act-card-6-t">Omgeving</h3>
               <p data-i18n="act-card-6-p">Centraal gelegen voor alle uitstapjes.</p>
@@ -635,23 +697,23 @@
         <div class="gallery-grid">
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/outside-view-winter.jpg"
               alt="Winter View"></div>
-          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/livingroom.jpg" alt="Living Room"></div>
+          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/livingroom.jpg" alt="Woonkamer Gipfel Lodge met open haard en alpien decor" loading="lazy"></div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/diningtabel.jpg" alt="Dining Table">
           </div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/Kitchen-1.jpg" alt="Kitchen"></div>
-          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bedroom-1.jpg" alt="Bedroom 1"></div>
+          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bedroom-1.jpg" alt="Eerste slaapkamer Gipfel Lodge met comfortabel queensize bed" loading="lazy"></div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bedroom-2.jpg" alt="Bedroom 2"></div>
-          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bedroom-3.jpg" alt="Bedroom 3"></div>
-          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bunkbedroom.jpg" alt="Bunk Bedroom">
+          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bedroom-3.jpg" alt="Derde slaapkamer Gipfel Lodge — ruime suite voor comfortabel verblijf in Oostenrijk" loading="lazy"></div>
+          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bunkbedroom.jpg" alt="Stapelbed kamer in Gipfel Lodge — ideaal voor kinderen op wintersportvakantie" loading="lazy">
           </div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bathroom-1.jpg" alt="Bathroom"></div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/bathroom-2.jpg" alt="Bathroom"></div>
-          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Sauna"></div>
-          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/hallways.jpg" alt="Hallways"></div>
+          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Privé sauna in Gipfel Lodge — Finse houten sauna met eigen spa-ervaring in Oostenrijk" loading="lazy"></div>
+          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/hallways.jpg" alt="Gangen en open hal in Gipfel Lodge chalet, luxe interieur in alpijnse stijl" loading="lazy"></div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/entrancehall.jpg" alt="Entrance"></div>
-          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/readingcorner.jpg" alt="Reading Corner">
+          <div class="gallery-item"><img src="assets/images/Foto-collage-woning/readingcorner.jpg" alt="Leeshoek met uitzicht op de Alpen in Gipfel Lodge woonkamer" loading="lazy">
           </div>
-          <div class="gallery-item"><img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace"></div>
+          <div class="gallery-item"><img src="assets/images/pictures/summer-outside-terrace.png" alt="Panoramaterras van Gipfel Lodge met bergzicht in de zomer, Eben im Pongau" loading="lazy"></div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/outside-view-summer.jpg"
               alt="Summer View"></div>
           <div class="gallery-item"><img src="assets/images/Foto-collage-woning/garage.jpg" alt="Garage"></div>
@@ -767,12 +829,12 @@
           <div class="floor-card reveal">
             <div class="floor-card-img">
               <div class="mini-carousel" id="lodge-mini-ug">
-                <img src="assets/images/Foto-collage-woning/sauna-2.jpg" alt="Sauna 2" class="active">
-                <img src="assets/images/Foto-collage-woning/entrancehall-estatic.jpg" alt="Entrance Hall Estatic">
-                <img src="assets/images/Foto-collage-woning/entrancehall.jpg" alt="Entrance Hall">
+                <img src="assets/images/Foto-collage-woning/sauna-2.jpg" alt="Privé sauna souterrain Gipfel Lodge Eben im Pongau" class="active" loading="lazy">
+                <img src="assets/images/Foto-collage-woning/entrancehall-estatic.jpg" alt="Sfeervolle entreehal van Gipfel Lodge, chalet Salzburgerland" loading="lazy">
+                <img src="assets/images/Foto-collage-woning/entrancehall.jpg" alt="Entreehal en hal van Gipfel Lodge luxe chalet Oostenrijk" loading="lazy">
                 <img src="assets/images/Foto-collage-woning/bedroom-1.jpg" alt="Bedroom 1">
-                <img src="assets/images/Foto-collage-woning/bathroom-1.jpg" alt="Bathroom 1">
-                <img src="assets/images/Foto-collage-woning/skiruim-1.jpg" alt="Skiruim">
+                <img src="assets/images/Foto-collage-woning/bathroom-1.jpg" alt="Design badkamer met regendouche in souterrain van Gipfel Lodge" loading="lazy">
+                <img src="assets/images/Foto-collage-woning/skiruim-1.jpg" alt="Eigen skiruimte met opbergruimte voor ski-uitrusting in Gipfel Lodge" loading="lazy">
                 <button class="mini-nav prev" aria-label="Previous image"><i class="ph-bold ph-caret-left"></i></button>
                 <button class="mini-nav next" aria-label="Next image"><i class="ph-bold ph-caret-right"></i></button>
               </div>
@@ -791,12 +853,12 @@
           <div class="floor-card reveal" style="transition-delay: 0.1s;">
             <div class="floor-card-img">
               <div class="mini-carousel" id="lodge-mini-1og">
-                <img src="assets/images/Foto-collage-woning/bedroom-2.jpg" alt="Bedroom 2" class="active">
-                <img src="assets/images/Foto-collage-woning/bathroom-2.jpg" alt="Bathroom 2">
+                <img src="assets/images/Foto-collage-woning/bedroom-2.jpg" alt="Tweede slaapkamer Gipfel Lodge met alpine interieur en berg uitzicht" class="active" loading="lazy">
+                <img src="assets/images/Foto-collage-woning/bathroom-2.jpg" alt="Tweede designbadkamer op eerste verdieping van Gipfel Lodge" loading="lazy">
                 <img src="assets/images/Foto-collage-woning/bedroom-3.jpg" alt="Bedroom 3">
                 <img src="assets/images/Foto-collage-woning/bunkbedroom.jpg" alt="Bunk Bedroom">
                 <img src="assets/images/Foto-collage-woning/hallways.jpg" alt="Hallways">
-                <img src="assets/images/Foto-collage-woning/bedroom-estatic-1.jpg" alt="Bedroom Estatic 1">
+                <img src="assets/images/Foto-collage-woning/bedroom-estatic-1.jpg" alt="Sfeerfoto eerste slaapkamer Gipfel Lodge — warmte en luxe in Salzburgerland" loading="lazy">
                 <button class="mini-nav prev" aria-label="Previous image"><i class="ph-bold ph-caret-left"></i></button>
                 <button class="mini-nav next" aria-label="Next image"><i class="ph-bold ph-caret-right"></i></button>
               </div>
@@ -814,11 +876,11 @@
           <div class="floor-card reveal" style="transition-delay: 0.2s;">
             <div class="floor-card-img">
               <div class="mini-carousel" id="lodge-mini-2og">
-                <img src="assets/images/Foto-collage-woning/Kitchen-1.jpg" alt="Kitchen 1" class="active">
+                <img src="assets/images/Foto-collage-woning/Kitchen-1.jpg" alt="Open keuken op tweede verdieping van Gipfel Lodge — volledig uitgerust voor groepen" class="active" loading="lazy">
                 <img src="assets/images/Foto-collage-woning/readingcorner.jpg" alt="Reading Corner">
-                <img src="assets/images/Foto-collage-woning/diningtable-estatic.jpg" alt="Dining Table Estatic">
+                <img src="assets/images/Foto-collage-woning/diningtable-estatic.jpg" alt="Sfeerfoto eethoek Gipfel Lodge — gezellig dineren met het hele gezelschap" loading="lazy">
                 <img src="assets/images/Foto-collage-woning/livingroom.jpg" alt="Living Room">
-                <img src="assets/images/Foto-collage-woning/kitchen-estatic.jpg" alt="Kitchen Estatic">
+                <img src="assets/images/Foto-collage-woning/kitchen-estatic.jpg" alt="Sfeerfoto gourmetkeuken Gipfel Lodge — modern en volledig uitgerust" loading="lazy">
                 <button class="mini-nav prev" aria-label="Previous image"><i class="ph-bold ph-caret-left"></i></button>
                 <button class="mini-nav next" aria-label="Next image"><i class="ph-bold ph-caret-right"></i></button>
               </div>
@@ -846,86 +908,86 @@
         </div>
         <div class="masonry-gallery">
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/outside-view-winter.jpg" alt="Winter View">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/outside-view-winter.jpg" alt="Gipfel Lodge in winterse sfeer — luxe chalet Eben im Pongau Salzburgerland">
             <div class="masonry-overlay"><span data-i18n="gal-winter">Winter View</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/livingroom.jpg" alt="Living Room">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/livingroom.jpg" alt="Woonkamer Gipfel Lodge met alpien interieur, open haard en comfortable zithoek">
             <div class="masonry-overlay"><span data-i18n="gal-living">Living Room</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/Kitchen-1.jpg" alt="Kitchen">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/Kitchen-1.jpg" alt="Volledig uitgeruste gourmetkeuken in Gipfel Lodge voor groepen tot 10 personen">
             <div class="masonry-overlay"><span data-i18n="gal-kitchen">Kitchen</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/bedroom-1.jpg" alt="Bedroom">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/bedroom-1.jpg" alt="Eerste slaapkamer Gipfel Lodge — ruime suite met queensize bed en berguitzicht">
             <div class="masonry-overlay"><span data-i18n="gal-bedroom">Bedroom</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/bathroom-1.jpg" alt="Bathroom">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/bathroom-1.jpg" alt="Luxe badkamer met regendouche in souterrain van Gipfel Lodge Oostenrijk">
             <div class="masonry-overlay"><span data-i18n="gal-bathroom">Bathroom</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/readingcorner.jpg" alt="Reading Corner">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/readingcorner.jpg" alt="Sfeervolle leeshoek in Gipfel Lodge met uitzicht op de Oostenrijkse Alpen">
             <div class="masonry-overlay"><span data-i18n="gal-reading">Reading Corner</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/outside-view-summer.jpg" alt="Summer View">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/outside-view-summer.jpg" alt="Gipfel Lodge in de zomer — omgeving Eben im Pongau nabij Flachau">
             <div class="masonry-overlay"><span data-i18n="gal-summer">Summer View</span></div>
           </div>
 
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/diningtabel.jpg" alt="Dining Table">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/diningtabel.jpg" alt="Gezellige eethoek van Gipfel Lodge — perfect voor diners met het hele gezelschap">
             <div class="masonry-overlay"><span data-i18n="gal-dining">Dining Area</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/bedroom-2.jpg" alt="Bedroom 2">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/bedroom-2.jpg" alt="Tweede slaapkamer Gipfel Lodge — comfortabel en rustgevend met alpine sfeer">
             <div class="masonry-overlay"><span data-i18n="gal-bedroom">Bedroom</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/bunkbedroom.jpg" alt="Bunk Bedroom">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/bunkbedroom.jpg" alt="Stapelbed kamer in Gipfel Lodge — ideaal voor kinderen en jeugd op wintersportvakantie">
             <div class="masonry-overlay"><span data-i18n="gal-bunkbed">Bunk Bedroom</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/hallways.jpg" alt="Hallways">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/hallways.jpg" alt="Stijlvolle gang en hal in Gipfel Lodge — luxe chalet met alpien interieur">
             <div class="masonry-overlay"><span data-i18n="gal-hallways">Hallways</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/pictures/summer-outside-terrace.png" alt="Terrace">
+            <img loading="lazy" src="assets/images/pictures/summer-outside-terrace.png" alt="Terras van Gipfel Lodge in de zomer met panoramisch berguitzicht, Salzburgerland">
             <div class="masonry-overlay"><span data-i18n="gal-terrace">Terrace</span></div>
           </div>
 
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/bedroom-3.jpg" alt="Bedroom 3">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/bedroom-3.jpg" alt="Derde slaapkamer Gipfel Lodge — ruime suite voor een comfortabel verblijf in Oostenrijk">
             <div class="masonry-overlay"><span data-i18n="gal-bedroom">Bedroom</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/bathroom-2.jpg" alt="Bathroom 2">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/bathroom-2.jpg" alt="Design badkamer op eerste verdieping van Gipfel Lodge — modern en stijlvol">
             <div class="masonry-overlay"><span data-i18n="gal-bathroom">Bathroom</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/entrancehall.jpg" alt="Entrance">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/entrancehall.jpg" alt="Entreehal van Gipfel Lodge — verwelkomend interieur in alpijnse luxe stijl">
             <div class="masonry-overlay"><span data-i18n="gal-entrance">Entrance</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/outside-building-summer.jpg" alt="Summer View 2">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/outside-building-summer.jpg" alt="Exterieur van Gipfel Lodge in de zomer — luxe chalet Eben im Pongau Oostenrijk">
             <div class="masonry-overlay"><span data-i18n="gal-summer">Summer View</span></div>
           </div>
           <div class="masonry-item reveal">
-            <img src="assets/images/Foto-collage-woning/garage.jpg" alt="Garage">
+            <img loading="lazy" src="assets/images/Foto-collage-woning/garage.jpg" alt="Privégarage van Gipfel Lodge — ruimte voor meerdere voertuigen en skiuitrusting">
             <div class="masonry-overlay"><span data-i18n="gal-garage">Garage</span></div>
           </div>
-          <div class="masonry-item reveal"><img src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Sauna">
+          <div class="masonry-item reveal"><img loading="lazy" src="assets/images/Foto-collage-woning/sauna-1.jpg" alt="Privé sauna in Gipfel Lodge — Finse houten sauna voor ontspanning na een dag in de bergen">
             <div class="masonry-overlay"><span data-i18n="gal-sauna">Sauna</span></div>
           </div>
-          <div class="masonry-item reveal"><img src="assets/images/Foto-collage-woning/sauna-2.jpg" alt="Sauna">
+          <div class="masonry-item reveal"><img loading="lazy" src="assets/images/Foto-collage-woning/sauna-2.jpg" alt="Sauna ruimte Gipfel Lodge Salzburgerland — exclusieve wellness in uw privé chalet">
             <div class="masonry-overlay"><span data-i18n="gal-sauna">Sauna</span></div>
           </div>
-          <div class="masonry-item reveal"><img src="assets/images/Foto-collage-woning/skiruim-1.jpg" alt="Ski Room">
+          <div class="masonry-item reveal"><img loading="lazy" src="assets/images/Foto-collage-woning/skiruim-1.jpg" alt="Eigen skiruimte in Gipfel Lodge — handig voor opslag van skis en snowboards">
             <div class="masonry-overlay"><span data-i18n="gal-ski-room">Ski Room</span></div>
           </div>
-          <div class="masonry-item reveal"><img src="assets/images/Foto-collage-woning/tauernlodge-eben-sign.jpg"
-              alt="Gipfel Lodge Eben">
+          <div class="masonry-item reveal"><img loading="lazy" src="assets/images/Foto-collage-woning/tauernlodge-eben-sign.jpg"
+              alt="Naambord Gipfel Lodge in Eben im Pongau — luxe chalet in het hart van het Salzburgerland">
             <div class="masonry-overlay"><span data-i18n="gal-sign">Gipfel Lodge Eben</span></div>
           </div>
         </div>
