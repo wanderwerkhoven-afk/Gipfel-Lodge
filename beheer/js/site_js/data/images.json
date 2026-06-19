@@ -90,6 +90,7 @@
     "assets/images/enjoyment/jandlalm.webp",
     "assets/images/enjoyment/romerkeller.png",
     "assets/images/enjoyment/romerkeller.webp",
+    "assets/images/gipfel-lodge-bedroom-winter-view-alpine-interior.webp",
     "assets/images/logo-Topbar.png",
     "assets/images/logo-Topbar.webp",
     "assets/images/logo.gif",
@@ -153,10 +154,12 @@
     "assets/images/pictures/winter-outside-2.webp",
     "assets/images/pictures/winter-outside.png",
     "assets/images/pictures/winter-outside.webp",
+    "assets/images/room.png",
     "assets/images/seo/gipfel-lodge-alpine-bedroom-interior.webp",
     "assets/images/seo/gipfel-lodge-alpine-bunk-bedroom.webp",
     "assets/images/seo/gipfel-lodge-alpine-entrance-hall.webp",
     "assets/images/seo/gipfel-lodge-bedroom-winter-mountain-view.webp",
+    "assets/images/seo/gipfel-lodge-bedroom-winter-view-alpine-interior.webp",
     "assets/images/seo/gipfel-lodge-covered-terrace-garden-lounge.webp",
     "assets/images/seo/gipfel-lodge-dining-area-10-guests.webp",
     "assets/images/seo/gipfel-lodge-hallway-stone-staircase.webp",
@@ -178,5 +181,5 @@
     "assets/images/seo/gipfel-lodge-winter-mountain-view-flachau.webp",
     "assets/images/seo/gipfel-lodge-wooden-bunk-bedroom-detail.webp"
   ],
-  "generated": "2026-06-19T14:43:11.957Z"
+  "generated": "2026-06-19T14:54:00.707Z"
 }
