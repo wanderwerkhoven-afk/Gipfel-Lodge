@@ -144,14 +144,43 @@ async function startStaticExport() {
                     const zoneKey = el.getAttribute('data-gallery-zone');
                     const items = galleryZones[zoneKey];
                     if (items && items.length > 0) {
-                        // Render als <img> elementen in het carousel/grid element
-                        el.innerHTML = items.map(item => {
-                            const src = typeof item === 'string' ? item : (item.src || '');
-                            const alt = (item && typeof item === 'object' && item.alt)
-                                ? (item.alt[lang] || item.alt.nl || '')
-                                : '';
-                            return src ? `<img src="${src}" alt="${alt}" loading="lazy">` : '';
-                        }).join('');
+                        if (zoneKey === 'hero_slider') {
+                            el.innerHTML = items.map((item, i) => {
+                                const src = typeof item === 'string' ? item : (item.src || '');
+                                return `
+                                    <div class="hero-v3-slide${i === 0 ? ' active' : ''}" style="background-image: url('${src}');"></div>
+                                `;
+                            }).join('');
+                        } else if (zoneKey.startsWith('lodge_mini')) {
+                            const prevBtn = el.querySelector('.mini-nav.prev');
+                            const nextBtn = el.querySelector('.mini-nav.next');
+                            el.innerHTML = items.map((item, i) => {
+                                const src = typeof item === 'string' ? item : (item.src || '');
+                                const alt = (item && typeof item === 'object' && item.alt) ? (item.alt[lang] || item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+                                return `<img src="${src}" alt="${alt}"${i === 0 ? ' class="active"' : ''}>`;
+                            }).join('');
+                            if (prevBtn) el.appendChild(prevBtn);
+                            if (nextBtn) el.appendChild(nextBtn);
+                        } else if (zoneKey === 'lodge_gallery') {
+                            el.innerHTML = items.map(item => {
+                                const src = typeof item === 'string' ? item : (item.src || '');
+                                const alt = (item && typeof item === 'object' && item.alt) ? (item.alt[lang] || item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+                                return `
+                                    <div class="masonry-item reveal">
+                                        <img src="${src}" alt="${alt}">
+                                        <div class="masonry-overlay"><span>${alt}</span></div>
+                                    </div>
+                                `;
+                            }).join('');
+                        } else {
+                            el.innerHTML = items.map(item => {
+                                const src = typeof item === 'string' ? item : (item.src || '');
+                                const alt = (item && typeof item === 'object' && item.alt)
+                                    ? (item.alt[lang] || item.alt.nl || item.alt.en || '')
+                                    : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+                                return src ? `<div class="gallery-item"><img src="${src}" alt="${alt}" loading="lazy"></div>` : '';
+                            }).join('');
+                        }
                     }
                 });
 
@@ -160,10 +189,10 @@ async function startStaticExport() {
                 const activeView = doc.getElementById(route);
                 if (activeView) activeView.classList.add('active');
 
-                // i18n/router scripts verwijderen (niet nodig in statische versie)
+                // i18n/router/gallery scripts verwijderen (niet nodig in statische versie)
                 doc.querySelectorAll('script[src]').forEach(script => {
                     const src = script.getAttribute('src');
-                    if (src && (src.includes('router.js') || src.includes('i18n_') || src.includes('i18n.js'))) {
+                    if (src && (src.includes('router.js') || src.includes('i18n_') || src.includes('i18n.js') || src.includes('gallery-loader.js'))) {
                         script.remove();
                     }
                 });

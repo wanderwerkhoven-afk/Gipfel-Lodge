@@ -84,15 +84,19 @@
        ───────────────────────────────────────────────────────────── */
 
     function injectHeroSlides(container, images) {
-        container.innerHTML = images.map((src, i) => `
+        container.innerHTML = images.map((item, i) => {
+            const src = typeof item === 'string' ? item : (item.src || '');
+            return `
             <div class="hero-v3-slide${i === 0 ? ' active' : ''}" style="background-image: url('${src}');"></div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function injectPropertyGallery(container, images) {
-        container.innerHTML = images.map(src => {
-            const name = src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
-            return `<div class="gallery-item"><img src="${src}" alt="${name}"></div>`;
+        container.innerHTML = images.map(item => {
+            const src = typeof item === 'string' ? item : (item.src || '');
+            const alt = (typeof item === 'object' && item.alt) ? (item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+            return `<div class="gallery-item"><img src="${src}" alt="${alt}"></div>`;
         }).join('');
     }
 
@@ -101,9 +105,10 @@
         const prevBtn = container.querySelector('.mini-nav.prev');
         const nextBtn = container.querySelector('.mini-nav.next');
 
-        container.innerHTML = images.map((src, i) => {
-            const name = src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
-            return `<img src="${src}" alt="${name}"${i === 0 ? ' class="active"' : ''}>`;
+        container.innerHTML = images.map((item, i) => {
+            const src = typeof item === 'string' ? item : (item.src || '');
+            const alt = (typeof item === 'object' && item.alt) ? (item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+            return `<img src="${src}" alt="${alt}"${i === 0 ? ' class="active"' : ''}>`;
         }).join('');
 
         // Re-append nav buttons
@@ -112,12 +117,13 @@
     }
 
     function injectMasonryGallery(container, images) {
-        container.innerHTML = images.map(src => {
-            const name = src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+        container.innerHTML = images.map(item => {
+            const src = typeof item === 'string' ? item : (item.src || '');
+            const alt = (typeof item === 'object' && item.alt) ? (item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
             return `
                 <div class="masonry-item reveal">
-                    <img src="${src}" alt="${name}">
-                    <div class="masonry-overlay"><span>${name}</span></div>
+                    <img src="${src}" alt="${alt}">
+                    <div class="masonry-overlay"><span>${alt}</span></div>
                 </div>
             `;
         }).join('');
