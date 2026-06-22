@@ -38,16 +38,15 @@ async function startStaticExport() {
         }
         progressFill.style.width = '10%';
 
-        // 4. Lees het site-manifest (lijst van alle bestanden in siteground_upload)
+        // 4. Lees het site-manifest (staat in js/site-manifest.json naast de admin)
         statusDiv.innerText = 'Bestandsmanifest ophalen...';
-        const baseUrl = getBaseUrl(); // bijv. https://host/  of  http://127.0.0.1:5500/
-        const manifestUrl = resolveUrl(baseUrl, 'js/site-manifest.json');
-        const manifestResp = await fetch(manifestUrl).catch(() => null);
+        const manifestResp = await fetch('js/site-manifest.json').catch(() => null);
         if (!manifestResp || !manifestResp.ok) throw new Error('Kon site-manifest.json niet ophalen. Voer eerst npm run build:siteground uit.');
-        const fileList = await manifestResp.json(); // array van paden, bijv. ["css/site_css/base/main.css", ...]
+        const fileList = await manifestResp.json();
         progressFill.style.width = '15%';
 
-        // 5. Kopieer alle statische bestanden (CSS, JS, assets, favicons etc.) naar ZIP
+        // 5. Bepaal de base URL van siteground_upload (sibling van beheer/)
+        const sgBase = getSitegroundBase();
         statusDiv.innerText = `Bestanden kopiëren (${fileList.length} bestanden)...`;
         let copied = 0;
         const batchSize = 10; // parallel downloads per batch
@@ -56,7 +55,7 @@ async function startStaticExport() {
             const batch = fileList.slice(i, i + batchSize);
             await Promise.all(batch.map(async (filePath) => {
                 try {
-                    const url = resolveUrl(baseUrl, filePath);
+                    const url = sgBase + filePath;
                     const resp = await fetch(url);
                     if (resp.ok) {
                         const blob = await resp.blob();
@@ -72,8 +71,7 @@ async function startStaticExport() {
 
         // 6. Haal de originele index.html op als sjabloon
         statusDiv.innerText = 'HTML sjabloon ophalen...';
-        const indexUrl = resolveUrl(baseUrl, 'index.html');
-        let indexResp = await fetch(indexUrl).catch(() => null);
+        let indexResp = await fetch(sgBase + 'index.html').catch(() => null);
         if (!indexResp || !indexResp.ok) throw new Error('Kon index.html niet ophalen');
         const rawHtml = await indexResp.text();
         progressFill.style.width = '55%';
@@ -209,19 +207,29 @@ async function startStaticExport() {
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 /**
- * Detecteer de base URL van de siteground_upload map, afhankelijk van context.
- * - Vanuit beheer/ op GitHub Pages → gaat 1 niveau omhoog
- * - Vanuit root (localhost) → zelfde map
+ * Bereken de absolute base URL van de siteground_upload/ map.
+ * Beheer draait altijd naast siteground_upload/ als sibling.
+ *
+ * Lokaal (VS Code Live Server):
+ *   Admin: http://127.0.0.1:5500/beheer/admin.html
+ *   SG:    http://127.0.0.1:5500/siteground_upload/
+ *
+ * GitHub Pages:
+ *   Admin: https://user.github.io/Repo/beheer/
+ *   SG:    https://user.github.io/Repo/siteground_upload/
+ */
+function getSitegroundBase() {
+    const loc = window.location;
+    // Verwijder /beheer/ segment en plak /siteground_upload/ eraan
+    const beforeBeheer = loc.href.replace(/\/beheer(\/[^?#]*)?([?#].*)?$/, '/');
+    return beforeBeheer + 'siteground_upload/';
+}
+
+/**
+ * @deprecated Gebruik getSitegroundBase() voor bestandspaden
  */
 function getBaseUrl() {
-    const loc = window.location;
-    const pathname = loc.pathname;
-    // Als we in /beheer/ of /beheer zitten, gaan we 1 niveau omhoog
-    if (pathname.includes('/beheer/') || pathname.endsWith('/beheer')) {
-        const base = loc.origin + pathname.substring(0, pathname.lastIndexOf('/beheer')) + '/';
-        return base;
-    }
-    return loc.origin + '/';
+    return getSitegroundBase();
 }
 
 function resolveUrl(base, path) {

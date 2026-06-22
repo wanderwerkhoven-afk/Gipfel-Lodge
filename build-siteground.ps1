@@ -222,6 +222,15 @@ Write-Ok "site_manifest/favicon_admin/"
 Copy-Item "$Root\list-images.php" "$Beheer\list-images.php" -ErrorAction SilentlyContinue
 Write-Ok "list-images.php"
 
+# -- Site-manifest.json (nodig voor statische export vanuit admin panel) --
+$manifestSrc = Join-Path $Dist "js\site-manifest.json"
+if (Test-Path $manifestSrc) {
+    Copy-Item $manifestSrc "$beheerJs\site-manifest.json"
+    Write-Ok "js/site-manifest.json (gekopieerd van siteground_upload/)"
+} else {
+    Write-Warn "site-manifest.json niet gevonden - voer eerst build:siteground uit"
+}
+
 # -- README voor beheer --
 Copy-Item "$Root\beheer\README.md" "$Beheer\README.md" -ErrorAction SilentlyContinue
 Write-Ok "README.md"
