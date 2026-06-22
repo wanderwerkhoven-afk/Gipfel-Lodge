@@ -1,4 +1,6 @@
 // admin-export.js
+// Statische export: bouwt een volledige ZIP gelijk aan siteground_upload/
+// maar met alle HTML-bestanden per taal/route al ingevuld met teksten & afbeeldingen.
 
 async function startStaticExport() {
     const btn = document.getElementById('btn-run-export');
@@ -8,160 +10,93 @@ async function startStaticExport() {
 
     btn.disabled = true;
     statusDiv.style.display = 'block';
+    statusDiv.style.color = '#475569';
     progressWrap.style.display = 'block';
     progressFill.style.width = '0%';
-    statusDiv.innerText = 'Scripts en content laden...';
+    statusDiv.innerText = 'Firebase data laden...';
 
     try {
-        // 1. Zorg dat we JSZip hebben
-        if (typeof JSZip === 'undefined') {
-            throw new Error('JSZip is niet geladen!');
-        }
+        // 1. JSZip check
+        if (typeof JSZip === 'undefined') throw new Error('JSZip is niet geladen!');
+        const zip = new JSZip();
 
-        // 2. Laad Firebase data (galleries + text overrides)
+        // 2. Firebase data ophalen
         const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
         const [galleriesSnap, translationsSnap] = await Promise.all([
             getDoc(doc(db, 'settings', 'galleries')),
             getDoc(doc(db, 'settings', 'translations'))
         ]);
-        const galleryZones = galleriesSnap.exists() ? (galleriesSnap.data().zones || {}) : {};
-        const textOverrides = translationsSnap.exists() ? translationsSnap.data() : {};
+        const galleryZones  = galleriesSnap.exists()    ? (galleriesSnap.data().zones || {}) : {};
+        const textOverrides = translationsSnap.exists() ? translationsSnap.data()            : {};
+        progressFill.style.width = '5%';
 
-        // 3. Laad alle vertalingen in admin window
+        // 3. Vertalingen laden en mergen met Firebase overrides
+        statusDiv.innerText = 'Vertalingen laden...';
         await loadAllTranslations();
-        
-        // Merge Firebase text overrides into gipfelTranslations
         for (const lang of ['nl', 'de', 'en']) {
-            if (textOverrides[lang]) {
-                Object.assign(window.gipfelTranslations[lang], textOverrides[lang]);
-            }
+            if (textOverrides[lang]) Object.assign(window.gipfelTranslations[lang], textOverrides[lang]);
         }
-        progressFill.style.width = '20%';
+        progressFill.style.width = '10%';
 
-        // 4. Haal de originele index.html op
-        statusDiv.innerText = 'Sjabloon ophalen...';
-        let response = await fetch('index.html').catch(() => null);
-        if (!response || !response.ok) response = await fetch('../index.html').catch(() => null);
-        if (!response || !response.ok) response = await fetch('/index.html').catch(() => null);
-        if (!response || !response.ok) throw new Error('Kon index.html niet ophalen');
-        const rawHtml = await response.text();
-        progressFill.style.width = '40%';
+        // 4. Lees het site-manifest (lijst van alle bestanden in siteground_upload)
+        statusDiv.innerText = 'Bestandsmanifest ophalen...';
+        const baseUrl = getBaseUrl(); // bijv. https://host/  of  http://127.0.0.1:5500/
+        const manifestUrl = resolveUrl(baseUrl, 'js/site-manifest.json');
+        const manifestResp = await fetch(manifestUrl).catch(() => null);
+        if (!manifestResp || !manifestResp.ok) throw new Error('Kon site-manifest.json niet ophalen. Voer eerst npm run build:siteground uit.');
+        const fileList = await manifestResp.json(); // array van paden, bijv. ["css/site_css/base/main.css", ...]
+        progressFill.style.width = '15%';
 
-        // 5. Genereer HTML per taal en per route
-        statusDiv.innerText = 'Pagina\'s genereren...';
-        const zip = new JSZip();
-        
+        // 5. Kopieer alle statische bestanden (CSS, JS, assets, favicons etc.) naar ZIP
+        statusDiv.innerText = `Bestanden kopiëren (${fileList.length} bestanden)...`;
+        let copied = 0;
+        const batchSize = 10; // parallel downloads per batch
+
+        for (let i = 0; i < fileList.length; i += batchSize) {
+            const batch = fileList.slice(i, i + batchSize);
+            await Promise.all(batch.map(async (filePath) => {
+                try {
+                    const url = resolveUrl(baseUrl, filePath);
+                    const resp = await fetch(url);
+                    if (resp.ok) {
+                        const blob = await resp.blob();
+                        zip.file(filePath, blob);
+                    }
+                } catch (e) {
+                    console.warn('[export] Kon niet kopiëren:', filePath, e);
+                }
+                copied++;
+            }));
+            progressFill.style.width = (15 + (copied / fileList.length * 35)) + '%';
+        }
+
+        // 6. Haal de originele index.html op als sjabloon
+        statusDiv.innerText = 'HTML sjabloon ophalen...';
+        const indexUrl = resolveUrl(baseUrl, 'index.html');
+        let indexResp = await fetch(indexUrl).catch(() => null);
+        if (!indexResp || !indexResp.ok) throw new Error('Kon index.html niet ophalen');
+        const rawHtml = await indexResp.text();
+        progressFill.style.width = '55%';
+
+        // 7. Genereer HTML per taal/route
+        statusDiv.innerText = 'Pagina\'s genereren per taal...';
         const languages = ['de', 'nl', 'en'];
         const routes = ['home', 'lodge', 'activities', 'enjoyment', 'booking'];
-        
-        // Helper to construct directory path based on user requested structure
-        const getRoutePath = (lang, route) => {
-            let path = '';
-            
-            // Language prefix (DE is root)
-            if (lang !== 'de') {
-                path += lang + '/';
-            }
-            
-            // Route name translation
-            if (route === 'home') {
-                return path + 'index.html'; // root of language
-            }
-            
-            if (lang === 'de') {
-                if (route === 'lodge') path += 'lodge/';
-                if (route === 'activities') path += 'aktivitaeten/';
-                if (route === 'enjoyment') path += 'geniessen/';
-                if (route === 'booking') path += 'buchen/';
-            } else if (lang === 'nl') {
-                if (route === 'lodge') path += 'lodge/';
-                if (route === 'activities') path += 'activiteiten/';
-                if (route === 'enjoyment') path += 'genieten/';
-                if (route === 'booking') path += 'boeken/';
-            } else if (lang === 'en') {
-                if (route === 'lodge') path += 'lodge/';
-                if (route === 'activities') path += 'activities/';
-                if (route === 'enjoyment') path += 'enjoy/';
-                if (route === 'booking') path += 'book/';
-            }
-            
-            return path + 'index.html';
-        };
-
         const parser = new DOMParser();
-
         let generatedCount = 0;
         const totalCount = languages.length * routes.length;
 
         for (const lang of languages) {
             for (const route of routes) {
                 const doc = parser.parseFromString(rawHtml, 'text/html');
-                
-                // --- 1. Stel de taal in ---
+
+                // Lang attribuut
                 doc.documentElement.lang = lang;
-                
-                // --- 2. Update de <title> en meta tags per route ---
+
+                // Meta tags (title, description, hreflang)
                 updateMetaTags(doc, lang, route);
-                
-                // --- 3. Injecteer i18n teksten (inclusief Firebase overrides) ---
-                const elements = doc.querySelectorAll('[data-i18n]');
-                elements.forEach(el => {
-                    const key = el.getAttribute('data-i18n');
-                    // Merge order: lang override > lang default > en fallback > key
-                    const text = (textOverrides[lang] && textOverrides[lang][key])
-                        || window.gipfelTranslations[lang]?.[key]
-                        || (textOverrides['en'] && textOverrides['en'][key])
-                        || window.gipfelTranslations['en']?.[key]
-                        || key;
-                    
-                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        el.placeholder = text;
-                    } else if (el.hasAttribute('title')) {
-                        el.title = text;
-                    } else {
-                        el.innerHTML = text; // allow HTML tags in translations
-                    }
-                });
-                
-                // --- 4. Injecteer Firebase Single Images (nu in galleryZones arrays als objecten) ---
-                const imgElements = doc.querySelectorAll('[data-img-key]');
-                imgElements.forEach(el => {
-                    const key = el.getAttribute('data-img-key');
-                    if (galleryZones[key] && galleryZones[key].length > 0) {
-                        const item = galleryZones[key][0];
-                        const url = typeof item === 'string' ? item : item.src;
-                        const alt = (item && typeof item === 'object' && item.alt) ? (item.alt[lang] || item.alt.nl || item.alt.en || '') : '';
-                        
-                        if (el.tagName === 'IMG') {
-                            el.src = url;
-                            if (alt) el.alt = alt;
-                        } else {
-                            el.style.backgroundImage = `url('${url}')`;
-                        }
-                    }
-                });
 
-                // --- 5. Pas SPA status aan ---
-                // Zet de actieve main-content op de juiste route, verberg de rest
-                doc.querySelectorAll('.page-view').forEach(view => {
-                    view.classList.remove('active');
-                });
-                const activeView = doc.getElementById(route);
-                if (activeView) activeView.classList.add('active');
-
-                // Verwijder client-side router/i18n scripts omdat dit nu statisch is
-                // We keep basic JS for carousels etc.
-                const scripts = doc.querySelectorAll('script');
-                scripts.forEach(script => {
-                    const src = script.getAttribute('src');
-                    if (src && (src.includes('router.js') || src.includes('i18n_') || src.includes('i18n.js'))) {
-                        script.remove();
-                    }
-                });
-                
-                // --- 6. Fix Base URL / Paths ---
-                // Omdat we nu in submappen zitten (/nl/lodge/), moeten relatieve paden naar assets fixed worden.
-                // Een simpele manier is om `<base href="/">` toe te voegen
+                // base href zodat relatieve paden werken vanuit submappen
                 let head = doc.querySelector('head');
                 if (!head.querySelector('base')) {
                     const baseEl = doc.createElement('base');
@@ -169,75 +104,91 @@ async function startStaticExport() {
                     head.insertBefore(baseEl, head.firstChild);
                 }
 
-                // Genereer de final HTML string
+                // i18n teksten injecteren
+                doc.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    const text = (textOverrides[lang]?.[key])
+                        || window.gipfelTranslations[lang]?.[key]
+                        || (textOverrides['en']?.[key])
+                        || window.gipfelTranslations['en']?.[key]
+                        || key;
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = text;
+                    } else if (el.hasAttribute('title')) {
+                        el.title = text;
+                    } else {
+                        el.innerHTML = text;
+                    }
+                });
+
+                // Afbeeldingen injecteren (single images via data-img-key)
+                doc.querySelectorAll('[data-img-key]').forEach(el => {
+                    const key = el.getAttribute('data-img-key');
+                    if (galleryZones[key] && galleryZones[key].length > 0) {
+                        const item = galleryZones[key][0];
+                        const url = typeof item === 'string' ? item : (item.src || '');
+                        const alt = (item && typeof item === 'object' && item.alt)
+                            ? (item.alt[lang] || item.alt.nl || item.alt.en || '')
+                            : '';
+                        if (el.tagName === 'IMG') {
+                            if (url) el.src = url;
+                            if (alt) el.alt = alt;
+                        } else if (url) {
+                            el.style.backgroundImage = `url('${url}')`;
+                        }
+                    }
+                });
+
+                // Gallerij zones injecteren (data-gallery-zone)
+                doc.querySelectorAll('[data-gallery-zone]').forEach(el => {
+                    const zoneKey = el.getAttribute('data-gallery-zone');
+                    const items = galleryZones[zoneKey];
+                    if (items && items.length > 0) {
+                        // Render als <img> elementen in het carousel/grid element
+                        el.innerHTML = items.map(item => {
+                            const src = typeof item === 'string' ? item : (item.src || '');
+                            const alt = (item && typeof item === 'object' && item.alt)
+                                ? (item.alt[lang] || item.alt.nl || '')
+                                : '';
+                            return src ? `<img src="${src}" alt="${alt}" loading="lazy">` : '';
+                        }).join('');
+                    }
+                });
+
+                // Actieve route instellen, anderen verbergen
+                doc.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
+                const activeView = doc.getElementById(route);
+                if (activeView) activeView.classList.add('active');
+
+                // i18n/router scripts verwijderen (niet nodig in statische versie)
+                doc.querySelectorAll('script[src]').forEach(script => {
+                    const src = script.getAttribute('src');
+                    if (src && (src.includes('router.js') || src.includes('i18n_') || src.includes('i18n.js'))) {
+                        script.remove();
+                    }
+                });
+
                 const finalHtml = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
-                
-                // Bepaal de filepath
                 const filePath = getRoutePath(lang, route);
                 zip.file(filePath, finalHtml);
 
                 generatedCount++;
-                progressFill.style.width = (40 + (generatedCount / totalCount * 40)) + '%';
+                progressFill.style.width = (55 + (generatedCount / totalCount * 35)) + '%';
             }
         }
 
-        // 6. Voeg extra bestanden toe (robots, sitemap, htaccess)
-        statusDiv.innerText = 'Systeem bestanden genereren...';
-        
-        zip.file('robots.txt', "User-agent: *\nAllow: /\nSitemap: https://gipfellodge.nl/sitemap.xml\n");
-        
-        const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://gipfellodge.nl/</loc></url>
-  <url><loc>https://gipfellodge.nl/lodge/</loc></url>
-  <url><loc>https://gipfellodge.nl/aktivitaeten/</loc></url>
-  <url><loc>https://gipfellodge.nl/geniessen/</loc></url>
-  <url><loc>https://gipfellodge.nl/buchen/</loc></url>
-  <url><loc>https://gipfellodge.nl/nl/</loc></url>
-  <url><loc>https://gipfellodge.nl/nl/lodge/</loc></url>
-  <url><loc>https://gipfellodge.nl/nl/activiteiten/</loc></url>
-  <url><loc>https://gipfellodge.nl/nl/genieten/</loc></url>
-  <url><loc>https://gipfellodge.nl/nl/boeken/</loc></url>
-  <url><loc>https://gipfellodge.nl/en/</loc></url>
-  <url><loc>https://gipfellodge.nl/en/lodge/</loc></url>
-  <url><loc>https://gipfellodge.nl/en/activities/</loc></url>
-  <url><loc>https://gipfellodge.nl/en/enjoy/</loc></url>
-  <url><loc>https://gipfellodge.nl/en/book/</loc></url>
-</urlset>`;
-        zip.file('sitemap.xml', sitemap);
-        
-        // Let op: HTACCESS met de NIeuwe folders
-        const htaccess = `<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
-</IfModule>`;
-        zip.file('.htaccess', htaccess);
-        
-        zip.file('README-upload-instructies.txt', "GIPFEL LODGE - STATISCHE EXPORT\n\n1. Log in op SiteGround Site Tools\n2. Ga naar File Manager -> public_html\n3. Upload de INHOUD van deze ZIP naar public_html (overschrijf bestaande bestanden)\n4. Let op: De assets map is hierin NIET overschreven. De foto's en css staan al live.\n5. Klaar! Je website is nu statisch en SEO-geoptimaliseerd.");
-        
-        zip.file('release.json', JSON.stringify({
-            generatedAt: new Date().toISOString(),
-            version: "1.0",
-            type: "Static Content Export",
-            languages: languages,
-            routes: routes
-        }, null, 2));
-
-        // 7. Genereer ZIP
+        // 8. ZIP genereren & downloaden
         statusDiv.innerText = 'ZIP inpakken...';
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
-        
-        progressFill.style.width = '100%';
-        statusDiv.innerText = 'Klaar! Download start automatisch.';
-        statusDiv.style.color = '#10b981'; // green
+        progressFill.style.width = '95%';
+        const zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
 
-        // 8. Download
+        progressFill.style.width = '100%';
+        statusDiv.innerText = '✅ Klaar! Download start automatisch.';
+        statusDiv.style.color = '#10b981';
+
         const a = document.createElement('a');
         a.href = URL.createObjectURL(zipBlob);
-        a.download = `gipfellodge-content-export.zip`;
+        a.download = `gipfellodge-static-export-${new Date().toISOString().slice(0,10)}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -245,23 +196,68 @@ async function startStaticExport() {
         setTimeout(() => {
             btn.disabled = false;
             progressWrap.style.display = 'none';
-        }, 3000);
+        }, 4000);
 
     } catch (error) {
         console.error('Export mislukt:', error);
         statusDiv.innerText = 'Fout bij exporteren: ' + error.message;
-        statusDiv.style.color = '#ef4444'; // red
+        statusDiv.style.color = '#ef4444';
         btn.disabled = false;
     }
 }
 
-// Helpers
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+/**
+ * Detecteer de base URL van de siteground_upload map, afhankelijk van context.
+ * - Vanuit beheer/ op GitHub Pages → gaat 1 niveau omhoog
+ * - Vanuit root (localhost) → zelfde map
+ */
+function getBaseUrl() {
+    const loc = window.location;
+    const pathname = loc.pathname;
+    // Als we in /beheer/ of /beheer zitten, gaan we 1 niveau omhoog
+    if (pathname.includes('/beheer/') || pathname.endsWith('/beheer')) {
+        const base = loc.origin + pathname.substring(0, pathname.lastIndexOf('/beheer')) + '/';
+        return base;
+    }
+    return loc.origin + '/';
+}
+
+function resolveUrl(base, path) {
+    return base.replace(/\/$/, '') + '/' + path.replace(/^\//, '');
+}
+
+function getRoutePath(lang, route) {
+    let path = '';
+    if (lang !== 'de') path += lang + '/';
+
+    if (route === 'home') return path + 'index.html';
+
+    if (lang === 'de') {
+        if (route === 'lodge')      path += 'lodge/';
+        if (route === 'activities') path += 'aktivitaeten/';
+        if (route === 'enjoyment')  path += 'geniessen/';
+        if (route === 'booking')    path += 'buchen/';
+    } else if (lang === 'nl') {
+        if (route === 'lodge')      path += 'lodge/';
+        if (route === 'activities') path += 'activiteiten/';
+        if (route === 'enjoyment')  path += 'genieten/';
+        if (route === 'booking')    path += 'boeken/';
+    } else if (lang === 'en') {
+        if (route === 'lodge')      path += 'lodge/';
+        if (route === 'activities') path += 'activities/';
+        if (route === 'enjoyment')  path += 'enjoy/';
+        if (route === 'booking')    path += 'book/';
+    }
+    return path + 'index.html';
+}
+
 function loadAllTranslations() {
     return new Promise((resolve) => {
         if (window.gipfelTranslations && window.gipfelTranslations['nl']) {
-            resolve(); return; // Al geladen
+            resolve(); return;
         }
-        
         const scripts = [
             'js/site_js/i18n/i18n_core.js',
             'js/site_js/i18n/i18n_global.js',
@@ -271,47 +267,23 @@ function loadAllTranslations() {
             'js/site_js/i18n/i18n_enjoyment.js',
             'js/site_js/i18n/i18n_booking.js'
         ];
-
         let loaded = 0;
         scripts.forEach(src => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = () => {
-                loaded++;
-                if (loaded === scripts.length) resolve();
-            };
-            script.onerror = () => {
-                console.error('Kon script niet laden:', src);
-                loaded++;
-                if (loaded === scripts.length) resolve();
-            };
-            document.head.appendChild(script);
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = () => { loaded++; if (loaded === scripts.length) resolve(); };
+            s.onerror = () => { console.error('Kon script niet laden:', src); loaded++; if (loaded === scripts.length) resolve(); };
+            document.head.appendChild(s);
         });
     });
 }
 
 function updateMetaTags(doc, lang, route) {
-    // Eenvoudige meta tag update (in een latere fase kan dit uit Firebase SEO instellingen komen)
-    let title = "Gipfel Lodge | Alpiner Luxus & Raum";
-    if (lang === 'nl') {
-        if (route === 'lodge') title = "De Lodge | Gipfel Lodge Eben im Pongau";
-        if (route === 'activities') title = "Activiteiten | Ski Amadé & Zomer Alpen";
-        if (route === 'enjoyment') title = "Genieten | Gipfel Lodge";
-        if (route === 'booking') title = "Boeken | Gipfel Lodge";
-    } else if (lang === 'de') {
-        if (route === 'lodge') title = "Die Lodge | Gipfel Lodge Eben im Pongau";
-        if (route === 'activities') title = "Aktivitäten | Ski Amadé & Sommer Alpen";
-        if (route === 'enjoyment') title = "Genießen | Gipfel Lodge";
-        if (route === 'booking') title = "Buchen | Gipfel Lodge";
-    } else if (lang === 'en') {
-        if (route === 'lodge') title = "The Lodge | Gipfel Lodge Eben im Pongau";
-        if (route === 'activities') title = "Activities | Ski Amadé & Summer Alps";
-        if (route === 'enjoyment') title = "Enjoyment | Gipfel Lodge";
-        if (route === 'booking') title = "Book | Gipfel Lodge";
-    }
-    
+    const titles = {
+        de: { home: 'Gipfel Lodge | Alpiner Luxus & Raum', lodge: 'Die Lodge | Gipfel Lodge Eben im Pongau', activities: 'Aktivitäten | Ski Amadé & Sommer Alpen', enjoyment: 'Genießen | Gipfel Lodge', booking: 'Buchen | Gipfel Lodge' },
+        nl: { home: 'Gipfel Lodge | Alpiner Luxus & Raum', lodge: 'De Lodge | Gipfel Lodge Eben im Pongau', activities: 'Activiteiten | Ski Amadé & Zomer Alpen', enjoyment: 'Genieten | Gipfel Lodge', booking: 'Boeken | Gipfel Lodge' },
+        en: { home: 'Gipfel Lodge | Alpine Luxury & Space', lodge: 'The Lodge | Gipfel Lodge Eben im Pongau', activities: 'Activities | Ski Amadé & Summer Alps', enjoyment: 'Enjoy | Gipfel Lodge', booking: 'Book | Gipfel Lodge' }
+    };
     const titleEl = doc.querySelector('title');
-    if (titleEl) titleEl.innerText = title;
+    if (titleEl) titleEl.textContent = titles[lang]?.[route] || 'Gipfel Lodge';
 }
-
-window.startStaticExport = startStaticExport;

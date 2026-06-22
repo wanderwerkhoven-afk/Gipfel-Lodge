@@ -153,6 +153,17 @@ Sitemap: https://gipfellodge.com/sitemap.xml
     Copy-Item "$Root\list-images.php" "$Dist\list-images.php" -ErrorAction SilentlyContinue
     Write-Ok "list-images.php"
 
+    # -- Genereer site-manifest.json voor de statische exporter --
+    Write-Step "Genereren van site-manifest.json (voor statische export)..."
+    $manifestFiles = Get-ChildItem -Path $Dist -Recurse -File | ForEach-Object {
+        $_.FullName.Substring($Dist.Length + 1).Replace('\', '/')
+    }
+    # Exclude index.html (die wordt door de exporter gegenereerd per taal)
+    $manifestFiles = $manifestFiles | Where-Object { $_ -ne 'index.html' -and $_ -ne 'invoice.html' }
+    $manifestJson = $manifestFiles | ConvertTo-Json -Compress
+    $manifestJson | Set-Content "$Dist\js\site-manifest.json" -Encoding UTF8
+    Write-Ok "js/site-manifest.json ($($manifestFiles.Count) bestanden geindexeerd)"
+
     Write-Host "`n[DONE] siteground_upload/ klaar!" -ForegroundColor Green
     Write-Host "   Upload de inhoud van siteground_upload/ naar SiteGround public_html" -ForegroundColor White
 }
