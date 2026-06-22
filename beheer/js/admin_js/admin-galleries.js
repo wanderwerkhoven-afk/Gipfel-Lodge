@@ -652,4 +652,7 @@ window.saveSeoModal = function (isSingle, keyToEdit, idx) {
     } else {
         renderEditorSelected();
     }
+    
+    // Automatisch direct opslaan in Firebase!
+    window.saveGalleryConfig();
 };
