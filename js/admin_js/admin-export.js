@@ -277,7 +277,8 @@ function getRoutePath(lang, route) {
 
 function loadAllTranslations() {
     return new Promise((resolve) => {
-        if (window.gipfelTranslations && window.gipfelTranslations['nl']) {
+        // Check if a key from the last file (booking) exists to ensure EVERYTHING is loaded
+        if (window.gipfelTranslations && window.gipfelTranslations['nl'] && window.gipfelTranslations['nl']['book-title']) {
             resolve(); return;
         }
         const scripts = [

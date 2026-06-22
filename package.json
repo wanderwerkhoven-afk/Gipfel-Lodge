@@ -10,6 +10,7 @@
   "private": true,
   "dependencies": {
     "glob": "^13.0.6",
+    "jsdom": "^29.1.1",
     "sharp": "^0.35.1"
   }
 }
