@@ -40,8 +40,10 @@ async function startStaticExport() {
 
         // 4. Haal de originele index.html op
         statusDiv.innerText = 'Sjabloon ophalen...';
-        const response = await fetch('../index.html');
-        if (!response.ok) throw new Error('Kon index.html niet ophalen');
+        let response = await fetch('index.html').catch(() => null);
+        if (!response || !response.ok) response = await fetch('../index.html').catch(() => null);
+        if (!response || !response.ok) response = await fetch('/index.html').catch(() => null);
+        if (!response || !response.ok) throw new Error('Kon index.html niet ophalen');
         const rawHtml = await response.text();
         progressFill.style.width = '40%';
 
