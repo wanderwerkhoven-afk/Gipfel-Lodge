@@ -2,11 +2,11 @@
   RewriteEngine On
   RewriteBase /
 
-  # Exclude existing files and directories
+  # Bestaande bestanden en mappen normaal blijven laden
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Rewrite all other routes to the SPA index.html
-  RewriteRule ^ index.html [L]
+  # Laat de geldige SPA-routes door de frontend afhandelen
+  RewriteRule ^(home|lodge|activities|enjoyment|booking)(?:/.*)?$ /index.html [L]
 </IfModule>

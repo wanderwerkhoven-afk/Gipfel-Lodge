@@ -42,6 +42,9 @@
     <!-- Date adapter required for Chart.js time-scale charts -->
     <script src="https://cdn.jsdelivr.net/npm/date-fns@3/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <!-- JSZip for Exporting Static HTML -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
 <body>
@@ -142,6 +145,9 @@
                     </li>
 
                     <li class="nav-group-title">BEHEER & SYSTEEM</li>
+                    <li id="nav-texts-desktop" class="nav-item" onclick="switchView('texts-view', this)">
+                        <i class="ph ph-translate"></i> Teksten Beheren
+                    </li>
                     <li id="nav-maintenance-desktop" class="nav-item" onclick="switchView('maintenance-view', this)">
                         <i class="ph ph-wrench"></i> Website Status
                     </li>
@@ -156,6 +162,11 @@
                     </li>
                     <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">
                         <i class="ph ph-activity"></i> Systeem Logs
+                    </li>
+
+                    <li class="nav-group-title">PUBLICATIE</li>
+                    <li id="nav-export-desktop" class="nav-item" onclick="switchView('export-view', this)">
+                        <i class="ph ph-rocket-launch"></i> Website Publiceren
                     </li>
                 </ul>
 
@@ -417,6 +428,141 @@
                                     <!-- Logs populated here -->
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEKSTEN BEHEREN VIEW -->
+                <div id="texts-view" class="dashboard-view">
+                    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <h1>Teksten Beheren</h1>
+                            <p>Beheer de dynamische vertalingen en website teksten (NL, DE, EN).</p>
+                        </div>
+                        <button class="eb2-action-btn eb2-btn-gold" onclick="saveTextTranslations()">
+                            <i class="ph ph-floppy-disk"></i> Opslaan
+                        </button>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;" id="texts-page-tabs">
+                        <button class="eb2-tab-btn active" onclick="switchTextPageTab('home', this)">Home</button>
+                        <button class="eb2-tab-btn" onclick="switchTextPageTab('lodge', this)">Lodge</button>
+                        <button class="eb2-tab-btn" onclick="switchTextPageTab('activities', this)">Activiteiten</button>
+                        <button class="eb2-tab-btn" onclick="switchTextPageTab('enjoyment', this)">Genieten</button>
+                        <button class="eb2-tab-btn" onclick="switchTextPageTab('booking', this)">Boeken</button>
+                        <button class="eb2-tab-btn" onclick="switchTextPageTab('global', this)">Algemeen</button>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button class="eb2-filter-btn active" onclick="switchLanguageTab('nl', this)">🇳🇱 NL</button>
+                        <button class="eb2-filter-btn" onclick="switchLanguageTab('en', this)">🇬🇧 EN</button>
+                        <button class="eb2-filter-btn" onclick="switchLanguageTab('de', this)">🇩🇪 DE</button>
+                    </div>
+
+                    <div class="eb2-section-card" style="padding: 24px;">
+                        <div id="texts-editor-container" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="text-align: center; color: #64748b; padding: 40px;">
+                                <div class="spinner" style="margin: 0 auto 15px;"></div>
+                                Teksten inladen...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WEBSITE PUBLICEREN / EXPORT VIEW -->
+                <div id="export-view" class="dashboard-view">
+                    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <h1>Website Publiceren</h1>
+                            <p>Genereer een razendsnelle, statische SEO-versie van de actuele website.</p>
+                        </div>
+                    </div>
+
+                    <div class="eb2-section-card" style="padding: 30px;">
+                        
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            
+                            <!-- STAP 1 -->
+                            <div style="display: flex; gap: 20px; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; flex-shrink: 0;">1</div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 10px 0; color: var(--text-dark);">Content Controleren</h3>
+                                    <p style="margin: 0 0 15px 0; color: #64748b; font-size: 0.95rem;">Controleer of alle teksten, prijzen en vaste afbeeldingen up-to-date zijn in het systeem. De export gebruikt de live-data.</p>
+                                    <button onclick="switchView('galleries-view', document.getElementById('nav-galleries-desktop'))" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 6px; cursor: pointer; color: #475569; font-weight: 500; transition: all 0.2s;"><i class="ph ph-image" style="margin-right: 5px;"></i> Ga naar Galerijen Beheren</button>
+                                </div>
+                            </div>
+
+                            <!-- STAP 2 -->
+                            <div style="display: flex; gap: 20px; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; flex-shrink: 0;">2</div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 10px 0; color: var(--text-dark);">Preview Genereren</h3>
+                                    <p style="margin: 0 0 15px 0; color: #64748b; font-size: 0.95rem;">Bekijk de huidige dynamische versie van de website om er zeker van te zijn dat alles er goed uitziet voordat je publiceert.</p>
+                                    <button onclick="window.open('../index.html', '_blank')" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 6px; cursor: pointer; color: #475569; font-weight: 500; transition: all 0.2s;"><i class="ph ph-eye" style="margin-right: 5px;"></i> Open Live Preview in nieuw tabblad</button>
+                                </div>
+                            </div>
+
+                            <!-- STAP 3 -->
+                            <div style="display: flex; gap: 20px; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; flex-shrink: 0;">3</div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 10px 0; color: var(--text-dark);">SEO Controleren</h3>
+                                    <p style="margin: 0 0 10px 0; color: #64748b; font-size: 0.95rem;">De exporter genereert automatisch unieke title-tags en sitemaps voor alle 3 de talen. Hieronder een preview van de gegenereerde titles:</p>
+                                    <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 0.85rem; color: #475569; font-family: monospace; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                        <div><strong>NL Home:</strong> Gipfel Lodge | Alpiner Luxus & Raum</div>
+                                        <div><strong>DE Home:</strong> Gipfel Lodge | Alpiner Luxus & Raum</div>
+                                        <div><strong>NL Lodge:</strong> De Lodge | Gipfel Lodge Eben im Pongau</div>
+                                        <div><strong>DE Lodge:</strong> Die Lodge | Gipfel Lodge Eben im Pongau</div>
+                                        <div><strong>NL Activiteiten:</strong> Activiteiten | Ski Amadé & Zomer Alpen</div>
+                                        <div><strong>EN Lodge:</strong> The Lodge | Gipfel Lodge Eben im Pongau</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STAP 4 -->
+                            <div style="display: flex; gap: 20px; align-items: flex-start; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; flex-shrink: 0;">4</div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 10px 0; color: var(--text-dark);">Website Exporteren</h3>
+                                    <p style="margin: 0 0 15px 0; color: #64748b; font-size: 0.95rem;">Start de SSG (Static Site Generation). We genereren automatisch razendsnelle HTML-bestanden met ingebouwde teksten en SEO-tags voor elke taal. Je ontvangt direct een kleine ZIP-download met de nieuwe bestandsstructuur.</p>
+                                    
+                                    <button id="btn-run-export" onclick="startStaticExport()" style="background: var(--gold); color: #fff; border: none; padding: 12px 24px; font-size: 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; transition: background 0.3s; box-shadow: 0 4px 6px -1px rgba(197,160,89, 0.3);">
+                                        <i class="ph ph-rocket-launch" style="font-size: 1.2rem;"></i> Start Statische Export
+                                    </button>
+                                    
+                                    <div id="export-status" style="margin-top: 15px; font-size: 0.95rem; color: #64748b; font-weight: 500; display: none;">
+                                        Initialiseren...
+                                    </div>
+                                    <div id="export-progress-bar" style="margin-top: 10px; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; display: none; width: 100%; max-width: 400px;">
+                                        <div id="export-progress-fill" style="width: 0%; height: 100%; background: var(--gold); transition: width 0.2s ease;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- STAP 5 -->
+                            <div style="display: flex; gap: 20px; align-items: flex-start;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--gold); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; flex-shrink: 0;">5</div>
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 10px 0; color: var(--text-dark);">Uploadinstructies Bekijken</h3>
+                                    <p style="margin: 0 0 10px 0; color: #64748b; font-size: 0.95rem;">Wat moet ik doen met het gedownloade `.zip` bestand?</p>
+                                    <div style="background: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <ol style="margin: 0; padding-left: 20px; color: #475569; line-height: 1.6; font-size: 0.9rem;">
+                                            <li>Log in op <strong>SiteGround Site Tools</strong> via je hosting account.</li>
+                                            <li>Navigeer in het linkermenu naar <strong>Site -> File Manager</strong>.</li>
+                                            <li>Open de map <strong>public_html</strong>.</li>
+                                            <li>Pak de gedownloade ZIP lokaal uit op je computer. Je ziet mappen zoals <code>nl/</code>, <code>de/</code>, <code>en/</code> en bestanden zoals <code>index.html</code>.</li>
+                                            <li>Sleep de <strong>inhoud</strong> van de map (alle bestanden en mapjes) naar de File Manager in de browser.</li>
+                                            <li>Kies voor <strong>Overschrijven / Overwrite</strong> als SiteGround vraagt wat te doen met bestaande bestanden.</li>
+                                            <li>Klaar! De website is direct online geüpdatet.</li>
+                                        </ol>
+                                        <div style="margin-top: 15px; padding: 10px; background: #e0f2fe; color: #0369a1; border-radius: 6px; font-size: 0.85rem; display: flex; gap: 10px; align-items: center;">
+                                            <i class="ph ph-info" style="font-size: 1.2rem;"></i>
+                                            <span><strong>Let op:</strong> De <code>assets</code> map met foto's zit expres niet in de ZIP. Deze staat namelijk al op SiteGround. Zorg dat je de bestaande assets map op de server niet verwijdert.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -1359,6 +1505,8 @@
     <script src="js/admin_js/admin-invoices.js"></script>
     <script src="js/admin_js/admin-behavior.js"></script>
     <script src="js/admin_js/admin-galleries.js"></script>
+    <script src="js/admin_js/admin-texts.js"></script>
+    <script src="js/admin_js/admin-export.js"></script>
     <!-- Toast Notification Container -->
     <div id="eb-toast-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
 

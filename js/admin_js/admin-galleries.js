@@ -16,8 +16,13 @@ const GALLERY_PAGES = [
         zones: ['lodge_top_carousel', 'lodge_mini_ug', 'lodge_mini_1og', 'lodge_mini_2og', 'lodge_gallery']
     },
     {
-        id: '_single',
-        label: '🖼️ Vaste Afbeeldingen',
+        id: 'activities',
+        label: '🎿 Activiteiten',
+        zones: []
+    },
+    {
+        id: 'enjoyment',
+        label: '🍷 Genieten',
         zones: []
     }
 ];
@@ -39,42 +44,47 @@ const GALLERY_ZONES = {
  */
 const SINGLE_IMAGES = [
     // Home
-    { key: 'hero-slide-1',       label: 'Home Hero — Slide 1 (Winter)',         page: 'Home' },
-    { key: 'hero-slide-2',       label: 'Home Hero — Slide 2 (Zomer)',          page: 'Home' },
-    { key: 'home-accommodatie-1', label: 'Home Accommodatie — Woonkamer',        page: 'Home' },
-    { key: 'home-accommodatie-2', label: 'Home Accommodatie — Keuken',           page: 'Home' },
-    { key: 'home-accommodatie-3', label: 'Home Accommodatie — Slaapkamer',       page: 'Home' },
-    { key: 'home-accommodatie-4', label: 'Home Accommodatie — Terras',           page: 'Home' },
-    { key: 'home-accommodatie-5', label: 'Home Accommodatie — Badkamer',         page: 'Home' },
-    { key: 'home-accommodatie-6', label: 'Home Accommodatie — Gang',             page: 'Home' },
-    { key: 'home-act-1',          label: 'Home Activiteiten — Skiën',            page: 'Home' },
-    { key: 'home-act-2',          label: 'Home Activiteiten — Wandelen',         page: 'Home' },
-    { key: 'home-act-3',          label: 'Home Activiteiten — Sauna',            page: 'Home' },
-    { key: 'home-act-4',          label: 'Home Activiteiten — Natuur',           page: 'Home' },
-    { key: 'home-act-5',          label: 'Home Activiteiten — Omgeving',         page: 'Home' },
-    { key: 'booking-cta-bg',      label: 'Home Boekings CTA — Achtergrond',      page: 'Home' },
+    { key: 'hero-slide-1',       label: 'Home Hero — Slide 1 (Winter)',         page: 'home' },
+    { key: 'hero-slide-2',       label: 'Home Hero — Slide 2 (Zomer)',          page: 'home' },
+    { key: 'home-accommodatie-1', label: 'Home Accommodatie — Woonkamer',        page: 'home' },
+    { key: 'home-accommodatie-2', label: 'Home Accommodatie — Keuken',           page: 'home' },
+    { key: 'home-accommodatie-3', label: 'Home Accommodatie — Slaapkamer',       page: 'home' },
+    { key: 'home-accommodatie-4', label: 'Home Accommodatie — Terras',           page: 'home' },
+    { key: 'home-accommodatie-5', label: 'Home Accommodatie — Badkamer',         page: 'home' },
+    { key: 'home-accommodatie-6', label: 'Home Accommodatie — Gang',             page: 'home' },
+    { key: 'home-act-1',          label: 'Home Activiteiten — Skiën',            page: 'home' },
+    { key: 'home-act-2',          label: 'Home Activiteiten — Wandelen',         page: 'home' },
+    { key: 'home-act-3',          label: 'Home Activiteiten — Sauna',            page: 'home' },
+    { key: 'home-act-4',          label: 'Home Activiteiten — Natuur',           page: 'home' },
+    { key: 'home-act-5',          label: 'Home Activiteiten — Omgeving',         page: 'home' },
+    { key: 'booking-cta-bg',      label: 'Home Boekings CTA — Achtergrond',      page: 'home' },
     // Lodge
-    { key: 'lodge-cta-bg',        label: 'Lodge CTA — Achtergrond',             page: 'Lodge' },
+    { key: 'lodge-cta-bg',        label: 'Lodge CTA — Achtergrond',             page: 'lodge' },
     // Activities
-    { key: 'activities-hero-bg',  label: 'Activiteiten Hero — Achtergrond',     page: 'Activiteiten' },
-    { key: 'activities-cta-bg',   label: 'Activiteiten CTA — Achtergrond',      page: 'Activiteiten' },
+    { key: 'activities-hero-bg',  label: 'Activiteiten Hero — Achtergrond',     page: 'activities' },
+    { key: 'activities-cta-bg',   label: 'Activiteiten CTA — Achtergrond',      page: 'activities' },
     // Enjoyment
-    { key: 'enjoyment-hero-bg',   label: 'Genieten Hero — Achtergrond',         page: 'Genieten' },
-    { key: 'enjoyment-cta-bg',    label: 'Genieten CTA — Achtergrond',          page: 'Genieten' },
-    { key: 'enjoyment-loc-1',     label: 'Genieten Locatie 1 — Hofstadl (Lunch)',  page: 'Genieten' },
-    { key: 'enjoyment-loc-2',     label: 'Genieten Locatie 2 — Café Freiraum',  page: 'Genieten' },
-    { key: 'enjoyment-loc-3',     label: 'Genieten Locatie 3 — Bakkerij',       page: 'Genieten' },
-    { key: 'enjoyment-loc-4',     label: 'Genieten Locatie 4 — Jandlalm',       page: 'Genieten' },
-    { key: 'enjoyment-loc-5',     label: 'Genieten Locatie 5 — Römerkeller',    page: 'Genieten' },
+    { key: 'enjoyment-hero-bg',   label: 'Genieten Hero — Achtergrond',         page: 'enjoyment' },
+    { key: 'enjoyment-cta-bg',    label: 'Genieten CTA — Achtergrond',          page: 'enjoyment' },
+    { key: 'enjoyment-loc-1',     label: 'Genieten Locatie 1 — Hofstadl (Lunch)',  page: 'enjoyment' },
+    { key: 'enjoyment-loc-2',     label: 'Genieten Locatie 2 — Café Freiraum',  page: 'enjoyment' },
+    { key: 'enjoyment-loc-3',     label: 'Genieten Locatie 3 — Bakkerij',       page: 'enjoyment' },
+    { key: 'enjoyment-loc-4',     label: 'Genieten Locatie 4 — Jandlalm',       page: 'enjoyment' },
+    { key: 'enjoyment-loc-5',     label: 'Genieten Locatie 5 — Römerkeller',    page: 'enjoyment' }
 ];
 
 let _allImages = [];
 let _galleryConfig = {};
-let _singleImagesConfig = {}; // { key: url } from settings/single_images
 let _activePageId = null;
 let _activeModalZoneId = null;
 let _activeSingleKey = null;  // key being edited in single-image picker
 let _galleryFilter = '';
+
+function getImgSrc(item) { return item ? (typeof item === 'string' ? item : item.src || '') : ''; }
+function getImgAlt(item, lang = 'nl') { return (item && typeof item === 'object' && item.alt) ? (item.alt[lang] || '') : ''; }
+function getImgCaption(item, lang = 'nl') { return (item && typeof item === 'object' && item.caption) ? (item.caption[lang] || '') : ''; }
+function createImgObj(src) { return { src: src, alt: { nl: '', de: '', en: '' }, caption: { nl: '', de: '', en: '' } }; }
+
 
 /* ─────────────────────────────────────────────────────────────
    INIT & LOAD
@@ -82,7 +92,6 @@ let _galleryFilter = '';
 window.initGalleriesView = async function () {
     renderPageTabs();
     await loadGalleryConfig();
-    await loadSingleImagesConfig();
     await loadAllImages();
     selectPage(GALLERY_PAGES[0].id);
 };
@@ -123,22 +132,27 @@ async function loadGalleryConfig() {
         const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
         const snap = await getDoc(doc(db, 'settings', 'galleries'));
         _galleryConfig = snap.exists() ? (snap.data().zones || {}) : {};
+        
+        let migrated = false;
+        for (const [key, val] of Object.entries(_galleryConfig)) {
+            if (Array.isArray(val)) {
+                _galleryConfig[key] = val.map(item => {
+                    if (typeof item === 'string') {
+                        migrated = true;
+                        return createImgObj(item);
+                    }
+                    return item;
+                });
+            }
+        }
+        if (migrated) console.log('[galleries] Migrated some images to object format.');
     } catch (e) {
         console.warn('[galleries] Could not load gallery config:', e);
         _galleryConfig = {};
     }
 }
 
-async function loadSingleImagesConfig() {
-    try {
-        const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
-        const snap = await getDoc(doc(db, 'settings', 'single_images'));
-        _singleImagesConfig = snap.exists() ? (snap.data().images || {}) : {};
-    } catch (e) {
-        console.warn('[galleries] Could not load single_images config:', e);
-        _singleImagesConfig = {};
-    }
-}
+// loadSingleImagesConfig removed
 
 window.refreshImages = async function () {
     const btn = document.getElementById('galleries-refresh-btn');
@@ -161,14 +175,9 @@ window.saveGalleryConfig = async function () {
 
     try {
         const { db, doc, setDoc } = await import('../site_js/core/firebase.js');
-        // Save gallery zones
+        // Save gallery zones (now includes single images as well)
         await setDoc(doc(db, 'settings', 'galleries'), {
             zones: _galleryConfig,
-            updatedAt: new Date().toISOString()
-        });
-        // Save single images
-        await setDoc(doc(db, 'settings', 'single_images'), {
-            images: _singleImagesConfig,
             updatedAt: new Date().toISOString()
         });
         showToast('Galerijen opgeslagen', 'De afbeeldingsselectie is bijgewerkt.', 'success');
@@ -204,41 +213,69 @@ function renderZonesForPage(pageId) {
     const container = document.getElementById('gallery-zones-container');
     if (!container) return;
 
-    // Special page: single images
-    if (pageId === '_single') {
-        renderSingleImagesGrid(container);
-        return;
-    }
-
     const page = GALLERY_PAGES.find(p => p.id === pageId);
     if (!page) return;
 
-    container.innerHTML = page.zones.map(zoneId => {
-        const zoneInfo = GALLERY_ZONES[zoneId];
-        const images = _galleryConfig[zoneId] || [];
-        
-        // Show up to 4 previews
-        const previews = images.slice(0, 4).map(src => `<img src="${src}" style="width:100%; height:80px; object-fit:cover; border-radius:4px;">`).join('');
-        const previewHtml = images.length > 0 
-            ? `<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:15px;">${previews}</div>`
-            : `<div style="margin-top:15px; height:80px; background:#f1f5f9; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:0.8rem;">Geen foto's ingesteld</div>`;
+    let zonesHtml = '';
+    if (page.zones.length > 0) {
+        zonesHtml += `<div style="grid-column:1/-1; margin-top:10px; margin-bottom:10px;"><h3 style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; font-weight:700; margin:0; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Carousels & Galerijen</h3></div>`;
+        zonesHtml += page.zones.map(zoneId => {
+            const zoneInfo = GALLERY_ZONES[zoneId];
+            const images = _galleryConfig[zoneId] || [];
+            
+            // Show up to 4 previews
+            const previews = images.slice(0, 4).map(item => `<img src="${getImgSrc(item)}" style="width:100%; height:80px; object-fit:cover; border-radius:4px;">`).join('');
+            const previewHtml = images.length > 0 
+                ? `<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:15px;">${previews}</div>`
+                : `<div style="margin-top:15px; height:80px; background:#f1f5f9; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:0.8rem;">Geen foto's ingesteld</div>`;
 
-        return `
-            <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column;">
-                <div style="flex:1;">
-                    <h3 style="margin:0 0 5px 0; font-size:1.1rem; color:#1e293b;">${zoneInfo.label}</h3>
-                    <p style="margin:0; font-size:0.85rem; color:#64748b;">${zoneInfo.description}</p>
-                    <div style="margin-top:10px; font-size:0.8rem; font-weight:600; color:var(--color-gold);">
-                        ${images.length} foto's gebruikt
+            return `
+                <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column;">
+                    <div style="flex:1;">
+                        <h3 style="margin:0 0 5px 0; font-size:1.1rem; color:#1e293b;">${zoneInfo.label}</h3>
+                        <p style="margin:0; font-size:0.85rem; color:#64748b;">${zoneInfo.description}</p>
+                        <div style="margin-top:10px; font-size:0.8rem; font-weight:600; color:var(--color-gold);">
+                            ${images.length} foto's gebruikt
+                        </div>
+                        ${previewHtml}
                     </div>
-                    ${previewHtml}
+                    <button class="eb2-action-btn eb2-btn-secondary" style="width:100%; margin-top:20px; justify-content:center;" onclick="openGalleryEditor('${zoneId}')">
+                        <i class="ph ph-pencil-simple"></i> Foto's Beheren
+                    </button>
                 </div>
-                <button class="eb2-action-btn eb2-btn-secondary" style="width:100%; margin-top:20px; justify-content:center;" onclick="openGalleryEditor('${zoneId}')">
-                    <i class="ph ph-pencil-simple"></i> Foto's Beheren
-                </button>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
+    }
+
+    // Now render single images for this page
+    const pageSingleImages = SINGLE_IMAGES.filter(img => img.page === pageId);
+    let singleHtml = '';
+    
+    if (pageSingleImages.length > 0) {
+        singleHtml += `<div style="grid-column:1/-1; margin-top:20px; margin-bottom:10px;"><h3 style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; font-weight:700; margin:0; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Vaste Afbeeldingen</h3></div>`;
+        singleHtml += pageSingleImages.map(item => {
+            const itemObj = (_galleryConfig[item.key] && _galleryConfig[item.key][0]) ? _galleryConfig[item.key][0] : null;
+            const currentSrc = getImgSrc(itemObj);
+            const preview = currentSrc
+                ? `<img src="${currentSrc}" style="width:100%; height:120px; object-fit:cover; border-radius:6px 6px 0 0; display:block;">`
+                : `<div style="width:100%; height:120px; background:#f1f5f9; border-radius:6px 6px 0 0; display:flex; align-items:center; justify-content:center;"><i class="ph ph-image" style="font-size:2rem; color:#cbd5e1;"></i></div>`;
+            return `
+            <div style="background:white; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; flex-direction:column;">
+                ${preview}
+                <div style="padding:12px 14px; flex:1;">
+                    <h4 style="margin:0; font-size:0.9rem; color:#1e293b; font-weight:600; line-height:1.3;">${item.label}</h4>
+                    <div style="margin-top:6px; font-size:0.7rem; color:#94a3b8; font-family:monospace; background:#f8fafc; padding:2px 6px; border-radius:4px; display:inline-block;">key: ${item.key}</div>
+                </div>
+                <div style="padding:10px 14px; border-top:1px solid #f1f5f9; background:#f8fafc;">
+                    <button class="eb2-action-btn eb2-btn-secondary" style="width:100%; font-size:0.8rem; padding:8px;" onclick="openSingleImagePicker('${item.key}')">
+                        <i class="ph ph-image"></i> Kies Foto
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    container.innerHTML = zonesHtml + singleHtml;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -256,7 +293,8 @@ function renderSingleImagesGrid(container) {
     for (const [pageName, items] of Object.entries(grouped)) {
         html += `<div style="grid-column:1/-1; margin-top:10px; margin-bottom:4px;"><h3 style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:#94a3b8; font-weight:700; margin:0;">${pageName}</h3></div>`;
         html += items.map(item => {
-            const currentSrc = _singleImagesConfig[item.key] || '';
+            const itemObj = (_galleryConfig[item.key] && _galleryConfig[item.key][0]) ? _galleryConfig[item.key][0] : null;
+            const currentSrc = getImgSrc(itemObj);
             const preview = currentSrc
                 ? `<img src="${currentSrc}" style="width:100%; height:120px; object-fit:cover; border-radius:6px 6px 0 0; display:block;">`
                 : `<div style="width:100%; height:120px; background:#f1f5f9; border-radius:6px 6px 0 0; display:flex; align-items:center; justify-content:center;"><i class="ph ph-image" style="font-size:2rem; color:#cbd5e1;"></i></div>`;
@@ -279,6 +317,28 @@ function renderSingleImagesGrid(container) {
     container.innerHTML = html;
 }
 
+window.renderSingleEditorSelected = function() {
+    if (!_activeSingleKey) return;
+    const selectedContainer = document.getElementById('gallery-editor-selected');
+    const item = _galleryConfig[_activeSingleKey] ? _galleryConfig[_activeSingleKey][0] : null;
+    const currentSrc = getImgSrc(item);
+    const hasSeo = (getImgAlt(item, 'nl') || getImgAlt(item, 'de') || getImgAlt(item, 'en')) ? 'var(--color-gold)' : '#cbd5e1';
+    
+    selectedContainer.style.gridTemplateColumns = '1fr';
+    if (currentSrc) {
+        selectedContainer.innerHTML = `
+            <div style="position:relative; background:white; border-radius:6px; overflow:hidden; border:2px solid var(--color-gold);">
+                <img src="${currentSrc}" style="width:100%; height:160px; object-fit:cover; display:block;">
+                <button onclick="openSeoModal(0)" style="position:absolute; top:4px; right:4px; background:white; color:${hasSeo}; border:1px solid ${hasSeo}; border-radius:4px; padding:4px 8px; font-size:0.8rem; cursor:pointer; display:flex; align-items:center; gap:5px; z-index: 10;" title="SEO & Alt Teksten">
+                    <i class="ph ph-text-aa"></i> SEO / Alt
+                </button>
+                <div style="padding:8px; text-align:center; font-size:0.8rem; color:#64748b;">Huidige afbeelding</div>
+            </div>`;
+    } else {
+        selectedContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;"><i class="ph ph-image" style="font-size:2rem; margin-bottom:10px; display:block;"></i>Nog geen afbeelding ingesteld.</div>`;
+    }
+};
+
 window.openSingleImagePicker = function (key) {
     _activeSingleKey = key;
     const item = SINGLE_IMAGES.find(i => i.key === key);
@@ -286,19 +346,7 @@ window.openSingleImagePicker = function (key) {
     document.getElementById('gallery-editor-title').textContent = (item ? item.label : key) + ' — Afbeelding Kiezen';
     document.getElementById('gallery-editor-count').textContent = 'Kies één afbeelding uit de bibliotheek';
 
-    // Show a single-image selected preview panel
-    const selectedContainer = document.getElementById('gallery-editor-selected');
-    const currentSrc = _singleImagesConfig[key] || '';
-    selectedContainer.style.gridTemplateColumns = '1fr';
-    if (currentSrc) {
-        selectedContainer.innerHTML = `
-            <div style="position:relative; background:white; border-radius:6px; overflow:hidden; border:2px solid var(--color-gold);">
-                <img src="${currentSrc}" style="width:100%; height:160px; object-fit:cover; display:block;">
-                <div style="padding:8px; text-align:center; font-size:0.8rem; color:#64748b;">Huidige afbeelding</div>
-            </div>`;
-    } else {
-        selectedContainer.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;"><i class="ph ph-image" style="font-size:2rem; margin-bottom:10px; display:block;"></i>Nog geen afbeelding ingesteld.</div>`;
-    }
+    renderSingleEditorSelected();
 
     document.getElementById('gallery-pages-container').style.display = 'none';
     document.getElementById('gallery-zones-container').style.display = 'none';
@@ -319,7 +367,8 @@ function renderSingleImageLibrary() {
         return;
     }
 
-    const currentSrc = _singleImagesConfig[_activeSingleKey] || '';
+    const itemObj = (_galleryConfig[_activeSingleKey] && _galleryConfig[_activeSingleKey][0]) ? _galleryConfig[_activeSingleKey][0] : null;
+    const currentSrc = getImgSrc(itemObj);
     grid.innerHTML = filtered.map(src => {
         const isSelected = currentSrc === src;
         return `
@@ -333,7 +382,13 @@ function renderSingleImageLibrary() {
 
 window.selectSingleImage = function (src) {
     if (!_activeSingleKey) return;
-    _singleImagesConfig[_activeSingleKey] = src;
+    const currentObj = _galleryConfig[_activeSingleKey] ? _galleryConfig[_activeSingleKey][0] : null;
+    const newObj = createImgObj(src);
+    if (currentObj && typeof currentObj === 'object') {
+        newObj.alt = currentObj.alt || newObj.alt;
+        newObj.caption = currentObj.caption || newObj.caption;
+    }
+    _galleryConfig[_activeSingleKey] = [newObj];
 
     // Update the selected preview
     const selectedContainer = document.getElementById('gallery-editor-selected');
@@ -343,12 +398,12 @@ window.selectSingleImage = function (src) {
             <div style="padding:8px; text-align:center; font-size:0.8rem; color:#64748b;">Geselecteerd ✔</div>
         </div>`;
 
-    renderSingleImageLibrary(); // Update active states
+    renderSingleEditorSelected(); renderSingleImageLibrary(); // Update active states
 };
 
 window.removeSingleImage = function (key) {
-    delete _singleImagesConfig[key];
-    renderSingleImagesGrid(document.getElementById('gallery-zones-container'));
+    delete _galleryConfig[key];
+    renderZonesForPage(_activePageId);
 };
 
 /* ─────────────────────────────────────────────────────────────
@@ -395,17 +450,23 @@ function renderEditorSelected() {
         return;
     }
 
-    container.innerHTML = images.map((src, idx) => `
+    container.innerHTML = images.map((item, idx) => {
+        const src = getImgSrc(item);
+        const hasSeo = (getImgAlt(item, 'nl') || getImgAlt(item, 'de') || getImgAlt(item, 'en')) ? 'var(--color-gold)' : '#cbd5e1';
+        return `
         <div class="zone-img-card" data-src="${src}" draggable="true" style="position:relative; background:white; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1; cursor:move;">
             <img src="${src}" style="width:100%; height:90px; object-fit:cover; display:block;" loading="lazy">
-            <button onclick="removeImageFromEditor(${idx})" style="position:absolute; top:4px; right:4px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:4px; width:24px; height:24px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+            <button onclick="removeImageFromEditor(${idx})" style="position:absolute; top:4px; right:4px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:4px; width:24px; height:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index: 10;">
                 <i class="ph ph-x"></i>
+            </button>
+            <button onclick="openSeoModal(${idx})" style="position:absolute; top:4px; left:4px; background:white; color:${hasSeo}; border:1px solid ${hasSeo}; border-radius:4px; width:24px; height:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index: 10;" title="SEO & Alt Teksten">
+                <i class="ph ph-text-aa"></i>
             </button>
             <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.5); color:white; font-size:0.7rem; padding:4px; text-align:center;">
                 Positie ${idx + 1}
             </div>
         </div>
-    `).join('');
+    `}).join('');
 
     initEditorSortable();
 }
@@ -423,7 +484,7 @@ function renderEditorLibrary() {
     }
 
     grid.innerHTML = filtered.map(src => {
-        const isUsed = (_galleryConfig[_activeModalZoneId] || []).includes(src);
+        const isUsed = (_galleryConfig[_activeModalZoneId] || []).some(item => getImgSrc(item) === src);
         return `
             <div onclick="addImageToEditor('${src}')" style="position:relative; border-radius:6px; overflow:hidden; cursor:pointer; border:2px solid ${isUsed ? 'var(--color-gold)' : 'transparent'}; opacity:${isUsed ? '0.6' : '1'};">
                 <img src="${src}" style="width:100%; height:120px; object-fit:cover; display:block;" loading="lazy">
@@ -442,9 +503,9 @@ window.addImageToEditor = function (src) {
     if (!_galleryConfig[_activeModalZoneId]) _galleryConfig[_activeModalZoneId] = [];
     
     // Don't add duplicates
-    if (_galleryConfig[_activeModalZoneId].includes(src)) return;
+    if (_galleryConfig[_activeModalZoneId].some(item => getImgSrc(item) === src)) return;
 
-    _galleryConfig[_activeModalZoneId].push(src);
+    _galleryConfig[_activeModalZoneId].push(createImgObj(src));
     renderEditorSelected();
     renderEditorLibrary(); // Update active states
 };
@@ -503,3 +564,92 @@ function initEditorSortable() {
         });
     });
 }
+
+/* ─────────────────────────────────────────────────────────────
+   SEO MODAL LOGIC
+   ───────────────────────────────────────────────────────────── */
+window.openSeoModal = function (idx) {
+    // Determine if we're editing a zone array or a single key
+    const isSingle = !!_activeSingleKey;
+    const keyToEdit = isSingle ? _activeSingleKey : _activeModalZoneId;
+    if (!keyToEdit || !_galleryConfig[keyToEdit] || !_galleryConfig[keyToEdit][idx]) return;
+
+    const item = _galleryConfig[keyToEdit][idx];
+    
+    // Inject the modal into DOM if it doesn't exist
+    if (!document.getElementById('seo-modal')) {
+        const div = document.createElement('div');
+        div.id = 'seo-modal';
+        div.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:9999; display:flex; align-items:center; justify-content:center;';
+        document.body.appendChild(div);
+    }
+    
+    const modal = document.getElementById('seo-modal');
+    modal.style.display = 'flex';
+    
+    modal.innerHTML = `
+        <div style="background:white; border-radius:12px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; padding:25px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0; font-size:1.2rem;">SEO & Alt Teksten</h3>
+                <button onclick="document.getElementById('seo-modal').style.display='none'" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            
+            <div style="display:flex; gap:15px; margin-bottom:20px;">
+                <img src="${getImgSrc(item)}" style="width:120px; height:80px; object-fit:cover; border-radius:6px;">
+                <p style="font-size:0.8rem; color:#64748b;">Voeg alternatieve teksten (Alt-tags) toe voor zoekmachines en blinden/slechtzienden. Dit verbetert je vindbaarheid in Google Afbeeldingen.</p>
+            </div>
+            
+            <h4 style="margin:15px 0 10px; font-size:0.95rem;">Alt Teksten (Verplicht voor goede SEO)</h4>
+            <div style="display:grid; gap:10px;">
+                <div><label style="font-size:0.8rem; font-weight:600;">🇳🇱 Nederlands</label><input type="text" id="seo-alt-nl" value="${getImgAlt(item, 'nl')}" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:4px;"></div>
+                <div><label style="font-size:0.8rem; font-weight:600;">🇩🇪 Duits</label><input type="text" id="seo-alt-de" value="${getImgAlt(item, 'de')}" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:4px;"></div>
+                <div><label style="font-size:0.8rem; font-weight:600;">🇬🇧 Engels</label><input type="text" id="seo-alt-en" value="${getImgAlt(item, 'en')}" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:4px;"></div>
+            </div>
+
+            <h4 style="margin:20px 0 10px; font-size:0.95rem;">Onderschrift / Caption (Optioneel)</h4>
+            <div style="display:grid; gap:10px;">
+                <div><label style="font-size:0.8rem; font-weight:600;">🇳🇱 Nederlands</label><input type="text" id="seo-cap-nl" value="${getImgCaption(item, 'nl')}" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:4px;"></div>
+                <div><label style="font-size:0.8rem; font-weight:600;">🇩🇪 Duits</label><input type="text" id="seo-cap-de" value="${getImgCaption(item, 'de')}" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:4px;"></div>
+                <div><label style="font-size:0.8rem; font-weight:600;">🇬🇧 Engels</label><input type="text" id="seo-cap-en" value="${getImgCaption(item, 'en')}" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:4px;"></div>
+            </div>
+            
+            <div style="margin-top:25px; text-align:right;">
+                <button onclick="saveSeoModal(${isSingle}, '${keyToEdit}', ${idx})" class="eb2-action-btn eb2-btn-primary" style="display:inline-flex;">
+                    <i class="ph ph-check"></i> Opslaan
+                </button>
+            </div>
+        </div>
+    `;
+};
+
+window.saveSeoModal = function (isSingle, keyToEdit, idx) {
+    if (!_galleryConfig[keyToEdit] || !_galleryConfig[keyToEdit][idx]) return;
+    
+    const item = _galleryConfig[keyToEdit][idx];
+    
+    // Ensure it's an object
+    if (typeof item === 'string') {
+        _galleryConfig[keyToEdit][idx] = createImgObj(item);
+    }
+    
+    const obj = _galleryConfig[keyToEdit][idx];
+    if (!obj.alt) obj.alt = {};
+    if (!obj.caption) obj.caption = {};
+    
+    obj.alt.nl = document.getElementById('seo-alt-nl').value;
+    obj.alt.de = document.getElementById('seo-alt-de').value;
+    obj.alt.en = document.getElementById('seo-alt-en').value;
+    
+    obj.caption.nl = document.getElementById('seo-cap-nl').value;
+    obj.caption.de = document.getElementById('seo-cap-de').value;
+    obj.caption.en = document.getElementById('seo-cap-en').value;
+    
+    document.getElementById('seo-modal').style.display = 'none';
+    
+    // Refresh views to show the gold icon if SEO is filled
+    if (isSingle) {
+        renderSingleEditorSelected();
+    } else {
+        renderEditorSelected();
+    }
+};

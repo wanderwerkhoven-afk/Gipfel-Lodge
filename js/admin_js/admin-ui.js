@@ -77,6 +77,8 @@
                 initPricingView();
             } else if (viewId === 'carousel-view') {
                 loadCarouselView();
+            } else if (viewId === 'texts-view') {
+                if (typeof initTextsView === 'function') initTextsView();
             } else if (viewId === 'galleries-view') {
                 if (typeof initGalleriesView === 'function') initGalleriesView();
             } else if (viewId === 'invoices-view') {
