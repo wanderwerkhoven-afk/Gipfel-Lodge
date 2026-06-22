@@ -55,6 +55,9 @@ window.initTextsView = async function() {
 };
 
 window.switchTextPageTab = function(page, btnElement) {
+    // Save current values to local object BEFORE switching to preserve unsaved changes
+    saveCurrentTabToOverrides();
+
     _activePage = page;
     
     // Update active button state
@@ -62,22 +65,19 @@ window.switchTextPageTab = function(page, btnElement) {
     btns.forEach(btn => btn.classList.remove('active'));
     btnElement.classList.add('active');
 
-    // Save current values to local object before switching to preserve unsaved changes across tabs
-    saveCurrentTabToOverrides();
-
     renderTextsEditor();
 };
 
 window.switchLanguageTab = function(lang, btnElement) {
+    // Save current values to local object BEFORE switching lang to preserve unsaved changes in the correct language
+    saveCurrentTabToOverrides();
+
     _activeLang = lang;
     
     // Update active button state
     const btns = btnElement.parentElement.querySelectorAll('.eb2-filter-btn');
     btns.forEach(btn => btn.classList.remove('active'));
     btnElement.classList.add('active');
-
-    // Save current values to local object before switching to preserve unsaved changes across tabs
-    saveCurrentTabToOverrides();
 
     renderTextsEditor();
 };
