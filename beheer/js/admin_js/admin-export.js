@@ -38,16 +38,18 @@ async function startStaticExport() {
         }
         progressFill.style.width = '10%';
 
-        // 4. Lees het site-manifest (staat in js/site-manifest.json naast de admin)
+        // 4. Lees het site-manifest (staat in siteground_upload/js/site-manifest.json)
         statusDiv.innerText = 'Bestandsmanifest ophalen...';
-        const manifestResp = await fetch('js/site-manifest.json').catch(() => null);
+        
+        // Bepaal de base URL van siteground_upload
+        const sgBase = getSitegroundBase();
+        
+        const manifestResp = await fetch(sgBase + 'js/site-manifest.json').catch(() => null);
         if (!manifestResp || !manifestResp.ok) throw new Error('Kon site-manifest.json niet ophalen. Voer eerst npm run build:siteground uit.');
         const fileList = await manifestResp.json();
         progressFill.style.width = '15%';
 
-        // 5. Bepaal de base URL van siteground_upload (sibling van beheer/)
-        const sgBase = getSitegroundBase();
-        statusDiv.innerText = `Bestanden kopiëren (${fileList.length} bestanden)...`;
+        // 5. Kopieer alle statische bestanden (CSS, JS, assets, favicons etc.) naar ZIP
         let copied = 0;
         const batchSize = 10; // parallel downloads per batch
 
@@ -220,9 +222,21 @@ async function startStaticExport() {
  */
 function getSitegroundBase() {
     const loc = window.location;
-    // Verwijder /beheer/ segment en plak /siteground_upload/ eraan
-    const beforeBeheer = loc.href.replace(/\/beheer(\/[^?#]*)?([?#].*)?$/, '/');
-    return beforeBeheer + 'siteground_upload/';
+    let pathname = loc.pathname;
+    
+    // Bepaal de root directory door de bestandsnaam eraf te halen (als die er is)
+    let base = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+    
+    // Als we in /beheer/ zitten, gaan we 1 niveau omhoog
+    if (base.endsWith('/beheer/')) {
+        base = base.substring(0, base.length - 'beheer/'.length);
+    } 
+    // Specifieke check voor GitHub Pages zonder .html extensie (bijv. /Gipfel-Lodge/admin)
+    else if (pathname.endsWith('/admin')) {
+        base = pathname.substring(0, pathname.length - 'admin'.length);
+    }
+    
+    return loc.origin + base + 'siteground_upload/';
 }
 
 /**

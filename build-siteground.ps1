@@ -223,7 +223,8 @@ Copy-Item "$Root\list-images.php" "$Beheer\list-images.php" -ErrorAction Silentl
 Write-Ok "list-images.php"
 
 # -- Site-manifest.json (nodig voor statische export vanuit admin panel) --
-$manifestSrc = Join-Path $Dist "js\site-manifest.json"
+$sgDist = Join-Path $Root "siteground_upload"
+$manifestSrc = Join-Path $sgDist "js\site-manifest.json"
 if (Test-Path $manifestSrc) {
     Copy-Item $manifestSrc "$beheerJs\site-manifest.json"
     Write-Ok "js/site-manifest.json (gekopieerd van siteground_upload/)"
