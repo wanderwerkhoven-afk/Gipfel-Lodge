@@ -110,13 +110,13 @@ function ensureDefaultTranslationsLoaded() {
         }
         
         const scripts = [
-            '../js/site_js/i18n/i18n_core.js',
-            '../js/site_js/i18n/i18n_global.js',
-            '../js/site_js/i18n/i18n_home.js',
-            '../js/site_js/i18n/i18n_lodge.js',
-            '../js/site_js/i18n/i18n_activities.js',
-            '../js/site_js/i18n/i18n_enjoyment.js',
-            '../js/site_js/i18n/i18n_booking.js'
+            'js/site_js/i18n/i18n_core.js',
+            'js/site_js/i18n/i18n_global.js',
+            'js/site_js/i18n/i18n_home.js',
+            'js/site_js/i18n/i18n_lodge.js',
+            'js/site_js/i18n/i18n_activities.js',
+            'js/site_js/i18n/i18n_enjoyment.js',
+            'js/site_js/i18n/i18n_booking.js'
         ];
 
         let loaded = 0;
