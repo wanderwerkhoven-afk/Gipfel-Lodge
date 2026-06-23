@@ -65,11 +65,35 @@ class I18n {
         };
     }
 
-    init() {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.setLanguage(this.lang, false);
-            this.setupListeners();
-        });
+    async init() {
+        // Wait for DOM
+        if (document.readyState === 'loading') {
+            await new Promise(r => document.addEventListener('DOMContentLoaded', r));
+        }
+
+        // Setup base listeners
+        this.setupListeners();
+
+        // Dynamically fetch translations from Firestore
+        try {
+            const { db, doc, getDoc } = await import('../core/firebase.js');
+            const snap = await getDoc(doc(db, 'settings', 'translations'));
+            if (snap.exists()) {
+                const overrides = snap.data();
+                if (window.gipfelTranslations) {
+                    ['nl', 'de', 'en'].forEach(l => {
+                        if (overrides[l]) {
+                            window.gipfelTranslations[l] = { ...window.gipfelTranslations[l], ...overrides[l] };
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('[i18n] Could not fetch live translations from Firebase:', e);
+        }
+
+        // Apply translations
+        this.setLanguage(this.lang, false);
     }
 
     setupListeners() {

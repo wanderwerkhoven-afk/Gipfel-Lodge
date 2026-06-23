@@ -25,6 +25,9 @@ let _pageKeysOrder = {
 window.initTextsView = async function() {
     try {
         const fb = await import('../site_js/core/firebase.js');
+        const groupsMod = await import('./admin-texts-groups.js').catch(() => null);
+        window.HOME_PAGE_GROUPS = groupsMod ? groupsMod.HOME_PAGE_GROUPS : null;
+
         _firebaseDb = fb.db;
         _firebaseDoc = fb.doc;
         _firebaseSetDoc = fb.setDoc;
@@ -237,17 +240,20 @@ function renderTextsEditor() {
         return;
     }
 
-    // Render all keys chronologically
-    html += `
-        <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-            <div style="background:#f8fafc; padding:12px 20px; border-bottom:1px solid #e2e8f0; font-weight:600; text-transform:uppercase; font-size:0.8rem; color:#64748b; letter-spacing:0.05em;">
-                Pagina: ${_activePage}
-            </div>
-            <div style="padding:20px; display:flex; flex-direction:column; gap:15px;">
-    `;
-    
-    for (const key of keysToRender) {
-        const defaultValue = defaults[key] || '';
+    if (_activePage === 'home' && window.HOME_PAGE_GROUPS) {
+        html += renderGroupedEditor(window.HOME_PAGE_GROUPS, defaults, overrides);
+    } else {
+        // Render all keys chronologically
+        html += `
+            <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+                <div style="background:#f8fafc; padding:12px 20px; border-bottom:1px solid #e2e8f0; font-weight:600; text-transform:uppercase; font-size:0.8rem; color:#64748b; letter-spacing:0.05em;">
+                    Pagina: ${_activePage}
+                </div>
+                <div style="padding:20px; display:flex; flex-direction:column; gap:15px;">
+        `;
+        
+        for (const key of keysToRender) {
+            const defaultValue = defaults[key] || '';
         const overrideValue = overrides[key] || '';
         
         // If the text is very long, use a textarea, else input
@@ -262,15 +268,55 @@ function renderTextsEditor() {
                 }
                 ${overrideValue ? `<div style="font-size:0.75rem; color:var(--color-gold);">* Aangepast (Standaard: ${defaultValue.substring(0, 50).replace(/</g, '&lt;')}${defaultValue.length > 50 ? '...' : ''})</div>` : ''}
             </div>
+            `;
+        }
+        
+        html += `
+                </div>
+            </div>
         `;
     }
-
-    html += `</div></div>`;
 
     container.innerHTML = html;
 }
 
-window.saveTextTranslations = async function() {
+function renderGroupedEditor(groups, defaults, overrides) {
+    let html = '';
+    for (const group of groups) {
+        html += `
+            <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02); margin-bottom:20px;">
+                <div style="background:#f8fafc; padding:12px 20px; border-bottom:1px solid #e2e8f0; font-weight:700; font-size:1rem; color:#1e293b;">
+                    ${group.title}
+                </div>
+                <div style="padding:20px; display:flex; flex-direction:column; gap:15px;">
+        `;
+        for (const field of group.keys) {
+            const defaultValue = defaults[field.id] || '';
+            const currentVal = overrides[field.id] !== undefined ? overrides[field.id] : defaultValue;
+            
+            // Determine input type (textarea for long text, else input)
+            const isTextarea = currentVal.length > 60 || defaultValue.length > 60;
+            
+            html += `
+                <div class="eb2-form-group" style="margin:0;">
+                    <label style="color:#64748b; font-size:0.85rem; font-weight:600;">${field.label}</label>
+                    <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:4px; font-family:monospace;">ID: ${field.id}</div>
+                    ${isTextarea 
+                        ? `<textarea data-text-key="${field.id}" rows="3" class="eb2-input">${currentVal}</textarea>`
+                        : `<input type="text" data-text-key="${field.id}" value="${currentVal.replace(/"/g, '&quot;')}" class="eb2-input">`
+                    }
+                </div>
+            `;
+        }
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    return html;
+}
+
+window.saveTexts = async function() {
     if (!_firebaseSetDoc) return;
     
     const btn = document.querySelector('button[onclick="saveTextTranslations()"]');
