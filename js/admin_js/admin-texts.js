@@ -290,23 +290,16 @@ function renderGroupedEditor(groups, defaults, overrides) {
                 </div>
                 <div style="padding:20px; display:flex; flex-direction:column; gap:15px;">
         `;
-        for (const field of group.keys) {
-            const defaultValue = defaults[field.id] || '';
-            const currentVal = overrides[field.id] !== undefined ? overrides[field.id] : defaultValue;
-            
-            // Determine input type (textarea for long text, else input)
-            const isTextarea = currentVal.length > 60 || defaultValue.length > 60;
-            
-            html += `
-                <div class="eb2-form-group" style="margin:0;">
-                    <label style="color:#64748b; font-size:0.85rem; font-weight:600;">${field.label}</label>
-                    <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:4px; font-family:monospace;">ID: ${field.id}</div>
-                    ${isTextarea 
-                        ? `<textarea data-text-key="${field.id}" rows="3" class="eb2-input">${currentVal}</textarea>`
-                        : `<input type="text" data-text-key="${field.id}" value="${currentVal.replace(/"/g, '&quot;')}" class="eb2-input">`
-                    }
-                </div>
-            `;
+        for (const fieldItem of group.fields) {
+            if (Array.isArray(fieldItem)) {
+                html += `<div style="display:flex; gap:15px; align-items:flex-start; width:100%;">`;
+                for (const field of fieldItem) {
+                    html += renderSingleField(field, defaults, overrides);
+                }
+                html += `</div>`;
+            } else {
+                html += renderSingleField(fieldItem, defaults, overrides);
+            }
         }
         html += `
                 </div>
@@ -314,6 +307,27 @@ function renderGroupedEditor(groups, defaults, overrides) {
         `;
     }
     return html;
+}
+
+function renderSingleField(field, defaults, overrides) {
+    const defaultValue = defaults[field.id] || '';
+    const currentVal = overrides[field.id] !== undefined ? overrides[field.id] : defaultValue;
+    const isTextarea = currentVal.length > 60 || defaultValue.length > 60;
+    
+    // Zorg voor placeholder tekst
+    const placeholderEscaped = defaultValue ? defaultValue.replace(/"/g, '&quot;') : '';
+    const valEscaped = currentVal ? currentVal.replace(/"/g, '&quot;') : '';
+
+    return `
+        <div class="eb2-form-group" style="margin:0; flex:1; width:100%;">
+            <label style="color:#64748b; font-size:0.85rem; font-weight:600;">${field.label}</label>
+            <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:4px; font-family:monospace;">ID: ${field.id}</div>
+            ${isTextarea 
+                ? `<textarea data-text-key="${field.id}" rows="3" class="eb2-input" placeholder="${placeholderEscaped}">${valEscaped}</textarea>`
+                : `<input type="text" data-text-key="${field.id}" value="${valEscaped}" class="eb2-input" placeholder="${placeholderEscaped}">`
+            }
+        </div>
+    `;
 }
 
 window.saveTexts = async function() {

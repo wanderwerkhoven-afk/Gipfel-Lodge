@@ -1,17 +1,19 @@
 const HOME_PAGE_GROUPS = [
     {
         title: '#Hero',
-        keys: [
+        fields: [
             { id: 'hero-v3-subtitle', label: '[ sub-title ] Alpiner Luxe & Rust' },
             { id: 'hero-v3-tagline', label: '[ sub-text ] Jou droom verblijf in Eben im Pongau' },
-            { id: 'hero-v3-cta1', label: '[ button 1 - lodge link ] Lodge ontdekken' },
-            { id: 'hero-v3-cta2', label: '[ button 2 - beschibaarheid link ] Beschikbaarheid checken' },
-            { id: 'hero-v3-cta3', label: '[ button 3 - boeking link ] Boek nu' }
+            [
+                { id: 'hero-v3-cta1', label: '[ button 1 - lodge link ] Lodge ontdekken' },
+                { id: 'hero-v3-cta2', label: '[ button 2 - beschibaarheid link ] Beschikbaarheid checken' },
+                { id: 'hero-v3-cta3', label: '[ button 3 - boeking link ] Boek nu' }
+            ]
         ]
     },
     {
         title: '#Text block 1',
-        keys: [
+        fields: [
             { id: 'intro-v3-title', label: '[ title text block 1 ] Natuurlijke elegantie, moderne comfort' },
             { id: 'intro-v3-p1', label: '[ block 1 alinea 1 ] intro tekst' },
             { id: 'intro-v3-p2', label: '[ block 1 alinea 2 ] intro tekst' }
@@ -19,19 +21,25 @@ const HOME_PAGE_GROUPS = [
     },
     {
         title: '#Detail highlights',
-        keys: [
-            { id: 'usp-1', label: '[ fact 1 ] 135 m^2 luxe-chalet' },
-            { id: 'usp-2', label: '[ fact 2 ] vakantiehuis 10 pers.' },
-            { id: 'usp-3', label: '[ fact 3 ] 4 slaapkamers/ 3 badkamers' },
-            { id: 'usp-4', label: '[ fact 4 ] privé Sauna.' },
-            { id: 'usp-5', label: '[ fact 5 ] chalet met berguitzicht' },
-            { id: 'usp-6', label: '[ fact 6 ] nabij flachau & ski amade.' },
+        fields: [
+            [
+                { id: 'usp-1', label: '[ fact 1 ] 135 m^2 luxe-chalet' },
+                { id: 'usp-2', label: '[ fact 2 ] vakantiehuis 10 pers.' }
+            ],
+            [
+                { id: 'usp-3', label: '[ fact 3 ] 4 slaapkamers/ 3 badkamers' },
+                { id: 'usp-4', label: '[ fact 4 ] privé Sauna.' }
+            ],
+            [
+                { id: 'usp-5', label: '[ fact 5 ] chalet met berguitzicht' },
+                { id: 'usp-6', label: '[ fact 6 ] nabij flachau & ski amade.' }
+            ],
             { id: 'feat-9', label: '[ fact 7 ] verse broodjesservice dagelijks aan huis' }
         ]
     },
     {
         title: '#Lodge fotos',
-        keys: [
+        fields: [
             { id: 'visual-1', label: '[ foto 1 ] Wonen' },
             { id: 'visual-2', label: '[ foto 2 ] Genieten' },
             { id: 'visual-3', label: '[ foto 3 ] Ontspannen' },
@@ -42,7 +50,7 @@ const HOME_PAGE_GROUPS = [
     },
     {
         title: '#Zomer/Winter activiteiten - Zomer',
-        keys: [
+        fields: [
             { id: 'seasonal-z-title', label: '[ Titel Zomer ] Zomer in de Alpen' },
             { id: 'seasonal-z-text', label: '[ sub-text zomer ] Wandelen, ebiken ...' },
             { id: 'seasonal-z-cta', label: '[ button activiteiten zomer ] zomer activiteiten ontdekken' }
@@ -50,7 +58,7 @@ const HOME_PAGE_GROUPS = [
     },
     {
         title: '#Zomer/Winter activiteiten - Winter',
-        keys: [
+        fields: [
             { id: 'seasonal-w-title', label: '[ Titel Winter ] Winter in Ski-Amade' },
             { id: 'seasonal-w-text', label: '[ sub-text winter ] Skien, snowboarden ...' },
             { id: 'seasonal-w-cta', label: '[ button activiteiten winter ] winter activiteiten ontdekken' }
@@ -58,7 +66,7 @@ const HOME_PAGE_GROUPS = [
     },
     {
         title: '#De experience',
-        keys: [
+        fields: [
             { id: 'act-v3-title', label: '[ Titel experience ] De Alpen ervaring' },
             { id: 'act-card-1-t', label: '[ Titel block 1 ] Skien in Ski-Amade' },
             { id: 'act-card-1-p', label: '[ sub-text block 1 ] familie vriendelijke ski routes ...' },
@@ -74,34 +82,44 @@ const HOME_PAGE_GROUPS = [
     },
     {
         title: '#Details huis',
-        keys: [
-            { id: 'feat-1', label: '[ fact 1 ] volledig uitgeruste keuken' },
-            { id: 'feat-2', label: '[ fact 2 ] wijnklimaatkast' },
-            { id: 'feat-3', label: '[ fact 3 ] prive sauna' },
-            { id: 'feat-4', label: '[ fact 4 ] vloerverwarming' },
-            { id: 'feat-5', label: '[ fact 5 ] sfeervolle openhaard' },
-            { id: 'feat-6', label: '[ fact 6 ] 2 parkeerplekken' },
-            { id: 'feat-7', label: '[ fact 7 ] balkon & terras' },
-            { id: 'feat-8', label: '[ fact 8 ] warme alpine sfeer' }
+        fields: [
+            [
+                { id: 'feat-1', label: '[ fact 1 ] volledig uitgeruste keuken' },
+                { id: 'feat-2', label: '[ fact 2 ] wijnklimaatkast' },
+                { id: 'feat-3', label: '[ fact 3 ] prive sauna' },
+                { id: 'feat-4', label: '[ fact 4 ] vloerverwarming' }
+            ],
+            [
+                { id: 'feat-5', label: '[ fact 5 ] sfeervolle openhaard' },
+                { id: 'feat-6', label: '[ fact 6 ] 2 parkeerplekken' },
+                { id: 'feat-7', label: '[ fact 7 ] balkon & terras' },
+                { id: 'feat-8', label: '[ fact 8 ] verse broodjes service' }
+            ]
         ]
     },
     {
         title: '#Locatie',
-        keys: [
+        fields: [
             { id: 'loc-v3-label', label: '[ sub-boven-titel ] locatie' },
             { id: 'loc-v3-title', label: '[ titel locatie ] Luxus Chalet perfekt gelegen in Eben im Pongau' },
             { id: 'loc-v3-tagline', label: '[ block 1 alinea 1 ] locatietekst' },
-            { id: 'loc-v3-b1', label: '[ tijd 1 ] 5 min.' },
-            { id: 'loc-v3-b1-s', label: '[ locatie 1 ] naar het skigebied' },
-            { id: 'loc-v3-b2', label: '[ tijd 2 ] 8 min.' },
-            { id: 'loc-v3-b2-s', label: '[ locatie 2 ] naar Flachau' },
-            { id: 'loc-v3-b3', label: '[ tijd 3 ] 45 min.' },
-            { id: 'loc-v3-b3-s', label: '[ locatie 3 ] vliegveld salzburg' }
+            [
+                { id: 'loc-v3-b1', label: '[ tijd 1 ] 5 min.' },
+                { id: 'loc-v3-b1-s', label: '[ locatie 1 ] naar het skigebied' }
+            ],
+            [
+                { id: 'loc-v3-b2', label: '[ tijd 2 ] 8 min.' },
+                { id: 'loc-v3-b2-s', label: '[ locatie 2 ] naar Flachau' }
+            ],
+            [
+                { id: 'loc-v3-b3', label: '[ tijd 3 ] 45 min.' },
+                { id: 'loc-v3-b3-s', label: '[ locatie 3 ] vliegveld salzburg' }
+            ]
         ]
     },
     {
         title: '#Reviews',
-        keys: [
+        fields: [
             { id: 'testi-v3-title', label: '[ Titel reviews ] Wat onze gasten van ons vinden' },
             { id: 'review-1-v3', label: '[ review 1 text ] review 1 ...' },
             { id: 'review-1-author', label: '[ review gastnaam 1 ] Sanne & Marc ...' },
@@ -115,7 +133,7 @@ const HOME_PAGE_GROUPS = [
     },
     {
         title: '#FAQ',
-        keys: [
+        fields: [
             { id: 'faq-label', label: '[ FAQ sub boven titel ] FAQ' },
             { id: 'faq-title', label: '[ FAQ titel ] Veelgestelde vragen' },
             { id: 'faq-q1', label: '[ question 1 ] Wat is Gipfel lodge precies?' },
@@ -132,11 +150,13 @@ const HOME_PAGE_GROUPS = [
     },
     {
         title: '#Boek nu CTA',
-        keys: [
+        fields: [
             { id: 'book-cta-v3-t', label: '[ boek nu text ] boek hier uw excl ...' },
             { id: 'book-cta-v3-s', label: '[ boek nu subtext ] ...' },
-            { id: 'book-cta-v3-b1', label: '[ button 1 - beschibaarheid link ] Beschikbaarheid checken' },
-            { id: 'book-cta-v3-b2', label: '[ button 2 - boeking link ] Boek nu' }
+            [
+                { id: 'book-cta-v3-b1', label: '[ button 1 - beschibaarheid link ] Beschikbaarheid checken' },
+                { id: 'book-cta-v3-b2', label: '[ button 2 - boeking link ] Boek nu' }
+            ]
         ]
     }
 ];
