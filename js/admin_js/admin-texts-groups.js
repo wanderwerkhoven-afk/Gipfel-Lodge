@@ -127,7 +127,19 @@ const HOME_PAGE_GROUPS = [
             { id: 'review-3-v3', label: '[ review 3 text ] review 3 ...' },
             { id: 'review-3-author', label: '[ review gastnaam 3 ] Sanne & Marc ...' },
             { id: 'review-4-v3', label: '[ review 4 text ] review 4 ...' },
-            { id: 'review-4-author', label: '[ review gastnaam 4 ] Sanne & Marc ...' }
+            { id: 'review-4-author', label: '[ review gastnaam 4 ] Sanne & Marc ...' },
+            { id: 'review-5-v3', label: '[ review 5 text ] (laat "-" staan om te verbergen)' },
+            { id: 'review-5-author', label: '[ review gastnaam 5 ] (laat "-" staan om te verbergen)' },
+            { id: 'review-6-v3', label: '[ review 6 text ] (laat "-" staan om te verbergen)' },
+            { id: 'review-6-author', label: '[ review gastnaam 6 ] (laat "-" staan om te verbergen)' },
+            { id: 'review-7-v3', label: '[ review 7 text ] (laat "-" staan om te verbergen)' },
+            { id: 'review-7-author', label: '[ review gastnaam 7 ] (laat "-" staan om te verbergen)' },
+            { id: 'review-8-v3', label: '[ review 8 text ] (laat "-" staan om te verbergen)' },
+            { id: 'review-8-author', label: '[ review gastnaam 8 ] (laat "-" staan om te verbergen)' },
+            { id: 'review-9-v3', label: '[ review 9 text ] (laat "-" staan om te verbergen)' },
+            { id: 'review-9-author', label: '[ review gastnaam 9 ] (laat "-" staan om te verbergen)' },
+            { id: 'review-10-v3', label: '[ review 10 text ] (laat "-" staan om te verbergen)' },
+            { id: 'review-10-author', label: '[ review gastnaam 10 ] (laat "-" staan om te verbergen)' }
         ]
     },
     {

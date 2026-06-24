@@ -197,8 +197,23 @@ class I18n {
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if (currentTranslations[key]) {
+            if (currentTranslations[key] !== undefined && currentTranslations[key] !== '') {
                 el.innerText = currentTranslations[key];
+            } else if (currentTranslations[key] === '') {
+                el.innerText = '';
+            }
+        });
+
+        // Hide empty review cards dynamically
+        document.querySelectorAll('.review-card-v3').forEach(card => {
+            const p = card.querySelector('p[data-i18n]');
+            if (p) {
+                const text = p.innerText.trim();
+                if (!text || text === '-' || text === '...' || text === 'EMPTY') {
+                    card.style.display = 'none';
+                } else {
+                    card.style.display = '';
+                }
             }
         });
 
