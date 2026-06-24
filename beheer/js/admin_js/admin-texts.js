@@ -319,7 +319,7 @@ function renderSingleField(field, defaults, overrides) {
     const valEscaped = currentVal ? currentVal.replace(/"/g, '&quot;') : '';
 
     return `
-        <div class="eb2-form-group" style="margin:0; flex:1; width:100%;">
+        <div class="eb2-form-group" style="margin:0;">
             <label style="color:#64748b; font-size:0.85rem; font-weight:600;">${field.label}</label>
             <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:4px; font-family:monospace;">ID: ${field.id}</div>
             ${isTextarea 
