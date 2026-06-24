@@ -180,6 +180,11 @@ window.saveGalleryConfig = async function () {
             zones: _galleryConfig,
             updatedAt: new Date().toISOString()
         });
+        
+        if (window.logActivity) {
+            window.logActivity('Website update', 'Afbeeldingen op de website zijn bijgewerkt', 'website');
+        }
+        
         showToast('Galerijen opgeslagen', 'De afbeeldingsselectie is bijgewerkt.', 'success');
     } catch (e) {
         showToast('Fout', 'Kon niet opslaan: ' + e.message, 'error');

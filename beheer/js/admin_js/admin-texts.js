@@ -348,6 +348,10 @@ window.saveTextTranslations = async function() {
     try {
         await _firebaseSetDoc(_firebaseDoc(_firebaseDb, 'settings', 'translations'), _overrides);
 
+        if (window.logActivity) {
+            window.logActivity('Website update', `Teksten op de website zijn bijgewerkt (${_activeLanguage.toUpperCase()})`, 'website');
+        }
+
         if (window.showToast) {
             window.showToast('Teksten opgeslagen', 'De wijzigingen staan nu live op de website.', 'success');
         }
