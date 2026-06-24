@@ -33,8 +33,7 @@ const HOME_PAGE_GROUPS = [
             [
                 { id: 'usp-5', label: '[ fact 5 ] chalet met berguitzicht' },
                 { id: 'usp-6', label: '[ fact 6 ] nabij flachau & ski amade.' }
-            ],
-            { id: 'feat-9', label: '[ fact 7 ] verse broodjesservice dagelijks aan huis' }
+            ]
         ]
     },
     {
@@ -93,7 +92,7 @@ const HOME_PAGE_GROUPS = [
                 { id: 'feat-5', label: '[ fact 5 ] sfeervolle openhaard' },
                 { id: 'feat-6', label: '[ fact 6 ] 2 parkeerplekken' },
                 { id: 'feat-7', label: '[ fact 7 ] balkon & terras' },
-                { id: 'feat-8', label: '[ fact 8 ] verse broodjes service' }
+                { id: 'feat-8', label: '[ fact 8 ] verse broodjesservice' }
             ]
         ]
     },
