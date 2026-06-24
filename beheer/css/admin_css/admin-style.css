@@ -3929,3 +3929,59 @@
 .eb2-tab-btn:hover:not(.active) { background: #f8fafc; border-color: #94a3b8; }
 .eb2-filter-btn { background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 12px; font-size: 0.85rem; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s; }
 .eb2-filter-btn.active { background: #f1f5f9; color: #1e293b; border-color: #94a3b8; }
+
+/* ─── Teksten editor: form fields ─────────────────────────────────────────── */
+.eb2-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.eb2-form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.eb2-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: #1e293b;
+    line-height: 1.5;
+    transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+    resize: vertical;
+    min-height: 44px;
+}
+
+.eb2-input:focus {
+    outline: none;
+    border-color: var(--color-gold, #b8945a);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(184, 148, 90, 0.12);
+}
+
+.eb2-input::placeholder {
+    color: #b0b9c6;
+    font-style: italic;
+}
+
+textarea.eb2-input {
+    min-height: 80px;
+    resize: vertical;
+}
+
