@@ -146,7 +146,6 @@ async function loadGalleryConfig() {
                 });
             }
         }
-        }
         if (migrated) console.log('[galleries] Migrated some images to object format.');
         _originalGalleryConfigStr = JSON.stringify(_galleryConfig);
     } catch (e) {
