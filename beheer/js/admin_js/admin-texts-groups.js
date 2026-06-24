@@ -28,7 +28,7 @@ const HOME_PAGE_GROUPS = [
             ],
             [
                 { id: 'usp-3', label: '[ fact 3 ] 4 slaapkamers/ 3 badkamers' },
-                { id: 'usp-4', label: '[ fact 4 ] priv� Sauna.' }
+                { id: 'usp-4', label: '[ fact 4 ] priv� Sauna.' }
             ],
             [
                 { id: 'usp-5', label: '[ fact 5 ] chalet met berguitzicht' },
@@ -172,4 +172,101 @@ const HOME_PAGE_GROUPS = [
     }
 ];
 
-export { HOME_PAGE_GROUPS };
+
+
+const LODGE_PAGE_GROUPS = [
+    {
+        title: '#HERO CAROUSEL',
+        fields: [
+            [
+                { id: 'gallery-btn-photos', label: "[ button 1 - fotos ] Foto's" },
+                { id: 'gallery-btn-share', label: '[ button 2 - Delen ] Delen' },
+                { id: 'gallery-btn-favorite', label: '[ button 3 - Favorieten ] Favorieten' }
+            ]
+        ]
+    },
+    {
+        title: '#Propperty Lint',
+        fields: [
+            [
+                { id: 'lodge-max-guests', label: '[ fact 1 ] Max. 10 gasten' },
+                { id: 'lodge-bedrooms', label: '[ fact 2 ] 4 slaapkamers' },
+                { id: 'lodge-bathrooms', label: '[ fact 3 ] 3 badkamers' },
+                { id: 'lodge-area', label: '[ fact 4 ] 135 m² vakantiewoning' }
+            ]
+        ]
+    },
+    {
+        title: '#TEXT BLOCK 1',
+        fields: [
+            { id: 'lodge-highlights-title', label: '[ block 1 sub-boven titel ] Alpine Luxury' },
+            { id: 'lodge-title', label: '[ block 1 Titel ] Luxe Chalet met privé sauna nabij Flachau & Ski amadé' },
+            { id: 'lodge-about-text', label: '[ block 1 Text ] De Gipfel Lodge combineert authentieke ...' }
+        ]
+    },
+    {
+        title: '#TEXT BLOCK 2',
+        fields: [
+            { id: 'lodge-sauna-tag', label: '[ block 2 sub-boven titel ] Wellness & Ontspanning' },
+            { id: 'lodge-sauna-title', label: '[ block 2 Titel ] Privé Spa & Wellness Ervaring' },
+            { id: 'lodge-sauna-text', label: '[ block 2 Text ] Na een actieve dag op de pistes ...' }
+        ]
+    },
+    {
+        title: '#INDELING',
+        fields: [
+            { id: 'lodge-indeling-tag', label: '[ Indeling sub-boven titel ] Woonconcept' },
+            { id: 'lodge-indeling-title', label: '[ Indeling Titel ] Indeling van het luxe chalet' },
+            { id: 'lodge-indeling-subtitle', label: '[ Indeling exp. text] Uw vakantiehuis verdeeld over drie comfortabele woonlagen.' },
+            { id: 'lodge-ug', label: '[ BG Titel] Begane grond (Ontspanning)' },
+            { id: 'lodge-ug-list-1', label: '[ BG facility 1 ] Wellness-suite met regendouche' },
+            { id: 'lodge-ug-list-2', label: '[ BG facility 2 ] Privé sauna' },
+            { id: 'lodge-ug-list-3', label: '[ BG facility 3 ] Skiraum & Wasruimte' },
+            { id: 'lodge-1og', label: '[ V1 Titel] 1e Verdieping (Slapen)' },
+            { id: 'lodge-1og-list-1', label: '[ V1 facility 1 ] 3 luxe suites' },
+            { id: 'lodge-1og-list-2', label: '[ V1 facility 2 ] 2 designer badkamers' },
+            { id: 'lodge-1og-list-3', label: '[ V1 facility 3 ] Panoramisch terras' },
+            { id: 'lodge-2og', label: '[ V2 Titel] 2e Verdieping (Wonen)' },
+            { id: 'lodge-2og-list-1', label: '[ V2 facility 1 ] Open gastronomische keuken' },
+            { id: 'lodge-2og-list-2', label: '[ V2 facility 2 ] Open haard lounge' },
+            { id: 'lodge-2og-list-3', label: '[ V2 facility 3 ] Panoramisch balkon' }
+        ]
+    },
+    {
+        title: '#Galerie',
+        fields: [
+            { id: 'gallery-tag', label: '[ Indeling sub-boven titel ] Impressies' },
+            { id: 'gallery-title', label: '[ Galerie Titel ] Galerie' }
+        ]
+    },
+    {
+        title: '#FAQ',
+        fields: [
+            { id: 'faq-lodge-label', label: '[ FAQ sub boven titel ] FAQ' },
+            { id: 'faq-lodge-title', label: '[ FAQ titel ] Veelgestelde vragen' },
+            { id: 'faq-lodge-q1', label: '[ question 1 ] Wat is Gipfel lodge precies?' },
+            { id: 'faq-lodge-a1', label: '[ answer 1 ] Gipfel lodge is een heerlijk ...' },
+            { id: 'faq-lodge-q2', label: '[ question 2 ] Hoe dicht ligt ...?' },
+            { id: 'faq-lodge-a2', label: '[ answer 2 ] het chalet ligt slechts ...' },
+            { id: 'faq-lodge-q3', label: '[ question 3 ] is er een sauna?' },
+            { id: 'faq-lodge-a3', label: '[ answer 3 ] Jazeker is die er ...' },
+            { id: 'faq-lodge-q4', label: '[ question 4 ] hoe boek ik een verblijf bij ...?' },
+            { id: 'faq-lodge-a4', label: '[ answer 4 ] u kunt direct bij de eigenaar ...' },
+            { id: 'faq-lodge-q5', label: '[ question 5 ] is gipfellodge ook in de zomer de moeite waard?' },
+            { id: 'faq-lodge-a5', label: '[ answer 5 ] Absoluut...' }
+        ]
+    },
+    {
+        title: '#Boek nu CTA',
+        fields: [
+            { id: 'lodge-cta-title', label: '[ Boek nu Text ]' },
+            { id: 'lodge-cta-subtitle', label: '[ Boek nu subtext ] Verzeker uzelf van ...' },
+            [
+                { id: 'lodge-cta-b1', label: '[ button 1 - beschibaarheid link ] Beschikbaarheid' },
+                { id: 'lodge-cta-b2', label: '[ button 2 - boeking link ] Boek Direct' }
+            ]
+        ]
+    }
+];
+
+export { HOME_PAGE_GROUPS, LODGE_PAGE_GROUPS };

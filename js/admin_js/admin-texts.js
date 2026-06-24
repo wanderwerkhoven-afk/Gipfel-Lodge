@@ -27,6 +27,7 @@ window.initTextsView = async function() {
         const fb = await import('../site_js/core/firebase.js');
         const groupsMod = await import('./admin-texts-groups.js').catch(() => null);
         window.HOME_PAGE_GROUPS = groupsMod ? groupsMod.HOME_PAGE_GROUPS : null;
+        window.LODGE_PAGE_GROUPS = groupsMod ? groupsMod.LODGE_PAGE_GROUPS : null;
 
         _firebaseDb = fb.db;
         _firebaseDoc = fb.doc;
@@ -249,6 +250,8 @@ function renderTextsEditor() {
 
     if (_activePage === 'home' && window.HOME_PAGE_GROUPS) {
         html += renderGroupedEditor(window.HOME_PAGE_GROUPS, defaults, overrides);
+    } else if (_activePage === 'lodge' && window.LODGE_PAGE_GROUPS) {
+        html += renderGroupedEditor(window.LODGE_PAGE_GROUPS, defaults, overrides);
     } else {
         // Render all keys chronologically
         html += `
@@ -366,11 +369,31 @@ window.saveTextTranslations = async function() {
                         for (const g of window.HOME_PAGE_GROUPS) {
                             for (const f of g.fields) {
                                 if (Array.isArray(f)) {
-                                    if (f.some(sub => sub.id === k)) foundGroup = g.title.replace('#', '');
-                                } else {
-                                    if (f.id === k) foundGroup = g.title.replace('#', '');
+                                    if (f.find(sub => sub.id === k)) {
+                                        foundGroup = g.title.replace('#', '');
+                                        break;
+                                    }
+                                } else if (f.id === k) {
+                                    foundGroup = g.title.replace('#', '');
+                                    break;
                                 }
                             }
+                            if (foundGroup !== 'Overig') break;
+                        }
+                    } else if (_activePage === 'lodge' && window.LODGE_PAGE_GROUPS) {
+                        for (const g of window.LODGE_PAGE_GROUPS) {
+                            for (const f of g.fields) {
+                                if (Array.isArray(f)) {
+                                    if (f.find(sub => sub.id === k)) {
+                                        foundGroup = g.title.replace('#', '');
+                                        break;
+                                    }
+                                } else if (f.id === k) {
+                                    foundGroup = g.title.replace('#', '');
+                                    break;
+                                }
+                            }
+                            if (foundGroup !== 'Overig') break;
                         }
                     }
                     groups.add(foundGroup.trim());
