@@ -59,6 +59,8 @@ const SINGLE_IMAGES = [
     { key: 'home-act-5',          label: 'Home Activiteiten — Omgeving',         page: 'home' },
     { key: 'booking-cta-bg',      label: 'Home Boekings CTA — Achtergrond',      page: 'home' },
     // Lodge
+    { key: 'lodge-intro-img',     label: 'Lodge Intro — Afbeelding',            page: 'lodge' },
+    { key: 'lodge-wellness-img',  label: 'Lodge Wellness — Afbeelding',         page: 'lodge' },
     { key: 'lodge-cta-bg',        label: 'Lodge CTA — Achtergrond',             page: 'lodge' },
     // Activities
     { key: 'activities-hero-bg',  label: 'Activiteiten Hero — Achtergrond',     page: 'activities' },
