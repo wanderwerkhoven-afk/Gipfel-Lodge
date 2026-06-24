@@ -330,7 +330,7 @@ function renderSingleField(field, defaults, overrides) {
     `;
 }
 
-window.saveTexts = async function() {
+window.saveTextTranslations = async function() {
     if (!_firebaseSetDoc) return;
 
     // Support both old and new button onclick names
