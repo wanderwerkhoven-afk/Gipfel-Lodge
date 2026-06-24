@@ -46,9 +46,24 @@
         if (!config || !config[pageId]) return null;
 
         // Try requested lang, then 'en', then first available
-        const langData = config[pageId][lang]
+        const baseData = config[pageId][lang]
             || config[pageId]['en']
             || Object.values(config[pageId])[0];
+
+        if (!baseData || !baseData.length) return null;
+
+        // Merge admin text overrides (faq-q1/faq-a1 etc.) into the FAQ items
+        // Only applies to home page FAQ (indexed 1-based)
+        const translations = (window.gipfelTranslations && window.gipfelTranslations[lang]) || {};
+        const langData = baseData.map((item, i) => {
+            const n = i + 1;
+            const qKey = `faq-q${n}`;
+            const aKey = `faq-a${n}`;
+            return {
+                q: translations[qKey] || item.q,
+                a: translations[aKey] || item.a
+            };
+        });
 
         if (!langData || !langData.length) return null;
 
