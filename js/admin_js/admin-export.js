@@ -140,9 +140,13 @@ async function startStaticExport() {
                         const hasDe = !!item.alt.de;
                         const hasEn = !!item.alt.en;
                         if (hasNl || hasDe || hasEn) {
-                            // Genereer snelle PHP inline dictionary voor deze alt-tag
-                            const altArr = `['nl'=>'${(item.alt.nl||'').replace(/'/g,"\\'")}','de'=>'${(item.alt.de||'').replace(/'/g,"\\'")}','en'=>'${(item.alt.en||'').replace(/'/g,"\\'")}']`;
-                            el.setAttribute('alt', `<?= htmlspecialchars(${altArr}[$lang] ?? '') ?>`);
+                            const altJson = JSON.stringify({
+                                nl: item.alt.nl || '',
+                                de: item.alt.de || '',
+                                en: item.alt.en || ''
+                            });
+                            const b64Alt = btoa(unescape(encodeURIComponent(altJson)));
+                            el.setAttribute('alt', `<?= htmlspecialchars(json_decode(base64_decode('${b64Alt}'), true)[$lang] ?? '') ?>`);
                         }
                     }
                 } else {
@@ -161,8 +165,13 @@ async function startStaticExport() {
 
             const getAltPhp = (item, fallbackSrc) => {
                 if (item && typeof item === 'object' && item.alt && (item.alt.nl || item.alt.de || item.alt.en)) {
-                    const altArr = `['nl'=>'${(item.alt.nl||'').replace(/'/g,"\\'")}','de'=>'${(item.alt.de||'').replace(/'/g,"\\'")}','en'=>'${(item.alt.en||'').replace(/'/g,"\\'")}']`;
-                    return `<?= htmlspecialchars(${altArr}[$lang] ?? '') ?>`;
+                    const altJson = JSON.stringify({
+                        nl: item.alt.nl || '',
+                        de: item.alt.de || '',
+                        en: item.alt.en || ''
+                    });
+                    const b64Alt = btoa(unescape(encodeURIComponent(altJson)));
+                    return `<?= htmlspecialchars(json_decode(base64_decode('${b64Alt}'), true)[$lang] ?? '') ?>`;
                 }
                 return fallbackSrc.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
             };
@@ -234,14 +243,9 @@ async function startStaticExport() {
         statusDiv.innerText = `HTML omgebouwd naar PHP: ${imagesReplaced} afbeeldingszones.`;
 
         // 7. Stel het uiteindelijke PHP-bestand samen
-        // PHP array serialiseren
-        const phpTranslations = JSON.stringify(finalTranslations)
-            .replace(/\\/g, '\\\\')
-            .replace(/'/g, "\\'")
-            .replace(/"([^"]+)":/g, "'$1'=>")
-            .replace(/"/g, "'")
-            .replace(/\{/g, "[")
-            .replace(/\}/g, "]");
+        // PHP array veilig genereren via base64 JSON om alle syntax errors (quotes/brackets) te voorkomen
+        const safeJson = JSON.stringify(finalTranslations);
+        const b64Json = btoa(unescape(encodeURIComponent(safeJson))); // Safe base64 encode for UTF-8
 
         const phpHeader = `<?php
 /**
@@ -280,7 +284,7 @@ $seoTitles = [
 ];
 
 // Ingebakken vertalingen
-$t = ${phpTranslations};
+$t = json_decode(base64_decode('${b64Json}'), true);
 ?>
 `;
 
