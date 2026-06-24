@@ -376,9 +376,9 @@ window.saveTextTranslations = async function() {
                     groups.add(foundGroup.trim());
                 });
                 const groupNames = Array.from(groups).join(', ');
-                changeDetails = ` (${_activeLanguage.toUpperCase()} - ${_activePage.toUpperCase()} - ${groupNames})`;
+                changeDetails = ` (${_activeLang.toUpperCase()} - ${_activePage.toUpperCase()} - ${groupNames})`;
             } else {
-                changeDetails = ` (${_activeLanguage.toUpperCase()} - ${_activePage.toUpperCase()})`;
+                changeDetails = ` (${_activeLang.toUpperCase()} - ${_activePage.toUpperCase()})`;
             }
 
             window.logActivity('Website update', `Teksten bijgewerkt${changeDetails}`, 'website');
