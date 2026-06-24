@@ -332,28 +332,38 @@ function renderSingleField(field, defaults, overrides) {
 
 window.saveTexts = async function() {
     if (!_firebaseSetDoc) return;
-    
-    const btn = document.querySelector('button[onclick="saveTextTranslations()"]');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="ph ph-spinner"></i> Opslaan...';
-    btn.style.opacity = '0.7';
+
+    // Support both old and new button onclick names
+    const btn = document.querySelector('button[onclick="saveTexts()"], button[onclick="saveTextTranslations()"]');
+    const originalHTML = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<i class="ph ph-spinner"></i> Opslaan...';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+    }
 
     // Gather values for current language
     saveCurrentTabToOverrides();
 
     try {
         await _firebaseSetDoc(_firebaseDoc(_firebaseDb, 'settings', 'translations'), _overrides);
-        
-        if (window.showToast) window.showToast('Teksten succesvol opgeslagen!', 'success');
-        
+
+        if (window.showToast) {
+            window.showToast('Teksten opgeslagen', 'De wijzigingen staan nu live op de website.', 'success');
+        }
+
         // Re-render to show updated override labels
         renderTextsEditor();
     } catch (e) {
-        console.error("Fout bij opslaan teksten:", e);
-        if (window.showToast) window.showToast('Fout bij opslaan.', 'error');
-        alert("Fout bij opslaan: " + e.message);
+        console.error('Fout bij opslaan teksten:', e);
+        if (window.showToast) {
+            window.showToast('Opslaan mislukt', e.message, 'error');
+        }
     } finally {
-        btn.innerHTML = originalText;
-        btn.style.opacity = '1';
+        if (btn) {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
     }
 };
