@@ -1,7 +1,6 @@
 // admin-export.js
-// Statische export: bouwt een volledige ZIP die 1-op-1 overeenkomt met
-// siteground_upload/ maar met afbeeldingen en teksten al statisch ingevuld
-// vanuit Firebase. Geen aparte taalsubmappen — zelfde structuur als productie.
+// PHP Export: bouwt een ZIP voor SiteGround (parked domains) met een index.php.
+// De server kiest hierin zelf de taal op basis van het domein.
 
 async function startStaticExport() {
     const btn = document.getElementById('btn-run-export');
@@ -17,11 +16,10 @@ async function startStaticExport() {
     statusDiv.innerText = 'Firebase data laden...';
 
     try {
-        // 1. JSZip check
         if (typeof JSZip === 'undefined') throw new Error('JSZip is niet geladen!');
         const zip = new JSZip();
 
-        // 2. Firebase data ophalen
+        // 1. Firebase data ophalen
         const { db, doc, getDoc } = await import('../site_js/core/firebase.js');
         const [galleriesSnap, translationsSnap] = await Promise.all([
             getDoc(doc(db, 'settings', 'galleries')),
@@ -29,8 +27,21 @@ async function startStaticExport() {
         ]);
         const galleryZones  = galleriesSnap.exists()    ? (galleriesSnap.data().zones || {}) : {};
         const textOverrides = translationsSnap.exists() ? translationsSnap.data()            : {};
+        
         progressFill.style.width = '10%';
-        statusDiv.innerText = `Firebase: ${Object.keys(galleryZones).length} afbeeldingszones, tekst-overrides voor ${Object.keys(textOverrides).length} talen geladen.`;
+        statusDiv.innerText = 'Standaard vertalingen inladen...';
+
+        // 2. Laad alle standaard vertalingen lokaal in
+        await loadAllTranslations();
+        
+        // Samenvoegen met Firebase overrides
+        const finalTranslations = { nl: {}, de: {}, en: {} };
+        ['nl', 'de', 'en'].forEach(lang => {
+            finalTranslations[lang] = { 
+                ...(window.gipfelTranslations?.[lang] || {}), 
+                ...(textOverrides[lang] || {}) 
+            };
+        });
 
         // 3. Haal bestandslijst op via site-manifest.json
         statusDiv.innerText = 'Bestandsmanifest ophalen...';
@@ -42,10 +53,8 @@ async function startStaticExport() {
         }
         const fileList = await manifestResp.json();
         progressFill.style.width = '15%';
-        statusDiv.innerText = `Bestandslijst geladen: ${fileList.length} bestanden te kopiëren.`;
 
-        // 4. Kopieer alle statische bestanden (CSS, JS, assets, etc.) naar ZIP
-        // index.html wordt apart verwerkt en toegevoegd
+        // 4. Kopieer alle statische bestanden (behalve index.html) naar ZIP
         statusDiv.innerText = 'Bestanden kopiëren naar ZIP...';
         let copied = 0;
         const batchSize = 8;
@@ -53,44 +62,41 @@ async function startStaticExport() {
         for (let i = 0; i < fileList.length; i += batchSize) {
             const batch = fileList.slice(i, i + batchSize);
             await Promise.all(batch.map(async (filePath) => {
+                if (filePath === 'index.html') return; // Slaan we over, wordt index.php
                 try {
                     const resp = await fetch(sgBase + filePath + '?v=' + Date.now());
                     if (resp.ok) {
                         const blob = await resp.blob();
                         zip.file(filePath, blob);
-                    } else {
-                        console.warn('[export] HTTP', resp.status, 'voor:', filePath);
                     }
                 } catch (e) {
                     console.warn('[export] Kon niet kopiëren:', filePath, e);
                 }
                 copied++;
             }));
-            const pct = 15 + (copied / fileList.length * 45);
-            progressFill.style.width = pct + '%';
-            statusDiv.innerText = `Bestanden kopiëren: ${copied} / ${fileList.length}`;
+            progressFill.style.width = (15 + (copied / fileList.length * 45)) + '%';
         }
 
         // 5. Haal index.html op als sjabloon
-        statusDiv.innerText = 'HTML statisch invullen...';
+        statusDiv.innerText = 'HTML omzetten naar PHP...';
         const indexResp = await fetch(sgBase + 'index.html?v=' + Date.now()).catch(() => null);
         if (!indexResp || !indexResp.ok) throw new Error('Kon index.html niet ophalen vanuit siteground_upload/');
         const rawHtml = await indexResp.text();
         progressFill.style.width = '65%';
 
-        // 6. Parse HTML en inject Firebase-content statisch
+        // 6. Parse HTML
         const parser = new DOMParser();
         const docEl = parser.parseFromString(rawHtml, 'text/html');
 
-        // ── 6a. Tekst-overrides inbakken als inline script ──────────────────────
-        // Wordt door i18n.js opgepikt vóór de Firebase-aanroep
+        // ── 6a. Injecteer PHP logica voor vertalingen in HTML-attributen ───────────
+        
+        // Injecteer tekst overrides statisch voor i18n.js zodat deze geen Firebase call doet
         if (Object.keys(textOverrides).length > 0) {
             const inlineScript = docEl.createElement('script');
             inlineScript.id = 'gipfel-static-overrides';
             inlineScript.textContent =
                 `/* Statisch ingebakken tekst-overrides vanuit Firebase (gegenereerd op ${new Date().toISOString()}) */\n` +
                 `window.__GIPFEL_TEXT_OVERRIDES__ = ${JSON.stringify(textOverrides, null, 2)};`;
-            // Voeg toe als allereerste script in <head> zodat i18n het vindt
             const firstScript = docEl.head.querySelector('script');
             if (firstScript) {
                 docEl.head.insertBefore(inlineScript, firstScript);
@@ -98,6 +104,23 @@ async function startStaticExport() {
                 docEl.head.appendChild(inlineScript);
             }
         }
+        
+        // data-i18n elementen
+        docEl.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const phpTag = `<?= htmlspecialchars($t[$lang]['${key}'] ?? '${key}') ?>`;
+            
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.setAttribute('placeholder', phpTag);
+                el.removeAttribute('data-i18n');
+            } else if (el.hasAttribute('title')) {
+                el.setAttribute('title', phpTag);
+                el.removeAttribute('data-i18n');
+            } else {
+                el.innerHTML = phpTag;
+                el.removeAttribute('data-i18n');
+            }
+        });
 
         // ── 6b. Single images: vervang data-img-key direct in de HTML ───────────
         let imagesReplaced = 0;
@@ -111,26 +134,36 @@ async function startStaticExport() {
 
                 if (el.tagName === 'IMG') {
                     el.setAttribute('src', url);
-                    const alt = item?.alt?.nl || item?.alt?.de || item?.alt?.en || '';
-                    if (alt) el.setAttribute('alt', alt);
+                    // Image alt tags afhandelen met PHP als ze per taal verschillen
+                    if (item && typeof item === 'object' && item.alt) {
+                        const hasNl = !!item.alt.nl;
+                        const hasDe = !!item.alt.de;
+                        const hasEn = !!item.alt.en;
+                        if (hasNl || hasDe || hasEn) {
+                            // Genereer snelle PHP inline dictionary voor deze alt-tag
+                            const altArr = `['nl'=>'${(item.alt.nl||'').replace(/'/g,"\\'")}','de'=>'${(item.alt.de||'').replace(/'/g,"\\'")}','en'=>'${(item.alt.en||'').replace(/'/g,"\\'")}']`;
+                            el.setAttribute('alt', `<?= htmlspecialchars(${altArr}[$lang] ?? '') ?>`);
+                        }
+                    }
                 } else {
-                    // background-image div
                     el.style.backgroundImage = `url('${url}')`;
                 }
                 imagesReplaced++;
             }
+            el.removeAttribute('data-img-key');
         });
 
-        // ── 6c. Gallery zones: vervang data-gallery-zone direct in de HTML ──────
+        // ── 6c. Gallery zones ───────────────────────────────────────────────────
         docEl.querySelectorAll('[data-gallery-zone]').forEach(el => {
             const zoneKey = el.getAttribute('data-gallery-zone');
             const items = galleryZones[zoneKey];
             if (!items || items.length === 0) return;
 
-            const getAlt = (item, fallbackSrc) => {
-                if (item?.alt?.nl) return item.alt.nl;
-                if (item?.alt?.de) return item.alt.de;
-                if (item?.alt?.en) return item.alt.en;
+            const getAltPhp = (item, fallbackSrc) => {
+                if (item && typeof item === 'object' && item.alt && (item.alt.nl || item.alt.de || item.alt.en)) {
+                    const altArr = `['nl'=>'${(item.alt.nl||'').replace(/'/g,"\\'")}','de'=>'${(item.alt.de||'').replace(/'/g,"\\'")}','en'=>'${(item.alt.en||'').replace(/'/g,"\\'")}']`;
+                    return `<?= htmlspecialchars(${altArr}[$lang] ?? '') ?>`;
+                }
                 return fallbackSrc.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
             };
 
@@ -145,53 +178,124 @@ async function startStaticExport() {
                 const nextBtn = el.querySelector('.mini-nav.next')?.outerHTML || '';
                 el.innerHTML = items.map((item, i) => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAlt(item, src);
+                    const alt = getAltPhp(item, src);
                     return `<img src="${src}" alt="${alt}"${i === 0 ? ' class="active"' : ''}>`;
                 }).join('') + prevBtn + nextBtn;
 
             } else if (zoneKey === 'lodge_top_carousel') {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAlt(item, src);
+                    const alt = getAltPhp(item, src);
                     return `<div class="lodge-strip-item"><img src="${src}" alt="${alt}" loading="lazy"></div>`;
                 }).join('');
 
             } else if (zoneKey === 'lodge_gallery') {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAlt(item, src);
+                    const alt = getAltPhp(item, src);
                     return `<div class="masonry-item reveal"><img src="${src}" alt="${alt}" loading="lazy"><div class="masonry-overlay"><span>${alt}</span></div></div>`;
                 }).join('');
 
             } else {
-                // Generieke gallerij-zone
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAlt(item, src);
+                    const alt = getAltPhp(item, src);
                     return src ? `<div class="gallery-item"><img src="${src}" alt="${alt}" loading="lazy"></div>` : '';
                 }).join('');
             }
             imagesReplaced++;
+            el.removeAttribute('data-gallery-zone');
         });
 
-        // ── 6d. Verwijder Firebase-afhankelijke laadscripts ──────────────────────
-        // single-image-loader en gallery-loader zijn niet meer nodig
-        // i18n.js wordt BEWAARD maar opgepikt via __GIPFEL_TEXT_OVERRIDES__
-        const removedScripts = [];
-        docEl.querySelectorAll('script[src]').forEach(script => {
-            const src = script.getAttribute('src') || '';
-            if (src.includes('single-image-loader.js') || src.includes('gallery-loader.js')) {
-                removedScripts.push(src);
-                script.remove();
-            }
-        });
+
+
+        // ── 6e. Meta Tags (SEO) ────────────────────────────────────────────────
+        const titleEl = docEl.querySelector('title');
+        if (titleEl) {
+            titleEl.textContent = `<?= $seoTitles[$lang][$activeRoute] ?? 'Gipfel Lodge' ?>`;
+        }
+        
+        // Hreflang toevoegen
+        const head = docEl.querySelector('head');
+        if (head) {
+            head.insertAdjacentHTML('beforeend', `
+    <!-- Dynamic SEO Tags via PHP -->
+    <link rel="alternate" hreflang="de" href="https://gipfellodge.de/" />
+    <link rel="alternate" hreflang="nl" href="https://gipfellodge.nl/" />
+    <link rel="alternate" hreflang="en" href="https://gipfellodge.eu/" />
+    <link rel="alternate" hreflang="x-default" href="https://gipfellodge.eu/" />
+            `);
+        }
+
+        // html lang attribuut
+        docEl.documentElement.setAttribute('lang', '<?= $lang ?>');
 
         progressFill.style.width = '85%';
-        statusDiv.innerText = `HTML verwerkt: ${imagesReplaced} afbeeldingszones ingevuld, ${removedScripts.length} Firebase-laadscripts verwijderd.`;
+        statusDiv.innerText = `HTML omgebouwd naar PHP: ${imagesReplaced} afbeeldingszones.`;
 
-        // 7. Voeg de verwerkte index.html toe aan de ZIP
-        const finalHtml = '<!DOCTYPE html>\n' + docEl.documentElement.outerHTML;
-        zip.file('index.html', finalHtml);
+        // 7. Stel het uiteindelijke PHP-bestand samen
+        // PHP array serialiseren
+        const phpTranslations = JSON.stringify(finalTranslations)
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'")
+            .replace(/"([^"]+)":/g, "'$1'=>")
+            .replace(/"/g, "'")
+            .replace(/\{/g, "[")
+            .replace(/\}/g, "]");
+
+        const phpHeader = `<?php
+/**
+ * Gipfel Lodge - Dynamische taal routering voor Parked Domains
+ * Dit bestand genereert server-side de juiste HTML o.b.v. het domein.
+ */
+
+$host = $_SERVER['HTTP_HOST'] ?? '';
+
+// Bepaal taal o.b.v. domein (fallback = nl)
+$lang = 'nl';
+if (strpos($host, '.de') !== false || strpos($host, '.at') !== false || strpos($host, '.ch') !== false) {
+    $lang = 'de';
+} elseif (strpos($host, '.com') !== false || strpos($host, '.eu') !== false || strpos($host, '.co.uk') !== false) {
+    $lang = 'en';
+}
+
+// Check eventuele URL parameter (?lang=de)
+if (isset($_GET['lang']) && in_array($_GET['lang'], ['nl', 'de', 'en'])) {
+    $lang = $_GET['lang'];
+}
+
+// Bepaal actieve route voor SEO title (simpel gebaseerd op URI, of default 'home')
+$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$activeRoute = 'home';
+if (strpos($uri, 'lodge') !== false) $activeRoute = 'lodge';
+elseif (strpos($uri, 'activiteit') !== false || strpos($uri, 'aktivitaet') !== false || strpos($uri, 'activities') !== false) $activeRoute = 'activities';
+elseif (strpos($uri, 'genieten') !== false || strpos($uri, 'geniessen') !== false || strpos($uri, 'enjoy') !== false) $activeRoute = 'enjoyment';
+elseif (strpos($uri, 'boek') !== false || strpos($uri, 'buch') !== false || strpos($uri, 'book') !== false) $activeRoute = 'booking';
+
+// SEO Titles
+$seoTitles = [
+    'de' => ['home' => 'Gipfel Lodge | Alpiner Luxus & Raum', 'lodge' => 'Die Lodge | Gipfel Lodge Eben im Pongau', 'activities' => 'Aktivitäten | Ski Amadé & Sommer Alpen', 'enjoyment' => 'Genießen | Gipfel Lodge', 'booking' => 'Buchen | Gipfel Lodge'],
+    'nl' => ['home' => 'Gipfel Lodge | Alpiner Luxus & Raum', 'lodge' => 'De Lodge | Gipfel Lodge Eben im Pongau', 'activities' => 'Activiteiten | Ski Amadé & Zomer Alpen', 'enjoyment' => 'Genieten | Gipfel Lodge', 'booking' => 'Boeken | Gipfel Lodge'],
+    'en' => ['home' => 'Gipfel Lodge | Alpine Luxury & Space', 'lodge' => 'The Lodge | Gipfel Lodge Eben im Pongau', 'activities' => 'Activities | Ski Amadé & Summer Alps', 'enjoyment' => 'Enjoy | Gipfel Lodge', 'booking' => 'Book | Gipfel Lodge']
+];
+
+// Ingebakken vertalingen
+$t = ${phpTranslations};
+?>
+`;
+
+        // We ontsnappen eventuele <? en ?> die toevallig in de HTML tekst zitten om PHP syntax errors te voorkomen,
+        // (maar DOMParser lost dat normaal gesproken zelf al netjes op; PHP tags die wél moeten draaien zijn door ons handmatig geïnjecteerd in HTML tags, wat DOMParser codeert naar &lt;?= etc. Wacht, DOMParser zet <?= om in &lt;?= !!)
+        
+        // FIX: DOMParser escaped de `<`, dus onze injected `<?= $t... ?>` is nu `&lt;?= $t... ?&gt;`. 
+        // We moeten dit in de raw string terug-replacen.
+        let bodyHtml = docEl.documentElement.outerHTML;
+        bodyHtml = bodyHtml.replace(/&lt;\?=/g, '<?=');
+        bodyHtml = bodyHtml.replace(/\?&gt;/g, '?>');
+
+        const finalPhp = phpHeader + '<!DOCTYPE html>\n' + bodyHtml;
+        
+        zip.file('index.php', finalPhp);
 
         // 8. ZIP genereren & downloaden
         statusDiv.innerText = 'ZIP inpakken en comprimeren...';
@@ -203,20 +307,15 @@ async function startStaticExport() {
         });
 
         progressFill.style.width = '100%';
-        statusDiv.innerText = `✅ Klaar! ZIP bevat siteground_upload structuur met ${imagesReplaced} statische afbeeldingen en ingebakken teksten.`;
+        statusDiv.innerText = `✅ Klaar! PHP Export voltooid. Bestand heet nu index.php.`;
         statusDiv.style.color = '#10b981';
 
         const a = document.createElement('a');
         a.href = URL.createObjectURL(zipBlob);
-        a.download = `gipfellodge-export-${new Date().toISOString().slice(0, 10)}.zip`;
+        a.download = `gipfellodge-phpexport-${new Date().toISOString().slice(0, 10)}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-
-        // Loggen
-        if (window.logActivity) {
-            window.logActivity('Website export', `Statische export gegenereerd met ${imagesReplaced} afbeeldingen en tekst-overrides voor ${Object.keys(textOverrides).length} talen.`, 'website');
-        }
 
         setTimeout(() => {
             btn.disabled = false;
@@ -233,18 +332,33 @@ async function startStaticExport() {
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-/**
- * Bereken de absolute base URL van de siteground_upload/ map.
- * Beheer draait altijd naast siteground_upload/ als sibling.
- *
- * Lokaal (VS Code Live Server):
- *   Admin: http://127.0.0.1:5500/beheer/admin.html
- *   SG:    http://127.0.0.1:5500/siteground_upload/
- *
- * GitHub Pages:
- *   Admin: https://user.github.io/Repo/beheer/
- *   SG:    https://user.github.io/Repo/siteground_upload/
- */
+function loadAllTranslations() {
+    return new Promise((resolve) => {
+        // Check if a key from the last file (booking) exists
+        if (window.gipfelTranslations && window.gipfelTranslations['nl'] && window.gipfelTranslations['nl']['book-title']) {
+            resolve(); return;
+        }
+        const sgBase = getSitegroundBase();
+        const scripts = [
+            'js/site_js/i18n/i18n_core.js',
+            'js/site_js/i18n/i18n_global.js',
+            'js/site_js/i18n/i18n_home.js',
+            'js/site_js/i18n/i18n_lodge.js',
+            'js/site_js/i18n/i18n_activities.js',
+            'js/site_js/i18n/i18n_enjoyment.js',
+            'js/site_js/i18n/i18n_booking.js'
+        ];
+        let loaded = 0;
+        scripts.forEach(src => {
+            const s = document.createElement('script');
+            s.src = sgBase + src;
+            s.onload = () => { loaded++; if (loaded === scripts.length) resolve(); };
+            s.onerror = () => { console.error('Kon script niet laden:', src); loaded++; if (loaded === scripts.length) resolve(); };
+            document.head.appendChild(s);
+        });
+    });
+}
+
 function getSitegroundBase() {
     const loc = window.location;
     let pathname = loc.pathname;
