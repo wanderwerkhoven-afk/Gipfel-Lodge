@@ -87,23 +87,30 @@ window.switchLanguageTab = function(lang, btnElement) {
 
 function saveCurrentTabToOverrides() {
     const container = document.getElementById('texts-editor-container');
-    if (!container) return;
+    if (!container) return [];
     const inputs = container.querySelectorAll('[data-text-key]');
-    if (inputs.length === 0) return;
+    if (inputs.length === 0) return [];
     
     if (!_overrides[_activeLang]) _overrides[_activeLang] = {};
     
+    let changedKeys = [];
     inputs.forEach(input => {
         const key = input.getAttribute('data-text-key');
         const val = input.value.trim();
         const def = _defaultTranslations[_activeLang][key] || '';
+        const oldVal = _overrides[_activeLang][key] || def;
         
+        if (val !== oldVal) {
+            changedKeys.push(key);
+        }
+
         if (val !== def) {
             _overrides[_activeLang][key] = val; // Store override
         } else {
             delete _overrides[_activeLang][key]; // Delete override if it matches default
         }
     });
+    return changedKeys;
 }
 
 function ensureDefaultTranslationsLoaded() {
@@ -343,13 +350,38 @@ window.saveTextTranslations = async function() {
     }
 
     // Gather values for current language
-    saveCurrentTabToOverrides();
+    const changedKeys = saveCurrentTabToOverrides() || [];
 
     try {
         await _firebaseSetDoc(_firebaseDoc(_firebaseDb, 'settings', 'translations'), _overrides);
 
         if (window.logActivity) {
-            window.logActivity('Website update', `Teksten op de website zijn bijgewerkt (${_activeLanguage.toUpperCase()})`, 'website');
+            let changeDetails = '';
+            if (changedKeys.length > 0) {
+                // Find group names
+                let groups = new Set();
+                changedKeys.forEach(k => {
+                    let foundGroup = 'Overig';
+                    if (_activePage === 'home' && window.HOME_PAGE_GROUPS) {
+                        for (const g of window.HOME_PAGE_GROUPS) {
+                            for (const f of g.fields) {
+                                if (Array.isArray(f)) {
+                                    if (f.some(sub => sub.id === k)) foundGroup = g.title.replace('#', '');
+                                } else {
+                                    if (f.id === k) foundGroup = g.title.replace('#', '');
+                                }
+                            }
+                        }
+                    }
+                    groups.add(foundGroup.trim());
+                });
+                const groupNames = Array.from(groups).join(', ');
+                changeDetails = ` (${_activeLanguage.toUpperCase()} - ${_activePage.toUpperCase()} - ${groupNames})`;
+            } else {
+                changeDetails = ` (${_activeLanguage.toUpperCase()} - ${_activePage.toUpperCase()})`;
+            }
+
+            window.logActivity('Website update', `Teksten bijgewerkt${changeDetails}`, 'website');
         }
 
         if (window.showToast) {

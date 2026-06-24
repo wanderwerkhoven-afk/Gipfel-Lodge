@@ -75,6 +75,7 @@ const SINGLE_IMAGES = [
 
 let _allImages = [];
 let _galleryConfig = {};
+let _originalGalleryConfigStr = '{}';
 let _activePageId = null;
 let _activeModalZoneId = null;
 let _activeSingleKey = null;  // key being edited in single-image picker
@@ -145,7 +146,9 @@ async function loadGalleryConfig() {
                 });
             }
         }
+        }
         if (migrated) console.log('[galleries] Migrated some images to object format.');
+        _originalGalleryConfigStr = JSON.stringify(_galleryConfig);
     } catch (e) {
         console.warn('[galleries] Could not load gallery config:', e);
         _galleryConfig = {};
@@ -182,9 +185,35 @@ window.saveGalleryConfig = async function () {
         });
         
         if (window.logActivity) {
-            window.logActivity('Website update', 'Afbeeldingen op de website zijn bijgewerkt', 'website');
+            let modifiedDetails = '';
+            try {
+                const oldConfig = JSON.parse(_originalGalleryConfigStr || '{}');
+                let changedKeys = [];
+                for (const key of new Set([...Object.keys(oldConfig), ...Object.keys(_galleryConfig)])) {
+                    if (JSON.stringify(oldConfig[key]) !== JSON.stringify(_galleryConfig[key])) {
+                        changedKeys.push(key);
+                    }
+                }
+                if (changedKeys.length > 0) {
+                    let labels = [];
+                    changedKeys.forEach(zid => {
+                        let foundLabel = zid;
+                        GALLERY_PAGES.forEach(p => {
+                            if (p.id === zid) foundLabel = p.label;
+                            (p.zones || []).forEach(z => {
+                                if (z.id === zid) foundLabel = `${p.label} - ${z.label}`;
+                            });
+                        });
+                        labels.push(foundLabel);
+                    });
+                    modifiedDetails = ` (${labels.join(', ')})`;
+                }
+            } catch(err) { console.warn(err); }
+
+            window.logActivity('Website update', `Afbeeldingen bijgewerkt${modifiedDetails}`, 'website');
         }
         
+        _originalGalleryConfigStr = JSON.stringify(_galleryConfig);
         showToast('Galerijen opgeslagen', 'De afbeeldingsselectie is bijgewerkt.', 'success');
     } catch (e) {
         showToast('Fout', 'Kon niet opslaan: ' + e.message, 'error');
