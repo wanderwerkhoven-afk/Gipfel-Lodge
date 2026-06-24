@@ -74,22 +74,35 @@ class I18n {
         // Setup base listeners
         this.setupListeners();
 
-        // Dynamically fetch translations from Firestore
-        try {
-            const { db, doc, getDoc } = await import('../core/firebase.js');
-            const snap = await getDoc(doc(db, 'settings', 'translations'));
-            if (snap.exists()) {
-                const overrides = snap.data();
-                if (window.gipfelTranslations) {
-                    ['nl', 'de', 'en'].forEach(l => {
-                        if (overrides[l]) {
-                            window.gipfelTranslations[l] = { ...window.gipfelTranslations[l], ...overrides[l] };
-                        }
-                    });
-                }
+        // Statische export: tekst-overrides zijn al ingebakken via inline script
+        if (window.__GIPFEL_TEXT_OVERRIDES__) {
+            const overrides = window.__GIPFEL_TEXT_OVERRIDES__;
+            if (window.gipfelTranslations) {
+                ['nl', 'de', 'en'].forEach(l => {
+                    if (overrides[l]) {
+                        window.gipfelTranslations[l] = { ...window.gipfelTranslations[l], ...overrides[l] };
+                    }
+                });
             }
-        } catch (e) {
-            console.warn('[i18n] Could not fetch live translations from Firebase:', e);
+            console.log('[i18n] Statische tekst-overrides toegepast (geen Firebase nodig).');
+        } else {
+            // Dynamisch: haal tekst-overrides live op vanuit Firestore
+            try {
+                const { db, doc, getDoc } = await import('../core/firebase.js');
+                const snap = await getDoc(doc(db, 'settings', 'translations'));
+                if (snap.exists()) {
+                    const overrides = snap.data();
+                    if (window.gipfelTranslations) {
+                        ['nl', 'de', 'en'].forEach(l => {
+                            if (overrides[l]) {
+                                window.gipfelTranslations[l] = { ...window.gipfelTranslations[l], ...overrides[l] };
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('[i18n] Could not fetch live translations from Firebase:', e);
+            }
         }
 
         // Apply translations
