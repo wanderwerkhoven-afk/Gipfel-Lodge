@@ -844,7 +844,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 250px;
+  height: 290px;
+}
+
+.review-card-v3.is-expanded {
+  height: auto;
+  min-height: 290px;
 }
 
 .review-card-v3 .stars {

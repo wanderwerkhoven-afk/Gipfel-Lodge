@@ -49,17 +49,32 @@ const HomePage = {
                     if (isClamped) {
                         const btn = document.createElement('button');
                         btn.className = 'review-read-more';
-                        // Use translation if available, otherwise default to "Verder lezen"
-                        let btnText = 'Verder lezen';
-                        if (window.i18n) {
-                            const translated = window.i18n.t('review-read-more');
-                            if (translated && translated !== 'review-read-more') btnText = translated;
-                        }
-                        btn.textContent = btnText;
-                        btn.setAttribute('data-i18n', 'review-read-more');
+                        
+                        const getVerderText = () => {
+                            if (window.i18n && window.i18n.t('review-read-more') !== 'review-read-more') {
+                                return window.i18n.t('review-read-more');
+                            }
+                            return 'Verder lezen';
+                        };
+                        
+                        const getMinderText = () => {
+                            if (window.i18n && window.i18n.t('review-read-less') !== 'review-read-less') {
+                                return window.i18n.t('review-read-less');
+                            }
+                            return 'Minder lezen';
+                        };
+
+                        btn.textContent = getVerderText();
+                        
                         btn.addEventListener('click', () => {
-                            p.classList.add('expanded');
-                            btn.style.display = 'none';
+                            p.classList.toggle('expanded');
+                            if (p.classList.contains('expanded')) {
+                                btn.textContent = getMinderText();
+                                card.classList.add('is-expanded');
+                            } else {
+                                btn.textContent = getVerderText();
+                                card.classList.remove('is-expanded');
+                            }
                         });
                         p.parentNode.insertBefore(btn, p.nextSibling);
                     }
