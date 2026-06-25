@@ -29,7 +29,10 @@ const HomePage = {
     },
 
     initReviews() {
+        let isUpdatingReviews = false;
+
         const updateTruncation = () => {
+            isUpdatingReviews = true;
             document.querySelectorAll('.review-card-v3').forEach(card => {
                 const p = card.querySelector('.review-text');
                 if (!p) return;
@@ -46,7 +49,13 @@ const HomePage = {
                     if (isClamped) {
                         const btn = document.createElement('button');
                         btn.className = 'review-read-more';
-                        btn.textContent = window.i18n ? window.i18n.t('review-read-more') : 'Verder lezen';
+                        // Use translation if available, otherwise default to "Verder lezen"
+                        let btnText = 'Verder lezen';
+                        if (window.i18n) {
+                            const translated = window.i18n.t('review-read-more');
+                            if (translated && translated !== 'review-read-more') btnText = translated;
+                        }
+                        btn.textContent = btnText;
                         btn.setAttribute('data-i18n', 'review-read-more');
                         btn.addEventListener('click', () => {
                             p.classList.add('expanded');
@@ -67,6 +76,8 @@ const HomePage = {
             if (moreWrap) {
                 moreWrap.style.display = hasContent ? '' : 'none';
             }
+
+            setTimeout(() => { isUpdatingReviews = false; }, 200);
         };
 
         // Run initially
@@ -76,9 +87,10 @@ const HomePage = {
         const grid = document.getElementById('reviews-grid');
         if (grid) {
             const observer = new MutationObserver((mutations) => {
+                if (isUpdatingReviews) return;
                 // Throttle updates slightly to avoid loops during mass text replacement
                 clearTimeout(this._reviewUpdateTimer);
-                this._reviewUpdateTimer = setTimeout(updateTruncation, 100);
+                this._reviewUpdateTimer = setTimeout(updateTruncation, 150);
             });
             observer.observe(grid, { childList: true, characterData: true, subtree: true });
         }
@@ -89,6 +101,7 @@ const HomePage = {
 window.__revealExtraReviews = function(btn) {
     document.querySelectorAll('.review-extra').forEach(card => {
         card.style.display = '';
+        card.classList.remove('d-none');
         card.classList.add('reveal', 'visible');
     });
     // Verberg de knop na klikken
