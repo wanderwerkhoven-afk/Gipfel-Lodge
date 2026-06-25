@@ -570,6 +570,26 @@
     transform: translateY(0);
 }
 
+/* figure wrapper in gallery items — layout neutral */
+.masonry-item figure,
+.gallery-item figure,
+.lodge-strip-item figure {
+    margin: 0;
+    padding: 0;
+    display: contents; /* transparent for layout — children behave as direct children */
+}
+
+/* SEO caption: present in DOM for Google, visually hidden */
+.img-caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
 /* BOOKING CALLOUT */
 .booking-callout {
     background: var(--color-primary);

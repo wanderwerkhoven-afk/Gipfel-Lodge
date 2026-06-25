@@ -92,11 +92,33 @@
         }).join('');
     }
 
+    function getLang() {
+        return (window.i18n && window.i18n.lang) || 'nl';
+    }
+
+    function getAlt(item, src) {
+        if (typeof item === 'object' && item.alt) {
+            const lang = getLang();
+            return item.alt[lang] || item.alt.nl || item.alt.en || '';
+        }
+        return src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+    }
+
+    function getCaption(item) {
+        if (typeof item === 'object' && item.caption) {
+            const lang = getLang();
+            return item.caption[lang] || item.caption.nl || item.caption.en || '';
+        }
+        return '';
+    }
+
     function injectPropertyGallery(container, images) {
         container.innerHTML = images.map(item => {
             const src = typeof item === 'string' ? item : (item.src || '');
-            const alt = (typeof item === 'object' && item.alt) ? (item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
-            return `<div class="gallery-item"><img src="${src}" alt="${alt}"></div>`;
+            const alt = getAlt(item, src);
+            const caption = getCaption(item);
+            const figcap = caption ? `<figcaption class="img-caption">${caption}</figcaption>` : '';
+            return `<div class="gallery-item"><figure><img src="${src}" alt="${alt}">${figcap}</figure></div>`;
         }).join('');
     }
 
@@ -107,7 +129,7 @@
 
         container.innerHTML = images.map((item, i) => {
             const src = typeof item === 'string' ? item : (item.src || '');
-            const alt = (typeof item === 'object' && item.alt) ? (item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+            const alt = getAlt(item, src);
             return `<img src="${src}" alt="${alt}"${i === 0 ? ' class="active"' : ''}>`;
         }).join('');
 
@@ -119,11 +141,15 @@
     function injectMasonryGallery(container, images) {
         container.innerHTML = images.map(item => {
             const src = typeof item === 'string' ? item : (item.src || '');
-            const alt = (typeof item === 'object' && item.alt) ? (item.alt.nl || item.alt.en || '') : src.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
+            const alt = getAlt(item, src);
+            const caption = getCaption(item) || alt; // caption als hover-tekst, fallback op alt
             return `
                 <div class="masonry-item reveal">
-                    <img src="${src}" alt="${alt}">
-                    <div class="masonry-overlay"><span>${alt}</span></div>
+                    <figure>
+                        <img src="${src}" alt="${alt}">
+                        <div class="masonry-overlay"><span>${caption}</span></div>
+                        ${getCaption(item) ? `<figcaption class="img-caption">${getCaption(item)}</figcaption>` : ''}
+                    </figure>
                 </div>
             `;
         }).join('');

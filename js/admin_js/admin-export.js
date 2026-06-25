@@ -187,6 +187,23 @@ async function startStaticExport() {
                 return fallbackSrc.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
             };
 
+            // Caption placeholder voor <figcaption> SEO element
+            const getCaptionPlaceholder = (item) => {
+                if (item && typeof item === 'object' && item.caption && (item.caption.nl || item.caption.de || item.caption.en)) {
+                    const capJson = JSON.stringify({
+                        nl: item.caption.nl || '',
+                        de: item.caption.de || '',
+                        en: item.caption.en || ''
+                    });
+                    const b64Cap = btoa(unescape(encodeURIComponent(capJson)));
+                    const phpCode = `<?= htmlspecialchars(json_decode(base64_decode('${b64Cap}'), true)[$lang] ?? '') ?>`;
+                    const placeholder = `__PHP_TAG_${phpCounter++}__`;
+                    phpMap[placeholder] = phpCode;
+                    return placeholder;
+                }
+                return '';
+            };
+
             if (zoneKey === 'hero_slider') {
                 el.innerHTML = items.map((item, i) => {
                     const src = typeof item === 'string' ? item : (item.src || '');
@@ -206,21 +223,28 @@ async function startStaticExport() {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
                     const alt = getAltPlaceholder(item, src);
-                    return `<div class="lodge-strip-item"><img src="${src}" alt="${alt}" loading="lazy"></div>`;
+                    const caption = getCaptionPlaceholder(item);
+                    const figcap = caption ? `<figcaption class="img-caption">${caption}</figcaption>` : '';
+                    return `<div class="lodge-strip-item"><figure><img src="${src}" alt="${alt}" loading="lazy">${figcap}</figure></div>`;
                 }).join('');
 
             } else if (zoneKey === 'lodge_gallery') {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
                     const alt = getAltPlaceholder(item, src);
-                    return `<div class="masonry-item reveal"><img src="${src}" alt="${alt}" loading="lazy"><div class="masonry-overlay"><span>${alt}</span></div></div>`;
+                    const caption = getCaptionPlaceholder(item);
+                    const overlayText = caption || alt;
+                    const figcap = caption ? `<figcaption class="img-caption">${caption}</figcaption>` : '';
+                    return `<div class="masonry-item reveal"><figure><img src="${src}" alt="${alt}" loading="lazy"><div class="masonry-overlay"><span>${overlayText}</span></div>${figcap}</figure></div>`;
                 }).join('');
 
             } else {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
                     const alt = getAltPlaceholder(item, src);
-                    return src ? `<div class="gallery-item"><img src="${src}" alt="${alt}" loading="lazy"></div>` : '';
+                    const caption = getCaptionPlaceholder(item);
+                    const figcap = caption ? `<figcaption class="img-caption">${caption}</figcaption>` : '';
+                    return src ? `<div class="gallery-item"><figure><img src="${src}" alt="${alt}" loading="lazy">${figcap}</figure></div>` : '';
                 }).join('');
             }
             imagesReplaced++;
