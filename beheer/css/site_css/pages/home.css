@@ -1198,19 +1198,35 @@
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   line-height: 1.2;
 }
-/* "Meer reviews lezen" knop op lichte achtergrond */
+/* "Meer reviews lezen" — puur tekst, geen kader */
 #reviews-more-btn {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
   color: var(--color-primary);
-  border-color: var(--color-primary);
-  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  transition: color 0.2s ease;
 }
 
 #reviews-more-btn:hover {
-  background: var(--color-accent);
-  color: #fff !important;
-  border-color: var(--color-accent);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(197, 160, 89, 0.3);
+  color: var(--color-accent);
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none;
+}
+
+/* Hide review cards whose text is just a placeholder dash */
+.review-card-v3.review-empty {
+  display: none !important;
 }
 
 .d-none { display: none !important; }

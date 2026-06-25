@@ -90,6 +90,7 @@ const HomePage = {
             });
 
             // Hide "Meer reviews" knop als alle extra cards leeg zijn (tekst == "-")
+            // Also hide visible cards that are just placeholders
             const extras = document.querySelectorAll('.review-extra');
             const hasContent = Array.from(extras).some(card => {
                 const p = card.querySelector('.review-text');
@@ -99,6 +100,16 @@ const HomePage = {
             if (moreWrap) {
                 moreWrap.style.display = hasContent ? '' : 'none';
             }
+
+            // Mark placeholder-only cards (non-extra) as empty so CSS hides them
+            document.querySelectorAll('.review-card-v3:not(.review-extra)').forEach(card => {
+                const p = card.querySelector('.review-text');
+                if (p && (p.textContent.trim() === '-' || p.textContent.trim() === '')) {
+                    card.classList.add('review-empty');
+                } else {
+                    card.classList.remove('review-empty');
+                }
+            });
 
             setTimeout(() => { isUpdatingReviews = false; }, 200);
         };
