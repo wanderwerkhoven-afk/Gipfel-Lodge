@@ -30,10 +30,15 @@ const HomePage = {
 
     initReviews() {
         let isUpdatingReviews = false;
+        // Track cards the user manually expanded — don't reset these
+        const manuallyExpanded = new WeakSet();
 
         const updateTruncation = () => {
             isUpdatingReviews = true;
             document.querySelectorAll('.review-card-v3').forEach(card => {
+                // Skip cards the user has manually expanded
+                if (manuallyExpanded.has(card)) return;
+
                 const p = card.querySelector('.review-text');
                 if (!p) return;
                 
@@ -43,6 +48,7 @@ const HomePage = {
                 
                 // Reset state to measure accurately
                 p.classList.remove('expanded');
+                card.classList.remove('is-expanded');
 
                 requestAnimationFrame(() => {
                     const isClamped = p.scrollHeight > p.clientHeight + 2;
@@ -71,9 +77,11 @@ const HomePage = {
                             if (p.classList.contains('expanded')) {
                                 btn.textContent = getMinderText();
                                 card.classList.add('is-expanded');
+                                manuallyExpanded.add(card);
                             } else {
                                 btn.textContent = getVerderText();
                                 card.classList.remove('is-expanded');
+                                manuallyExpanded.delete(card);
                             }
                         });
                         p.parentNode.insertBefore(btn, p.nextSibling);
@@ -99,11 +107,17 @@ const HomePage = {
         updateTruncation();
 
         // Observe text changes (e.g. from i18n / Firebase)
+        // Only watch childList — NOT characterData, to avoid firing when button text changes
         const grid = document.getElementById('reviews-grid');
         if (grid) {
             const observer = new MutationObserver((mutations) => {
                 if (isUpdatingReviews) return;
-                // Throttle updates slightly to avoid loops during mass text replacement
+                // Only re-run if actual review text nodes were added/replaced (not button clicks)
+                const isRelevant = mutations.some(m =>
+                    m.type === 'childList' ||
+                    (m.type === 'characterData' && m.target.parentElement && m.target.parentElement.hasAttribute('data-i18n'))
+                );
+                if (!isRelevant) return;
                 clearTimeout(this._reviewUpdateTimer);
                 this._reviewUpdateTimer = setTimeout(updateTruncation, 150);
             });

@@ -1003,5 +1003,18 @@
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   line-height: 1.2;
 }
+/* "Meer reviews lezen" knop op lichte achtergrond */
+#reviews-more-btn {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: transparent;
+}
+
+#reviews-more-btn:hover {
+  background: var(--color-primary);
+  color: var(--color-sand, #f5f0e8);
+  border-color: var(--color-primary);
+}
+
 .d-none { display: none !important; }
 
