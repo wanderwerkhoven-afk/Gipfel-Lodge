@@ -29,37 +29,58 @@ const HomePage = {
     },
 
     initReviews() {
-        // "Verder lezen" truncation per card
-        document.querySelectorAll('.review-card-v3').forEach(card => {
-            const p = card.querySelector('.review-text');
-            if (!p) return;
+        const updateTruncation = () => {
+            document.querySelectorAll('.review-card-v3').forEach(card => {
+                const p = card.querySelector('.review-text');
+                if (!p) return;
+                
+                // Verwijder oude knop als die bestaat (zodat we niet dubbelen bij tekst updates)
+                const oldBtn = card.querySelector('.review-read-more');
+                if (oldBtn) oldBtn.remove();
+                
+                // Reset state to measure accurately
+                p.classList.remove('expanded');
 
-            // Wait one tick so layout is complete
-            requestAnimationFrame(() => {
-                const isClamped = p.scrollHeight > p.clientHeight + 2;
-                if (isClamped) {
-                    const btn = document.createElement('button');
-                    btn.className = 'review-read-more';
-                    btn.textContent = window.i18n ? window.i18n.t('review-read-more') : 'Verder lezen';
-                    btn.setAttribute('data-i18n', 'review-read-more');
-                    btn.addEventListener('click', () => {
-                        p.classList.add('expanded');
-                        btn.style.display = 'none';
-                    });
-                    p.parentNode.insertBefore(btn, p.nextSibling);
-                }
+                requestAnimationFrame(() => {
+                    const isClamped = p.scrollHeight > p.clientHeight + 2;
+                    if (isClamped) {
+                        const btn = document.createElement('button');
+                        btn.className = 'review-read-more';
+                        btn.textContent = window.i18n ? window.i18n.t('review-read-more') : 'Verder lezen';
+                        btn.setAttribute('data-i18n', 'review-read-more');
+                        btn.addEventListener('click', () => {
+                            p.classList.add('expanded');
+                            btn.style.display = 'none';
+                        });
+                        p.parentNode.insertBefore(btn, p.nextSibling);
+                    }
+                });
             });
-        });
 
-        // Hide "Meer reviews" knop als alle extra cards leeg zijn (tekst == "-")
-        const extras = document.querySelectorAll('.review-extra');
-        const hasContent = Array.from(extras).some(card => {
-            const p = card.querySelector('.review-text');
-            return p && p.textContent.trim() !== '-' && p.textContent.trim() !== '';
-        });
-        const moreWrap = document.getElementById('reviews-more-wrap');
-        if (moreWrap && !hasContent) {
-            moreWrap.style.display = 'none';
+            // Hide "Meer reviews" knop als alle extra cards leeg zijn (tekst == "-")
+            const extras = document.querySelectorAll('.review-extra');
+            const hasContent = Array.from(extras).some(card => {
+                const p = card.querySelector('.review-text');
+                return p && p.textContent.trim() !== '-' && p.textContent.trim() !== '';
+            });
+            const moreWrap = document.getElementById('reviews-more-wrap');
+            if (moreWrap) {
+                moreWrap.style.display = hasContent ? '' : 'none';
+            }
+        };
+
+        // Run initially
+        updateTruncation();
+
+        // Observe text changes (e.g. from i18n / Firebase)
+        const grid = document.getElementById('reviews-grid');
+        if (grid) {
+            const observer = new MutationObserver((mutations) => {
+                // Throttle updates slightly to avoid loops during mass text replacement
+                clearTimeout(this._reviewUpdateTimer);
+                this._reviewUpdateTimer = setTimeout(updateTruncation, 100);
+            });
+            observer.observe(grid, { childList: true, characterData: true, subtree: true });
         }
     }
 };

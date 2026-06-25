@@ -874,6 +874,7 @@
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 100px; /* Force 4 lines of height even for short texts */
   transition: max-height 0.4s ease;
 }
 
@@ -881,6 +882,7 @@
   display: block;
   -webkit-line-clamp: unset;
   overflow: visible;
+  min-height: auto;
 }
 
 .review-read-more {
@@ -924,9 +926,11 @@
   gap: 5px;
 }
 
-.review-flag {
-  font-size: 1rem;
-  line-height: 1;
+.review-flag-img {
+  width: 16px;
+  height: 12px;
+  object-fit: cover;
+  border-radius: 2px;
 }
 
 @media (max-width: 992px) {
