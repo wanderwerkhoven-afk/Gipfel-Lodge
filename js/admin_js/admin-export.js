@@ -105,19 +105,24 @@ async function startStaticExport() {
             }
         }
         
+        const phpMap = {};
+        let phpCounter = 0;
+
         // data-i18n elementen
         docEl.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            const phpTag = `<?= htmlspecialchars($t[$lang]['${key}'] ?? '${key}') ?>`;
+            const phpCode = `<?= htmlspecialchars($t[$lang]['${key}'] ?? '${key}') ?>`;
+            const placeholder = `__PHP_TAG_${phpCounter++}__`;
+            phpMap[placeholder] = phpCode;
             
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                el.setAttribute('placeholder', phpTag);
+                el.setAttribute('placeholder', placeholder);
                 el.removeAttribute('data-i18n');
             } else if (el.hasAttribute('title')) {
-                el.setAttribute('title', phpTag);
+                el.setAttribute('title', placeholder);
                 el.removeAttribute('data-i18n');
             } else {
-                el.innerHTML = phpTag;
+                el.innerHTML = placeholder;
                 el.removeAttribute('data-i18n');
             }
         });
@@ -146,7 +151,10 @@ async function startStaticExport() {
                                 en: item.alt.en || ''
                             });
                             const b64Alt = btoa(unescape(encodeURIComponent(altJson)));
-                            el.setAttribute('alt', `<?= htmlspecialchars(json_decode(base64_decode('${b64Alt}'), true)[$lang] ?? '') ?>`);
+                            const phpCode = `<?= htmlspecialchars(json_decode(base64_decode('${b64Alt}'), true)[$lang] ?? '') ?>`;
+                            const placeholder = `__PHP_TAG_${phpCounter++}__`;
+                            phpMap[placeholder] = phpCode;
+                            el.setAttribute('alt', placeholder);
                         }
                     }
                 } else {
@@ -163,7 +171,7 @@ async function startStaticExport() {
             const items = galleryZones[zoneKey];
             if (!items || items.length === 0) return;
 
-            const getAltPhp = (item, fallbackSrc) => {
+            const getAltPlaceholder = (item, fallbackSrc) => {
                 if (item && typeof item === 'object' && item.alt && (item.alt.nl || item.alt.de || item.alt.en)) {
                     const altJson = JSON.stringify({
                         nl: item.alt.nl || '',
@@ -171,7 +179,10 @@ async function startStaticExport() {
                         en: item.alt.en || ''
                     });
                     const b64Alt = btoa(unescape(encodeURIComponent(altJson)));
-                    return `<?= htmlspecialchars(json_decode(base64_decode('${b64Alt}'), true)[$lang] ?? '') ?>`;
+                    const phpCode = `<?= htmlspecialchars(json_decode(base64_decode('${b64Alt}'), true)[$lang] ?? '') ?>`;
+                    const placeholder = `__PHP_TAG_${phpCounter++}__`;
+                    phpMap[placeholder] = phpCode;
+                    return placeholder;
                 }
                 return fallbackSrc.split('/').pop().replace(/[-_]/g, ' ').replace(/\.\w+$/, '');
             };
@@ -187,28 +198,28 @@ async function startStaticExport() {
                 const nextBtn = el.querySelector('.mini-nav.next')?.outerHTML || '';
                 el.innerHTML = items.map((item, i) => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAltPhp(item, src);
+                    const alt = getAltPlaceholder(item, src);
                     return `<img src="${src}" alt="${alt}"${i === 0 ? ' class="active"' : ''}>`;
                 }).join('') + prevBtn + nextBtn;
 
             } else if (zoneKey === 'lodge_top_carousel') {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAltPhp(item, src);
+                    const alt = getAltPlaceholder(item, src);
                     return `<div class="lodge-strip-item"><img src="${src}" alt="${alt}" loading="lazy"></div>`;
                 }).join('');
 
             } else if (zoneKey === 'lodge_gallery') {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAltPhp(item, src);
+                    const alt = getAltPlaceholder(item, src);
                     return `<div class="masonry-item reveal"><img src="${src}" alt="${alt}" loading="lazy"><div class="masonry-overlay"><span>${alt}</span></div></div>`;
                 }).join('');
 
             } else {
                 el.innerHTML = items.map(item => {
                     const src = typeof item === 'string' ? item : (item.src || '');
-                    const alt = getAltPhp(item, src);
+                    const alt = getAltPlaceholder(item, src);
                     return src ? `<div class="gallery-item"><img src="${src}" alt="${alt}" loading="lazy"></div>` : '';
                 }).join('');
             }
@@ -221,7 +232,10 @@ async function startStaticExport() {
         // ── 6e. Meta Tags (SEO) ────────────────────────────────────────────────
         const titleEl = docEl.querySelector('title');
         if (titleEl) {
-            titleEl.textContent = `<?= $seoTitles[$lang][$activeRoute] ?? 'Gipfel Lodge' ?>`;
+            const phpCode = `<?= $seoTitles[$lang][$activeRoute] ?? 'Gipfel Lodge' ?>`;
+            const placeholder = `__PHP_TAG_${phpCounter++}__`;
+            phpMap[placeholder] = phpCode;
+            titleEl.textContent = placeholder;
         }
         
         // Hreflang toevoegen
@@ -288,12 +302,16 @@ $t = json_decode(base64_decode('${b64Json}'), true);
 ?>
 `;
 
-        // We ontsnappen eventuele <? en ?> die toevallig in de HTML tekst zitten om PHP syntax errors te voorkomen,
-        // (maar DOMParser lost dat normaal gesproken zelf al netjes op; PHP tags die wél moeten draaien zijn door ons handmatig geïnjecteerd in HTML tags, wat DOMParser codeert naar &lt;?= etc. Wacht, DOMParser zet <?= om in &lt;?= !!)
-        
-        // FIX: DOMParser escaped de `<`, dus onze injected `<?= $t... ?>` is nu `&lt;?= $t... ?&gt;`. 
-        // We moeten dit in de raw string terug-replacen.
+        // Serialize de aangepaste DOM naar HTML string
         let bodyHtml = docEl.documentElement.outerHTML;
+
+        // Vervang de placeholders terug naar echte PHP tags
+        // Dit voorkomt dat de browser DOMParser <? aanziet voor een HTML comment (<!--?)
+        for (const [placeholder, phpCode] of Object.entries(phpMap)) {
+            bodyHtml = bodyHtml.replace(placeholder, phpCode);
+        }
+
+        // Als er onverhoopt nog raw PHP tags in de source stonden die wel omgezet zijn door outerHTML, herstel die:
         bodyHtml = bodyHtml.replace(/&lt;\?=/g, '<?=');
         bodyHtml = bodyHtml.replace(/\?&gt;/g, '?>');
 
