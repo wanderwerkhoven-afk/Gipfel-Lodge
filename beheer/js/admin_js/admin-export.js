@@ -251,6 +251,27 @@ async function startStaticExport() {
             el.removeAttribute('data-gallery-zone');
         });
 
+        // ── 6d. Verberg lege review kaartjes server-side ────────────────────────
+        docEl.querySelectorAll('.review-card-v3').forEach(card => {
+            const p = card.querySelector('.review-text');
+            if (!p) return;
+            const key = p.getAttribute('data-i18n');
+            if (!key) return;
+
+            // Check of de review leeg is in ALLE talen (nl, de, en)
+            // Als die in alle talen leeg/'-' is, verberg het kaartje statisch
+            const allEmpty = ['nl', 'de', 'en'].every(lang => {
+                const val = (finalTranslations[lang] && finalTranslations[lang][key]) || '';
+                return !val || val.trim() === '-' || val.trim() === '';
+            });
+
+            if (allEmpty) {
+                // Voeg display:none toe aan bestaande style
+                const existing = card.getAttribute('style') || '';
+                card.setAttribute('style', (existing + '; display:none!important;').replace(/^;\s*/, '').trim());
+            }
+        });
+
 
 
         // ── 6e. Meta Tags (SEO) ────────────────────────────────────────────────
@@ -380,10 +401,10 @@ $t = json_decode(base64_decode('${b64Json}'), true);
 
 function loadAllTranslations() {
     return new Promise((resolve) => {
-        // Check if a key from the last file (booking) exists
-        if (window.gipfelTranslations && window.gipfelTranslations['nl'] && window.gipfelTranslations['nl']['book-title']) {
-            resolve(); return;
-        }
+        // Reset altijd - zodat we altijd de siteground_upload versie laden
+        // en nooit een stale admin-versie meenemen
+        window.gipfelTranslations = { de: {}, fr: {}, it: {}, en: {}, pl: {}, he: {}, nl: {} };
+
         const sgBase = getSitegroundBase();
         const scripts = [
             'js/site_js/i18n/i18n_core.js',
@@ -394,14 +415,18 @@ function loadAllTranslations() {
             'js/site_js/i18n/i18n_enjoyment.js',
             'js/site_js/i18n/i18n_booking.js'
         ];
-        let loaded = 0;
-        scripts.forEach(src => {
+
+        // Serieel laden: i18n_core.js moet EERST klaar zijn voordat de rest begint
+        // anders overschrijft i18n_core.js de data die al door andere files was ingeladen
+        function loadNext(index) {
+            if (index >= scripts.length) { resolve(); return; }
             const s = document.createElement('script');
-            s.src = sgBase + src;
-            s.onload = () => { loaded++; if (loaded === scripts.length) resolve(); };
-            s.onerror = () => { console.error('Kon script niet laden:', src); loaded++; if (loaded === scripts.length) resolve(); };
+            s.src = sgBase + scripts[index] + '?export=' + Date.now();
+            s.onload = () => loadNext(index + 1);
+            s.onerror = () => { console.error('Kon script niet laden:', scripts[index]); loadNext(index + 1); };
             document.head.appendChild(s);
-        });
+        }
+        loadNext(0);
     });
 }
 

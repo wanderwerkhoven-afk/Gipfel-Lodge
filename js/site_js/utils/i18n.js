@@ -219,10 +219,10 @@ class I18n {
 
         // Hide empty review cards dynamically
         document.querySelectorAll('.review-card-v3').forEach(card => {
-            const p = card.querySelector('p[data-i18n]');
+            const p = card.querySelector('.review-text');
             if (p) {
                 const text = p.innerText.trim();
-                if (!text || text === '-' || text === '...' || text === 'EMPTY') {
+                if (!text || text === '-' || text === '...' || text === 'EMPTY' || text.includes('laat "-" staan')) {
                     card.style.display = 'none';
                     card.setAttribute('data-hidden', 'true');
                 } else {
