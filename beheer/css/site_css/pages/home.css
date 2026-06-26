@@ -826,308 +826,126 @@
 }
 
 /* ========== REVIEWS V3 ========== */
-/* ========== REVIEWS V3 ========== */
 .reviews-grid-v3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  align-items: start;
 }
 
 .review-card-v3 {
-  background: #fff;
-  padding: 28px 28px 22px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-  text-align: center;
-  position: relative;
+  background: white;
+  padding: 28px 28px 24px;
+  border-radius: var(--border-radius-card);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  text-align: left;
+  transition: var(--transition-smooth);
+  border: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 290px;
 }
 
-.review-card-v3.is-expanded {
-  height: auto;
-  min-height: 290px;
+.review-card-v3:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
 }
 
 .review-card-v3 .stars {
-  color: var(--color-gold);
-  font-size: 1.1rem;
-  margin-bottom: 15px;
+  color: var(--color-accent);
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 14px;
   letter-spacing: 2px;
 }
 
-/* Tekst truncatie */
-.review-text-wrap {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  margin-bottom: 10px;
-}
-
-.review-card-v3 .review-text {
+.review-card-v3 p {
   font-style: italic;
   color: var(--color-primary);
+  margin-bottom: 0;
   line-height: 1.7;
-  font-size: 0.92rem;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-}
-
-.review-card-v3 .review-text.expanded {
-  display: block;
-  -webkit-line-clamp: unset;
-  overflow: visible;
+  font-size: 0.97rem;
+  flex: 1;
 }
 
 .review-read-more {
   display: inline-block;
-  margin-top: 4px;
-  font-size: 0.82rem;
+  margin-top: 6px;
+  font-size: 0.85rem;
   color: var(--color-accent);
   text-decoration: underline;
   cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: inherit;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
-/* Footer: naam + vlag */
-.review-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  margin-top: 4px;
+.review-card-v3 .review-footer {
+  margin-top: 18px;
   padding-top: 14px;
   border-top: 1px solid rgba(0,0,0,0.06);
 }
 
 .review-card-v3 cite {
-  font-weight: 700;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  display: block;
+  font-weight: 600;
+  font-size: 0.82rem;
+  font-style: italic;
+  letter-spacing: 0.05em;
   color: var(--color-accent);
-  font-style: normal;
+  margin-bottom: 4px;
 }
 
-.review-meta {
+.review-card-v3 .review-meta {
   font-size: 0.78rem;
-  color: var(--color-text-muted, #888);
+  color: #888;
+  font-style: normal;
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
-.review-flag-img {
-  width: 16px;
-  height: 12px;
-  object-fit: cover;
-  border-radius: 2px;
-}
-
-@media (max-width: 992px) {
-  .reviews-grid-v3 {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    gap: 16px;
-    padding-bottom: 16px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .reviews-grid-v3::-webkit-scrollbar {
-    display: none;
-  }
-
-  .review-card-v3 {
-    flex: 0 0 82vw;
-    max-width: 300px;
-    scroll-snap-align: center;
-    padding: 22px 20px 18px;
-  }
-}
-
-/* ========== BOOKING CTA V3 ========== */
-.booking-cta-v3 {
-  position: relative;
-  padding: 120px 0;
-  background-color: var(--color-primary);
-  color: white;
-  overflow: hidden;
-}
-
-.booking-cta-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.4;
-}
-
-.booking-cta-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(32, 48, 61, 0.85) 0%, rgba(32, 48, 61, 0.3) 100%);
-}
-
-.booking-cta-content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.booking-cta-content .hero-v3-ctas {
-  margin-top: 50px;
-  gap: 15px;
-  /* Tighter grouping */
-}
-
-.booking-cta-title {
-  font-family: var(--font-heading);
-  font-weight: 300;
-.loc-list-v3 strong {
-  font-size: 1.8rem;
-  color: var(--color-primary);
-  font-family: var(--font-heading);
+.review-card-v3 .review-meta .flag {
+  font-size: 1rem;
   line-height: 1;
 }
 
-.loc-list-v3 span {
-  opacity: 0.7;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  font-size: 1rem;
-  color: var(--color-primary);
+/* Extra reviews hidden by default */
+.review-card-v3.review-extra {
+  display: none;
 }
 
-.location-v3-map {
-  aspect-ratio: 4 / 3;
-  border-radius: var(--border-radius-card);
-  overflow: hidden;
-  box-shadow: var(--shadow-premium);
-}
-
-/* ========== REVIEWS V3 ========== */
-/* ========== REVIEWS V3 ========== */
-.reviews-grid-v3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  align-items: start;
-}
-
-.review-card-v3 {
-  background: #fff;
-  padding: 28px 28px 22px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-  text-align: center;
-  position: relative;
+.review-card-v3.review-extra.review-visible {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 290px;
 }
 
-.review-card-v3.is-expanded {
-  height: auto;
-  min-height: 290px;
-}
-
-.review-card-v3 .stars {
-  color: var(--color-gold);
-  font-size: 1.1rem;
-  margin-bottom: 15px;
-  letter-spacing: 2px;
-}
-
-/* Tekst truncatie */
-.review-text-wrap {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  margin-bottom: 10px;
-}
-
-.review-card-v3 .review-text {
-  font-style: italic;
-  color: var(--color-primary);
-  line-height: 1.7;
-  font-size: 0.92rem;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
-}
-
-.review-card-v3 .review-text.expanded {
-  display: block;
-  -webkit-line-clamp: unset;
-  overflow: visible;
-}
-
-.review-read-more {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 0.82rem;
-  color: var(--color-accent);
-  text-decoration: underline;
-  cursor: pointer;
+/* Toggle button */
+.reviews-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   background: none;
   border: none;
-  padding: 0;
-  font-family: inherit;
-}
-
-/* Footer: naam + vlag */
-.review-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  margin-top: 4px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(0,0,0,0.06);
-}
-
-.review-card-v3 cite {
-  font-weight: 700;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-accent);
-  font-style: normal;
-}
-
-.review-meta {
+  cursor: pointer;
   font-size: 0.78rem;
-  color: var(--color-text-muted, #888);
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  padding: 0;
+  margin-top: 32px;
+  transition: color 0.2s;
 }
 
-.review-flag-img {
-  width: 16px;
-  height: 12px;
-  object-fit: cover;
-  border-radius: 2px;
+.reviews-toggle-btn:hover {
+  color: var(--color-accent);
+}
+
+.reviews-toggle-btn .btn-arrow {
+  font-size: 1.1rem;
+  transition: transform 0.3s;
+}
+
+.reviews-toggle-wrap {
+  margin-top: 10px;
 }
 
 @media (max-width: 992px) {
@@ -1136,22 +954,24 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: 16px;
-    padding-bottom: 16px;
+    padding-bottom: 20px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
-
+  
   .reviews-grid-v3::-webkit-scrollbar {
     display: none;
   }
 
-  .review-card-v3 {
-    flex: 0 0 82vw;
+  .review-card-v3,
+  .review-card-v3.review-extra {
+    flex: 0 0 85vw;
     max-width: 300px;
     scroll-snap-align: center;
-    padding: 22px 20px 18px;
+    display: flex !important;
   }
 }
+
 
 /* ========== BOOKING CTA V3 ========== */
 .booking-cta-v3 {
@@ -1198,35 +1018,3 @@
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   line-height: 1.2;
 }
-/* "Meer reviews lezen" — puur tekst, geen kader */
-#reviews-more-btn {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  color: var(--color-primary);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 5px;
-  transition: color 0.2s ease;
-}
-
-#reviews-more-btn:hover {
-  color: var(--color-accent);
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  transform: none;
-}
-
-/* Hide review cards whose text is just a placeholder dash */
-.review-card-v3.review-empty {
-  display: none !important;
-}
-
-.d-none { display: none !important; }
