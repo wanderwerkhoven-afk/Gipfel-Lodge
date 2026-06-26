@@ -145,7 +145,8 @@
   border: 0;
 }
 
-.hero-v3-subtitle {
+.hero-v3-subtitle,
+.hero-eyebrow {
   font-family: var(--font-heading);
   font-size: clamp(1.6rem, 4.5vw, 3.2rem);
   font-weight: 300;
@@ -156,7 +157,8 @@
     0 6px 20px rgba(0, 0, 0, 0.45);
 }
 
-.hero-v3-tagline {
+.hero-v3-tagline,
+.hero-description {
   font-size: clamp(1rem, 2vw, 1.25rem);
   max-width: 800px;
   margin: 0 auto 40px;

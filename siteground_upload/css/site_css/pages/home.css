@@ -145,7 +145,8 @@
   border: 0;
 }
 
-.hero-v3-subtitle {
+.hero-v3-subtitle,
+.hero-eyebrow {
   font-family: var(--font-heading);
   font-size: clamp(1.6rem, 4.5vw, 3.2rem);
   font-weight: 300;
@@ -156,7 +157,8 @@
     0 6px 20px rgba(0, 0, 0, 0.45);
 }
 
-.hero-v3-tagline {
+.hero-v3-tagline,
+.hero-description {
   font-size: clamp(1rem, 2vw, 1.25rem);
   max-width: 800px;
   margin: 0 auto 40px;
@@ -829,46 +831,124 @@
 .reviews-grid-v3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+  gap: 20px;
 }
 
 .review-card-v3 {
   background: white;
-  padding: 50px;
-  /* Increased */
+  padding: 28px 28px 24px;
   border-radius: var(--border-radius-card);
-  box-shadow: var(--shadow-premium);
-  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  text-align: left;
   transition: var(--transition-smooth);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  display: flex;
+  flex-direction: column;
 }
 
 .review-card-v3:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lift);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
 }
 
 .review-card-v3 .stars {
   color: var(--color-accent);
-  font-size: 1.2rem;
+  font-size: 1rem;
   display: block;
-  margin-bottom: 25px;
+  margin-bottom: 14px;
+  letter-spacing: 2px;
 }
 
 .review-card-v3 p {
   font-style: italic;
   color: var(--color-primary);
-  margin-bottom: 30px;
-  line-height: 1.8;
-  font-size: 1.05rem;
+  margin-bottom: 0;
+  line-height: 1.7;
+  font-size: 0.97rem;
+  flex: 1;
+  /* Truncation handled by JS / .review-text-short class */
+}
+
+.review-read-more {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.review-card-v3 .review-footer {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(0,0,0,0.06);
 }
 
 .review-card-v3 cite {
-  font-weight: 700;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
+  display: block;
+  font-weight: 600;
+  font-size: 0.82rem;
+  font-style: italic;
+  letter-spacing: 0.05em;
   color: var(--color-accent);
+  margin-bottom: 4px;
+}
+
+.review-card-v3 .review-meta {
+  font-size: 0.78rem;
+  color: #888;
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.review-card-v3 .review-meta .flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Extra reviews hidden by default */
+.review-card-v3.review-extra {
+  display: none;
+}
+
+.review-card-v3.review-extra.review-visible {
+  display: flex;
+}
+
+/* Toggle button */
+.reviews-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  padding: 0;
+  margin-top: 32px;
+  transition: color 0.2s;
+}
+
+.reviews-toggle-btn:hover {
+  color: var(--color-accent);
+}
+
+.reviews-toggle-btn .btn-arrow {
+  font-size: 1.1rem;
+  transition: transform 0.3s;
+}
+
+.reviews-toggle-wrap {
+  margin-top: 10px;
 }
 
 @media (max-width: 992px) {
@@ -876,21 +956,22 @@
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    gap: 20px;
-    padding-bottom: 20px; /* Space for scrolling */
+    gap: 16px;
+    padding-bottom: 20px;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
   }
   
   .reviews-grid-v3::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
   }
 
-  .review-card-v3 {
-    flex: 0 0 85vw; /* Strictly constrain width so text wraps instead of stretching */
-    max-width: 320px;
+  .review-card-v3,
+  .review-card-v3.review-extra {
+    flex: 0 0 85vw;
+    max-width: 300px;
     scroll-snap-align: center;
-    padding: 30px; /* Reduce massive padding specifically for mobile */
+    display: flex !important;
   }
 }
 

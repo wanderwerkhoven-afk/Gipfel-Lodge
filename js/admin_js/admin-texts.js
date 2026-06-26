@@ -12,6 +12,7 @@ let _defaultTranslations = null; // window.gipfelTranslations
 let _overrides = { nl: {}, de: {}, en: {} };
 let _activeLang = 'nl';
 let _activePage = 'home'; // home, lodge, activities, enjoyment, booking, global
+let _activeSection = 0;
 
 let _pageKeysOrder = {
     home: [],
@@ -63,6 +64,7 @@ window.switchTextPageTab = function(page, btnElement) {
     saveCurrentTabToOverrides();
 
     _activePage = page;
+    _activeSection = 0;
     
     // Update active button state
     const btns = btnElement.parentElement.querySelectorAll('.eb2-tab-btn');
@@ -83,6 +85,14 @@ window.switchLanguageTab = function(lang, btnElement) {
     btns.forEach(btn => btn.classList.remove('active'));
     btnElement.classList.add('active');
 
+    renderTextsEditor();
+};
+
+window.switchTextSection = function(index, btnElement) {
+    saveCurrentTabToOverrides();
+    _activeSection = index;
+    
+    // The UI will re-render, so active classes will be set automatically in renderSidebarLayout
     renderTextsEditor();
 };
 
@@ -249,60 +259,117 @@ function renderTextsEditor() {
     }
 
     if (_activePage === 'home' && window.HOME_PAGE_GROUPS) {
-        html += renderGroupedEditor(window.HOME_PAGE_GROUPS, defaults, overrides);
+        html += renderSidebarLayout(window.HOME_PAGE_GROUPS, defaults, overrides);
     } else if (_activePage === 'lodge' && window.LODGE_PAGE_GROUPS) {
-        html += renderGroupedEditor(window.LODGE_PAGE_GROUPS, defaults, overrides);
+        html += renderSidebarLayout(window.LODGE_PAGE_GROUPS, defaults, overrides);
     } else {
-        // Render all keys chronologically
-        html += `
-            <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
-                <div style="background:#f8fafc; padding:12px 20px; border-bottom:1px solid #e2e8f0; font-weight:600; text-transform:uppercase; font-size:0.8rem; color:#64748b; letter-spacing:0.05em;">
-                    Pagina: ${_activePage}
-                </div>
-                <div style="padding:20px; display:flex; flex-direction:column; gap:15px;">
-        `;
-        
-        for (const key of keysToRender) {
-            const defaultValue = defaults[key] || '';
-        const overrideValue = overrides[key] || '';
-        
-        // If the text is very long, use a textarea, else input
-        const isLong = defaultValue.length > 80;
-
-        html += `
-            <div style="display:flex; flex-direction:column; gap:6px;">
-                <label style="font-size:0.85rem; font-weight:600; color:#475569;">${key}</label>
-                ${isLong 
-                    ? `<textarea data-text-key="${key}" rows="3" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-family:inherit; font-size:0.9rem;">${overrideValue || defaultValue}</textarea>`
-                    : `<input type="text" data-text-key="${key}" value="${(overrideValue || defaultValue).replace(/"/g, '&quot;')}" style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-family:inherit; font-size:0.9rem;">`
-                }
-                ${overrideValue ? `<div style="font-size:0.75rem; color:var(--color-gold);">* Aangepast (Standaard: ${defaultValue.substring(0, 50).replace(/</g, '&lt;')}${defaultValue.length > 50 ? '...' : ''})</div>` : ''}
-            </div>
-            `;
-        }
-        
-        html += `
-                </div>
-            </div>
-        `;
+        const fallbackGroup = [{
+            title: 'Alle Teksten',
+            fields: keysToRender.map(k => ({ id: k, label: k }))
+        }];
+        html += renderSidebarLayout(fallbackGroup, defaults, overrides);
     }
 
     container.innerHTML = html;
 }
 
-function renderGroupedEditor(groups, defaults, overrides) {
-    let html = '';
-    for (const group of groups) {
+function renderSidebarLayout(groups, defaults, overrides) {
+    if (!groups || groups.length === 0) return '';
+    
+    if (_activeSection >= groups.length) _activeSection = 0;
+    
+    const activeGroup = groups[_activeSection];
+
+    let html = `<div style="display:flex; gap:20px; align-items:flex-start; min-height: 500px;">`;
+    
+    // Sidebar
+    html += `
+        <div style="width:160px; background:white; border:1px solid #e2e8f0; border-radius:12px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); flex-shrink:0;">
+            <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:#94a3b8; padding:10px 15px 5px; letter-spacing:0.05em;">Secties</div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+    `;
+    
+    groups.forEach((group, idx) => {
+        const isActive = idx === _activeSection;
+        const bg = isActive ? '#f1f5f9' : 'transparent';
+        const color = isActive ? '#0f172a' : '#64748b';
+        const weight = isActive ? '600' : '500';
         html += `
-            <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02); margin-bottom:20px;">
-                <div style="background:#f8fafc; padding:12px 20px; border-bottom:1px solid #e2e8f0; font-weight:700; font-size:1rem; color:#1e293b;">
-                    ${group.title}
-                </div>
-                <div style="padding:20px; display:flex; flex-direction:column; gap:15px;">
+            <button class="cms-sidebar-btn ${isActive ? 'active' : ''}" onclick="switchTextSection(${idx}, this)" style="background:${bg}; color:${color}; font-weight:${weight}; text-align:left; padding:10px 15px; border-radius:6px; border:none; cursor:pointer; font-size:0.9rem; transition:all 0.2s;">
+                ${group.title}
+            </button>
         `;
-        for (const fieldItem of group.fields) {
+    });
+    
+    html += `
+            </div>
+        </div>
+    `;
+    
+    // Content area
+    html += `
+        <div style="flex:1; background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+            <div style="background:#f8fafc; padding:15px 20px; border-bottom:1px solid #e2e8f0; font-weight:700; font-size:1.1rem; color:#1e293b;">
+                ${activeGroup.title}
+            </div>
+            <div style="padding:24px; display:flex; flex-direction:column; gap:20px;">
+    `;
+    
+    if (activeGroup.title === 'Reviews') {
+        const reviewTitleField = activeGroup.fields.find(f => f.id === 'testi-v3-title');
+        const reviewSourceField = activeGroup.fields.find(f => f.id === 'review-source');
+        
+        if (reviewTitleField) html += renderSingleField(reviewTitleField, defaults, overrides);
+        if (reviewSourceField) html += renderSingleField(reviewSourceField, defaults, overrides);
+        
+        let activeCount = 0;
+        
+        for (let i = 1; i <= 10; i++) {
+            const textField = activeGroup.fields.find(f => f.id === `review-${i}-text`);
+            const nameField = activeGroup.fields.find(f => f.id === `review-${i}-name`);
+            const flagField = activeGroup.fields.find(f => f.id === `review-${i}-flag`);
+            
+            if (!textField) continue;
+            
+            const currentText = overrides[textField.id] !== undefined ? overrides[textField.id] : (defaults[textField.id] || '');
+            
+            if (currentText.trim() === '-' || currentText.includes('laat "-" staan')) {
+                continue;
+            }
+            
+            activeCount++;
+            
+            html += `
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:15px; position:relative;">
+                    <div style="position:absolute; top:15px; right:15px;">
+                        <button class="action-btn" style="background:#fee2e2; color:#ef4444; border:1px solid #fecaca; padding:6px 12px; font-size:0.8rem; cursor:pointer; border-radius:4px;" onclick="removeReviewSlot(${i})">✕ Verwijder</button>
+                    </div>
+                    <h4 style="margin-top:0; margin-bottom:15px; color:#475569; font-size:0.95rem;">Review ${i}</h4>
+                    <div style="display:flex; flex-direction:column; gap:15px;">
+                        ${renderSingleField(textField, defaults, overrides)}
+                        <div style="display:flex; gap:15px;">
+                            <div style="flex:1;">${nameField ? renderSingleField(nameField, defaults, overrides) : ''}</div>
+                            <div style="flex:1;">${flagField ? renderSingleField(flagField, defaults, overrides) : ''}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (activeCount < 10) {
+            html += `
+                <div style="margin-top:10px;">
+                    <button class="action-btn" style="background:white; color:#0f172a; border:2px dashed #cbd5e1; width:100%; padding:15px; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.2s;" onclick="addReviewSlot()">+ Review Toevoegen</button>
+                </div>
+            `;
+        } else {
+            html += `<div style="text-align:center; font-size:0.85rem; color:#64748b; margin-top:10px;">Maximum van 10 reviews bereikt.</div>`;
+        }
+        
+    } else {
+        for (const fieldItem of activeGroup.fields) {
             if (Array.isArray(fieldItem)) {
-                html += `<div style="display:flex; gap:15px; align-items:flex-start; width:100%;">`;
+                html += `<div style="display:flex; gap:20px; align-items:flex-start; width:100%;">`;
                 for (const field of fieldItem) {
                     html += renderSingleField(field, defaults, overrides);
                 }
@@ -311,11 +378,13 @@ function renderGroupedEditor(groups, defaults, overrides) {
                 html += renderSingleField(fieldItem, defaults, overrides);
             }
         }
-        html += `
-                </div>
-            </div>
-        `;
     }
+    
+    html += `
+            </div>
+        </div>
+    </div>`;
+    
     return html;
 }
 
@@ -323,19 +392,38 @@ function renderSingleField(field, defaults, overrides) {
     const defaultValue = defaults[field.id] || '';
     const currentVal = overrides[field.id] !== undefined ? overrides[field.id] : defaultValue;
     const isTextarea = currentVal.length > 60 || defaultValue.length > 60;
+    const isFlag = field.id.endsWith('-flag');
     
     // Zorg voor placeholder tekst
     const placeholderEscaped = defaultValue ? defaultValue.replace(/"/g, '&quot;') : '';
     const valEscaped = currentVal ? currentVal.replace(/"/g, '&quot;') : '';
 
+    let inputHtml = '';
+    
+    if (isFlag) {
+        inputHtml = `
+            <select data-text-key="${field.id}" class="eb2-input" style="cursor:pointer; font-family:inherit; padding:10px; border:1px solid #cbd5e1; border-radius:6px; font-size:0.9rem; width:100%;">
+                <option value="-" ${valEscaped === '-' || !valEscaped ? 'selected' : ''}>Geen vlag (Verbergen)</option>
+                <option value="🇳🇱" ${valEscaped === '🇳🇱' ? 'selected' : ''}>Nederland 🇳🇱</option>
+                <option value="🇧🇪" ${valEscaped === '🇧🇪' ? 'selected' : ''}>België 🇧🇪</option>
+                <option value="🇩🇪" ${valEscaped === '🇩🇪' ? 'selected' : ''}>Duitsland 🇩🇪</option>
+                <option value="🇬🇧" ${valEscaped === '🇬🇧' ? 'selected' : ''}>Verenigd Koninkrijk 🇬🇧</option>
+                <option value="🇫🇷" ${valEscaped === '🇫🇷' ? 'selected' : ''}>Frankrijk 🇫🇷</option>
+                <option value="🇦🇹" ${valEscaped === '🇦🇹' ? 'selected' : ''}>Oostenrijk 🇦🇹</option>
+                <option value="🇨🇭" ${valEscaped === '🇨🇭' ? 'selected' : ''}>Zwitserland 🇨🇭</option>
+            </select>
+        `;
+    } else if (isTextarea) {
+        inputHtml = `<textarea data-text-key="${field.id}" rows="3" class="eb2-input" placeholder="${placeholderEscaped}">${valEscaped}</textarea>`;
+    } else {
+        inputHtml = `<input type="text" data-text-key="${field.id}" value="${valEscaped}" class="eb2-input" placeholder="${placeholderEscaped}">`;
+    }
+
     return `
         <div class="eb2-form-group" style="margin:0;">
             <label style="color:#64748b; font-size:0.85rem; font-weight:600;">${field.label}</label>
             <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:4px; font-family:monospace;">ID: ${field.id}</div>
-            ${isTextarea 
-                ? `<textarea data-text-key="${field.id}" rows="3" class="eb2-input" placeholder="${placeholderEscaped}">${valEscaped}</textarea>`
-                : `<input type="text" data-text-key="${field.id}" value="${valEscaped}" class="eb2-input" placeholder="${placeholderEscaped}">`
-            }
+            ${inputHtml}
         </div>
     `;
 }
@@ -424,5 +512,39 @@ window.saveTextTranslations = async function() {
             btn.disabled = false;
             btn.style.opacity = '1';
         }
+    }
+};
+
+window.removeReviewSlot = function(index) {
+    if (!confirm('Weet je zeker dat je deze review wilt verwijderen?')) return;
+    saveCurrentTabToOverrides();
+    if (!_overrides[_activeLang]) _overrides[_activeLang] = {};
+    _overrides[_activeLang][`review-${index}-text`] = '-';
+    _overrides[_activeLang][`review-${index}-name`] = '-';
+    _overrides[_activeLang][`review-${index}-flag`] = '-';
+    renderTextsEditor();
+};
+
+window.addReviewSlot = function() {
+    saveCurrentTabToOverrides();
+    if (!_overrides[_activeLang]) _overrides[_activeLang] = {};
+    
+    let availableIndex = -1;
+    for (let i = 1; i <= 10; i++) {
+        const currentText = _overrides[_activeLang][`review-${i}-text`] !== undefined 
+            ? _overrides[_activeLang][`review-${i}-text`] 
+            : (_defaultTranslations[_activeLang][`review-${i}-text`] || '');
+            
+        if (currentText.trim() === '-' || currentText.includes('laat "-" staan')) {
+            availableIndex = i;
+            break;
+        }
+    }
+    
+    if (availableIndex !== -1) {
+        _overrides[_activeLang][`review-${availableIndex}-text`] = 'Nieuwe review tekst...';
+        _overrides[_activeLang][`review-${availableIndex}-name`] = 'Naam';
+        _overrides[_activeLang][`review-${availableIndex}-flag`] = '-';
+        renderTextsEditor();
     }
 };

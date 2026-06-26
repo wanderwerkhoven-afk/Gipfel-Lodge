@@ -224,11 +224,25 @@ class I18n {
                 const text = p.innerText.trim();
                 if (!text || text === '-' || text === '...' || text === 'EMPTY') {
                     card.style.display = 'none';
+                    card.setAttribute('data-hidden', 'true');
                 } else {
-                    card.style.display = '';
+                    card.removeAttribute('data-hidden');
+                    // Restore display: extra cards only show when review-visible is present
+                    if (card.classList.contains('review-extra')) {
+                        card.style.display = card.classList.contains('review-visible') ? 'flex' : '';
+                    } else {
+                        card.style.display = 'flex';
+                    }
                 }
             }
         });
+
+        // Show or hide the toggle button based on visible extra reviews
+        const visibleExtras = document.querySelectorAll('.review-card-v3.review-extra:not([data-hidden="true"])');
+        const toggleWrap = document.querySelector('.reviews-toggle-wrap');
+        if (toggleWrap) {
+            toggleWrap.style.display = visibleExtras.length > 0 ? '' : 'none';
+        }
 
         // Update active class on language switchers
         document.querySelectorAll('[data-lang-switch]').forEach(btn => {

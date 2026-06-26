@@ -1,183 +1,183 @@
 const HOME_PAGE_GROUPS = [
     {
-        title: '#Hero',
+        title: 'Hero',
         fields: [
-            { id: 'hero-v3-subtitle', label: '[ sub-title ] Alpiner Luxe & Rust' },
-            { id: 'hero-v3-tagline', label: '[ sub-text ] Jou droom verblijf in Eben im Pongau' },
+            { id: 'hero-eyebrow', label: 'Eyebrow' },
+            { id: 'hero-description', label: 'Beschrijving' },
             [
-                { id: 'hero-v3-cta1', label: '[ button 1 - lodge link ] Lodge ontdekken' },
-                { id: 'hero-v3-cta2', label: '[ button 2 - beschibaarheid link ] Beschikbaarheid checken' },
-                { id: 'hero-v3-cta3', label: '[ button 3 - boeking link ] Boek nu' }
+                { id: 'hero-btn-explore', label: 'Knop - Ontdekken' },
+                { id: 'hero-btn-availability', label: 'Knop - Beschikbaarheid' },
+                { id: 'hero-btn-book', label: 'Knop - Boeken' }
             ]
         ]
     },
     {
-        title: '#Text block 1',
+        title: 'Intro',
         fields: [
-            { id: 'intro-v3-title', label: '[ title text block 1 ] Natuurlijke elegantie, moderne comfort' },
-            { id: 'intro-v3-p1', label: '[ block 1 alinea 1 ] intro tekst' },
-            { id: 'intro-v3-p2', label: '[ block 1 alinea 2 ] intro tekst' }
+            { id: 'intro-title', label: 'Titel' },
+            { id: 'intro-description-1', label: 'Alinea 1' },
+            { id: 'intro-description-2', label: 'Alinea 2' }
         ]
     },
     {
-        title: '#Detail highlights',
+        title: 'Highlights',
         fields: [
             [
-                { id: 'usp-1', label: '[ fact 1 ] 135 m^2 luxe-chalet' },
-                { id: 'usp-2', label: '[ fact 2 ] vakantiehuis 10 pers.' }
+                { id: 'highlights-area', label: 'Oppervlakte (135m2)' },
+                { id: 'highlights-capacity', label: 'Capaciteit (10 pers.)' }
             ],
             [
-                { id: 'usp-3', label: '[ fact 3 ] 4 slaapkamers/ 3 badkamers' },
-                { id: 'usp-4', label: '[ fact 4 ] priv� Sauna.' }
+                { id: 'highlights-bedrooms', label: 'Slaapkamers/Badkamers' },
+                { id: 'highlights-sauna', label: 'Sauna' }
             ],
             [
-                { id: 'usp-5', label: '[ fact 5 ] chalet met berguitzicht' },
-                { id: 'usp-6', label: '[ fact 6 ] nabij flachau & ski amade.' }
+                { id: 'highlights-view', label: 'Uitzicht' },
+                { id: 'highlights-location', label: 'Nabij Flachau' }
             ]
         ]
     },
     {
-        title: '#Lodge fotos',
+        title: 'Gallery',
         fields: [
-            { id: 'visual-1', label: '[ foto 1 ] Wonen' },
-            { id: 'visual-2', label: '[ foto 2 ] Genieten' },
-            { id: 'visual-3', label: '[ foto 3 ] Ontspannen' },
-            { id: 'visual-4', label: '[ foto 4 ] Buiten' },
-            { id: 'visual-5', label: '[ foto 5 ] Wellness' },
-            { id: 'visual-6', label: '[ foto 6 ] Details' }
+            { id: 'gallery-living', label: 'Foto - Wonen' },
+            { id: 'gallery-dining', label: 'Foto - Genieten' },
+            { id: 'gallery-outdoor', label: 'Foto - Ontspannen' },
+            { id: 'gallery-wellness', label: 'Foto - Buiten' },
+            { id: 'gallery-details', label: 'Foto - Wellness' },
+            { id: 'gallery-view', label: 'Foto - Details' }
         ]
     },
     {
-        title: '#Zomer/Winter activiteiten - Zomer',
+        title: 'Zomer',
         fields: [
-            { id: 'seasonal-z-title', label: '[ Titel Zomer ] Zomer in de Alpen' },
-            { id: 'seasonal-z-text', label: '[ sub-text zomer ] Wandelen, ebiken ...' },
-            { id: 'seasonal-z-cta', label: '[ button activiteiten zomer ] zomer activiteiten ontdekken' }
+            { id: 'summer-title', label: 'Titel Zomer' },
+            { id: 'summer-description', label: 'Beschrijving Zomer' },
+            { id: 'summer-button', label: 'Knop - Zomer Ontdekken' }
         ]
     },
     {
-        title: '#Zomer/Winter activiteiten - Winter',
+        title: 'Winter',
         fields: [
-            { id: 'seasonal-w-title', label: '[ Titel Winter ] Winter in Ski-Amade' },
-            { id: 'seasonal-w-text', label: '[ sub-text winter ] Skien, snowboarden ...' },
-            { id: 'seasonal-w-cta', label: '[ button activiteiten winter ] winter activiteiten ontdekken' }
+            { id: 'winter-title', label: 'Titel Winter' },
+            { id: 'winter-description', label: 'Beschrijving Winter' },
+            { id: 'winter-button', label: 'Knop - Winter Ontdekken' }
         ]
     },
     {
-        title: '#De experience',
+        title: 'Experience',
         fields: [
-            { id: 'act-v3-title', label: '[ Titel experience ] De Alpen ervaring' },
-            { id: 'act-card-1-t', label: '[ Titel block 1 ] Skien in Ski-Amade' },
-            { id: 'act-card-1-p', label: '[ sub-text block 1 ] familie vriendelijke ski routes ...' },
-            { id: 'act-card-2-t', label: '[ Titel block 2 ] Wandelen' },
-            { id: 'act-card-2-p', label: '[ sub-text block 2 ] ontdek de regio ...' },
-            { id: 'act-card-3-t', label: '[ Titel block 3 ] Sauna' },
-            { id: 'act-card-3-p', label: '[ sub-text block 3 ] ideaal na een dag skien ...' },
-            { id: 'act-card-4-t', label: '[ Titel block 4 ] Natuurbelevenis' },
-            { id: 'act-card-4-p', label: '[ sub-text block 4 ] Geniet van der zon midden in de natuur ...' },
-            { id: 'act-card-6-t', label: '[ Titel block 5 ] Aktiviteiten' },
-            { id: 'act-card-6-p', label: '[ sub-text block 5 ] elke dag weer wat anders te beleven, van ...' }
+            { id: 'experience-main-title', label: 'Hoofdtitel' },
+            { id: 'experience-ski-title', label: 'Titel - Skiën' },
+            { id: 'experience-ski-description', label: 'Beschrijving - Skiën' },
+            { id: 'experience-hiking-title', label: 'Titel - Wandelen' },
+            { id: 'experience-hiking-description', label: 'Beschrijving - Wandelen' },
+            { id: 'experience-sauna-title', label: 'Titel - Sauna' },
+            { id: 'experience-sauna-description', label: 'Beschrijving - Sauna' },
+            { id: 'experience-nature-title', label: 'Titel - Natuur' },
+            { id: 'experience-nature-description', label: 'Beschrijving - Natuur' },
+            { id: 'experience-activities-title', label: 'Titel - Activiteiten' },
+            { id: 'experience-activities-description', label: 'Beschrijving - Activiteiten' }
         ]
     },
     {
-        title: '#Details huis',
+        title: 'Features',
         fields: [
             [
-                { id: 'feat-1', label: '[ fact 1 ] volledig uitgeruste keuken' },
-                { id: 'feat-2', label: '[ fact 2 ] wijnklimaatkast' },
-                { id: 'feat-3', label: '[ fact 3 ] prive sauna' },
-                { id: 'feat-4', label: '[ fact 4 ] vloerverwarming' }
+                { id: 'feature-kitchen', label: 'Keuken' },
+                { id: 'feature-winecooler', label: 'Wijnklimaatkast' },
+                { id: 'feature-sauna', label: 'Privé Sauna' },
+                { id: 'feature-floorheating', label: 'Vloerverwarming' }
             ],
             [
-                { id: 'feat-5', label: '[ fact 5 ] sfeervolle openhaard' },
-                { id: 'feat-6', label: '[ fact 6 ] 2 parkeerplekken' },
-                { id: 'feat-7', label: '[ fact 7 ] balkon & terras' },
-                { id: 'feat-8', label: '[ fact 8 ] verse broodjesservice' }
+                { id: 'feature-fireplace', label: 'Openhaard' },
+                { id: 'feature-parking', label: 'Parkeerplekken' },
+                { id: 'feature-balcony', label: 'Balkon' },
+                { id: 'feature-breadservice', label: 'Broodjesservice' }
             ]
         ]
     },
     {
-        title: '#Locatie',
+        title: 'Locatie',
         fields: [
-            { id: 'loc-v3-label', label: '[ sub-boven-titel ] locatie' },
-            { id: 'loc-v3-title', label: '[ titel locatie ] Luxus Chalet perfekt gelegen in Eben im Pongau' },
-            { id: 'loc-v3-tagline', label: '[ block 1 alinea 1 ] locatietekst' },
+            { id: 'location-label', label: 'Label' },
+            { id: 'location-title', label: 'Titel' },
+            { id: 'location-description', label: 'Beschrijving' },
             [
-                { id: 'loc-v3-b1', label: '[ tijd 1 ] 5 min.' },
-                { id: 'loc-v3-b1-s', label: '[ locatie 1 ] naar het skigebied' }
+                { id: 'location-distance-ski-time', label: 'Tijd tot Ski' },
+                { id: 'location-distance-ski-label', label: 'Label - Skigebied' }
             ],
             [
-                { id: 'loc-v3-b2', label: '[ tijd 2 ] 8 min.' },
-                { id: 'loc-v3-b2-s', label: '[ locatie 2 ] naar Flachau' }
+                { id: 'location-distance-flachau-time', label: 'Tijd tot Flachau' },
+                { id: 'location-distance-flachau-label', label: 'Label - Flachau' }
             ],
             [
-                { id: 'loc-v3-b3', label: '[ tijd 3 ] 45 min.' },
-                { id: 'loc-v3-b3-s', label: '[ locatie 3 ] vliegveld salzburg' }
+                { id: 'location-distance-airport-time', label: 'Tijd tot Vliegveld' },
+                { id: 'location-distance-airport-label', label: 'Label - Vliegveld' }
             ]
         ]
     },
     {
-        title: '#Reviews',
+        title: 'Reviews',
         fields: [
-            { id: 'testi-v3-title', label: '[ Titel reviews ] Wat gasten vinden' },
-            { id: 'review-source', label: '[ Platform label ] via Airbnb' },
-            { id: 'review-1-v3', label: '[ Review 1 tekst ]' },
-            { id: 'review-1-author', label: '[ Review 1 naam ] — Philipp.' },
-            { id: 'review-1-flag', label: '[ Review 1 vlag emoji ] 🇧🇪' },
-            { id: 'review-2-v3', label: '[ Review 2 tekst ]' },
-            { id: 'review-2-author', label: '[ Review 2 naam ] — Veerle.' },
-            { id: 'review-2-flag', label: '[ Review 2 vlag emoji ] 🇧🇪' },
-            { id: 'review-3-v3', label: '[ Review 3 tekst ]' },
-            { id: 'review-3-author', label: '[ Review 3 naam ] — Dirk.' },
-            { id: 'review-3-flag', label: '[ Review 3 vlag emoji ] 🇧🇪' },
-            { id: 'review-4-v3', label: '[ Review 4 tekst ]' },
-            { id: 'review-4-author', label: '[ Review 4 naam ] — Sabrina' },
-            { id: 'review-4-flag', label: '[ Review 4 vlag emoji ] 🇳🇱' },
-            { id: 'review-5-v3', label: '[ Review 5 tekst ] (laat "-" staan om te verbergen)' },
-            { id: 'review-5-author', label: '[ Review 5 naam ] (laat "-" staan om te verbergen)' },
-            { id: 'review-5-flag', label: '[ Review 5 vlag emoji ] 🇧🇪' },
-            { id: 'review-6-v3', label: '[ Review 6 tekst ] (laat "-" staan om te verbergen)' },
-            { id: 'review-6-author', label: '[ Review 6 naam ] (laat "-" staan om te verbergen)' },
-            { id: 'review-6-flag', label: '[ Review 6 vlag emoji ] 🇧🇪' },
-            { id: 'review-7-v3', label: '[ Review 7 tekst ] (laat "-" staan om te verbergen)' },
-            { id: 'review-7-author', label: '[ Review 7 naam ] (laat "-" staan om te verbergen)' },
-            { id: 'review-7-flag', label: '[ Review 7 vlag emoji ] 🇧🇪' },
-            { id: 'review-8-v3', label: '[ Review 8 tekst ] (laat "-" staan om te verbergen)' },
-            { id: 'review-8-author', label: '[ Review 8 naam ] (laat "-" staan om te verbergen)' },
-            { id: 'review-8-flag', label: '[ Review 8 vlag emoji ] 🇧🇪' },
-            { id: 'review-9-v3', label: '[ Review 9 tekst ] (laat "-" staan om te verbergen)' },
-            { id: 'review-9-author', label: '[ Review 9 naam ] (laat "-" staan om te verbergen)' },
-            { id: 'review-9-flag', label: '[ Review 9 vlag emoji ] 🇧🇪' },
-            { id: 'review-10-v3', label: '[ Review 10 tekst ] (laat "-" staan om te verbergen)' },
-            { id: 'review-10-author', label: '[ Review 10 naam ] (laat "-" staan om te verbergen)' },
-            { id: 'review-10-flag', label: '[ Review 10 vlag emoji ] 🇧🇪' }
+            { id: 'testi-v3-title', label: 'Titel Reviews' },
+            { id: 'review-source', label: 'Platform (bijv. via Airbnb)' },
+            { id: 'review-1-text', label: 'Review 1 - Tekst' },
+            { id: 'review-1-name', label: 'Review 1 - Naam' },
+            { id: 'review-1-flag', label: 'Review 1 - Vlag Emoji' },
+            { id: 'review-2-text', label: 'Review 2 - Tekst' },
+            { id: 'review-2-name', label: 'Review 2 - Naam' },
+            { id: 'review-2-flag', label: 'Review 2 - Vlag Emoji' },
+            { id: 'review-3-text', label: 'Review 3 - Tekst' },
+            { id: 'review-3-name', label: 'Review 3 - Naam' },
+            { id: 'review-3-flag', label: 'Review 3 - Vlag Emoji' },
+            { id: 'review-4-text', label: 'Review 4 - Tekst' },
+            { id: 'review-4-name', label: 'Review 4 - Naam' },
+            { id: 'review-4-flag', label: 'Review 4 - Vlag Emoji' },
+            { id: 'review-5-text', label: 'Review 5 - Tekst (laat "-" staan om te verbergen)' },
+            { id: 'review-5-name', label: 'Review 5 - Naam' },
+            { id: 'review-5-flag', label: 'Review 5 - Vlag Emoji' },
+            { id: 'review-6-text', label: 'Review 6 - Tekst (laat "-" staan om te verbergen)' },
+            { id: 'review-6-name', label: 'Review 6 - Naam' },
+            { id: 'review-6-flag', label: 'Review 6 - Vlag Emoji' },
+            { id: 'review-7-text', label: 'Review 7 - Tekst (laat "-" staan om te verbergen)' },
+            { id: 'review-7-name', label: 'Review 7 - Naam' },
+            { id: 'review-7-flag', label: 'Review 7 - Vlag Emoji' },
+            { id: 'review-8-text', label: 'Review 8 - Tekst (laat "-" staan om te verbergen)' },
+            { id: 'review-8-name', label: 'Review 8 - Naam' },
+            { id: 'review-8-flag', label: 'Review 8 - Vlag Emoji' },
+            { id: 'review-9-text', label: 'Review 9 - Tekst (laat "-" staan om te verbergen)' },
+            { id: 'review-9-name', label: 'Review 9 - Naam' },
+            { id: 'review-9-flag', label: 'Review 9 - Vlag Emoji' },
+            { id: 'review-10-text', label: 'Review 10 - Tekst (laat "-" staan om te verbergen)' },
+            { id: 'review-10-name', label: 'Review 10 - Naam' },
+            { id: 'review-10-flag', label: 'Review 10 - Vlag Emoji' }
         ]
     },
     {
-        title: '#FAQ',
+        title: 'FAQ',
         fields: [
-            { id: 'faq-label', label: '[ FAQ sub boven titel ] FAQ' },
-            { id: 'faq-title', label: '[ FAQ titel ] Veelgestelde vragen' },
-            { id: 'faq-q1', label: '[ question 1 ] Wat is Gipfel lodge precies?' },
-            { id: 'faq-a1', label: '[ answer 1 ] Gipfel lodge is een heerlijk ...' },
-            { id: 'faq-q2', label: '[ question 2 ] hoe dicht ligt ...?' },
-            { id: 'faq-a2', label: '[ answer 2 ] het chalet ligt slechts ...' },
-            { id: 'faq-q3', label: '[ question 3 ] is er een sauna?' },
-            { id: 'faq-a3', label: '[ answer 3 ] Jazeker is die er ...' },
-            { id: 'faq-q4', label: '[ question 4 ] hoe boek ik een verblijf bij ...?' },
-            { id: 'faq-a4', label: '[ answer 4 ] u kunt direct bij de eigenaar ...' },
-            { id: 'faq-q5', label: '[ question 5 ] is gipfellodge ook in de zomer de moeite waard?' },
-            { id: 'faq-a5', label: '[ answer 5 ] Absoluut...' }
+            { id: 'faq-label', label: 'Label' },
+            { id: 'faq-title', label: 'Titel' },
+            { id: 'faq-1-question', label: 'Vraag 1' },
+            { id: 'faq-1-answer', label: 'Antwoord 1' },
+            { id: 'faq-2-question', label: 'Vraag 2' },
+            { id: 'faq-2-answer', label: 'Antwoord 2' },
+            { id: 'faq-3-question', label: 'Vraag 3' },
+            { id: 'faq-3-answer', label: 'Antwoord 3' },
+            { id: 'faq-4-question', label: 'Vraag 4' },
+            { id: 'faq-4-answer', label: 'Antwoord 4' },
+            { id: 'faq-5-question', label: 'Vraag 5' },
+            { id: 'faq-5-answer', label: 'Antwoord 5' }
         ]
     },
     {
-        title: '#Boek nu CTA',
+        title: 'Booking CTA',
         fields: [
-            { id: 'book-cta-v3-t', label: '[ boek nu text ] boek hier uw excl ...' },
-            { id: 'book-cta-v3-s', label: '[ boek nu subtext ] ...' },
+            { id: 'booking-title', label: 'Titel' },
+            { id: 'booking-description', label: 'Beschrijving' },
             [
-                { id: 'book-cta-v3-b1', label: '[ button 1 - beschibaarheid link ] Beschikbaarheid checken' },
-                { id: 'book-cta-v3-b2', label: '[ button 2 - boeking link ] Boek nu' }
+                { id: 'booking-button-availability', label: 'Knop - Beschikbaarheid' },
+                { id: 'booking-button-book', label: 'Knop - Boeken' }
             ]
         ]
     }
@@ -187,94 +187,94 @@ const HOME_PAGE_GROUPS = [
 
 const LODGE_PAGE_GROUPS = [
     {
-        title: '#HERO CAROUSEL',
+        title: 'Hero Gallery',
         fields: [
             [
-                { id: 'gallery-btn-photos', label: "[ button 1 - fotos ] Foto's" },
-                { id: 'gallery-btn-share', label: '[ button 2 - Delen ] Delen' },
-                { id: 'gallery-btn-favorite', label: '[ button 3 - Favorieten ] Favorieten' }
+                { id: 'gallery-btn-photos', label: "Knop - Foto's" },
+                { id: 'gallery-btn-share', label: 'Knop - Delen' },
+                { id: 'gallery-btn-favorite', label: 'Knop - Favorieten' }
             ]
         ]
     },
     {
-        title: '#Propperty Lint',
+        title: 'Eigenschappen Lint',
         fields: [
             [
-                { id: 'lodge-max-guests', label: '[ fact 1 ] Max. 10 gasten' },
-                { id: 'lodge-bedrooms', label: '[ fact 2 ] 4 slaapkamers' },
-                { id: 'lodge-bathrooms', label: '[ fact 3 ] 3 badkamers' },
-                { id: 'lodge-area', label: '[ fact 4 ] 135 m² vakantiewoning' }
+                { id: 'lodge-max-guests', label: 'Gasten' },
+                { id: 'lodge-bedrooms', label: 'Slaapkamers' },
+                { id: 'lodge-bathrooms', label: 'Badkamers' },
+                { id: 'lodge-area', label: 'Oppervlakte' }
             ]
         ]
     },
     {
-        title: '#TEXT BLOCK 1',
+        title: 'Intro Block',
         fields: [
-            { id: 'lodge-highlights-title', label: '[ block 1 sub-boven titel ] Alpine Luxury' },
-            { id: 'lodge-title', label: '[ block 1 Titel ] Luxe Chalet met privé sauna nabij Flachau & Ski amadé' },
-            { id: 'lodge-about-text', label: '[ block 1 Text ] De Gipfel Lodge combineert authentieke ...' }
+            { id: 'lodge-highlights-title', label: 'Eyebrow (Alpine Luxury)' },
+            { id: 'lodge-title', label: 'Titel' },
+            { id: 'lodge-about-text', label: 'Beschrijving' }
         ]
     },
     {
-        title: '#TEXT BLOCK 2',
+        title: 'Wellness Block',
         fields: [
-            { id: 'lodge-sauna-tag', label: '[ block 2 sub-boven titel ] Wellness & Ontspanning' },
-            { id: 'lodge-sauna-title', label: '[ block 2 Titel ] Privé Spa & Wellness Ervaring' },
-            { id: 'lodge-sauna-text', label: '[ block 2 Text ] Na een actieve dag op de pistes ...' }
+            { id: 'lodge-sauna-tag', label: 'Eyebrow (Wellness & Ontspanning)' },
+            { id: 'lodge-sauna-title', label: 'Titel' },
+            { id: 'lodge-sauna-text', label: 'Beschrijving' }
         ]
     },
     {
-        title: '#INDELING',
+        title: 'Indeling',
         fields: [
-            { id: 'lodge-indeling-tag', label: '[ Indeling sub-boven titel ] Woonconcept' },
-            { id: 'lodge-indeling-title', label: '[ Indeling Titel ] Indeling van het luxe chalet' },
-            { id: 'lodge-indeling-subtitle', label: '[ Indeling exp. text] Uw vakantiehuis verdeeld over drie comfortabele woonlagen.' },
-            { id: 'lodge-ug', label: '[ BG Titel] Begane grond (Ontspanning)' },
-            { id: 'lodge-ug-list-1', label: '[ BG facility 1 ] Wellness-suite met regendouche' },
-            { id: 'lodge-ug-list-2', label: '[ BG facility 2 ] Privé sauna' },
-            { id: 'lodge-ug-list-3', label: '[ BG facility 3 ] Skiraum & Wasruimte' },
-            { id: 'lodge-1og', label: '[ V1 Titel] 1e Verdieping (Slapen)' },
-            { id: 'lodge-1og-list-1', label: '[ V1 facility 1 ] 3 luxe suites' },
-            { id: 'lodge-1og-list-2', label: '[ V1 facility 2 ] 2 designer badkamers' },
-            { id: 'lodge-1og-list-3', label: '[ V1 facility 3 ] Panoramisch terras' },
-            { id: 'lodge-2og', label: '[ V2 Titel] 2e Verdieping (Wonen)' },
-            { id: 'lodge-2og-list-1', label: '[ V2 facility 1 ] Open gastronomische keuken' },
-            { id: 'lodge-2og-list-2', label: '[ V2 facility 2 ] Open haard lounge' },
-            { id: 'lodge-2og-list-3', label: '[ V2 facility 3 ] Panoramisch balkon' }
+            { id: 'lodge-indeling-tag', label: 'Eyebrow (Woonconcept)' },
+            { id: 'lodge-indeling-title', label: 'Titel' },
+            { id: 'lodge-indeling-subtitle', label: 'Ondertitel' },
+            { id: 'lodge-ug', label: 'Verdieping 1 (Begane Grond) - Titel' },
+            { id: 'lodge-ug-list-1', label: 'Verdieping 1 - Item 1' },
+            { id: 'lodge-ug-list-2', label: 'Verdieping 1 - Item 2' },
+            { id: 'lodge-ug-list-3', label: 'Verdieping 1 - Item 3' },
+            { id: 'lodge-1og', label: 'Verdieping 2 (1e Etage) - Titel' },
+            { id: 'lodge-1og-list-1', label: 'Verdieping 2 - Item 1' },
+            { id: 'lodge-1og-list-2', label: 'Verdieping 2 - Item 2' },
+            { id: 'lodge-1og-list-3', label: 'Verdieping 2 - Item 3' },
+            { id: 'lodge-2og', label: 'Verdieping 3 (2e Etage) - Titel' },
+            { id: 'lodge-2og-list-1', label: 'Verdieping 3 - Item 1' },
+            { id: 'lodge-2og-list-2', label: 'Verdieping 3 - Item 2' },
+            { id: 'lodge-2og-list-3', label: 'Verdieping 3 - Item 3' }
         ]
     },
     {
-        title: '#Galerie',
+        title: 'Galerij Sectie',
         fields: [
-            { id: 'gallery-tag', label: '[ Indeling sub-boven titel ] Impressies' },
-            { id: 'gallery-title', label: '[ Galerie Titel ] Galerie' }
+            { id: 'gallery-tag', label: 'Eyebrow (Impressies)' },
+            { id: 'gallery-title', label: 'Titel' }
         ]
     },
     {
-        title: '#FAQ',
+        title: 'FAQ Lodge',
         fields: [
-            { id: 'faq-lodge-label', label: '[ FAQ sub boven titel ] FAQ' },
-            { id: 'faq-lodge-title', label: '[ FAQ titel ] Veelgestelde vragen' },
-            { id: 'faq-lodge-q1', label: '[ question 1 ] Wat is Gipfel lodge precies?' },
-            { id: 'faq-lodge-a1', label: '[ answer 1 ] Gipfel lodge is een heerlijk ...' },
-            { id: 'faq-lodge-q2', label: '[ question 2 ] Hoe dicht ligt ...?' },
-            { id: 'faq-lodge-a2', label: '[ answer 2 ] het chalet ligt slechts ...' },
-            { id: 'faq-lodge-q3', label: '[ question 3 ] is er een sauna?' },
-            { id: 'faq-lodge-a3', label: '[ answer 3 ] Jazeker is die er ...' },
-            { id: 'faq-lodge-q4', label: '[ question 4 ] hoe boek ik een verblijf bij ...?' },
-            { id: 'faq-lodge-a4', label: '[ answer 4 ] u kunt direct bij de eigenaar ...' },
-            { id: 'faq-lodge-q5', label: '[ question 5 ] is gipfellodge ook in de zomer de moeite waard?' },
-            { id: 'faq-lodge-a5', label: '[ answer 5 ] Absoluut...' }
+            { id: 'faq-lodge-label', label: 'Label' },
+            { id: 'faq-lodge-title', label: 'Titel' },
+            { id: 'faq-lodge-q1', label: 'Vraag 1' },
+            { id: 'faq-lodge-a1', label: 'Antwoord 1' },
+            { id: 'faq-lodge-q2', label: 'Vraag 2' },
+            { id: 'faq-lodge-a2', label: 'Antwoord 2' },
+            { id: 'faq-lodge-q3', label: 'Vraag 3' },
+            { id: 'faq-lodge-a3', label: 'Antwoord 3' },
+            { id: 'faq-lodge-q4', label: 'Vraag 4' },
+            { id: 'faq-lodge-a4', label: 'Antwoord 4' },
+            { id: 'faq-lodge-q5', label: 'Vraag 5' },
+            { id: 'faq-lodge-a5', label: 'Antwoord 5' }
         ]
     },
     {
-        title: '#Boek nu CTA',
+        title: 'Booking CTA',
         fields: [
-            { id: 'lodge-cta-title', label: '[ Boek nu Text ]' },
-            { id: 'lodge-cta-subtitle', label: '[ Boek nu subtext ] Verzeker uzelf van ...' },
+            { id: 'lodge-cta-title', label: 'Titel' },
+            { id: 'lodge-cta-subtitle', label: 'Beschrijving' },
             [
-                { id: 'lodge-cta-b1', label: '[ button 1 - beschibaarheid link ] Beschikbaarheid' },
-                { id: 'lodge-cta-b2', label: '[ button 2 - boeking link ] Boek Direct' }
+                { id: 'lodge-cta-b1', label: 'Knop - Beschikbaarheid' },
+                { id: 'lodge-cta-b2', label: 'Knop - Boeken' }
             ]
         ]
     }
