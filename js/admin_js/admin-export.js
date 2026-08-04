@@ -112,7 +112,7 @@ async function startStaticExport() {
         // Voor deze velden gebruiken we de NL waarde als fallback in PHP (niet de key-naam)
         const langNeutralPrefixes = ['review-', 'review-source'];
         const isLangNeutral = (key) => key === 'review-source' ||
-            (key.startsWith('review-') && (key.endsWith('-flag') || key.endsWith('-name')));
+            (key.startsWith('review-') && (key.endsWith('-flag') || key.endsWith('-name') || key.endsWith('-source')));
 
         // data-i18n elementen
         docEl.querySelectorAll('[data-i18n]').forEach(el => {

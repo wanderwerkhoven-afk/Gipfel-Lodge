@@ -317,12 +317,10 @@ function renderSidebarLayout(groups, defaults, overrides) {
     
     if (activeGroup.title === 'Reviews') {
         const reviewTitleField = activeGroup.fields.find(f => f.id === 'testi-v3-title');
-        const reviewSourceField = activeGroup.fields.find(f => f.id === 'review-source');
         const showMoreField = activeGroup.fields.find(f => f.id === 'reviews-show-more');
         const showLessField = activeGroup.fields.find(f => f.id === 'reviews-show-less');
         
         if (reviewTitleField) html += renderSingleField(reviewTitleField, defaults, overrides);
-        if (reviewSourceField) html += renderSingleField(reviewSourceField, defaults, overrides);
         if (showMoreField || showLessField) {
             html += `<div style="display:flex; gap:20px; align-items:flex-start; width:100%;">`;
             if (showMoreField) html += renderSingleField(showMoreField, defaults, overrides);
@@ -336,6 +334,7 @@ function renderSidebarLayout(groups, defaults, overrides) {
             const textField = activeGroup.fields.find(f => f.id === `review-${i}-text`);
             const nameField = activeGroup.fields.find(f => f.id === `review-${i}-name`);
             const flagField = activeGroup.fields.find(f => f.id === `review-${i}-flag`);
+            const sourceField = activeGroup.fields.find(f => f.id === `review-${i}-source`);
             
             if (!textField) continue;
             
@@ -358,6 +357,7 @@ function renderSidebarLayout(groups, defaults, overrides) {
                         <div style="display:flex; gap:15px;">
                             <div style="flex:1;">${nameField ? renderSingleField(nameField, defaults, overrides) : ''}</div>
                             <div style="flex:1;">${flagField ? renderSingleField(flagField, defaults, overrides) : ''}</div>
+                            <div style="flex:1;">${sourceField ? renderSingleField(sourceField, defaults, overrides) : ''}</div>
                         </div>
                     </div>
                 </div>
@@ -530,6 +530,7 @@ window.removeReviewSlot = function(index) {
     _overrides[_activeLang][`review-${index}-text`] = '-';
     _overrides[_activeLang][`review-${index}-name`] = '-';
     _overrides[_activeLang][`review-${index}-flag`] = '-';
+    _overrides[_activeLang][`review-${index}-source`] = '-';
     renderTextsEditor();
 };
 
@@ -553,6 +554,7 @@ window.addReviewSlot = function() {
         _overrides[_activeLang][`review-${availableIndex}-text`] = 'Nieuwe review tekst...';
         _overrides[_activeLang][`review-${availableIndex}-name`] = 'Naam';
         _overrides[_activeLang][`review-${availableIndex}-flag`] = '-';
+        _overrides[_activeLang][`review-${availableIndex}-source`] = 'via Airbnb';
         renderTextsEditor();
     }
 };
