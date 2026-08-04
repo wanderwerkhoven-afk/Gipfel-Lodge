@@ -318,9 +318,17 @@ function renderSidebarLayout(groups, defaults, overrides) {
     if (activeGroup.title === 'Reviews') {
         const reviewTitleField = activeGroup.fields.find(f => f.id === 'testi-v3-title');
         const reviewSourceField = activeGroup.fields.find(f => f.id === 'review-source');
+        const showMoreField = activeGroup.fields.find(f => f.id === 'reviews-show-more');
+        const showLessField = activeGroup.fields.find(f => f.id === 'reviews-show-less');
         
         if (reviewTitleField) html += renderSingleField(reviewTitleField, defaults, overrides);
         if (reviewSourceField) html += renderSingleField(reviewSourceField, defaults, overrides);
+        if (showMoreField || showLessField) {
+            html += `<div style="display:flex; gap:20px; align-items:flex-start; width:100%;">`;
+            if (showMoreField) html += renderSingleField(showMoreField, defaults, overrides);
+            if (showLessField) html += renderSingleField(showLessField, defaults, overrides);
+            html += `</div>`;
+        }
         
         let activeCount = 0;
         

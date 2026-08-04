@@ -22,7 +22,9 @@ Object.assign(window.gipfelTranslations.de, {
     "maint-title": "Gipfel Lodge",
     "maint-subtitle": "Wartungsarbeiten",
     "maint-text": "Die Gipfel Lodge wird derzeit aktualisiert. Wir sind bald wieder für Sie da.",
-    "maint-btn": "Buchen Sie über Villa For You"
+    "maint-btn": "Buchen Sie über Villa For You",
+    "reviews-show-more": "MEHR BEWERTUNGEN",
+    "reviews-show-less": "WENIGER BEWERTUNGEN"
 });
 
 // FR
@@ -138,7 +140,9 @@ Object.assign(window.gipfelTranslations.en, {
     "maint-title": "Gipfel Lodge",
     "maint-subtitle": "Under Construction",
     "maint-text": "Gipfel Lodge is currently being updated. We'll be back shortly.",
-    "maint-btn": "Book via Villa For You"
+    "maint-btn": "Book via Villa For You",
+    "reviews-show-more": "SHOW MORE REVIEWS",
+    "reviews-show-less": "SHOW LESS REVIEWS"
 });
 
 
@@ -162,5 +166,7 @@ Object.assign(window.gipfelTranslations.nl, {
     "maint-title": "Gipfel Lodge",
     "maint-subtitle": "Onder Constructie",
     "maint-text": "Gipfel Lodge is momenteel bezig met een update. We zijn snel weer bereikbaar.",
-    "maint-btn": "Boek via Villa For You"
+    "maint-btn": "Boek via Villa For You",
+    "reviews-show-more": "MEER REVIEWS WEERGEVEN",
+    "reviews-show-less": "MINDER REVIEWS WEERGEVEN"
 });

@@ -121,6 +121,8 @@ const HOME_PAGE_GROUPS = [
         fields: [
             { id: 'testi-v3-title', label: 'Titel Reviews' },
             { id: 'review-source', label: 'Platform (bijv. via Airbnb)' },
+            { id: 'reviews-show-more', label: 'Show more knop' },
+            { id: 'reviews-show-less', label: 'Show less knop' },
             { id: 'review-1-text', label: 'Review 1 - Tekst' },
             { id: 'review-1-name', label: 'Review 1 - Naam' },
             { id: 'review-1-flag', label: 'Review 1 - Vlag Emoji' },

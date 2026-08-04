@@ -108,10 +108,26 @@ async function startStaticExport() {
         const phpMap = {};
         let phpCounter = 0;
 
+        // Velden die taal-onafhankelijk zijn: vlag emojis, namen, review-source
+        // Voor deze velden gebruiken we de NL waarde als fallback in PHP (niet de key-naam)
+        const langNeutralPrefixes = ['review-', 'review-source'];
+        const isLangNeutral = (key) => key === 'review-source' ||
+            (key.startsWith('review-') && (key.endsWith('-flag') || key.endsWith('-name')));
+
         // data-i18n elementen
         docEl.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            const phpCode = `<?= htmlspecialchars($t[$lang]['${key}'] ?? '${key}') ?>`;
+            let phpCode;
+
+            if (isLangNeutral(key)) {
+                // Taal-onafhankelijk veld: gebruik NL waarde als fallback voor alle talen
+                const nlFallback = (finalTranslations['nl'] && finalTranslations['nl'][key]) || key;
+                const nlEscaped = nlFallback.replace(/'/g, "\\'");
+                phpCode = `<?= htmlspecialchars($t[$lang]['${key}'] ?? '${nlEscaped}') ?>`;
+            } else {
+                phpCode = `<?= htmlspecialchars($t[$lang]['${key}'] ?? $t['nl']['${key}'] ?? '') ?>`;
+            }
+
             const placeholder = `__PHP_TAG_${phpCounter++}__`;
             phpMap[placeholder] = phpCode;
             

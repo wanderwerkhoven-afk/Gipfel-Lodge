@@ -865,8 +865,14 @@
   margin-bottom: 0;
   line-height: 1.7;
   font-size: 0.97rem;
+  /* Truncation handled by JS */
+}
+
+.review-text-wrap {
   flex: 1;
-  /* Truncation handled by JS / .review-text-short class */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .review-read-more {
