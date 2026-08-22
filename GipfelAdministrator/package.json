@@ -1,0 +1,47 @@
+{
+  "name": "gipfeladministrator",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "functions"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @gipfel/admin",
+    "build": "npm run build -w @gipfel/admin",
+    "test": "node --import tsx --test tests/domain.test.ts",
+    "test:rules:unit": "node --import tsx --test tests/firestore-rules.test.ts",
+    "test:rules": "firebase emulators:exec --project demo-gipfel-saas --only firestore \"npm run test:rules:unit\"",
+    "prepare:browser": "node scripts/verification/prepare-browser.mjs",
+    "pretest:e2e": "npm run prepare:browser",
+    "test:e2e": "playwright test",
+    "verify:phase0": "node scripts/verification/verify.mjs phase0",
+    "verify:phase1": "npm run build && npm run test:e2e -- --grep 'shell|accessibility' && node scripts/verification/verify.mjs phase1",
+    "verify:phase2": "npm run test:rules && node scripts/verification/verify.mjs phase2",
+    "verify:phase3": "npm test && npm run test:rules && node scripts/verification/verify.mjs phase3",
+    "verify:phase3b": "npm run build && npm run test:e2e && node scripts/verification/verify.mjs phase3b",
+    "verify:phase4": "npm test && node scripts/verification/verify.mjs phase4",
+    "verify:phase5": "node scripts/verification/verify.mjs phase5",
+    "verify:phase6": "npm test && node scripts/verification/verify.mjs phase6",
+    "verify:phase7": "node scripts/website/export.mjs && node scripts/verification/verify.mjs phase7",
+    "verify:phase8": "node scripts/verification/verify.mjs phase8",
+    "verify:phase9": "node scripts/verification/verify.mjs phase9",
+    "verify:all": "node scripts/verification/safety.mjs && npm test && npm run test:rules && npm run build && npm run test:e2e && node scripts/website/export.mjs && node scripts/verification/verify.mjs all"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@playwright/test": "^1.62.1",
+    "@sparticuz/chromium": "^149.0.0",
+    "@types/node": "^24.0.0",
+    "firebase": "^12.18.0",
+    "firebase-tools": "^15.28.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
