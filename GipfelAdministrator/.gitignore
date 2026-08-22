@@ -7,7 +7,7 @@ firebase-debug.log
 .env
 coverage/
 artifacts/
-publications/*.zip
+publications/
 browser-tmp/
 runtime-tmp/
 test-results/
