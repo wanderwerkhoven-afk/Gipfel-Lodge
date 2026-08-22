@@ -9,5 +9,6 @@ coverage/
 artifacts/
 publications/*.zip
 browser-tmp/
+runtime-tmp/
 test-results/
 playwright-report/

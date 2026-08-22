@@ -42,4 +42,4 @@ Added `ChannelManagerProvider` and an inert planned Smoobu adapter with no crede
 
 ## Phase 10 — acceptance evidence
 
-Node domain tests, TypeScript/Vite build and 8 desktop/mobile Chromium/Axe tests pass locally. The Firestore Rules suite is present but its official emulator JAR could not be downloaded in the current restricted network, so `GIPFELADMINISTRATOR LOCAL BUILD ACCEPTED` is deliberately not claimed yet.
+The checkpoint gate passes locally with exit code 0: 7 domain tests, 5 official Firestore Emulator Rules tests, TypeScript/Vite build, 8 desktop/mobile Chromium tests, Axe, multilingual export and secrets scan. This is an implemented foundation/MVP checkpoint; incomplete master-spec workflows are listed in `PRODUCTION_READINESS.md`, so full product acceptance is deliberately not claimed.
