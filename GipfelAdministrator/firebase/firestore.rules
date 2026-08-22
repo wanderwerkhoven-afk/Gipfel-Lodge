@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function membership(orgId) {
+      return get(/databases/$(database)/documents/organizations/$(orgId)/memberships/$(request.auth.uid));
+    }
+    function belongsTo(orgId) { return signedIn() && membership(orgId).data.active == true; }
+    function roleIn(orgId, roles) { return belongsTo(orgId) && membership(orgId).data.role in roles; }
+    function immutableTenant(orgId) {
+      return request.resource.data.organizationId == orgId &&
+        (!('organizationId' in resource.data) || request.resource.data.organizationId == resource.data.organizationId);
+    }
+
+    match /organizations/{orgId} {
+      allow read: if belongsTo(orgId);
+      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow update: if roleIn(orgId, ['platform_admin', 'organization_owner']);
+      allow delete: if false;
+
+      match /memberships/{memberId} {
+        allow read: if belongsTo(orgId);
+        allow write: if roleIn(orgId, ['platform_admin', 'organization_owner']);
+      }
+
+      match /{collection}/{docId} {
+        allow read: if collection != 'memberships' && collection != 'auditLogs' && belongsTo(orgId);
+        allow create, update: if collection != 'memberships' && collection != 'auditLogs'
+          && roleIn(orgId, ['platform_admin', 'organization_owner', 'property_manager', 'operations_staff', 'finance_user', 'content_editor'])
+          && immutableTenant(orgId);
+        allow delete: if collection != 'memberships' && collection != 'auditLogs'
+          && roleIn(orgId, ['platform_admin', 'organization_owner']);
+      }
+
+      match /auditLogs/{logId} {
+        allow read: if roleIn(orgId, ['platform_admin', 'organization_owner', 'property_manager']);
+        allow write: if false;
+      }
+    }
+  }
+}

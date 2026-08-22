@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    { "collectionGroup": "reservations", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "propertyId", "order": "ASCENDING" },
+      { "fieldPath": "arrivalDate", "order": "ASCENDING" }
+    ] },
+    { "collectionGroup": "tasks", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "propertyId", "order": "ASCENDING" },
+      { "fieldPath": "dueDate", "order": "ASCENDING" }
+    ] }
+  ],
+  "fieldOverrides": []
+}
