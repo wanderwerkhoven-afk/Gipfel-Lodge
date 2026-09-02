@@ -34,23 +34,40 @@ const routerConfig = {
 };
 
 function getPageIdFromPath(path) {
+    if (!path) return 'home';
+
     const domain = (window.i18n && window.i18n.domain) || 'gipfellodge.eu';
     const config = routerConfig[domain] || routerConfig['gipfellodge.eu'];
     
-    // Normalize path (remove leading/trailing slashes and query params/hashes)
-    const cleanPath = path.split('?')[0].split('#')[0];
+    // Normalize path (remove query params, hashes, and trailing/leading slashes)
+    let cleanPath = path.split('?')[0].split('#')[0];
+    
+    // Strip trailing index.html, index, or .html extension for matching
+    cleanPath = cleanPath.replace(/\/index(\.html)?$/i, '');
+    cleanPath = cleanPath.replace(/\.html$/i, '');
+
     const normPath = '/' + cleanPath.replace(/^\/+|\/+$/g, '');
     
+    // If root or empty, it's home
+    if (normPath === '/' || normPath === '') {
+        return 'home';
+    }
+
     for (const [pageId, pagePath] of Object.entries(config)) {
         if (pagePath === normPath) {
             return pageId;
         }
     }
-    
-    // If no match found and path is empty, default to home
-    if (normPath === '/' || normPath === '') {
-        return 'home';
+
+    // Also check cross-domain path matches (e.g. user opens /activiteiten on .eu domain or vice versa)
+    for (const d of Object.values(routerConfig)) {
+        for (const [pageId, pagePath] of Object.entries(d)) {
+            if (pagePath === normPath) {
+                return pageId;
+            }
+        }
     }
+    
     return '404';
 }
 
@@ -186,13 +203,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const link = e.target.closest('a');
         if (!link) return;
 
-        // Skip absolute external links or target="_blank"
-        if (link.target === '_blank' || (link.hostname && link.hostname !== window.location.hostname)) {
+        const href = link.getAttribute('href');
+        if (!href || href === '#' || href.startsWith('#!') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
+            return;
+        }
+
+        // Check if href is a hash link like #lodge
+        if (href.startsWith('#')) {
+            const hashPage = href.substring(1);
+            if (hashPage) {
+                e.preventDefault();
+                window.navigateTo(hashPage);
+            }
             return;
         }
 
         const pageId = getPageIdFromPath(link.pathname);
-        if (pageId) {
+        if (pageId && pageId !== '404') {
             e.preventDefault();
             window.navigateTo(pageId);
         }
