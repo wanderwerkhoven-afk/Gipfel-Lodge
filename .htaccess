@@ -1,4 +1,4 @@
-<IfModule mod_rewrite.c>
+﻿<IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
@@ -7,6 +7,6 @@
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Laat de geldige SPA-routes door de frontend afhandelen
-  RewriteRule ^(home|lodge|activities|enjoyment|booking)(?:/.*)?$ /index.html [L]
+  # Stuur alle overige routes door naar index.html zodat de SPA router de pagina kan tonen (of het 404-scherm)
+  RewriteRule ^ index.html [L]
 </IfModule>

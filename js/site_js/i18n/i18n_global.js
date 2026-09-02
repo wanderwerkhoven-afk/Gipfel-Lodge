@@ -24,7 +24,11 @@ Object.assign(window.gipfelTranslations.de, {
     "maint-text": "Die Gipfel Lodge wird derzeit aktualisiert. Wir sind bald wieder für Sie da.",
     "maint-btn": "Buchen Sie über Villa For You",
     "reviews-show-more": "MEHR BEWERTUNGEN",
-    "reviews-show-less": "WENIGER BEWERTUNGEN"
+    "reviews-show-less": "WENIGER BEWERTUNGEN",
+    "error-404-title": "Seite nicht gefunden",
+    "error-404-desc": "Die von Ihnen gesuchte Seite existiert leider nicht oder wurde verschoben. Entdecken Sie unsere Lodge oder kehren Sie zur Startseite zurück.",
+    "error-404-btn-home": "Zur Startseite",
+    "error-404-btn-lodge": "Die Lodge ansehen"
 });
 
 // FR
@@ -47,7 +51,11 @@ Object.assign(window.gipfelTranslations.fr, {
     "maint-title": "Gipfel Lodge",
     "maint-subtitle": "En maintenance",
     "maint-text": "Le Gipfel Lodge est en cours de mise à jour. Nous serons de retour sous peu.",
-    "maint-btn": "Réserver via Villa For You"
+    "maint-btn": "Réserver via Villa For You",
+    "error-404-title": "Page non trouvée",
+    "error-404-desc": "La page que vous recherchez n'existe pas ou a été déplacée. Découvrez notre lodge ou revenez à l'accueil.",
+    "error-404-btn-home": "Retour à l'accueil",
+    "error-404-btn-lodge": "Découvrir le Lodge"
 });
 
 // IT
@@ -70,7 +78,11 @@ Object.assign(window.gipfelTranslations.it, {
     "maint-title": "Gipfel Lodge",
     "maint-subtitle": "In manutenzione",
     "maint-text": "Gipfel Lodge è in fase di aggiornamento. Torneremo a breve.",
-    "maint-btn": "Prenota su Villa For You"
+    "maint-btn": "Prenota su Villa For You",
+    "error-404-title": "Pagina non trovata",
+    "error-404-desc": "La pagina che stai cercando non esiste o è stata spostata. Scopri il nostro lodge o torna alla home.",
+    "error-404-btn-home": "Torna alla Home",
+    "error-404-btn-lodge": "Scopri il Lodge"
 });
 
 // PL
@@ -93,7 +105,11 @@ Object.assign(window.gipfelTranslations.pl, {
     "maint-title": "Gipfel Lodge",
     "maint-subtitle": "W przebudowie",
     "maint-text": "Gipfel Lodge jest obecnie aktualizowany. Wkrótce do Państwa wrócimy.",
-    "maint-btn": "Zarezerwuj przez Villa For You"
+    "maint-btn": "Zarezerwuj przez Villa For You",
+    "error-404-title": "Strona nie znaleziona",
+    "error-404-desc": "Strona, której szukasz, nie istnieje lub została przeniesiona. Odkryj naszą chatę lub wróć do strony głównej.",
+    "error-404-btn-home": "Strona główna",
+    "error-404-btn-lodge": "Zobacz Domek"
 });
 
 // HE (RTL)
@@ -116,7 +132,11 @@ Object.assign(window.gipfelTranslations.he, {
     "maint-title": "Gipfel Lodge",
     "maint-subtitle": "תחת תחזוקה",
     "maint-text": "Gipfel Lodge עובר כרגע עדכון. נשוב בקרוב.",
-    "maint-btn": "הזמינו דרך Villa For You"
+    "maint-btn": "הזמינו דרך Villa For You",
+    "error-404-title": "הדף לא נמצא",
+    "error-404-desc": "הדף שחיפשת אינו קיים או הועבר. גלו את הלודג' שלנו או חזרו לדף הבית.",
+    "error-404-btn-home": "חזרה לדף הבית",
+    "error-404-btn-lodge": "צפו בלודג׳"
 });
 
 
@@ -142,7 +162,11 @@ Object.assign(window.gipfelTranslations.en, {
     "maint-text": "Gipfel Lodge is currently being updated. We'll be back shortly.",
     "maint-btn": "Book via Villa For You",
     "reviews-show-more": "SHOW MORE REVIEWS",
-    "reviews-show-less": "SHOW LESS REVIEWS"
+    "reviews-show-less": "SHOW LESS REVIEWS",
+    "error-404-title": "Page Not Found",
+    "error-404-desc": "The page you are looking for does not exist or has been moved. Discover our luxury lodge or return to the homepage.",
+    "error-404-btn-home": "Back to Home",
+    "error-404-btn-lodge": "Explore the Lodge"
 });
 
 
@@ -168,5 +192,9 @@ Object.assign(window.gipfelTranslations.nl, {
     "maint-text": "Gipfel Lodge is momenteel bezig met een update. We zijn snel weer bereikbaar.",
     "maint-btn": "Boek via Villa For You",
     "reviews-show-more": "MEER REVIEWS WEERGEVEN",
-    "reviews-show-less": "MINDER REVIEWS WEERGEVEN"
+    "reviews-show-less": "MINDER REVIEWS WEERGEVEN",
+    "error-404-title": "Pagina Niet Gevonden",
+    "error-404-desc": "De pagina die je zoekt bestaat niet of is verplaatst. Ontdek onze luxe lodge of ga terug naar de homepagina.",
+    "error-404-btn-home": "Terug naar Home",
+    "error-404-btn-lodge": "Bekijk de Lodge"
 });

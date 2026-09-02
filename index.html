@@ -10,7 +10,8 @@
          2.1  SPLASH SCREEN (Entry Animation)
          2.2  HEADER (Navigation Bar)
          2.3  MAIN: Pages (Home, Lodge, Activities, Genuss, Booking)
-         2.4  FOOTER (Shared Footer)
+         2.7  404 Not Found Page
+         2.8  FOOTER (Shared Footer)
 
      3.  SCRIPTS
          3.1  Utilities (Scroll, i18n)
@@ -59,6 +60,7 @@
   <link rel="stylesheet" href="css/site_css/pages/booking.css" />
   <link rel="stylesheet" href="css/site_css/pages/enjoyment.css" />
   <link rel="stylesheet" href="css/site_css/pages/seo-blocks.css" />
+  <link rel="stylesheet" href="css/site_css/pages/404.css" />
 
   <!-- Flag Icons for Phone Selector -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
@@ -2366,7 +2368,24 @@
       </div> <!-- /.booking-grid-layout -->
     </section>
   </main>
-
+ 
+  <!-- 2.7 404 NOT FOUND PAGE -->
+  <main id="404-page" class="page">
+    <section class="error-page-section">
+      <div class="error-page-container">
+        <div class="error-code">404</div>
+        <h1 class="error-title" data-i18n="error-404-title">Pagina Niet Gevonden</h1>
+        <p class="error-description" data-i18n="error-404-desc">
+          De pagina die je zoekt bestaat niet of is verplaatst. Ontdek onze luxe lodge of ga terug naar de homepagina.
+        </p>
+        <div class="error-actions">
+          <a href="#home" class="error-btn-primary" data-i18n="error-404-btn-home">Terug naar Home</a>
+          <a href="#lodge" class="error-btn-secondary" data-i18n="error-404-btn-lodge">Bekijk de Lodge</a>
+        </div>
+      </div>
+    </section>
+  </main>
+ 
   <!-- 2.8 FOOTER (Shared Footer) -->
   <footer class="footer">
     <div class="footer-divider">

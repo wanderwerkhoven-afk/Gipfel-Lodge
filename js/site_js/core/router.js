@@ -51,7 +51,7 @@ function getPageIdFromPath(path) {
     if (normPath === '/' || normPath === '') {
         return 'home';
     }
-    return null;
+    return '404';
 }
 
 function updateNavigationHrefs() {
@@ -115,7 +115,7 @@ window.navigateTo = function(pageId) {
     });
 
     // 3. Update URL pathname (without triggering popstate)
-    if (window.location.pathname !== activePath) {
+    if (pageId !== '404' && window.location.pathname !== activePath) {
         window.history.pushState(null, null, activePath + window.location.search);
     }
 
@@ -132,7 +132,7 @@ window.addEventListener('popstate', () => {
 });
 
 function handleUrlChange() {
-    const pageId = getPageIdFromPath(window.location.pathname) || 'home';
+    const pageId = getPageIdFromPath(window.location.pathname) || '404';
     window.navigateTo(pageId);
 }
 
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNavigationHrefs();
 
     // 2. Load the initial page based on URL path
-    const initialPage = getPageIdFromPath(window.location.pathname) || 'home';
+    const initialPage = getPageIdFromPath(window.location.pathname) || '404';
     window.navigateTo(initialPage);
 
     // 3. Intercept clicks on links for routing
