@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link rel="stylesheet" href="css/admin_css/admin-style.css">
+<link rel="stylesheet" href="css/admin_css/crm-style.css">
     
     <!-- Chart.js for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -98,77 +99,18 @@
                         style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; padding:3px 8px; border-radius:4px; background: rgba(197,160,89,0.2); color: var(--color-gold);">-</span>
                 </div>
 
-                <ul class="nav-menu">
-                    <li class="nav-group-title">FRONTDESK</li>
-                    <li class="nav-item" onclick="switchView('bookings-view', this)">
-                        <i class="ph ph-envelope-simple"></i> Aanvragen
-                    </li>
-                    <li class="nav-item" onclick="switchView('mailchain-view', this)">
-                        <i class="ph ph-paper-plane-tilt"></i> Mail Chain
-                    </li>
-                    <li id="nav-carousel-desktop" class="nav-item" onclick="switchView('carousel-view', this)">
-                        <i class="ph ph-cards"></i> Boekingskaarten
-                    </li>
-                    <li id="nav-pricing-desktop" class="nav-item" onclick="switchView('pricing-view', this)">
-                        <i class="ph ph-tag"></i> Prijzen
-                    </li>
-                    <li id="nav-dataviz-todo" class="nav-item" onclick="switchView('dataviz-todo-view', this)">
-                        <i class="ph ph-check-square-offset"></i> TO-DO's
-                    </li>
-
-                    <li class="nav-group-title">FINANCIËN</li>
-                    <li id="nav-invoices-desktop" class="nav-item" onclick="switchView('invoices-view', this)">
-                        <i class="ph ph-file-text"></i> Facturen
-                    </li>
-                    <li id="nav-debtors-desktop" class="nav-item" onclick="switchView('debtors-view', this)">
-                        <i class="ph ph-warning-circle"></i> Openstaande Saldi
-                    </li>
-                    <li id="nav-kostenposten-desktop" class="nav-item" onclick="switchView('kostenposten-view', this)">
-                        <i class="ph ph-coins"></i> Kostenposten
-                    </li>
-
-                    <li class="nav-group-title">DATA & ANALYTICS</li>
-                    <li id="nav-dataviz-home" class="nav-item" onclick="switchView('dataviz-home-view', this)">
-                        <i class="ph ph-squares-four"></i> Dashboard (KPIs)
-                    </li>
-                    <li id="nav-dataviz-occupancy" class="nav-item" onclick="switchView('dataviz-occupancy-view', this)">
-                        <i class="ph ph-calendar-check"></i> Bezetting
-                    </li>
-                    <li id="nav-dataviz-revenue" class="nav-item" onclick="switchView('dataviz-revenue-view', this)">
-                        <i class="ph ph-chart-line-up"></i> Omzet & Trends
-                    </li>
-                    <li id="nav-dataviz-behavior" class="nav-item" onclick="switchView('dataviz-behavior-view', this)">
-                        <i class="ph ph-users"></i> Boekingsgedrag
-                    </li>
-                    <li id="nav-behavior-desktop" class="nav-item" onclick="switchView('behavior-view', this)">
-                        <i class="ph ph-globe"></i> Website Verkeer
-                    </li>
-
-                    <li class="nav-group-title">BEHEER & SYSTEEM</li>
-                    <li id="nav-texts-desktop" class="nav-item active" onclick="switchView('texts-view', this)">
-                        <i class="ph ph-translate"></i> Teksten Beheren
-                    </li>
-                    <li id="nav-maintenance-desktop" class="nav-item" onclick="switchView('maintenance-view', this)">
-                        <i class="ph ph-wrench"></i> Website Status
-                    </li>
-                    <li id="nav-galleries-desktop" class="nav-item" onclick="switchView('galleries-view', this)">
-                        <i class="ph ph-image"></i> Galerijen Beheren
-                    </li>
-                    <li id="nav-import-desktop" class="nav-item" onclick="switchView('import-view', this)">
-                        <i class="ph ph-file-arrow-up"></i> Excel Import
-                    </li>
-                    <li id="nav-dataviz-data" class="nav-item" onclick="switchView('dataviz-data-view', this)">
-                        <i class="ph ph-database"></i> Database Browser
-                    </li>
-                    <li id="nav-logs-desktop" class="nav-item" onclick="switchView('logs-view', this)">
-                        <i class="ph ph-activity"></i> Systeem Logs
-                    </li>
-
-                    <li class="nav-group-title">WERKOMGEVING</li><li class="nav-item"><a style="color:inherit;text-decoration:none" href="admin.html">Verhuuradministratie openen</a></li><li class="nav-group-title">PUBLICATIE</li>
-                    <li id="nav-export-desktop" class="nav-item" onclick="switchView('export-view', this)">
-                        <i class="ph ph-rocket-launch"></i> Website Publiceren
-                    </li>
-                </ul>
+                <ul class="nav-menu crm-navigation">
+<li class="nav-group-title">WORKSPACE</li>
+<li id="nav-crm-home" class="nav-item active" onclick="switchView('crm-home-view', this)"><i class="ph ph-squares-four"></i> Overzicht</li>
+<li class="nav-group-title">CONTENT STUDIO</li>
+<li id="nav-texts-desktop" class="nav-item" onclick="switchView('texts-view', this)"><i class="ph ph-translate"></i> Teksten & Vertalingen</li>
+<li id="nav-galleries-desktop" class="nav-item" onclick="switchView('galleries-view', this)"><i class="ph ph-images"></i> Galerijen & Media</li>
+<li class="nav-group-title">WEBSITE</li>
+<li id="nav-export-desktop" class="nav-item" onclick="switchView('export-view', this)"><i class="ph ph-rocket-launch"></i> Publicatie</li>
+<li id="nav-maintenance-desktop" class="nav-item" onclick="switchView('maintenance-view', this)"><i class="ph ph-pulse"></i> Website Status</li>
+<li class="nav-group-title">WERKOMGEVING</li>
+<li class="nav-item crm-admin-link"><a href="admin.html"><i class="ph ph-arrow-square-out"></i> Verhuuradmin openen</a></li>
+</ul>
 
                 <div
                     style="margin-top: auto; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; font-size: 0.85rem;">
@@ -230,6 +172,18 @@
             </aside>
 
             <main class="dashboard-main">
+<div class="crm-topbar"><div class="crm-topbar-title"><span>CONTENT MANAGEMENT</span><strong>Gipfel Lodge Studio</strong></div><div class="crm-topbar-actions"><a href="https://gipfellodge.at/" target="_blank" rel="noopener">Bekijk website <i class="ph ph-arrow-up-right"></i></a><button onclick="logout()" type="button"><i class="ph ph-sign-out"></i><span>Uitloggen</span></button></div></div>
+<section id="crm-home-view" class="dashboard-view active crm-home">
+<div class="crm-intro"><div><div class="crm-eyebrow">DIGITAL CONTENT STUDIO</div><h1>Jouw lodge.<br><em>Jouw verhaal.</em></h1><p>Beheer alle teksten, beelden en publicaties van de Gipfel Lodge-website vanuit één rustige werkruimte.</p><button type="button" class="crm-start-button" onclick="switchView('texts-view', document.getElementById('nav-texts-desktop'))">Content bewerken <i class="ph ph-arrow-right"></i></button></div><div class="crm-intro-decoration" aria-hidden="true"><i class="ph ph-mountains"></i><span>EBEN IM PONGAU · AUSTRIA</span></div></div>
+<div class="crm-section-heading"><div><span>SNEL NAAR</span><h2>Wat wil je vandaag aanpassen?</h2></div></div>
+<div class="crm-action-grid">
+<button type="button" class="crm-action-card" onclick="switchView('texts-view',document.getElementById('nav-texts-desktop'))"><span class="crm-action-icon"><i class="ph ph-translate"></i></span><span class="crm-card-index">01 / CONTENT</span><strong>Teksten & Vertalingen</strong><span>Pas de teksten van de website aan in meerdere talen.</span><span class="crm-card-arrow"><i class="ph ph-arrow-up-right"></i></span></button>
+<button type="button" class="crm-action-card" onclick="switchView('galleries-view',document.getElementById('nav-galleries-desktop'))"><span class="crm-action-icon"><i class="ph ph-images"></i></span><span class="crm-card-index">02 / MEDIA</span><strong>Galerijen & Media</strong><span>Beheer de beelden en fotozones van de lodge.</span><span class="crm-card-arrow"><i class="ph ph-arrow-up-right"></i></span></button>
+<button type="button" class="crm-action-card" onclick="switchView('export-view',document.getElementById('nav-export-desktop'))"><span class="crm-action-icon"><i class="ph ph-rocket-launch"></i></span><span class="crm-card-index">03 / PUBLICATIE</span><strong>Website Publiceren</strong><span>Maak een ZIP klaar voor handmatige upload naar SiteGround.</span><span class="crm-card-arrow"><i class="ph ph-arrow-up-right"></i></span></button>
+<button type="button" class="crm-action-card" onclick="switchView('maintenance-view',document.getElementById('nav-maintenance-desktop'))"><span class="crm-action-icon"><i class="ph ph-activity"></i></span><span class="crm-card-index">04 / WEBSITE</span><strong>Website Status</strong><span>Bekijk en beheer de beschikbaarheid van je website.</span><span class="crm-card-arrow"><i class="ph ph-arrow-up-right"></i></span></button>
+</div>
+<div class="crm-footer-note"><i class="ph ph-info"></i> Wijzigingen in de CRM worden pas onderdeel van de statische website na export en handmatige publicatie.</div>
+</section>
                 <!-- Bookings List View -->
                 <div id="bookings-view" class="dashboard-view">
                     <div class="page-header">
@@ -446,7 +400,7 @@
                 </div>
 
                 <!-- TEKSTEN BEHEREN VIEW -->
-                <div id="texts-view" class="dashboard-view active">
+                <div id="texts-view" class="dashboard-view">
                     <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
                             <h1>Teksten Beheren</h1>
