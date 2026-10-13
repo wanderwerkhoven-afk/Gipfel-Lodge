@@ -95,3 +95,10 @@ const crmTitles={'crm-home-view':'Home','texts-view':'Teksten & Vertalingen','ga
 function crmRouteView(){const name=location.hash.slice(2);return Object.keys(crmRoutes).find(key=>crmRoutes[key]===name)||'crm-home-view';}
 window.addEventListener('popstate',()=>{if(window.currentUser) switchView(crmRouteView());});
 window.addEventListener('hashchange',()=>{if(window.currentUser) switchView(crmRouteView());});
+
+/* Keep backdrop and drawer in the same stacking context on mobile Safari. */
+(function placeCrmBackdrop(){
+  const layout=document.querySelector('#dashboard-screen .dashboard-layout');
+  const overlay=document.getElementById('mobile-sidebar-overlay');
+  if(layout && overlay && overlay.parentElement!==layout)layout.appendChild(overlay);
+})();
