@@ -414,35 +414,27 @@ $t = json_decode(base64_decode('${b64Json}'), true);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function loadAllTranslations() {
-    return new Promise((resolve, reject) => {
-        // Reset altijd - zodat we altijd de siteground_upload versie laden
-        // en nooit een stale admin-versie meenemen
-        window.gipfelTranslations = { de: {}, fr: {}, it: {}, en: {}, pl: {}, he: {}, nl: {} };
-
-        const sgBase = new URL('./', window.location.href).href;
-        const scripts = [
-            'js/site_js/i18n/i18n_core.js',
-            'js/site_js/i18n/i18n_global.js',
-            'js/site_js/i18n/i18n_home.js',
-            'js/site_js/i18n/i18n_lodge.js',
-            'js/site_js/i18n/i18n_activities.js',
-            'js/site_js/i18n/i18n_enjoyment.js',
-            'js/site_js/i18n/i18n_booking.js'
-        ];
-
-        // Serieel laden: i18n_core.js moet EERST klaar zijn voordat de rest begint
-        // anders overschrijft i18n_core.js de data die al door andere files was ingeladen
-        function loadNext(index) {
-            if (index >= scripts.length) { resolve(); return; }
-            const s = document.createElement('script');
-            s.src = sgBase + scripts[index] + '?export=' + Date.now();
-            s.onload = () => loadNext(index + 1);
-            s.onerror = () => { reject(new Error('Vertaalbestand ontbreekt: ' + scripts[index])); };
-            document.head.appendChild(s);
-        }
-        loadNext(0);
-    });
+async function loadAllTranslations() {
+    // Fetch translations from the same canonical repository as the HTML export.
+    // This prevents stale copied admin translations from diverging from index.php.
+    window.gipfelTranslations = { de: {}, fr: {}, it: {}, en: {}, pl: {}, he: {}, nl: {} };
+    const base = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + GIPFEL_SOURCE_REF + '/';
+    const scripts = [
+        'js/site_js/i18n/i18n_core.js',
+        'js/site_js/i18n/i18n_global.js',
+        'js/site_js/i18n/i18n_home.js',
+        'js/site_js/i18n/i18n_lodge.js',
+        'js/site_js/i18n/i18n_activities.js',
+        'js/site_js/i18n/i18n_enjoyment.js',
+        'js/site_js/i18n/i18n_booking.js'
+    ];
+    for (const path of scripts) {
+        const response = await fetch(base + encodeGitHubPath(path));
+        if (!response.ok) throw new Error('Verplicht vertaalbestand ontbreekt: ' + path);
+        const script = document.createElement('script');
+        script.textContent = await response.text();
+        document.head.appendChild(script);
+    }
 }
 
 function getSitegroundBase() {
@@ -502,6 +494,6 @@ async function loadGitHubSiteSources() {
     if (new Set(files.map(f => f.dest)).size !== files.length) {
         throw new Error('Dubbele uitvoerbestanden gevonden. Export gestopt.');
     }
-    const rawBase = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + GIPFEL_SOURCE_REF + '/';
+    const rawBase = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + tree.sha + '/';
     return {files, rawBase};
 }
