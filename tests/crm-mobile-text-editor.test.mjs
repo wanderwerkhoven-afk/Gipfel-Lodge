@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{readFileSync}from'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+test('CRM editor keeps desktop sidebar and exposes responsive sections',()=>{const js=read('js/admin_js/admin-texts.js');for(const cls of ['crm-texts-layout','crm-texts-sections','crm-texts-section-buttons','crm-texts-content','crm-texts-fields','crm-texts-field-row'])assert.ok(js.includes(cls),cls)});
+test('mobile editor stacks navigation, rows and full-width input fields',()=>{const css=read('css/admin_css/crm-style.css');assert.match(css,/#texts-editor-container \.crm-texts-layout\{display:flex!important;flex-direction:column!important/);assert.match(css,/#texts-editor-container \.crm-texts-field-row\{display:flex!important;flex-direction:column!important/);assert.match(css,/#texts-editor-container \.eb2-input\{font-size:16px!important/);});
