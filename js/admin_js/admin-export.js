@@ -127,13 +127,13 @@ async function startStaticExport() {
             
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 el.setAttribute('placeholder', placeholder);
-                el.removeAttribute('data-i18n');
+                // Retain data-i18n for subsequent client-side language changes.
             } else if (el.hasAttribute('title')) {
                 el.setAttribute('title', placeholder);
-                el.removeAttribute('data-i18n');
+                // Retain data-i18n for subsequent client-side language changes.
             } else {
                 el.innerHTML = placeholder;
-                el.removeAttribute('data-i18n');
+                // Retain data-i18n for subsequent client-side language changes.
             }
         });
 
@@ -373,6 +373,11 @@ $t = json_decode(base64_decode('${b64Json}'), true);
         const finalPhp = phpHeader + '<!DOCTYPE html>\n' + bodyHtml;
         
         zip.file('index.php', finalPhp);
+        // Existing index.html on SiteGround must not shadow the translated PHP entrypoint.
+        if (zip.file('.htaccess')) {
+            const htaccess = await zip.file('.htaccess').async('string');
+            zip.file('.htaccess', 'DirectoryIndex index.php index.html\n' + htaccess);
+        }
 
         // 8. ZIP genereren & downloaden
         statusDiv.innerText = 'ZIP inpakken en comprimeren...';
