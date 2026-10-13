@@ -265,3 +265,24 @@ body:has(.crm-navigation) #login-screen .login-btn{
  #galleries-view #gallery-editor-container>div[style*="gap: 30px"]{flex-direction:column!important;align-items:stretch!important;gap:15px!important}
  #galleries-view #gallery-editor-container>div[style*="gap: 30px"]>div{width:100%;min-width:0;box-sizing:border-box}
 }
+
+/* Clear mobile page hierarchy: navigation > page title > tools > content. */
+@media(max-width:767px){
+ body:has(.crm-navigation) .crm-topbar{display:none!important}
+ body:has(.crm-navigation) .crm-page-breadcrumb{padding:18px 18px 8px!important;gap:5px 10px;font-size:11px!important}
+ body:has(.crm-navigation) .crm-page-breadcrumb button{font-size:12px!important}
+ body:has(.crm-navigation) #galleries-view{padding-top:12px!important}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-header{gap:11px!important;padding-bottom:20px!important;margin-bottom:15px!important}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-header h1{font-size:clamp(34px,9vw,44px)!important;line-height:1.07!important;letter-spacing:-.025em}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-header>p{font-size:13px!important;line-height:1.5!important;max-width:35ch;color:#73808e!important}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-actions{margin-top:9px!important}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-action-buttons{gap:10px!important}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-action-buttons .eb2-action-btn{
+  min-height:47px!important;border-radius:11px!important;font-size:12px!important;
+  padding:9px 10px!important;font-weight:600!important;line-height:1.25!important
+ }
+ body:has(.crm-navigation) #galleries-view #galleries-save-btn{background:#c5a059!important;color:#223043!important;border:1px solid #b89857!important}
+ body:has(.crm-navigation) #galleries-view #galleries-refresh-btn{background:#fff!important;color:#526173!important;border:1px solid #e2ded5!important}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-page-tabs{margin-top:10px!important}
+ body:has(.crm-navigation) #galleries-view .crm-gallery-zones{padding-top:14px!important}
+}
