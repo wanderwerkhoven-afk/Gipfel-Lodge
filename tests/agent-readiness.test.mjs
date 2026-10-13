@@ -17,3 +17,10 @@ test('canonical discovery files enter SiteGround build', () => {
  assert.ok(b.includes('404.php'));
  assert.ok(b.includes('llms.txt'));
 });
+
+test('homepage has meaningful non-JavaScript accommodation content', () => {
+ const html=read('index.html');
+ const noScript=html.match(/<noscript>([\\s\\S]*?)<\\/noscript>/)?.[1] ?? '';
+ assert.ok(noScript.replace(/<[^>]*>/g, '').trim().length >= 500);
+ assert.ok(html.includes('<link rel="canonical" href="https://gipfellodge.at/"'));
+});
