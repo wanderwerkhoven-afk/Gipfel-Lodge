@@ -70,7 +70,7 @@
     <!-- Mobile Top Bar -->
     <header class="mobile-top-bar">
         <div class="mobile-logo">Gipfel Lodge</div>
-        <button id="hamburger-btn" class="hamburger-btn" onclick="toggleMobileMenu()">
+        <button id="hamburger-btn" class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Open navigatiemenu" aria-expanded="false" aria-controls="dashboard-sidebar">
             <i class="ph ph-list"></i>
         </button>
     </header>
@@ -80,7 +80,8 @@
         <div class="dashboard-layout">
 
             <!-- Sidebar -->
-            <aside class="dashboard-sidebar" id="dashboard-sidebar">
+            <aside class="dashboard-sidebar" id="dashboard-sidebar" aria-label="CRM navigatie">
+<button type="button" class="crm-drawer-close" onclick="closeCrmMenu()" aria-label="Sluit navigatiemenu"><i class="ph ph-x"></i></button>
                 <div class="sidebar-brand">
                     <h2>Gipfel Lodge</h2>
                     <p>Website CRM</p>

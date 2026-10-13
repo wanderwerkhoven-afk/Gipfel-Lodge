@@ -29,17 +29,31 @@ function switchView(id, nav) {
   if(name) name.textContent=crmTitles[id]||'Home';
   if(location.hash!=='#/'+crmRoutes[id]) history.pushState(null,'','#/'+crmRoutes[id]);
   const side = document.getElementById('dashboard-sidebar');
-  if (side) side.classList.remove('active');
-  const overlay = document.getElementById('mobile-sidebar-overlay');
-  if (overlay) overlay.classList.remove('active');
+  closeCrmMenu();
   if (id === 'texts-view' && typeof initTextsView === 'function') initTextsView();
   if (id === 'galleries-view' && typeof initGalleriesView === 'function') initGalleriesView();
   if (id === 'maintenance-view') import('./dataviz/pages/maintenancePage.js').then(m=>m.MaintenancePage.init()).catch(console.error);
 }
-function toggleMobileMenu() {
-  document.getElementById('dashboard-sidebar')?.classList.toggle('active');
-  document.getElementById('mobile-sidebar-overlay')?.classList.toggle('active');
+function closeCrmMenu() {
+  const side=document.getElementById('dashboard-sidebar');
+  const overlay=document.getElementById('mobile-sidebar-overlay');
+  side?.classList.remove('active');
+  overlay?.classList.remove('active');
+  document.getElementById('hamburger-btn')?.setAttribute('aria-expanded','false');
+  document.body.classList.remove('crm-menu-open');
 }
+function toggleMobileMenu() {
+  const side=document.getElementById('dashboard-sidebar');
+  const overlay=document.getElementById('mobile-sidebar-overlay');
+  if (!side || !overlay) return;
+  const isOpen=!side.classList.contains('active');
+  side.classList.toggle('active',isOpen);
+  overlay.classList.toggle('active',isOpen);
+  document.getElementById('hamburger-btn')?.setAttribute('aria-expanded',String(isOpen));
+  document.body.classList.toggle('crm-menu-open',isOpen);
+}
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCrmMenu();});
+window.addEventListener('resize',()=>{if(window.innerWidth>992)closeCrmMenu();});
 async function testFirebaseConnection() {
   const display = document.getElementById('db-test-result');
   try {
@@ -81,3 +95,10 @@ const crmTitles={'crm-home-view':'Home','texts-view':'Teksten & Vertalingen','ga
 function crmRouteView(){const name=location.hash.slice(2);return Object.keys(crmRoutes).find(key=>crmRoutes[key]===name)||'crm-home-view';}
 window.addEventListener('popstate',()=>{if(window.currentUser) switchView(crmRouteView());});
 window.addEventListener('hashchange',()=>{if(window.currentUser) switchView(crmRouteView());});
+
+/* Keep backdrop and drawer in the same stacking context on mobile Safari. */
+(function placeCrmBackdrop(){
+  const layout=document.querySelector('#dashboard-screen .dashboard-layout');
+  const overlay=document.getElementById('mobile-sidebar-overlay');
+  if(layout && overlay && overlay.parentElement!==layout)layout.appendChild(overlay);
+})();
