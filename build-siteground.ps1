@@ -185,6 +185,7 @@ New-Item -ItemType Directory -Path $Beheer | Out-Null
 
 # -- Admin HTML --
 Copy-Item "$Root\admin.html"   "$Beheer\admin.html"
+Copy-Item "$Root\crm.html" "$Beheer\crm.html"
 Copy-Item "$Root\admin-sw.js"  "$Beheer\admin-sw.js"
 Write-Ok "admin.html + admin-sw.js"
 
