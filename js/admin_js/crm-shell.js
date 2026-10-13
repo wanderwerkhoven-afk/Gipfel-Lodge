@@ -7,12 +7,11 @@ function showDashboard() {
   dashboard.style.display = 'block';
   document.body.style.display = 'block';
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  const textsNav = document.getElementById('nav-texts-desktop');
-  if (textsNav) textsNav.classList.add('active');
-  switchView('texts-view', textsNav);
+  const homeNav = document.getElementById('nav-crm-home');
+  switchView('crm-home-view', homeNav);
 }
 function switchView(id, nav) {
-  const allowed = new Set(['texts-view', 'galleries-view', 'export-view', 'maintenance-view']);
+  const allowed = new Set(['crm-home-view', 'texts-view', 'galleries-view', 'export-view', 'maintenance-view']);
   if (!allowed.has(id)) return;
   if (id === 'maintenance-view' && currentUserRole !== 'superuser') {
     alert('Deze functie is alleen beschikbaar voor de superuser.');
