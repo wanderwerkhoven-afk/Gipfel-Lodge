@@ -29,17 +29,31 @@ function switchView(id, nav) {
   if(name) name.textContent=crmTitles[id]||'Home';
   if(location.hash!=='#/'+crmRoutes[id]) history.pushState(null,'','#/'+crmRoutes[id]);
   const side = document.getElementById('dashboard-sidebar');
-  if (side) side.classList.remove('active');
-  const overlay = document.getElementById('mobile-sidebar-overlay');
-  if (overlay) overlay.classList.remove('active');
+  closeCrmMenu();
   if (id === 'texts-view' && typeof initTextsView === 'function') initTextsView();
   if (id === 'galleries-view' && typeof initGalleriesView === 'function') initGalleriesView();
   if (id === 'maintenance-view') import('./dataviz/pages/maintenancePage.js').then(m=>m.MaintenancePage.init()).catch(console.error);
 }
-function toggleMobileMenu() {
-  document.getElementById('dashboard-sidebar')?.classList.toggle('active');
-  document.getElementById('mobile-sidebar-overlay')?.classList.toggle('active');
+function closeCrmMenu() {
+  const side=document.getElementById('dashboard-sidebar');
+  const overlay=document.getElementById('mobile-sidebar-overlay');
+  side?.classList.remove('active');
+  overlay?.classList.remove('active');
+  document.getElementById('hamburger-btn')?.setAttribute('aria-expanded','false');
+  document.body.classList.remove('crm-menu-open');
 }
+function toggleMobileMenu() {
+  const side=document.getElementById('dashboard-sidebar');
+  const overlay=document.getElementById('mobile-sidebar-overlay');
+  if (!side || !overlay) return;
+  const isOpen=!side.classList.contains('active');
+  side.classList.toggle('active',isOpen);
+  overlay.classList.toggle('active',isOpen);
+  document.getElementById('hamburger-btn')?.setAttribute('aria-expanded',String(isOpen));
+  document.body.classList.toggle('crm-menu-open',isOpen);
+}
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCrmMenu();});
+window.addEventListener('resize',()=>{if(window.innerWidth>992)closeCrmMenu();});
 async function testFirebaseConnection() {
   const display = document.getElementById('db-test-result');
   try {
