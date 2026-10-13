@@ -476,7 +476,11 @@ function mapPublicSiteFile(path) {
 }
 
 async function loadGitHubSiteSources() {
-    const api = 'https://api.github.com/repos/' + GIPFEL_SOURCE_REPOSITORY + '/git/trees/' + GIPFEL_SOURCE_REF + '?recursive=1';
+    const commitResponse = await fetch('https://api.github.com/repos/' + GIPFEL_SOURCE_REPOSITORY + '/commits/' + GIPFEL_SOURCE_REF);
+    if (!commitResponse.ok) throw new Error('GitHub-commit kan niet worden vastgesteld (HTTP ' + commitResponse.status + ').');
+    const {sha: commitSha} = await commitResponse.json();
+    if (!/^[0-9a-f]{40}$/.test(commitSha || '')) throw new Error('Ongeldige GitHub-commit SHA.');
+    const api = 'https://api.github.com/repos/' + GIPFEL_SOURCE_REPOSITORY + '/git/trees/' + commitSha + '?recursive=1';
     const response = await fetch(api, {headers: {'Accept': 'application/vnd.github+json'}});
     if (!response.ok) throw new Error('GitHub-bestandsinventaris niet bereikbaar (HTTP ' + response.status + '). Probeer later opnieuw.');
     const tree = await response.json();
@@ -494,6 +498,6 @@ async function loadGitHubSiteSources() {
     if (new Set(files.map(f => f.dest)).size !== files.length) {
         throw new Error('Dubbele uitvoerbestanden gevonden. Export gestopt.');
     }
-    const rawBase = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + tree.sha + '/';
+    const rawBase = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + commitSha + '/';
     return {files, rawBase};
 }
