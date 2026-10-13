@@ -105,3 +105,34 @@ body:has(.crm-navigation) .dashboard-main>.dashboard-view:not(.active){display:n
   }
   body:has(.crm-navigation) .sidebar-brand{padding-right:42px}
 }
+
+/* iOS drawer portal: override ancestor-based styles once moved to body. */
+@media(max-width:992px){
+ body > #dashboard-sidebar {
+   display:flex!important;flex-direction:column!important;position:fixed!important;
+   left:0!important;top:0!important;bottom:0!important;
+   width:min(86vw,350px)!important;height:100dvh!important;
+   max-height:100dvh!important;overflow-y:auto!important;
+   transform:translate3d(-105%,0,0)!important;
+   visibility:hidden!important;
+   z-index:2147483001!important;
+   background:#fcfbf8!important;color:#223043!important;
+   padding:24px 20px 30px!important;box-sizing:border-box!important;
+   transition:transform .25s ease,visibility .25s ease!important;
+ }
+ body > #dashboard-sidebar.active {
+   transform:translate3d(0,0,0)!important;visibility:visible!important;
+ }
+ body > #mobile-sidebar-overlay {
+   position:fixed!important;inset:0!important;z-index:2147483000!important;
+   background:rgba(13,24,34,.48)!important;
+   backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+ }
+ body > #mobile-sidebar-overlay.active {display:block!important;opacity:1!important}
+ body > #dashboard-sidebar .crm-drawer-close {display:grid!important}
+ body > #dashboard-sidebar .sidebar-brand h2{color:#223043!important}
+ body > #dashboard-sidebar .sidebar-brand p{color:#b89450!important}
+ body > #dashboard-sidebar .nav-item{color:#536071!important}
+ body > #dashboard-sidebar .nav-item.active{background:#eee7d8!important;color:#253346!important}
+ body > #dashboard-sidebar .nav-group-title{color:#949b9f!important}
+}
