@@ -286,3 +286,10 @@ body:has(.crm-navigation) #login-screen .login-btn{
  body:has(.crm-navigation) #galleries-view .crm-gallery-page-tabs{margin-top:10px!important}
  body:has(.crm-navigation) #galleries-view .crm-gallery-zones{padding-top:14px!important}
 }
+
+/* Match the Teksten Beheren page-selection pills. */
+#galleries-view .crm-gallery-page-tabs{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:10px!important;border-bottom:0!important;padding-bottom:0!important;max-width:100%!important}
+#galleries-view .crm-gallery-page-pill{appearance:none;border:1px solid #cbd5e1;border-radius:999px;background:#fff;color:#475569;font:600 14px/1.3 Inter,sans-serif;padding:11px 18px;min-height:44px;white-space:nowrap;cursor:pointer;box-shadow:none}
+#galleries-view .crm-gallery-page-pill.active{background:#c5a059;border-color:#c5a059;color:#fff}
+#galleries-view .crm-gallery-page-pill:focus-visible{outline:2px solid #223043;outline-offset:2px}
+@media(max-width:767px){#galleries-view .crm-gallery-page-tabs{flex-wrap:wrap!important;overflow:visible!important;gap:10px!important}#galleries-view .crm-gallery-page-pill{font-size:13px;padding:10px 15px}}
