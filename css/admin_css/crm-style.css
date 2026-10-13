@@ -159,3 +159,35 @@ body:has(.crm-navigation) .dashboard-main>.dashboard-view:not(.active){display:n
   #texts-editor-container textarea.eb2-input{min-height:110px;line-height:1.5}
   #texts-editor-container label{overflow-wrap:break-word;word-break:normal}
 }
+
+/* Unified light CRM mobile shell — rental admin remains unchanged. */
+@media(max-width:992px){
+  body:has(.crm-navigation) .mobile-top-bar,
+  body:has(#crm-home-view) .mobile-top-bar{
+    background:#f7f4ee!important;color:#223043!important;
+    border-bottom:1px solid #e8e1d6!important;
+    box-shadow:0 4px 18px rgba(34,48,67,.06)!important;
+    height:72px!important;padding:0 18px!important;
+    padding-top:env(safe-area-inset-top,0px)!important;
+    box-sizing:content-box!important;
+  }
+  body:has(#crm-home-view) .mobile-top-bar .mobile-logo{
+    color:#223043!important;font-family:"Cormorant Garamond",serif!important;
+    font-size:29px!important;letter-spacing:-.03em!important;
+  }
+  body:has(#crm-home-view) .mobile-top-bar .hamburger-btn{
+    background:#eee8dc!important;border:1px solid #e1d8c9!important;
+    color:#223043!important;box-shadow:none!important;border-radius:12px!important;
+  }
+  body:has(#crm-home-view) .mobile-top-bar .hamburger-btn:focus-visible{
+    outline:2px solid #b89450;outline-offset:2px;
+  }
+  body:has(#crm-home-view) .crm-topbar{
+    background:transparent!important;border-bottom:1px solid #e8e1d6!important;
+    padding:16px 20px!important;
+  }
+  body:has(#crm-home-view) .crm-page-breadcrumb{
+    flex-wrap:wrap;gap:6px 14px;padding:18px 20px 0!important;
+  }
+  body:has(#crm-home-view) .dashboard-main{padding-top:76px!important}
+}
