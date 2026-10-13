@@ -31,8 +31,9 @@ async function startStaticExport() {
         progressFill.style.width = '10%';
         statusDiv.innerText = 'Standaard vertalingen inladen...';
 
-        // 2. Laad alle standaard vertalingen lokaal in
-        await loadAllTranslations();
+        // 2. Resolve the immutable source commit before loading translations.
+        const source = await loadGitHubSiteSources();
+        await loadAllTranslations(source.rawBase);
         
         // Samenvoegen met Firebase overrides
         const finalTranslations = { nl: {}, de: {}, en: {} };
@@ -46,7 +47,6 @@ async function startStaticExport() {
         // 3. Read the exact public source tree from GitHub; no build-script or
         // previously generated siteground_upload/ directory is required.
         statusDiv.innerText = 'GitHub-bronbestanden controleren...';
-        const source = await loadGitHubSiteSources();
         const fileList = source.files;
         const sourceBase = source.rawBase;
         progressFill.style.width = '15%';
@@ -414,11 +414,11 @@ $t = json_decode(base64_decode('${b64Json}'), true);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-async function loadAllTranslations() {
+async function loadAllTranslations(rawBase) {
     // Fetch translations from the same canonical repository as the HTML export.
     // This prevents stale copied admin translations from diverging from index.php.
     window.gipfelTranslations = { de: {}, fr: {}, it: {}, en: {}, pl: {}, he: {}, nl: {} };
-    const base = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + GIPFEL_SOURCE_REF + '/';
+    const base = rawBase;
     const scripts = [
         'js/site_js/i18n/i18n_core.js',
         'js/site_js/i18n/i18n_global.js',
