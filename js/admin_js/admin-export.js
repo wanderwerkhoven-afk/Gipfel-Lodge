@@ -31,8 +31,9 @@ async function startStaticExport() {
         progressFill.style.width = '10%';
         statusDiv.innerText = 'Standaard vertalingen inladen...';
 
-        // 2. Laad alle standaard vertalingen lokaal in
-        await loadAllTranslations();
+        // 2. Resolve the immutable source commit before loading translations.
+        const source = await loadGitHubSiteSources();
+        await loadAllTranslations(source.rawBase);
         
         // Samenvoegen met Firebase overrides
         const finalTranslations = { nl: {}, de: {}, en: {} };
@@ -43,44 +44,37 @@ async function startStaticExport() {
             };
         });
 
-        // 3. Haal bestandslijst op via site-manifest.json
-        statusDiv.innerText = 'Bestandsmanifest ophalen...';
-        const sgBase = getSitegroundBase();
-
-        const manifestResp = await fetch(sgBase + 'js/site-manifest.json?v=' + Date.now()).catch(() => null);
-        if (!manifestResp || !manifestResp.ok) {
-            throw new Error('Kon site-manifest.json niet ophalen. Voer eerst "npm run build:siteground" uit in de terminal.');
-        }
-        const fileList = await manifestResp.json();
+        // 3. Read the exact public source tree from GitHub; no build-script or
+        // previously generated siteground_upload/ directory is required.
+        statusDiv.innerText = 'GitHub-bronbestanden controleren...';
+        const fileList = source.files;
+        const sourceBase = source.rawBase;
         progressFill.style.width = '15%';
 
-        // 4. Kopieer alle statische bestanden (behalve index.html) naar ZIP
-        statusDiv.innerText = 'Bestanden kopiëren naar ZIP...';
+        // 4. Build the static website archive. Any missing file is fatal;
+        // a partial package must never be presented as ready for publication.
         let copied = 0;
         const batchSize = 8;
-
         for (let i = 0; i < fileList.length; i += batchSize) {
             const batch = fileList.slice(i, i + batchSize);
-            await Promise.all(batch.map(async (filePath) => {
-                if (filePath === 'index.html') return; // Slaan we over, wordt index.php
-                try {
-                    const resp = await fetch(sgBase + filePath + '?v=' + Date.now());
-                    if (resp.ok) {
-                        const blob = await resp.blob();
-                        zip.file(filePath, blob);
-                    }
-                } catch (e) {
-                    console.warn('[export] Kon niet kopiëren:', filePath, e);
-                }
+            await Promise.all(batch.map(async ({src, dest}) => {
+                const response = await fetch(sourceBase + encodeGitHubPath(src));
+                if (!response.ok) throw new Error('Verplicht bronbestand ontbreekt: ' + src + ' (HTTP ' + response.status + ')');
+                zip.file(dest, await response.blob());
                 copied++;
             }));
-            progressFill.style.width = (15 + (copied / fileList.length * 45)) + '%';
+            progressFill.style.width = (15 + copied / fileList.length * 45) + '%';
+            statusDiv.innerText = 'Bestanden verwerkt: ' + copied + '/' + fileList.length;
         }
 
-        // 5. Haal index.html op als sjabloon
-        statusDiv.innerText = 'HTML omzetten naar PHP...';
-        const indexResp = await fetch(sgBase + 'index.html?v=' + Date.now()).catch(() => null);
-        if (!indexResp || !indexResp.ok) throw new Error('Kon index.html niet ophalen vanuit siteground_upload/');
+        // Generate machine-readable discovery metadata from the same canonical host.
+        zip.file('robots.txt', 'User-agent: *\\nAllow: /\\n\\nSitemap: https://gipfellodge.at/sitemap.xml\\n');
+        zip.file('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://gipfellodge.at/</loc></url></urlset>');
+
+        // 5. The exported site is always based on current GitHub index.html.
+        statusDiv.innerText = 'Actuele GitHub index.html ophalen...';
+        const indexResp = await fetch(sourceBase + 'index.html');
+        if (!indexResp.ok) throw new Error('GitHub index.html is niet beschikbaar');
         const rawHtml = await indexResp.text();
         progressFill.style.width = '65%';
 
@@ -133,13 +127,13 @@ async function startStaticExport() {
             
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 el.setAttribute('placeholder', placeholder);
-                el.removeAttribute('data-i18n');
+                // Retain data-i18n for subsequent client-side language changes.
             } else if (el.hasAttribute('title')) {
                 el.setAttribute('title', placeholder);
-                el.removeAttribute('data-i18n');
+                // Retain data-i18n for subsequent client-side language changes.
             } else {
                 el.innerHTML = placeholder;
-                el.removeAttribute('data-i18n');
+                // Retain data-i18n for subsequent client-side language changes.
             }
         });
 
@@ -379,8 +373,23 @@ $t = json_decode(base64_decode('${b64Json}'), true);
         const finalPhp = phpHeader + '<!DOCTYPE html>\n' + bodyHtml;
         
         zip.file('index.php', finalPhp);
+        // Existing index.html on SiteGround must not shadow the translated PHP entrypoint.
+        if (zip.file('.htaccess')) {
+            const htaccess = await zip.file('.htaccess').async('string');
+            zip.file('.htaccess', 'DirectoryIndex index.php index.html\n' + htaccess);
+        }
 
-        // 8. ZIP genereren & downloaden
+        // 8. Validate the finished archive before offering it for upload.
+        const requiredOutput = ['index.php', '.htaccess', 'robots.txt', 'sitemap.xml',
+            'invoice.html', 'favicon.ico', 'site.webmanifest',
+            'css/site_css/base/style.css', 'js/site_js/core/firebase.js'];
+        for (const path of requiredOutput) {
+            if (!zip.file(path)) throw new Error('Exportcontrole mislukt: ' + path + ' ontbreekt.');
+        }
+        if (copied !== fileList.length) throw new Error('Export onvolledig: niet alle bronbestanden zijn verwerkt.');
+        statusDiv.innerText = 'Export gevalideerd: ' + copied + ' GitHub-bestanden. ZIP maken...';
+
+        // 9. ZIP genereren & downloaden
         statusDiv.innerText = 'ZIP inpakken en comprimeren...';
         progressFill.style.width = '95%';
         const zipBlob = await zip.generateAsync({
@@ -415,35 +424,27 @@ $t = json_decode(base64_decode('${b64Json}'), true);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
-function loadAllTranslations() {
-    return new Promise((resolve) => {
-        // Reset altijd - zodat we altijd de siteground_upload versie laden
-        // en nooit een stale admin-versie meenemen
-        window.gipfelTranslations = { de: {}, fr: {}, it: {}, en: {}, pl: {}, he: {}, nl: {} };
-
-        const sgBase = getSitegroundBase();
-        const scripts = [
-            'js/site_js/i18n/i18n_core.js',
-            'js/site_js/i18n/i18n_global.js',
-            'js/site_js/i18n/i18n_home.js',
-            'js/site_js/i18n/i18n_lodge.js',
-            'js/site_js/i18n/i18n_activities.js',
-            'js/site_js/i18n/i18n_enjoyment.js',
-            'js/site_js/i18n/i18n_booking.js'
-        ];
-
-        // Serieel laden: i18n_core.js moet EERST klaar zijn voordat de rest begint
-        // anders overschrijft i18n_core.js de data die al door andere files was ingeladen
-        function loadNext(index) {
-            if (index >= scripts.length) { resolve(); return; }
-            const s = document.createElement('script');
-            s.src = sgBase + scripts[index] + '?export=' + Date.now();
-            s.onload = () => loadNext(index + 1);
-            s.onerror = () => { console.error('Kon script niet laden:', scripts[index]); loadNext(index + 1); };
-            document.head.appendChild(s);
-        }
-        loadNext(0);
-    });
+async function loadAllTranslations(rawBase) {
+    // Fetch translations from the same canonical repository as the HTML export.
+    // This prevents stale copied admin translations from diverging from index.php.
+    window.gipfelTranslations = { de: {}, fr: {}, it: {}, en: {}, pl: {}, he: {}, nl: {} };
+    const base = rawBase;
+    const scripts = [
+        'js/site_js/i18n/i18n_core.js',
+        'js/site_js/i18n/i18n_global.js',
+        'js/site_js/i18n/i18n_home.js',
+        'js/site_js/i18n/i18n_lodge.js',
+        'js/site_js/i18n/i18n_activities.js',
+        'js/site_js/i18n/i18n_enjoyment.js',
+        'js/site_js/i18n/i18n_booking.js'
+    ];
+    for (const path of scripts) {
+        const response = await fetch(base + encodeGitHubPath(path));
+        if (!response.ok) throw new Error('Verplicht vertaalbestand ontbreekt: ' + path);
+        const script = document.createElement('script');
+        script.textContent = await response.text();
+        document.head.appendChild(script);
+    }
 }
 
 function getSitegroundBase() {
@@ -459,4 +460,54 @@ function getSitegroundBase() {
     }
 
     return loc.origin + base + 'siteground_upload/';
+}
+
+/**
+ * Resolve the public site payload from its canonical GitHub source tree.
+ * Neither admin files nor generated bundles are included in the upload ZIP.
+ */
+const GIPFEL_SOURCE_REPOSITORY = 'wanderwerkhoven-afk/Gipfel-Lodge';
+const GIPFEL_SOURCE_REF = 'main';
+
+function encodeGitHubPath(path) {
+    return path.split('/').map(encodeURIComponent).join('/');
+}
+
+function mapPublicSiteFile(path) {
+    if (path === 'invoice.html' || path === '.htaccess' || path === 'list-images.php' ||
+        path === '404.php' || path === 'llms.txt') return path;
+    if (path.startsWith('css/site_css/') || path.startsWith('js/site_js/') ||
+        path.startsWith('js/utils/') || path.startsWith('assets/')) return path;
+    if (path === 'templates/invoice_template.html') return path;
+    if (path.startsWith('site_manifest/favicon_website/')) {
+        return path.slice('site_manifest/favicon_website/'.length);
+    }
+    return null;
+}
+
+async function loadGitHubSiteSources() {
+    const commitResponse = await fetch('https://api.github.com/repos/' + GIPFEL_SOURCE_REPOSITORY + '/commits/' + GIPFEL_SOURCE_REF);
+    if (!commitResponse.ok) throw new Error('GitHub-commit kan niet worden vastgesteld (HTTP ' + commitResponse.status + ').');
+    const {sha: commitSha} = await commitResponse.json();
+    if (!/^[0-9a-f]{40}$/.test(commitSha || '')) throw new Error('Ongeldige GitHub-commit SHA.');
+    const api = 'https://api.github.com/repos/' + GIPFEL_SOURCE_REPOSITORY + '/git/trees/' + commitSha + '?recursive=1';
+    const response = await fetch(api, {headers: {'Accept': 'application/vnd.github+json'}});
+    if (!response.ok) throw new Error('GitHub-bestandsinventaris niet bereikbaar (HTTP ' + response.status + '). Probeer later opnieuw.');
+    const tree = await response.json();
+    if (tree.truncated) throw new Error('GitHub geeft een onvolledige bestandsinventaris terug. Export afgebroken.');
+    if (!Array.isArray(tree.tree)) throw new Error('GitHub gaf geen geldige bestandsinventaris terug.');
+    const files = tree.tree.filter(entry => entry.type === 'blob')
+        .map(entry => ({src: entry.path, dest: mapPublicSiteFile(entry.path)}))
+        .filter(entry => entry.dest !== null);
+    const names = new Set(files.map(f => f.dest));
+    const mandatory = ['invoice.html', 'css/site_css/base/style.css', 'js/site_js/core/firebase.js',
+        'favicon.ico', 'site.webmanifest'];
+    for (const name of mandatory) {
+        if (!names.has(name)) throw new Error('Verplicht websitebestand ontbreekt in GitHub: ' + name);
+    }
+    if (new Set(files.map(f => f.dest)).size !== files.length) {
+        throw new Error('Dubbele uitvoerbestanden gevonden. Export gestopt.');
+    }
+    const rawBase = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + commitSha + '/';
+    return {files, rawBase};
 }
