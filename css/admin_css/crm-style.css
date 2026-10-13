@@ -136,3 +136,26 @@ body:has(.crm-navigation) .dashboard-main>.dashboard-view:not(.active){display:n
  body > #dashboard-sidebar .nav-item.active{background:#eee7d8!important;color:#253346!important}
  body > #dashboard-sidebar .nav-group-title{color:#949b9f!important}
 }
+
+/* CRM text editor — responsive without changing the desktop editor. */
+#texts-view, #texts-editor-container, .crm-texts-layout,
+.crm-texts-content, .crm-texts-fields, .crm-texts-field-row,
+.crm-texts-fields .eb2-form-group {min-width:0;max-width:100%;box-sizing:border-box}
+.crm-texts-fields .eb2-input{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow-wrap:normal;word-break:normal}
+.crm-texts-fields textarea.eb2-input{min-height:95px;resize:vertical;white-space:pre-wrap}
+.crm-texts-fields .eb2-form-group{flex:1 1 0}
+@media(max-width:767px){
+  body:has(.crm-navigation) #texts-view{padding-inline:14px!important}
+  #texts-editor-container .crm-texts-layout{display:flex!important;flex-direction:column!important;gap:15px!important;min-height:0!important;width:100%!important}
+  #texts-editor-container .crm-texts-sections{width:100%!important;flex-shrink:1!important;padding:12px!important;overflow:hidden}
+  #texts-editor-container .crm-texts-section-buttons{display:flex!important;flex-direction:row!important;overflow-x:auto;gap:7px!important;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding:3px 0 7px}
+  #texts-editor-container .cms-sidebar-btn{flex:0 0 auto;white-space:nowrap;scroll-snap-align:start;padding:11px 14px!important}
+  #texts-editor-container .crm-texts-content{width:100%!important;flex:0 1 auto!important}
+  #texts-editor-container .crm-texts-fields{padding:16px!important;gap:16px!important}
+  #texts-editor-container .crm-texts-field-row{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:14px!important}
+  #texts-editor-container .crm-texts-field-row>div{width:100%!important;flex:1 1 auto!important;min-width:0}
+  #texts-editor-container .eb2-form-group{width:100%!important;flex:1 1 auto!important;overflow-wrap:break-word;word-break:normal}
+  #texts-editor-container .eb2-input{font-size:16px!important;min-height:44px}
+  #texts-editor-container textarea.eb2-input{min-height:110px;line-height:1.5}
+  #texts-editor-container label{overflow-wrap:break-word;word-break:normal}
+}

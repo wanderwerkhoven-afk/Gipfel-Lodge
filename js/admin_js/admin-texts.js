@@ -280,13 +280,13 @@ function renderSidebarLayout(groups, defaults, overrides) {
     
     const activeGroup = groups[_activeSection];
 
-    let html = `<div style="display:flex; gap:20px; align-items:flex-start; min-height: 500px;">`;
+    let html = `<div class="crm-texts-layout" style="display:flex; gap:20px; align-items:flex-start; min-height: 500px;">`;
     
     // Sidebar
     html += `
-        <div style="width:160px; background:white; border:1px solid #e2e8f0; border-radius:12px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); flex-shrink:0;">
+        <div class="crm-texts-sections" style="width:160px; background:white; border:1px solid #e2e8f0; border-radius:12px; padding:10px; box-shadow:0 1px 3px rgba(0,0,0,0.02); flex-shrink:0;">
             <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:#94a3b8; padding:10px 15px 5px; letter-spacing:0.05em;">Secties</div>
-            <div style="display:flex; flex-direction:column; gap:2px;">
+            <div class="crm-texts-section-buttons" style="display:flex; flex-direction:column; gap:2px;">
     `;
     
     groups.forEach((group, idx) => {
@@ -308,11 +308,11 @@ function renderSidebarLayout(groups, defaults, overrides) {
     
     // Content area
     html += `
-        <div style="flex:1; background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+        <div class="crm-texts-content" style="flex:1; background:white; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
             <div style="background:#f8fafc; padding:15px 20px; border-bottom:1px solid #e2e8f0; font-weight:700; font-size:1.1rem; color:#1e293b;">
                 ${activeGroup.title}
             </div>
-            <div style="padding:24px; display:flex; flex-direction:column; gap:20px;">
+            <div class="crm-texts-fields" style="padding:24px; display:flex; flex-direction:column; gap:20px;">
     `;
     
     if (activeGroup.title === 'Reviews') {
@@ -322,7 +322,7 @@ function renderSidebarLayout(groups, defaults, overrides) {
         
         if (reviewTitleField) html += renderSingleField(reviewTitleField, defaults, overrides);
         if (showMoreField || showLessField) {
-            html += `<div style="display:flex; gap:20px; align-items:flex-start; width:100%;">`;
+            html += `<div class="crm-texts-field-row" style="display:flex; gap:20px; align-items:flex-start; width:100%;">`;
             if (showMoreField) html += renderSingleField(showMoreField, defaults, overrides);
             if (showLessField) html += renderSingleField(showLessField, defaults, overrides);
             html += `</div>`;
@@ -354,7 +354,7 @@ function renderSidebarLayout(groups, defaults, overrides) {
                     <h4 style="margin-top:0; margin-bottom:15px; color:#475569; font-size:0.95rem;">Review ${i}</h4>
                     <div style="display:flex; flex-direction:column; gap:15px;">
                         ${renderSingleField(textField, defaults, overrides)}
-                        <div style="display:flex; gap:15px;">
+                        <div class="crm-texts-field-row" style="display:flex; gap:15px;">
                             <div style="flex:1;">${nameField ? renderSingleField(nameField, defaults, overrides) : ''}</div>
                             <div style="flex:1;">${flagField ? renderSingleField(flagField, defaults, overrides) : ''}</div>
                             <div style="flex:1;">${sourceField ? renderSingleField(sourceField, defaults, overrides) : ''}</div>
@@ -377,7 +377,7 @@ function renderSidebarLayout(groups, defaults, overrides) {
     } else {
         for (const fieldItem of activeGroup.fields) {
             if (Array.isArray(fieldItem)) {
-                html += `<div style="display:flex; gap:20px; align-items:flex-start; width:100%;">`;
+                html += `<div class="crm-texts-field-row" style="display:flex; gap:20px; align-items:flex-start; width:100%;">`;
                 for (const field of fieldItem) {
                     html += renderSingleField(field, defaults, overrides);
                 }
