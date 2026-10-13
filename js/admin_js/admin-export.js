@@ -379,7 +379,17 @@ $t = json_decode(base64_decode('${b64Json}'), true);
             zip.file('.htaccess', 'DirectoryIndex index.php index.html\n' + htaccess);
         }
 
-        // 8. ZIP genereren & downloaden
+        // 8. Validate the finished archive before offering it for upload.
+        const requiredOutput = ['index.php', '.htaccess', 'robots.txt', 'sitemap.xml',
+            'invoice.html', 'favicon.ico', 'site.webmanifest',
+            'css/site_css/base/style.css', 'js/site_js/core/firebase.js'];
+        for (const path of requiredOutput) {
+            if (!zip.file(path)) throw new Error('Exportcontrole mislukt: ' + path + ' ontbreekt.');
+        }
+        if (copied !== fileList.length) throw new Error('Export onvolledig: niet alle bronbestanden zijn verwerkt.');
+        statusDiv.innerText = 'Export gevalideerd: ' + copied + ' GitHub-bestanden. ZIP maken...';
+
+        // 9. ZIP genereren & downloaden
         statusDiv.innerText = 'ZIP inpakken en comprimeren...';
         progressFill.style.width = '95%';
         const zipBlob = await zip.generateAsync({
