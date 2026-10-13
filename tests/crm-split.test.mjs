@@ -17,3 +17,18 @@ test('both pages are included in restricted management build',()=>{
  assert.match(build,/Copy-Item "\$Root\\admin\.html"/);
  assert.match(build,/Copy-Item "\$Root\\crm\.html"/);
 });
+
+test('CRM no longer loads rental, finance or analytics runtime modules',()=>{
+ const crm=read('crm.html');
+ for(const name of ['admin-bookings.js','admin-pricing.js','admin-invoices.js','admin-import.js','admin-behavior.js','admin-logs.js','admin-ui.js']){
+   assert.ok(!crm.includes('src="js/admin_js/'+name+'"'),name);
+ }
+ assert.match(crm,/src="js\/admin_js\/crm-shell\.js"/);
+ assert.match(crm,/src="js\/admin_js\/admin-auth\.js"/);
+});
+test('rental admin does not load website content publishing modules',()=>{
+ const admin=read('admin.html');
+ for(const name of ['admin-texts.js','admin-galleries.js','admin-export.js']){
+   assert.ok(!admin.includes('src="js/admin_js/'+name+'"'),name);
+ }
+});
