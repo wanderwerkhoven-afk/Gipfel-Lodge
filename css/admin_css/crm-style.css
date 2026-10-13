@@ -241,3 +241,27 @@ body:has(.crm-navigation) #login-screen .login-btn{
  body:has(.crm-navigation) #login-screen:not(.login-visible)[style*="display: none"]{display:none!important}
  body:has(.crm-navigation) .mobile-top-bar{z-index:1000}
 }
+
+/* Gallery workspace: controls are in document flow, never over the page title. */
+#galleries-view .crm-gallery-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:20px;min-width:0}
+#galleries-view .crm-gallery-header>h1,#galleries-view .crm-gallery-header>p{width:100%;margin-right:0}
+#galleries-view .crm-gallery-actions{position:static!important;inset:auto!important;align-items:flex-start!important;width:100%;min-width:0}
+#galleries-view .crm-gallery-action-buttons{width:100%;flex-wrap:wrap;min-width:0}
+#galleries-view .crm-gallery-command{max-width:100%;box-sizing:border-box;flex-wrap:wrap;overflow-wrap:anywhere}
+#galleries-view .crm-gallery-page-tabs{max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+#galleries-view .crm-gallery-page-tabs>*{flex-shrink:0}
+#galleries-view .crm-gallery-zones{min-width:0}
+@media(max-width:767px){
+ #galleries-view .crm-gallery-header{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:14px!important}
+ #galleries-view .crm-gallery-header>h1{margin:0!important}
+ #galleries-view .crm-gallery-header>p{margin:0!important}
+ #galleries-view .crm-gallery-actions{position:static!important;order:3;align-items:stretch!important;gap:10px!important}
+ #galleries-view .crm-gallery-action-buttons{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px!important}
+ #galleries-view .crm-gallery-action-buttons .eb2-action-btn{width:100%;min-width:0!important;white-space:normal;overflow-wrap:break-word;min-height:52px;padding:10px!important;line-height:1.35;text-align:center}
+ #galleries-view .crm-gallery-command{display:none!important}
+ #galleries-view .crm-gallery-page-tabs{width:100%;padding-bottom:12px!important;gap:9px!important}
+ #galleries-view .crm-gallery-zones{grid-template-columns:minmax(0,1fr)!important;gap:15px!important}
+ #galleries-view #gallery-editor-container>div{min-width:0}
+ #galleries-view #gallery-editor-container>div[style*="gap: 30px"]{flex-direction:column!important;align-items:stretch!important;gap:15px!important}
+ #galleries-view #gallery-editor-container>div[style*="gap: 30px"]>div{width:100%;min-width:0;box-sizing:border-box}
+}
