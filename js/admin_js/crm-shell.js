@@ -46,3 +46,28 @@ async function testFirebaseConnection() {
     if(display){display.style.display='block';display.textContent='Firebase verbinding mislukt.';display.style.color='#ff6b6b';}
   }
 }
+
+function showToast(title, message, type='success') {
+  const container=document.getElementById('eb-toast-container');
+  if(!container) return;
+  const toast=document.createElement('div');
+  toast.style.cssText='pointer-events:auto;background:#fff;border:1px solid #d1d5db;border-radius:10px;padding:14px 18px;box-shadow:0 4px 16px #0002;color:#1e293b;max-width:360px';
+  const strong=document.createElement('strong'); strong.textContent=title;
+  const p=document.createElement('p');p.textContent=message;p.style.margin='4px 0 0';
+  toast.append(strong,p);container.appendChild(toast);
+  setTimeout(()=>toast.remove(),4500);
+}
+async function logActivity(action, details='', bookingId='') {
+  if (!window.currentUser) return;
+  try {
+    const {db,collection,addDoc,serverTimestamp}=await import('../site_js/core/firebase.js');
+    await addDoc(collection(db,'audit_logs'),{
+      timestamp:serverTimestamp(),userId:window.currentUser.uid,
+      userEmail:window.currentUser.email,
+      userName:window.currentUserName||window.currentUser.email,
+      action,details,bookingId
+    });
+  } catch(e) { console.warn('CRM audit logging failed',e); }
+}
+window.showToast=showToast;
+window.logActivity=logActivity;
