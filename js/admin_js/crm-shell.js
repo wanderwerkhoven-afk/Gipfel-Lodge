@@ -80,3 +80,4 @@ const crmRoutes={'crm-home-view':'home','texts-view':'teksten','galleries-view':
 const crmTitles={'crm-home-view':'Home','texts-view':'Teksten & Vertalingen','galleries-view':'Galerijen & Media','export-view':'Publicatie','maintenance-view':'Website Status'};
 function crmRouteView(){const name=location.hash.slice(2);return Object.keys(crmRoutes).find(key=>crmRoutes[key]===name)||'crm-home-view';}
 window.addEventListener('popstate',()=>{if(window.currentUser) switchView(crmRouteView());});
+window.addEventListener('hashchange',()=>{if(window.currentUser) switchView(crmRouteView());});
