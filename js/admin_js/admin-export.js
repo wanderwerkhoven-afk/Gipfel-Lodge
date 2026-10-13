@@ -43,44 +43,38 @@ async function startStaticExport() {
             };
         });
 
-        // 3. Haal bestandslijst op via site-manifest.json
-        statusDiv.innerText = 'Bestandsmanifest ophalen...';
-        const sgBase = getSitegroundBase();
-
-        const manifestResp = await fetch(sgBase + 'js/site-manifest.json?v=' + Date.now()).catch(() => null);
-        if (!manifestResp || !manifestResp.ok) {
-            throw new Error('Kon site-manifest.json niet ophalen. Voer eerst "npm run build:siteground" uit in de terminal.');
-        }
-        const fileList = await manifestResp.json();
+        // 3. Read the exact public source tree from GitHub; no build-script or
+        // previously generated siteground_upload/ directory is required.
+        statusDiv.innerText = 'GitHub-bronbestanden controleren...';
+        const source = await loadGitHubSiteSources();
+        const fileList = source.files;
+        const sourceBase = source.rawBase;
         progressFill.style.width = '15%';
 
-        // 4. Kopieer alle statische bestanden (behalve index.html) naar ZIP
-        statusDiv.innerText = 'Bestanden kopiëren naar ZIP...';
+        // 4. Build the static website archive. Any missing file is fatal;
+        // a partial package must never be presented as ready for publication.
         let copied = 0;
         const batchSize = 8;
-
         for (let i = 0; i < fileList.length; i += batchSize) {
             const batch = fileList.slice(i, i + batchSize);
-            await Promise.all(batch.map(async (filePath) => {
-                if (filePath === 'index.html') return; // Slaan we over, wordt index.php
-                try {
-                    const resp = await fetch(sgBase + filePath + '?v=' + Date.now());
-                    if (resp.ok) {
-                        const blob = await resp.blob();
-                        zip.file(filePath, blob);
-                    }
-                } catch (e) {
-                    console.warn('[export] Kon niet kopiëren:', filePath, e);
-                }
+            await Promise.all(batch.map(async ({src, dest}) => {
+                const response = await fetch(sourceBase + encodeGitHubPath(src));
+                if (!response.ok) throw new Error('Verplicht bronbestand ontbreekt: ' + src + ' (HTTP ' + response.status + ')');
+                zip.file(dest, await response.blob());
                 copied++;
             }));
-            progressFill.style.width = (15 + (copied / fileList.length * 45)) + '%';
+            progressFill.style.width = (15 + copied / fileList.length * 45) + '%';
+            statusDiv.innerText = 'Bestanden verwerkt: ' + copied + '/' + fileList.length;
         }
 
-        // 5. Haal index.html op als sjabloon
-        statusDiv.innerText = 'HTML omzetten naar PHP...';
-        const indexResp = await fetch(sgBase + 'index.html?v=' + Date.now()).catch(() => null);
-        if (!indexResp || !indexResp.ok) throw new Error('Kon index.html niet ophalen vanuit siteground_upload/');
+        // Generate machine-readable discovery metadata from the same canonical host.
+        zip.file('robots.txt', 'User-agent: *\\nAllow: /\\n\\nSitemap: https://gipfellodge.at/sitemap.xml\\n');
+        zip.file('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://gipfellodge.at/</loc></url></urlset>');
+
+        // 5. The exported site is always based on current GitHub index.html.
+        statusDiv.innerText = 'Actuele GitHub index.html ophalen...';
+        const indexResp = await fetch(sourceBase + 'index.html');
+        if (!indexResp.ok) throw new Error('GitHub index.html is niet beschikbaar');
         const rawHtml = await indexResp.text();
         progressFill.style.width = '65%';
 
@@ -416,12 +410,12 @@ $t = json_decode(base64_decode('${b64Json}'), true);
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function loadAllTranslations() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         // Reset altijd - zodat we altijd de siteground_upload versie laden
         // en nooit een stale admin-versie meenemen
         window.gipfelTranslations = { de: {}, fr: {}, it: {}, en: {}, pl: {}, he: {}, nl: {} };
 
-        const sgBase = getSitegroundBase();
+        const sgBase = new URL('./', window.location.href).href;
         const scripts = [
             'js/site_js/i18n/i18n_core.js',
             'js/site_js/i18n/i18n_global.js',
@@ -439,7 +433,7 @@ function loadAllTranslations() {
             const s = document.createElement('script');
             s.src = sgBase + scripts[index] + '?export=' + Date.now();
             s.onload = () => loadNext(index + 1);
-            s.onerror = () => { console.error('Kon script niet laden:', scripts[index]); loadNext(index + 1); };
+            s.onerror = () => { reject(new Error('Vertaalbestand ontbreekt: ' + scripts[index])); };
             document.head.appendChild(s);
         }
         loadNext(0);
@@ -459,4 +453,50 @@ function getSitegroundBase() {
     }
 
     return loc.origin + base + 'siteground_upload/';
+}
+
+/**
+ * Resolve the public site payload from its canonical GitHub source tree.
+ * Neither admin files nor generated bundles are included in the upload ZIP.
+ */
+const GIPFEL_SOURCE_REPOSITORY = 'wanderwerkhoven-afk/Gipfel-Lodge';
+const GIPFEL_SOURCE_REF = 'main';
+
+function encodeGitHubPath(path) {
+    return path.split('/').map(encodeURIComponent).join('/');
+}
+
+function mapPublicSiteFile(path) {
+    if (path === 'invoice.html' || path === '.htaccess' || path === 'list-images.php' ||
+        path === '404.php' || path === 'llms.txt') return path;
+    if (path.startsWith('css/site_css/') || path.startsWith('js/site_js/') ||
+        path.startsWith('js/utils/') || path.startsWith('assets/')) return path;
+    if (path === 'templates/invoice_template.html') return path;
+    if (path.startsWith('site_manifest/favicon_website/')) {
+        return path.slice('site_manifest/favicon_website/'.length);
+    }
+    return null;
+}
+
+async function loadGitHubSiteSources() {
+    const api = 'https://api.github.com/repos/' + GIPFEL_SOURCE_REPOSITORY + '/git/trees/' + GIPFEL_SOURCE_REF + '?recursive=1';
+    const response = await fetch(api, {headers: {'Accept': 'application/vnd.github+json'}});
+    if (!response.ok) throw new Error('GitHub-bestandsinventaris niet bereikbaar (HTTP ' + response.status + '). Probeer later opnieuw.');
+    const tree = await response.json();
+    if (tree.truncated) throw new Error('GitHub geeft een onvolledige bestandsinventaris terug. Export afgebroken.');
+    if (!Array.isArray(tree.tree)) throw new Error('GitHub gaf geen geldige bestandsinventaris terug.');
+    const files = tree.tree.filter(entry => entry.type === 'blob')
+        .map(entry => ({src: entry.path, dest: mapPublicSiteFile(entry.path)}))
+        .filter(entry => entry.dest !== null);
+    const names = new Set(files.map(f => f.dest));
+    const mandatory = ['invoice.html', 'css/site_css/base/style.css', 'js/site_js/core/firebase.js',
+        'favicon.ico', 'site.webmanifest'];
+    for (const name of mandatory) {
+        if (!names.has(name)) throw new Error('Verplicht websitebestand ontbreekt in GitHub: ' + name);
+    }
+    if (new Set(files.map(f => f.dest)).size !== files.length) {
+        throw new Error('Dubbele uitvoerbestanden gevonden. Export gestopt.');
+    }
+    const rawBase = 'https://raw.githubusercontent.com/' + GIPFEL_SOURCE_REPOSITORY + '/' + GIPFEL_SOURCE_REF + '/';
+    return {files, rawBase};
 }
