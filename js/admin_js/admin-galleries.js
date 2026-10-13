@@ -259,10 +259,14 @@ function renderZonesForPage(pageId) {
             const images = _galleryConfig[zoneId] || [];
             
             // Show up to 4 previews
-            const previews = images.slice(0, 4).map(item => `<img src="${getImgSrc(item)}" style="width:100%; height:80px; object-fit:cover; border-radius:4px;">`).join('');
-            const previewHtml = images.length > 0 
-                ? `<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px; margin-top:15px;">${previews}</div>`
-                : `<div style="margin-top:15px; height:80px; background:#f1f5f9; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:0.8rem;">Geen foto's ingesteld</div>`;
+            const previewHtml = images.length > 0
+                ? `<div class="crm-preview-carousel" aria-label="Fotovoorbeeld ${zoneInfo.label}">
+                    <div class="crm-preview-track">
+                        ${images.map((item, index) => `<img src="${getImgSrc(item)}" alt="${zoneInfo.label} foto ${index + 1}" loading="lazy" draggable="false">`).join('')}
+                    </div>
+                    ${images.length > 1 ? `<button type="button" class="crm-preview-arrow prev" aria-label="Vorige foto" onclick="moveGalleryPreview(this,-1)">&#8249;</button><button type="button" class="crm-preview-arrow next" aria-label="Volgende foto" onclick="moveGalleryPreview(this,1)">&#8250;</button><span class="crm-preview-count" aria-live="polite">1 / ${images.length}</span>` : ''}
+                </div>`
+                : `<div style="margin-top:15px;height:100px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:.8rem;">Geen foto's ingesteld</div>`;
 
             return `
                 <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column;">
@@ -691,3 +695,15 @@ window.saveSeoModal = function (isSingle, keyToEdit, idx) {
     // Automatisch direct opslaan in Firebase!
     window.saveGalleryConfig();
 };
+
+// Scroll-snap preview carousel; independent from editing and saved image order.
+window.moveGalleryPreview = function(button, direction) {
+ const carousel=button.closest('.crm-preview-carousel');if(!carousel)return;
+ const track=carousel.querySelector('.crm-preview-track');const total=track.children.length;if(!total)return;
+ const current=Math.round(track.scrollLeft/Math.max(track.clientWidth,1));
+ const next=(current+direction+total)%total;
+ track.scrollTo({left:next*track.clientWidth,behavior:'smooth'});
+ updateGalleryPreviewCount(carousel,next);
+};
+function updateGalleryPreviewCount(carousel,index){const count=carousel.querySelector('.crm-preview-count');if(count)count.textContent=`${index+1} / ${carousel.querySelector('.crm-preview-track').children.length}`;}
+document.addEventListener('scroll',event=>{const track=event.target;if(!track.classList?.contains('crm-preview-track'))return;const width=track.clientWidth||1;updateGalleryPreviewCount(track.closest('.crm-preview-carousel'),Math.min(track.children.length-1,Math.round(track.scrollLeft/width)));},true);
