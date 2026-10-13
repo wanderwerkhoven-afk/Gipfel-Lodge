@@ -1,0 +1,68 @@
+/* Gipfel Lodge Content Studio — independent visual system from rental admin */
+:root{--crm-bg:#f7f4ee;--crm-surface:#fff;--crm-ink:#223043;--crm-muted:#718090;--crm-gold:#b89450;--crm-line:#e8e1d6}
+body:has(.crm-navigation){background:var(--crm-bg)!important;color:var(--crm-ink);font-family:Inter,sans-serif}
+body:has(.crm-navigation) #dashboard-screen{background:var(--crm-bg)}
+body:has(.crm-navigation) .dashboard-layout{background:var(--crm-bg);min-height:100vh}
+body:has(.crm-navigation) .dashboard-sidebar{background:#fcfbf8!important;border-right:1px solid var(--crm-line);box-shadow:none;color:var(--crm-ink)}
+body:has(.crm-navigation) .sidebar-brand{border-bottom:1px solid var(--crm-line);padding-bottom:24px}
+body:has(.crm-navigation) .sidebar-brand h2{color:var(--crm-ink);font-family:"Cormorant Garamond",serif;font-size:34px;letter-spacing:-.03em}
+body:has(.crm-navigation) .sidebar-brand p{color:var(--crm-gold);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+body:has(.crm-navigation) .nav-menu{padding-bottom:24px}
+body:has(.crm-navigation) .nav-group-title{color:#949b9f!important;letter-spacing:.17em;font-size:10px;margin-top:28px;margin-bottom:12px}
+body:has(.crm-navigation) .nav-item{color:#536071!important;border-radius:11px;margin:3px 0;padding:13px 15px;transition:background .18s,color .18s;cursor:pointer;font-size:13px;font-weight:550}
+body:has(.crm-navigation) .nav-item i{font-size:20px;margin-right:10px}
+body:has(.crm-navigation) .nav-item.active{background:#eee7d8!important;color:#253346!important;box-shadow:none;border-left:3px solid var(--crm-gold)}
+body:has(.crm-navigation) .nav-item:hover{background:#f2eee6;color:#253346!important}
+body:has(.crm-navigation) .crm-admin-link a{color:inherit;text-decoration:none;display:block}
+body:has(.crm-navigation) .dashboard-main{background:var(--crm-bg)!important;min-width:0;max-width:none}
+body:has(.crm-navigation) .crm-topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--crm-line);padding:18px 32px;background:#fff}
+.crm-topbar-title{display:flex;flex-direction:column;gap:3px}
+.crm-topbar-title span{font-size:9px;font-weight:750;letter-spacing:.2em;color:var(--crm-gold)}
+.crm-topbar-title strong{font-family:"Cormorant Garamond",serif;font-size:23px;line-height:1}
+.crm-topbar-actions{display:flex;align-items:center;gap:18px}
+.crm-topbar-actions a,.crm-topbar-actions button{font:500 12px Inter,sans-serif;color:var(--crm-ink);text-decoration:none;border:0;background:none;cursor:pointer}
+.crm-topbar-actions i{font-size:16px;vertical-align:middle}
+body:has(.crm-navigation) .dashboard-view{padding:clamp(20px,3vw,45px);max-width:1500px;margin:0 auto}
+body:has(.crm-navigation) .dashboard-view .page-header h1{font-family:"Cormorant Garamond",serif;font-size:clamp(35px,4vw,54px);font-weight:600;letter-spacing:-.02em;color:var(--crm-ink)}
+body:has(.crm-navigation) .dashboard-view .page-header p{color:var(--crm-muted)}
+.crm-home{display:block}
+.crm-intro{position:relative;overflow:hidden;display:grid;grid-template-columns:1.35fr .65fr;min-height:330px;background:#243449;border-radius:20px;padding:clamp(27px,4vw,55px);color:#fff}
+.crm-eyebrow,.crm-section-heading span,.crm-card-index{font-size:10px;font-weight:750;letter-spacing:.18em;color:#b99559}
+.crm-intro h1{font-family:"Cormorant Garamond",serif;font-size:clamp(48px,5.6vw,86px);line-height:.95;letter-spacing:-.04em;font-weight:500;margin:22px 0;color:#fff}
+.crm-intro h1 em{color:#d8b677;font-weight:400}
+.crm-intro p{max-width:460px;line-height:1.7;color:#cbd4de;font-size:13px}
+.crm-start-button{border:0;background:#c5a059;color:#17263b;border-radius:8px;padding:13px 20px;margin-top:22px;font-weight:650;cursor:pointer}
+.crm-start-button i{margin-left:14px}
+.crm-intro-decoration{align-self:center;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px;color:#c5a059;opacity:.65}
+.crm-intro-decoration i{font-size:clamp(100px,14vw,200px)}
+.crm-intro-decoration span{font-size:10px;letter-spacing:.2em}
+.crm-section-heading{margin:40px 0 22px}
+.crm-section-heading h2{font:500 clamp(27px,3vw,39px)/1.1 "Cormorant Garamond",serif;margin:10px 0}
+.crm-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.crm-action-card{position:relative;min-height:228px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;border:1px solid var(--crm-line);background:#fff;border-radius:16px;padding:28px;color:var(--crm-ink);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.crm-action-card:hover{transform:translateY(-3px);box-shadow:0 15px 38px #22304312}
+.crm-action-icon{width:45px;height:45px;background:#f5f0e6;display:grid;place-items:center;border-radius:11px;color:#9c7a3d;margin-bottom:16px;font-size:23px}
+.crm-action-card strong{font:600 27px/1.1 "Cormorant Garamond",serif;margin:13px 0 9px}
+.crm-action-card>span:nth-last-child(2){font-size:12px;color:var(--crm-muted);line-height:1.7;max-width:360px}
+.crm-card-arrow{position:absolute;right:25px;top:28px;font-size:19px}
+.crm-footer-note{margin-top:28px;color:#79828b;font-size:12px;display:flex;align-items:center;gap:10px;line-height:1.5}
+body:has(.crm-navigation) .dashboard-view:not(.crm-home) .page-header{padding-bottom:23px;border-bottom:1px solid var(--crm-line);margin-bottom:25px}
+body:has(.crm-navigation) .dashboard-view:not(.crm-home) .eb2-section,body:has(.crm-navigation) .dashboard-view:not(.crm-home) .card{border-color:var(--crm-line);border-radius:14px}
+body:has(.crm-navigation) #sidebar-user-info{background:#f1ede5!important;color:var(--crm-ink)}
+body:has(.crm-navigation) #sidebar-user-email{color:var(--crm-ink)!important}
+body:has(.crm-navigation) .logout-btn{background:#f2eee8!important;color:#39465a!important;border-radius:10px}
+body:has(.crm-navigation) .dashboard-sidebar>div[style*="margin-top: auto"]{display:none!important}
+@media(max-width:992px){
+ body:has(.crm-navigation) .dashboard-sidebar{background:#fcfbf8!important;z-index:1004}
+ body:has(.crm-navigation) .dashboard-main{min-height:100vh}
+ body:has(.crm-navigation) .crm-topbar{padding:15px 18px}
+ body:has(.crm-navigation) .crm-topbar-title strong{font-size:21px}
+ body:has(.crm-navigation) .crm-topbar-actions a{display:none}
+ body:has(.crm-navigation) .dashboard-view{padding:20px 17px}
+ .crm-intro{grid-template-columns:1fr;min-height:270px;padding:30px 24px}
+ .crm-intro-decoration{display:none}
+ .crm-action-grid{grid-template-columns:1fr;gap:13px}
+ .crm-action-card{min-height:168px;padding:21px}
+ .crm-action-card strong{font-size:26px}
+}
+@media(min-width:993px) and (max-width:1200px){.crm-intro-decoration i{font-size:110px}}
