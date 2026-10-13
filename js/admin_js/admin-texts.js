@@ -271,6 +271,7 @@ function renderTextsEditor() {
     }
 
     container.innerHTML = html;
+    applyCrmMobileEditorLayout();
 }
 
 function renderSidebarLayout(groups, defaults, overrides) {
@@ -558,3 +559,31 @@ window.addReviewSlot = function() {
         renderTextsEditor();
     }
 };
+
+/** Force a usable single-column mobile editor, including when older CSS is cached.
+ * Only changes inline presentation; values, keys and save behavior remain intact.
+ */
+function applyCrmMobileEditorLayout() {
+  const root=document.getElementById('texts-editor-container');
+  if(!root) return;
+  const mobile=window.innerWidth<=767;
+  const assign=(selector,styles)=>{
+    root.querySelectorAll(selector).forEach(el=>{
+      for(const [property,value] of Object.entries(styles)) {
+        if(mobile)el.style.setProperty(property,value,'important');
+        else el.style.removeProperty(property);
+      }
+    });
+  };
+  assign('.crm-texts-layout',{'flex-direction':'column','width':'100%','min-height':'0','gap':'14px'});
+  assign('.crm-texts-sections',{'width':'100%','flex-shrink':'1','overflow':'hidden'});
+  assign('.crm-texts-section-buttons',{'flex-direction':'row','overflow-x':'auto','flex-wrap':'nowrap'});
+  assign('.cms-sidebar-btn',{'flex':'0 0 auto','white-space':'nowrap'});
+  assign('.crm-texts-content',{'width':'100%','min-width':'0','flex':'0 1 auto'});
+  assign('.crm-texts-fields',{'padding':'16px'});
+  assign('.crm-texts-field-row',{'flex-direction':'column','align-items':'stretch'});
+  assign('.crm-texts-field-row > div',{'width':'100%','min-width':'0','flex':'1 1 auto'});
+  assign('.eb2-form-group',{'width':'100%','min-width':'0','flex':'1 1 auto'});
+  assign('.eb2-input',{'width':'100%','min-width':'0','max-width':'100%','box-sizing':'border-box','font-size':'16px'});
+}
+window.addEventListener('resize',applyCrmMobileEditorLayout);
