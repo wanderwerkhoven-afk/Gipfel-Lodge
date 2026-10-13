@@ -8,7 +8,7 @@ function showDashboard() {
   document.body.style.display = 'block';
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
   const homeNav = document.getElementById('nav-crm-home');
-  switchView('crm-home-view', homeNav);
+  switchView(crmRouteView(), homeNav);
 }
 function switchView(id, nav) {
   const allowed = new Set(['crm-home-view', 'texts-view', 'galleries-view', 'export-view', 'maintenance-view']);
@@ -22,7 +22,12 @@ function switchView(id, nav) {
   if (!view) return;
   view.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  if (nav) nav.classList.add('active');
+  (nav || document.querySelector('.crm-navigation [onclick*=\"'+id+'\"]'))?.classList.add('active');
+  const crumb=document.getElementById('crm-page-breadcrumb');
+  if(crumb) crumb.hidden=id==='crm-home-view';
+  const name=document.getElementById('crm-current-page-label');
+  if(name) name.textContent=crmTitles[id]||'Home';
+  if(location.hash!=='#/'+crmRoutes[id]) history.pushState(null,'','#/'+crmRoutes[id]);
   const side = document.getElementById('dashboard-sidebar');
   if (side) side.classList.remove('active');
   const overlay = document.getElementById('mobile-sidebar-overlay');
@@ -70,3 +75,8 @@ async function logActivity(action, details='', bookingId='') {
 }
 window.showToast=showToast;
 window.logActivity=logActivity;
+
+const crmRoutes={'crm-home-view':'home','texts-view':'teksten','galleries-view':'galerijen','export-view':'publicatie','maintenance-view':'status'};
+const crmTitles={'crm-home-view':'Home','texts-view':'Teksten & Vertalingen','galleries-view':'Galerijen & Media','export-view':'Publicatie','maintenance-view':'Website Status'};
+function crmRouteView(){const name=location.hash.slice(2);return Object.keys(crmRoutes).find(key=>crmRoutes[key]===name)||'crm-home-view';}
+window.addEventListener('popstate',()=>{if(window.currentUser) switchView(crmRouteView());});
