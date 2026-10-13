@@ -66,3 +66,11 @@ body:has(.crm-navigation) .dashboard-sidebar>div[style*="margin-top: auto"]{disp
  .crm-action-card strong{font-size:26px}
 }
 @media(min-width:993px) and (max-width:1200px){.crm-intro-decoration i{font-size:110px}}
+
+/* CRM dedicated page navigation */
+body:has(.crm-navigation) .dashboard-main>.dashboard-view:not(.active){display:none!important}
+.crm-page-breadcrumb{display:flex;align-items:center;gap:15px;padding:18px 36px 0;font:500 12px Inter,sans-serif;color:#78838c}
+.crm-page-breadcrumb[hidden]{display:none!important}
+.crm-page-breadcrumb button{border:0;background:none;color:#9c7a3d;cursor:pointer;font:650 12px Inter,sans-serif}
+.crm-page-breadcrumb button i{margin-right:6px}
+@media(max-width:992px){.crm-page-breadcrumb{padding:16px 18px 0}}
