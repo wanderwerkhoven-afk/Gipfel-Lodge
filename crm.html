@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link rel="stylesheet" href="css/admin_css/admin-style.css">
-<link rel="stylesheet" href="css/admin_css/crm-style.css?v=20261014-login-2">
+<link rel="stylesheet" href="css/admin_css/crm-style.css?v=20261014-gallery-mobile-1">
     
     <!-- Chart.js for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -554,11 +554,11 @@
                     }
                 </style>
                 <div id="galleries-view" class="dashboard-view" style="height: 100%;">
-                    <div class="page-header" style="flex-shrink: 0; position: relative;">
+                    <div class="page-header crm-gallery-header" style="flex-shrink: 0; position: relative;">
                         <h1>Galerijen Beheren</h1>
                         <p>Sleep afbeeldingen vanuit de bibliotheek naar de website-zones.</p>
-                        <div style="position: absolute; right: 0; top: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-                            <div style="display: flex; gap: 10px;">
+                        <div class="crm-gallery-actions" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                            <div class="crm-gallery-action-buttons" style="display: flex; gap: 10px;">
                                 <button id="galleries-refresh-btn" class="eb2-action-btn eb2-btn-secondary" onclick="refreshImages()">
                                     <i class="ph ph-arrows-clockwise"></i> Haal afbeeldingen op
                                 </button>
@@ -566,7 +566,7 @@
                                     <i class="ph ph-floppy-disk"></i> Wijzigingen Opslaan
                                 </button>
                             </div>
-                            <div style="font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 5px; background: #f8fafc; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <div class="crm-gallery-command" style="font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 5px; background: #f8fafc; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
                                 <span style="font-family: monospace; color: #0f172a;">node build-images-index.js</span>
                                 <button onclick="navigator.clipboard.writeText('node build-images-index.js'); showToast('Gekopieerd!', 'Commando naar klembord gekopieerd. Plak en run dit in de terminal.', 'success');" style="background: none; border: none; color: var(--color-gold); cursor: pointer; padding: 0 4px;" title="Kopieer commando">
                                     <i class="ph ph-copy"></i> Kopieer commando
@@ -575,11 +575,11 @@
                         </div>
                     </div>
 
-                    <div id="gallery-pages-container" style="display: flex; gap: 10px; margin-top: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                    <div id="gallery-pages-container" class="crm-gallery-page-tabs" style="display: flex; gap: 10px; margin-top: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
                         <!-- Page tabs rendered here -->
                     </div>
 
-                    <div id="gallery-zones-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px 0;">
+                    <div id="gallery-zones-container" class="crm-gallery-zones" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 20px 0;">
                         <!-- Zones rendered here based on active page -->
                     </div>
 
