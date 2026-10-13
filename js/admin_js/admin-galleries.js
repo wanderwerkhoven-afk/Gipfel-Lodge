@@ -231,7 +231,7 @@ function renderPageTabs() {
     if (!container) return;
 
     container.innerHTML = GALLERY_PAGES.map(page => `
-        <button class="eb2-action-btn ${page.id === _activePageId ? 'eb2-btn-primary' : 'eb2-btn-secondary'}" 
+        <button class="crm-gallery-page-pill ${page.id === _activePageId ? 'active' : ''}" aria-pressed="${page.id === _activePageId}" 
                 onclick="selectPage('${page.id}')" id="page-tab-${page.id}">
             ${page.label}
         </button>
