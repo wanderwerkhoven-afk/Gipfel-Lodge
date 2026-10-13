@@ -563,6 +563,7 @@ window.addReviewSlot = function() {
 /** Force a usable single-column mobile editor, including when older CSS is cached.
  * Only changes inline presentation; values, keys and save behavior remain intact.
  */
+const crmEditorOriginalStyles = new WeakMap();
 function applyCrmMobileEditorLayout() {
   const root=document.getElementById('texts-editor-container');
   if(!root) return;
@@ -570,8 +571,17 @@ function applyCrmMobileEditorLayout() {
   const assign=(selector,styles)=>{
     root.querySelectorAll(selector).forEach(el=>{
       for(const [property,value] of Object.entries(styles)) {
-        if(mobile)el.style.setProperty(property,value,'important');
-        else el.style.removeProperty(property);
+        let original=crmEditorOriginalStyles.get(el);
+        if(!original){original={};crmEditorOriginalStyles.set(el,original);}
+        if(mobile){
+          if(!(property in original))original[property]=[el.style.getPropertyValue(property),el.style.getPropertyPriority(property)];
+          el.style.setProperty(property,value,'important');
+        } else if(property in original){
+          const [oldValue,priority]=original[property];
+          if(oldValue)el.style.setProperty(property,oldValue,priority);
+          else el.style.removeProperty(property);
+          delete original[property];
+        }
       }
     });
   };
