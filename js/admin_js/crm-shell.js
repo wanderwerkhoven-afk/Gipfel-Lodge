@@ -43,6 +43,7 @@ function closeCrmMenu() {
   document.body.classList.remove('crm-menu-open');
 }
 function toggleMobileMenu() {
+  syncCrmMenuPortal();
   const side=document.getElementById('dashboard-sidebar');
   const overlay=document.getElementById('mobile-sidebar-overlay');
   if (!side || !overlay) return;
@@ -96,9 +97,24 @@ function crmRouteView(){const name=location.hash.slice(2);return Object.keys(crm
 window.addEventListener('popstate',()=>{if(window.currentUser) switchView(crmRouteView());});
 window.addEventListener('hashchange',()=>{if(window.currentUser) switchView(crmRouteView());});
 
-/* Keep backdrop and drawer in the same stacking context on mobile Safari. */
-(function placeCrmBackdrop(){
-  const layout=document.querySelector('#dashboard-screen .dashboard-layout');
+
+/* Move the mobile drawer and backdrop to document.body to escape parent
+   stacking contexts, transforms and overflow on iOS Safari. */
+function syncCrmMenuPortal() {
+  const side=document.getElementById('dashboard-sidebar');
   const overlay=document.getElementById('mobile-sidebar-overlay');
-  if(layout && overlay && overlay.parentElement!==layout)layout.appendChild(overlay);
-})();
+  const layout=document.querySelector('#dashboard-screen .dashboard-layout');
+  if (!side || !overlay || !layout) return;
+  const mobile=window.matchMedia('(max-width: 992px)').matches;
+  if (mobile) {
+    if(side.parentElement!==document.body)document.body.appendChild(side);
+    if(overlay.parentElement!==document.body)document.body.appendChild(overlay);
+  } else {
+    closeCrmMenu();
+    if(side.parentElement!==layout)layout.insertBefore(side,layout.firstChild);
+    if(overlay.parentElement!==document.getElementById('dashboard-screen'))
+      document.getElementById('dashboard-screen').appendChild(overlay);
+  }
+}
+document.addEventListener('DOMContentLoaded',syncCrmMenuPortal);
+window.addEventListener('resize',syncCrmMenuPortal);
