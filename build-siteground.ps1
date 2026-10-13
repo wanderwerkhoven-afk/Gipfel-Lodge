@@ -64,6 +64,11 @@ if (-not $BeheerOnly) {
         Write-Ok ".htaccess"
     }
 
+    # -- Agent-readable files --
+    Copy-Item "$Root\404.php" "$Dist\404.php"
+    Copy-Item "$Root\llms.txt" "$Dist\llms.txt"
+    Write-Ok "404.php + llms.txt"
+
     # -- CSS (alleen site_css, NIET admin_css) --
     Write-Step "Kopieren van CSS (site_css)..."
     $cssTarget = Join-Path $Dist "css\site_css"
@@ -111,7 +116,7 @@ if (-not $BeheerOnly) {
 User-agent: *
 Allow: /
 
-Sitemap: https://gipfellodge.com/sitemap.xml
+Sitemap: https://gipfellodge.at/sitemap.xml
 "@
     $robotsTxt | Set-Content "$Dist\robots.txt" -Encoding UTF8
     Write-Ok "robots.txt"
@@ -123,7 +128,7 @@ Sitemap: https://gipfellodge.com/sitemap.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://gipfellodge.com/</loc>
+    <loc>https://gipfellodge.at/</loc>
     <lastmod>$today</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>

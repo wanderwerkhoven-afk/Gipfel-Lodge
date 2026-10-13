@@ -1,0 +1,12 @@
+# Gipfel Lodge
+
+> Alpine holiday chalet in Eben im Pongau, Salzburgerland, Austria.
+
+- Official website: https://gipfellodge.at/
+- Sitemap: https://gipfellodge.at/sitemap.xml
+- Accommodation: 135 m², up to 10 guests, 4 bedrooms, 3 bathrooms, private sauna.
+- Location: Eben im Pongau, near Flachau and Ski amadé.
+- See the website for property details, local activities, and official booking links.
+
+## For AI agents
+Current prices and availability must be confirmed using official booking links. There is no documented public booking API.

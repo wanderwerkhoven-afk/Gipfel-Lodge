@@ -1,12 +1,9 @@
-﻿<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-
-  # Bestaande bestanden en mappen normaal blijven laden
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
-
-  # Stuur alle overige routes door naar index.html zodat de SPA router de pagina kan tonen (of het 404-scherm)
-  RewriteRule ^ index.html [L]
+ErrorDocument 404 /404.php
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+# Missing URLs are handled by Apache with HTTP 404, not rewritten to index.html.
 </IfModule>
