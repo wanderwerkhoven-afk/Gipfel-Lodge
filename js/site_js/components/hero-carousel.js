@@ -73,7 +73,7 @@ const HeroCarousel = {
         if (!slide) return;
         const inlineImage = slide.querySelector('img');
         const background = inlineImage ? '' : window.getComputedStyle(slide).backgroundImage;
-        const match = background && background.match(/url\\(["']?(.*?)["']?\\)/);
+        const match = background && background.match(/url\(["']?(.*?)["']?\)/);
         const src = inlineImage ? inlineImage.src : (match && match[1]);
         if (!src || this.readyImages.has(src)) return;
         const image = new Image();
@@ -110,7 +110,7 @@ const HeroCarousel = {
         const slide = this.slides[target];
         const inlineImage = slide.querySelector('img');
         const background = inlineImage ? '' : window.getComputedStyle(slide).backgroundImage;
-        const match = background && background.match(/url\\(["']?(.*?)["']?\\)/);
+        const match = background && background.match(/url\(["']?(.*?)["']?\)/);
         const src = inlineImage ? inlineImage.src : (match && match[1]);
         if (src && this.readyImages.has(src) && !(await this.readyImages.get(src))) return;
         this.current = target;
