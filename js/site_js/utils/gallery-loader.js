@@ -61,15 +61,15 @@
     if (!zonesConfig) return; // Nothing configured yet — keep defaults
 
     /* ───── Inject each zone ───── */
-    ZONES.forEach(zone => {
+    for (const zone of ZONES) {
         const images = zonesConfig[zone.id];
-        if (!images || images.length === 0) return; // Zone not configured — keep defaults
+        if (!images || images.length === 0) continue; // Zone not configured — keep defaults
 
         const container = document.querySelector(zone.selector);
-        if (!container) return;
+        if (!container) continue;
 
         if (zone.type === 'hero') {
-            injectHeroSlides(container, images);
+            await injectHeroSlides(container, images);
         } else if (zone.type === 'property') {
             injectPropertyGallery(container, images);
         } else if (zone.type === 'mini') {
@@ -77,19 +77,27 @@
         } else if (zone.type === 'masonry') {
             injectMasonryGallery(container, images);
         }
-    });
+    }
 
     /* ─────────────────────────────────────────────────────────────
        INJECTION HELPERS
        ───────────────────────────────────────────────────────────── */
 
-    function injectHeroSlides(container, images) {
+    async function injectHeroSlides(container, images) {
+        const first = images[0];
+        const firstSrc = typeof first === 'string' ? first : (first.src || '');
+        if (!firstSrc) return;
+        const image = new Image();
+        image.src = firstSrc;
+        try { await image.decode(); } catch (_) { return; }
+
         container.innerHTML = images.map((item, i) => {
             const src = typeof item === 'string' ? item : (item.src || '');
             return `
             <div class="hero-v3-slide${i === 0 ? ' active' : ''}" style="background-image: url('${src}');"></div>
             `;
         }).join('');
+        if (window.HeroCarousel) window.HeroCarousel.init();
     }
 
     function getLang() {
