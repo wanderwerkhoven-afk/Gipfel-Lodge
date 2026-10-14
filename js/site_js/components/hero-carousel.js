@@ -7,6 +7,7 @@ const HeroCarousel = {
     intervalMs: 8000, // Slightly slower for cinematic feel
     isInitialized: false,
     warmedImages: new Set(),
+    readyImages: new Map(),
 
     init() {
         // Try V3 first, then fallback to old hero
@@ -69,13 +70,20 @@ const HeroCarousel = {
     warmSlide(index) {
         if (!this.slides.length) return;
         const slide = this.slides[(index + this.slides.length) % this.slides.length];
-        const background = slide && window.getComputedStyle(slide).backgroundImage;
-        const match = background && background.match(/url\(["']?(.*?)["']?\)/);
-        if (!match || this.warmedImages.has(match[1])) return;
-        this.warmedImages.add(match[1]);
+        if (!slide) return;
+        const inlineImage = slide.querySelector('img');
+        const background = inlineImage ? '' : window.getComputedStyle(slide).backgroundImage;
+        const match = background && background.match(/url\\(["']?(.*?)["']?\\)/);
+        const src = inlineImage ? inlineImage.src : (match && match[1]);
+        if (!src || this.readyImages.has(src)) return;
         const image = new Image();
         image.fetchPriority = 'low';
-        image.src = match[1];
+        this.readyImages.set(src, new Promise(resolve => {
+            image.onload = () => resolve(true);
+            image.onerror = () => resolve(false);
+            image.src = src;
+            if (image.complete) resolve(image.naturalWidth > 0);
+        }));
     },
 
     updateSlides() {
@@ -90,21 +98,28 @@ const HeroCarousel = {
         }
     },
 
-    goToSlide(index) {
-        this.current = index;
-        this.updateSlides();
+    async goToSlide(index) {
+        await this.showSlide(index);
         this.resetTimer();
     },
 
-    nextSlide() {
-        this.current = (this.current + 1) % this.slides.length;
+    async showSlide(index) {
+        if (!this.slides.length) return;
+        const target = (index + this.slides.length) % this.slides.length;
+        this.warmSlide(target);
+        const slide = this.slides[target];
+        const inlineImage = slide.querySelector('img');
+        const background = inlineImage ? '' : window.getComputedStyle(slide).backgroundImage;
+        const match = background && background.match(/url\\(["']?(.*?)["']?\\)/);
+        const src = inlineImage ? inlineImage.src : (match && match[1]);
+        if (src && this.readyImages.has(src) && !(await this.readyImages.get(src))) return;
+        this.current = target;
         this.updateSlides();
     },
 
-    prevSlide() {
-        this.current = (this.current - 1 + this.slides.length) % this.slides.length;
-        this.updateSlides();
-    },
+    nextSlide() { return this.showSlide(this.current + 1); },
+
+    prevSlide() { return this.showSlide(this.current - 1); },
 
     startTimer() {
         if (this.timer) clearInterval(this.timer);
