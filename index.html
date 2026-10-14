@@ -46,7 +46,7 @@
       } catch (_) { /* Storage is optional. */ }
     })();
   </script>
-  <link rel="preload" as="image" type="image/webp" href="assets/images/pictures/winter-outside.webp" fetchpriority="low">
+  <script>if (!window.__gipfelCachedHero) { const l = document.createElement("link"); l.rel = "preload"; l.as = "image"; l.href = "assets/images/pictures/winter-outside.webp"; l.fetchPriority = "high"; document.head.appendChild(l); }</script>
 
   <!-- 1.2 STYLESHEETS -->
   <link rel="stylesheet" href="css/site_css/base/variables.css" />
@@ -368,7 +368,7 @@
             parent.dataset.cachedHero = 'true';
           })();
         </script>
-        <div class="hero-v3-slide active hero-v3-fallback"><img class="hero-v3-image" src="assets/images/pictures/winter-outside.webp" alt="" fetchpriority="low" loading="lazy" decoding="async"></div>
+        <div class="hero-v3-slide active hero-v3-fallback"><img class="hero-v3-image" src="assets/images/pictures/winter-outside.webp" alt="" fetchpriority="high" loading="eager" decoding="async"></div>
         <div class="hero-v3-slide" style="background-image: url('assets/images/pictures/summer-outside.png');"></div>
       </div>
       <div class="hero-v3-overlay"></div>
