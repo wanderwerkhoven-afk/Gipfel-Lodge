@@ -376,7 +376,7 @@ $t = json_decode(base64_decode('${b64Json}'), true);
         // Existing index.html on SiteGround must not shadow the translated PHP entrypoint.
         if (zip.file('.htaccess')) {
             const htaccess = await zip.file('.htaccess').async('string');
-            zip.file('.htaccess', 'DirectoryIndex index.php index.html\n' + htaccess);
+            zip.file('.htaccess', htaccess);
         }
 
         // 8. Validate the finished archive before offering it for upload.
