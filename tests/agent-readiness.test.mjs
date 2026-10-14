@@ -73,3 +73,5 @@ test('SPA router recognizes GitHub Pages project root and preserves production p
   assert.equal(vm.runInContext("toPublicPath('/lodge')",prod),'/lodge');
 });
 function requireVm(){return vmModule;}
+
+test('home hero preload matches the first visible background image',()=>{const html=read('index.html');const preload=html.match(/<link rel="preload" as="image" type="image\/webp"\s+href="([^"]+)"\s+fetchpriority="high">/);assert.ok(preload,'high-priority hero preload is required');const firstSlide=html.match(/<div class="hero-v3-slide active" style="background-image: url\('([^']+)'\)/);assert.ok(firstSlide,'first hero slide is required');assert.equal(firstSlide[1],preload[1]);});
