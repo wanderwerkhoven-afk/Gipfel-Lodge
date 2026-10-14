@@ -2,6 +2,17 @@
 
 > Exklusives Ferienhaus in Eben im Pongau, Salzburgerland, Österreich. Bis zu 10 Gäste, 4 Schlafzimmer, 3 Badezimmer, 135 m², private Sauna.
 
+## GitHub Pages Vorschau: Wann verwenden?
+
+Verwenden Sie diese Vorschau, wenn Sie die Gipfel Lodge als Ferienhaus für Familien und Gruppen in Eben im Pongau bewerten, die Ausstattung (vier Schlafzimmer, drei Badezimmer, Sauna), Lage bei Flachau und Ski amadé oder saisonale Aktivitäten erklären möchten. Die Vorschau dient nur der Information; sie nimmt keine Buchungen an.
+
+## So greifen Agenten auf die Vorschau zu
+
+1. Lesen Sie die kompakte Markdown-Übersicht: https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/index.md
+2. Prüfen Sie Unterkunft und Ausstattung auf https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/
+3. Nutzen Sie die Sitemap https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/sitemap.xml und die Seiten /Gipfel-Lodge/about/, /Gipfel-Lodge/contact/ und /Gipfel-Lodge/privacy/.
+4. Für aktuelle Preise, Verfügbarkeit und verbindliche Buchungsbedingungen verwenden Sie ausschließlich https://gipfellodge.at/; behaupten Sie keine Live-Verfügbarkeit ohne Prüfung.
+
 ## Offizielle Seiten
 
 - [Homepage](https://gipfellodge.at/): Informationen über das Chalet und seine Ausstattung.
