@@ -48,3 +48,5 @@ test('business structured data and identity metadata remain parseable',()=>{
   assert.equal(data.address.addressCountry,'AT');
   for(const signal of ['<html lang="nl">','rel="canonical"','property="og:type"','property="og:image"'])assert.ok(html.includes(signal));
 });
+
+test('meaningful home introduction is in raw HTML and heading order begins with H1',()=>{const html=read('index.html');assert.ok(html.startsWith('<!doctype html>'));const home=html.split('<main id="home-page"')[1].split('<!-- SECTION 3')[0];const paragraphs=[...home.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)].map(m=>m[1].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());const prose=paragraphs.join(' ');assert.ok(prose.length>=500);for(const word of ['Eben im Pongau','135 m²','vier slaapkamers','drie badkamers','sauna','Flachau'])assert.ok(prose.includes(word),word);const headings=[...html.matchAll(/<h([1-6])\b/g)].map(x=>Number(x[1]));assert.equal(headings[0],1);assert.equal(headings[1],2);});
