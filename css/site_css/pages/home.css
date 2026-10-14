@@ -1056,3 +1056,64 @@
   .hero-v3 > .hero-nav.prev { left: 4px; }
   .hero-v3 > .hero-nav.next { right: 4px; }
 }
+
+/* Editorial reveal for the home gallery and information cards.
+   Gentle vertical motion and stagger, with no abrupt image flash. */
+#home-page .visual-grid-v3 .visual-item,
+#home-page .activities-grid-v3 .act-card-v3,
+#home-page .intro-v3-usp {
+  transition: opacity 1.05s cubic-bezier(.22,1,.36,1),
+              transform 1.05s cubic-bezier(.22,1,.36,1);
+}
+#home-page .visual-grid-v3 .visual-item.reveal:not(.reveal-active),
+#home-page .activities-grid-v3 .act-card-v3.reveal:not(.reveal-active),
+#home-page .intro-v3-usp.reveal:not(.reveal-active) {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+}
+#home-page .visual-grid-v3 .visual-item.reveal-active,
+#home-page .activities-grid-v3 .act-card-v3.reveal-active,
+#home-page .intro-v3-usp.reveal-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+#home-page .visual-grid-v3 .visual-item img {
+  display: block;
+  opacity: 0;
+  transform: scale(1.035);
+  transition: opacity .85s ease, transform 1.6s cubic-bezier(.22,1,.36,1);
+}
+#home-page .visual-grid-v3 .visual-item img.is-loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+#home-page .visual-grid-v3 .visual-item:hover img.is-loaded {
+  transform: scale(1.045);
+}
+#home-page .intro-v3-usp .usp-item {
+  animation: none;
+}
+#home-page .intro-v3-usp.reveal-active .usp-item {
+  animation: gipfelCardRise .8s both cubic-bezier(.22,1,.36,1);
+}
+#home-page .intro-v3-usp.reveal-active .usp-item:nth-child(2) { animation-delay: .07s; }
+#home-page .intro-v3-usp.reveal-active .usp-item:nth-child(3) { animation-delay: .14s; }
+#home-page .intro-v3-usp.reveal-active .usp-item:nth-child(4) { animation-delay: .21s; }
+#home-page .intro-v3-usp.reveal-active .usp-item:nth-child(5) { animation-delay: .28s; }
+#home-page .intro-v3-usp.reveal-active .usp-item:nth-child(6) { animation-delay: .35s; }
+@keyframes gipfelCardRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #home-page .visual-grid-v3 .visual-item,
+  #home-page .visual-grid-v3 .visual-item img,
+  #home-page .activities-grid-v3 .act-card-v3,
+  #home-page .intro-v3-usp,
+  #home-page .intro-v3-usp .usp-item {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
