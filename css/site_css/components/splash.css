@@ -109,3 +109,6 @@
         filter: blur(0); 
     }
 }
+
+/* Returning visitors bypass the splash instantly, without a transition. */
+html.skip-daily-splash #splash-screen { display: none !important; }
