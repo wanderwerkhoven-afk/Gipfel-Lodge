@@ -1,3 +1,4 @@
+import * as vmModule from 'node:vm';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -50,3 +51,25 @@ test('business structured data and identity metadata remain parseable',()=>{
 });
 
 test('meaningful home introduction is in raw HTML and heading order begins with H1',()=>{const html=read('index.html');assert.ok(html.startsWith('<!doctype html>'));const home=html.split('<main id="home-page"')[1].split('<!-- SECTION 3')[0];const paragraphs=[...home.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)].map(m=>m[1].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());const prose=paragraphs.join(' ');assert.ok(prose.length>=500);for(const word of ['Eben im Pongau','135 m²','vier slaapkamers','drie badkamers','sauna','Flachau'])assert.ok(prose.includes(word),word);const headings=[...html.matchAll(/<h([1-6])\b/g)].map(x=>Number(x[1]));assert.equal(headings[0],1);assert.equal(headings[1],2);});
+
+test('SPA router recognizes GitHub Pages project root and preserves production paths',()=>{
+  const source=read('js/site_js/core/router.js');
+  const vm=requireVm();
+  function createLocation(hostname,pathname){return {hostname,pathname,search:''};}
+  function run(hostname,pathname){
+    const window={location:createLocation(hostname,pathname),i18n:{domain:'gipfellodge.eu'},addEventListener(){},history:{pushState(){}},scrollTo(){}};
+    const document={addEventListener(){}};
+    const context=vm.createContext({window,document,console,localStorage:{setItem(){}},URL});
+    vm.runInContext(source,context);
+    return context;
+  }
+  const gh=run('wanderwerkhoven-afk.github.io','/Gipfel-Lodge/');
+  assert.equal(vm.runInContext("getPageIdFromPath('/Gipfel-Lodge/')",gh),'home');
+  assert.equal(vm.runInContext("getPageIdFromPath('/Gipfel-Lodge/index.html')",gh),'home');
+  assert.equal(vm.runInContext("getPageIdFromPath('/Gipfel-Lodge/lodge')",gh),'lodge');
+  assert.equal(vm.runInContext("toPublicPath('/activities')",gh),'/Gipfel-Lodge/activities');
+  const prod=run('gipfellodge.at','/');
+  assert.equal(vm.runInContext("getPageIdFromPath('/')",prod),'home');
+  assert.equal(vm.runInContext("toPublicPath('/lodge')",prod),'/lodge');
+});
+function requireVm(){return vmModule;}
