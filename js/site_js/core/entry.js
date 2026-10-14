@@ -1,21 +1,37 @@
-/* ENTRY POINT LOGIC - REDIRECT TO HOME */
+/* ENTRY POINT LOGIC - SHOW SPLASH ONCE PER LOCAL CALENDAR DAY */
 
-document.addEventListener('DOMContentLoaded', () => {
-    const splash = document.getElementById('splash-screen');
-    if (!splash) return;
+(function () {
+    const storageKey = 'gipfel-splash-last-shown';
+    const today = () => {
+        const now = new Date();
+        return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+    };
 
-    // Animation Timing
-    // Sequence ends around 3.1s (2.35s start + 0.75s animation)
-    // Adding 0.5s hold = ~3.6s
-    const animationDuration = 3600; 
+    let alreadyShown = false;
+    try {
+        alreadyShown = localStorage.getItem(storageKey) === today();
+        if (!alreadyShown) localStorage.setItem(storageKey, today());
+    } catch (error) {
+        // Private browsing / restricted storage: fall back to the normal splash.
+    }
 
-    setTimeout(() => {
-        // Start fade out/slide up transition
-        splash.classList.add('hidden');
-        
-        // Optionally remove the splash screen from DOM entirely after hiding
-        setTimeout(() => {
+    // Apply before the DOM is painted to prevent a flash of the splash on return visits.
+    if (alreadyShown) document.documentElement.classList.add('skip-daily-splash');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const splash = document.getElementById('splash-screen');
+        if (!splash) return;
+
+        if (alreadyShown) {
             splash.remove();
-        }, 1000);
-    }, animationDuration);
-});
+            return;
+        }
+
+        // Preserve the existing cinematic first-visit animation.
+        const animationDuration = 3600;
+        setTimeout(() => {
+            splash.classList.add('hidden');
+            setTimeout(() => splash.remove(), 1200);
+        }, animationDuration);
+    });
+})();
