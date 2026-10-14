@@ -1,0 +1,34 @@
+name: Agent user-agent reachability
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 7 * * 1'
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check homepage as browser and major agent User-Agents
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/'
+          agents=(
+            'Mozilla/5.0'
+            'GPTBot/1.0 (+https://openai.com/gptbot)'
+            'ChatGPT-User/1.0'
+            'OAI-SearchBot/1.0'
+            'ClaudeBot/1.0'
+            'PerplexityBot/1.0'
+            'Googlebot/2.1 (+http://www.google.com/bot.html)'
+          )
+          failed=0
+          for agent in "${agents[@]}"; do
+            code=$(curl -sS -L --retry 2 --connect-timeout 10 --max-time 25 -o /tmp/agent-home.html -w '%{http_code}' -A "$agent" "$url") || code=000
+            bytes=$(wc -c < /tmp/agent-home.html 2>/dev/null || echo 0)
+            echo "User-Agent: $agent | HTTP: $code | bytes: $bytes"
+            if [[ "$code" != 200 || "$bytes" -lt 500 ]]; then failed=1; fi
+          done
+          exit "$failed"
