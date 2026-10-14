@@ -33,6 +33,23 @@ const routerConfig = {
     }
 };
 
+function getProjectBasePath() {
+    return window.location.hostname.endsWith('.github.io') ? '/Gipfel-Lodge' : '';
+}
+
+function toPublicPath(path) {
+    const base = getProjectBasePath();
+    return base ? base + (path === '/' ? '/' : path) : path;
+}
+
+function stripProjectBasePath(path) {
+    const base = getProjectBasePath();
+    if (!base) return path;
+    if (path === base || path === base + '/') return '/';
+    if (path.startsWith(base + '/')) return path.slice(base.length);
+    return path;
+}
+
 function getPageIdFromPath(path) {
     if (!path) return 'home';
 
@@ -40,7 +57,7 @@ function getPageIdFromPath(path) {
     const config = routerConfig[domain] || routerConfig['gipfellodge.eu'];
     
     // Normalize path (remove query params, hashes, and trailing/leading slashes)
-    let cleanPath = path.split('?')[0].split('#')[0];
+    let cleanPath = stripProjectBasePath(path.split('?')[0].split('#')[0]);
     
     // Strip trailing index.html, index, or .html extension for matching
     cleanPath = cleanPath.replace(/\/index(\.html)?$/i, '');
@@ -80,7 +97,7 @@ function updateNavigationHrefs() {
         if (href && href.startsWith('#')) {
             const pageId = href.substring(1) || 'home';
             if (config[pageId]) {
-                link.setAttribute('href', config[pageId]);
+                link.setAttribute('href', toPublicPath(config[pageId]));
             }
         }
     });
@@ -124,7 +141,7 @@ window.navigateTo = function(pageId) {
     const navLinks = document.querySelectorAll('.menu-link, .menu-btn, .topbar-book, .topbar-logo');
     navLinks.forEach(link => {
         const href = link.getAttribute('href');
-        if (href === activePath || (pageId === 'home' && href === '/')) {
+        if (href === toPublicPath(activePath) || (pageId === 'home' && href === toPublicPath('/'))) {
             link.classList.add('is-active');
         } else {
             link.classList.remove('is-active');
@@ -132,8 +149,8 @@ window.navigateTo = function(pageId) {
     });
 
     // 3. Update URL pathname (without triggering popstate)
-    if (pageId !== '404' && window.location.pathname !== activePath) {
-        window.history.pushState(null, null, activePath + window.location.search);
+    if (pageId !== '404' && window.location.pathname !== toPublicPath(activePath)) {
+        window.history.pushState(null, null, toPublicPath(activePath) + window.location.search);
     }
 
     // 4. Scroll to top
@@ -158,7 +175,7 @@ window.router = {
     currentPageId: 'home',
     getPathForPage: function(pageId, domain) {
         const config = routerConfig[domain] || routerConfig['gipfellodge.eu'];
-        return config[pageId] || '/';
+        return toPublicPath(config[pageId] || '/');
     },
     handleUrlChange: handleUrlChange,
     updateNavigationHrefs: updateNavigationHrefs
