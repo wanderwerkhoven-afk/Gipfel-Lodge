@@ -382,6 +382,8 @@ $t = json_decode(base64_decode('${b64Json}'), true);
         // 8. Validate the finished archive before offering it for upload.
         const requiredOutput = ['index.php', '.htaccess', 'robots.txt', 'sitemap.xml',
             'invoice.html', 'favicon.ico', 'site.webmanifest',
+            'llms.txt', 'index.md', 'openapi.json', 'agent-error.php',
+            'markdown-home.php', 'api/status.php', 'api/index.php',
             'css/site_css/base/style.css', 'js/site_js/core/firebase.js'];
         for (const path of requiredOutput) {
             if (!zip.file(path)) throw new Error('Exportcontrole mislukt: ' + path + ' ontbreekt.');
@@ -475,7 +477,9 @@ function encodeGitHubPath(path) {
 
 function mapPublicSiteFile(path) {
     if (path === 'invoice.html' || path === '.htaccess' || path === 'list-images.php' ||
-        path === '404.php' || path === 'llms.txt') return path;
+        path === '404.php' || path === 'llms.txt' || path === 'index.md' ||
+        path === 'openapi.json' || path === 'sitemap.xml' || path === 'agent-error.php' ||
+        path === 'markdown-home.php' || path === 'api/status.php' || path === 'api/index.php') return path;
     if (path.startsWith('css/site_css/') || path.startsWith('js/site_js/') ||
         path.startsWith('js/utils/') || path.startsWith('assets/')) return path;
     if (path === 'templates/invoice_template.html') return path;
