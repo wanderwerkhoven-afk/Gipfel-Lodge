@@ -17,3 +17,34 @@ test('business schema contains truthful contact destination and address',()=>{co
 
 test('GitHub Pages provides meaningful non-JavaScript accommodation content',()=>{const html=read('index.html');const block=html.match(/<noscript>([\s\S]*?)<\/noscript>/);assert.ok(block);const plain=block[1].replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();assert.ok(plain.length>=500);assert.match(plain,/Eben im Pongau/);assert.match(html,/<h1 class="hero-v3-title"[^>]*>Gipfel Lodge/);});
 test('GitHub Pages project 404 links to public discovery resources',()=>{const html=read('404.html');assert.match(html,/<h1>404/);for(const p of ['/Gipfel-Lodge/','/Gipfel-Lodge/index.md','/Gipfel-Lodge/llms.txt','/Gipfel-Lodge/sitemap.xml'])assert.ok(html.includes(p));assert.match(html,/noindex,follow/);});
+
+test('project sitemap contains four absolute preview URLs and export restores production host',()=>{
+  const xml=read('sitemap.xml');
+  const base='https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/';
+  for(const route of ['', 'about/', 'contact/', 'privacy/'])assert.ok(xml.includes('<loc>'+base+route+'</loc>'));
+  assert.equal((xml.match(/<url>/g)||[]).length,4);
+  const exportCode=read('js/admin_js/admin-export.js');
+  assert.ok(exportCode.includes("previewSitemap.replaceAll(previewSite, productionSite)"));
+});
+test('agent guidance describes project preview use cases and reliable booking source',()=>{
+  const instructions=read('llms.txt');
+  assert.ok(instructions.includes('Wann verwenden?'));
+  assert.ok(instructions.includes('github.io/Gipfel-Lodge/index.md'));
+  assert.ok(instructions.includes('gipfellodge.at/'));
+});
+test('trust page navigation works in both GitHub project path and production root',()=>{
+  for(const path of ['about/index.html','contact/index.html','privacy/index.html']){
+    const page=read(path);
+    for(const route of ['../','../about/','../contact/','../privacy/'])assert.ok(page.includes('href="'+route+'"'));
+    assert.ok(page.replace(/<[^>]*>/g,' ').length>500);
+  }
+});
+test('business structured data and identity metadata remain parseable',()=>{
+  const html=read('index.html');
+  const ld=html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  assert.ok(ld);
+  const data=JSON.parse(ld[1]);
+  assert.ok(data['@type'].includes('LodgingBusiness'));
+  assert.equal(data.address.addressCountry,'AT');
+  for(const signal of ['<html lang="nl">','rel="canonical"','property="og:type"','property="og:image"'])assert.ok(html.includes(signal));
+});
