@@ -1,12 +1,25 @@
-﻿<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
+# Gipfel Lodge: content negotiation and real 404 responses (Apache/SiteGround).
+DirectoryIndex index.html
+ErrorDocument 404 /agent-error.php
+<IfModule mod_headers.c>
+ Header always merge Vary Accept
+</IfModule>
+<IfModule mod_rewrite.c>
+ RewriteEngine On
+ RewriteBase /
 
-  # Bestaande bestanden en mappen normaal blijven laden
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
+ # Serve Markdown only when the homepage explicitly accepts Markdown.
+ RewriteCond %{HTTP:Accept} text/markdown [NC]
+ RewriteRule ^(?:index\.html)?$ markdown-home.php [END]
 
-  # Stuur alle overige routes door naar index.html zodat de SPA router de pagina kan tonen (of het 404-scherm)
-  RewriteRule ^ index.html [L]
+ # Existing public files and directories are served as-is.
+ RewriteCond %{REQUEST_FILENAME} -f [OR]
+ RewriteCond %{REQUEST_FILENAME} -d
+ RewriteRule ^ - [L]
+
+ # Unknown API routes return structured JSON, never the SPA shell.
+ RewriteRule ^api(?:/.*)?$ api/index.php [END]
+
+ # Unknown public routes are real HTTP 404 responses.
+ RewriteRule ^ - [R=404,L]
 </IfModule>
