@@ -1121,3 +1121,11 @@
 /* Hidden review placeholders must not occupy a mobile carousel slot. */
 #home-page .review-card-v3[hidden],
 #home-page .reviews-toggle-wrap[hidden] { display: none !important; }
+
+/* The first hero is stable immediately: no initial zoom or fade. */
+.hero-v3-slide { transform: none; transition: opacity .85s ease-in-out; }
+.hero-v3-slide.active { transform: none; }
+.hero-v3-slide:first-child { opacity: 1; }
+.hero-v3-slide:first-child:not(.active) { opacity: 0; }
+.hero-v3-image { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+@media (prefers-reduced-motion: reduce) { .hero-v3-slide { transition: none; } }
