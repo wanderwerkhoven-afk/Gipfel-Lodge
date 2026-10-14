@@ -217,7 +217,7 @@ async function startStaticExport() {
             if (zoneKey === 'hero_slider') {
                 // SiteGround ships the definitive carousel in HTML: no Firebase hero swap.
                 const valid = items.map(item => typeof item === 'string' ? item : (item.src || ''))
-                    .filter(src => /^(https?:\\/\\/|assets\\/)/.test(src) && !/["'<>]/.test(src));
+                    .filter(src => /^(https?:\/\/|assets\/)/.test(src) && !/["'<>]/.test(src));
                 if (!valid.length) return;
                 el.innerHTML = valid.map((src, i) => {
                     if (i === 0) {
