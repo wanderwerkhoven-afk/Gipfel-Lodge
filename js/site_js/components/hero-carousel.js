@@ -6,6 +6,7 @@ const HeroCarousel = {
     current: 0,
     intervalMs: 8000, // Slightly slower for cinematic feel
     isInitialized: false,
+    warmedImages: new Set(),
 
     init() {
         // Try V3 first, then fallback to old hero
@@ -13,6 +14,10 @@ const HeroCarousel = {
         this.slides = document.querySelectorAll(this.carousel?.classList.contains('hero-v3-carousel') ? '.hero-v3-slide' : '.hero-slide');
         
         if (!this.slides.length) return;
+
+        // Warm the next slide in parallel with the splash, without competing
+        // with the high-priority first hero image.
+        this.warmSlide(1);
 
         // Reset if already initialized
         if (this.isInitialized) {
@@ -61,7 +66,20 @@ const HeroCarousel = {
         this.updateSlides();
     },
 
+    warmSlide(index) {
+        if (!this.slides.length) return;
+        const slide = this.slides[(index + this.slides.length) % this.slides.length];
+        const background = slide && window.getComputedStyle(slide).backgroundImage;
+        const match = background && background.match(/url\(["']?(.*?)["']?\)/);
+        if (!match || this.warmedImages.has(match[1])) return;
+        this.warmedImages.add(match[1]);
+        const image = new Image();
+        image.fetchPriority = 'low';
+        image.src = match[1];
+    },
+
     updateSlides() {
+        this.warmSlide(this.current + 1);
         this.slides.forEach((slide, index) => {
             slide.classList.toggle('active', index === this.current);
         });

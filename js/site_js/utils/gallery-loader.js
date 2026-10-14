@@ -118,7 +118,7 @@
             const alt = getAlt(item, src);
             const caption = getCaption(item);
             const figcap = caption ? `<figcaption class="img-caption">${caption}</figcaption>` : '';
-            return `<div class="gallery-item"><figure><img src="${src}" alt="${alt}">${figcap}</figure></div>`;
+            return `<div class="gallery-item"><figure><img src="${src}" alt="${alt}" loading="lazy" decoding="async">${figcap}</figure></div>`;
         }).join('');
     }
 
@@ -130,7 +130,7 @@
         container.innerHTML = images.map((item, i) => {
             const src = typeof item === 'string' ? item : (item.src || '');
             const alt = getAlt(item, src);
-            return `<img src="${src}" alt="${alt}"${i === 0 ? ' class="active"' : ''}>`;
+            return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async"${i === 0 ? ' class="active"' : ''}>`;
         }).join('');
 
         // Re-append nav buttons
