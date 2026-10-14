@@ -68,7 +68,7 @@ async function startStaticExport() {
         }
 
         // Generate machine-readable discovery metadata from the same canonical host.
-        zip.file('robots.txt', 'User-agent: *\\nAllow: /\\n\\nSitemap: https://gipfellodge.at/sitemap.xml\\n');
+        // robots.txt is copied verbatim from the repository for preview/export parity.
         // Sitemap is copied verbatim from the versioned repository source.
 
         // 5. The exported site is always based on current GitHub index.html.
@@ -477,7 +477,7 @@ function encodeGitHubPath(path) {
 }
 
 function mapPublicSiteFile(path) {
-    if (path === 'invoice.html' || path === '.htaccess' || path === 'list-images.php' ||
+    if (path === 'robots.txt' || path === 'invoice.html' || path === '.htaccess' || path === 'list-images.php' ||
         path === '404.php' || path === 'llms.txt' || path === 'index.md' ||
         path === 'openapi.json' || path === 'sitemap.xml' || path === 'agent-error.php' ||
         path === 'markdown-home.php' || path === 'api/status.php' || path === 'api/index.php' ||
