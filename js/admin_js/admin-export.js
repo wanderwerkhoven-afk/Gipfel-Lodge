@@ -379,6 +379,15 @@ $t = json_decode(base64_decode('${b64Json}'), true);
             zip.file('.htaccess', htaccess);
         }
 
+        // The GitHub Pages preview sitemap contains project URLs. The SiteGround
+        // publication ZIP must instead contain canonical production URLs.
+        const previewSite = 'https://wanderwerkhoven-afk.github.io/Gipfel-Lodge/';
+        const productionSite = 'https://gipfellodge.at/';
+        if (zip.file('sitemap.xml')) {
+            const previewSitemap = await zip.file('sitemap.xml').async('string');
+            zip.file('sitemap.xml', previewSitemap.replaceAll(previewSite, productionSite));
+        }
+
         // 8. Validate the finished archive before offering it for upload.
         const requiredOutput = ['index.php', '.htaccess', 'robots.txt', 'sitemap.xml',
             'invoice.html', 'favicon.ico', 'site.webmanifest',
