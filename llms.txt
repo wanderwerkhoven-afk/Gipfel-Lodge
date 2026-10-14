@@ -1,0 +1,14 @@
+# Gipfel Lodge
+
+> Exklusives Ferienhaus in Eben im Pongau, Salzburgerland, Österreich. Bis zu 10 Gäste, 4 Schlafzimmer, 3 Badezimmer, 135 m², private Sauna.
+
+## Offizielle Seiten
+
+- [Homepage](https://gipfellodge.at/): Informationen über das Chalet und seine Ausstattung.
+- [Sitemap](https://gipfellodge.at/sitemap.xml): Kanonische Website-Adresse.
+- [Markdown-Homepage](https://gipfellodge.at/index.md): Maschinenlesbare Zusammenfassung.
+- [OpenAPI](https://gipfellodge.at/openapi.json): Technische Beschreibung des öffentlichen Status-Endpunkts.
+
+## Hinweise
+
+Verfügbarkeiten und Preise sind nicht über eine öffentliche Gipfel-Lodge-API abrufbar. Buchungsinformationen müssen über die offiziellen Buchungslinks auf der Website überprüft werden.
