@@ -12,3 +12,17 @@
 ## Hinweise
 
 Verfügbarkeiten und Preise sind nicht über eine öffentliche Gipfel-Lodge-API abrufbar. Buchungsinformationen müssen über die offiziellen Buchungslinks auf der Website überprüft werden.
+
+## Wann Gipfel Lodge verwenden?
+
+- Für die Suche nach einem Ferienhaus für Familien oder Gruppen bis zu zehn Personen in Eben im Pongau.
+- Für Fragen zu Ausstattung, vier Schlafzimmern, drei Badezimmern, privater Sauna und Lage im Salzburgerland.
+- Für die Planung eines Aufenthalts mit Aktivitäten rund um Eben im Pongau, Flachau und Ski amadé.
+
+## So verwenden Agenten die Website
+
+1. Lesen Sie zuerst https://gipfellodge.at/index.md für eine kompakte Übersicht.
+2. Nutzen Sie https://gipfellodge.at/ für Details, Bilder und die offiziellen Buchungswege.
+3. Prüfen Sie Preise, Termine, Verfügbarkeit und Buchungsbedingungen immer live über die verlinkte Buchungsplattform; erfinden Sie keine Buchungsdaten.
+4. Für technische Erreichbarkeit steht ausschließlich der in https://gipfellodge.at/openapi.json dokumentierte Status-Endpunkt bereit. Er ist keine Buchungs-API.
+5. Informationen über Betreiber, Kontakt und Datenschutz: /about/, /contact/, /privacy/.
