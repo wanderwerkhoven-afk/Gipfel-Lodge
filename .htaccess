@@ -1,5 +1,5 @@
 # Gipfel Lodge: content negotiation and real 404 responses (Apache/SiteGround).
-DirectoryIndex index.html
+DirectoryIndex index.php index.html
 ErrorDocument 404 /agent-error.php
 <IfModule mod_headers.c>
  Header always merge Vary Accept
@@ -10,7 +10,7 @@ ErrorDocument 404 /agent-error.php
 
  # Serve Markdown only when the homepage explicitly accepts Markdown.
  RewriteCond %{HTTP:Accept} text/markdown [NC]
- RewriteRule ^(?:index\.html)?$ markdown-home.php [END]
+ RewriteRule ^(?:index\.php|index\.html)?$ markdown-home.php [END]
 
  # Existing public files and directories are served as-is.
  RewriteCond %{REQUEST_FILENAME} -f [OR]
