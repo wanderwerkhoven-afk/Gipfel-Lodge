@@ -1026,3 +1026,33 @@
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   line-height: 1.2;
 }
+/* Minimal, accessible carousel arrows at the home hero edges. */
+.hero-v3 > .hero-nav {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font: 300 36px/1 Arial, sans-serif;
+  text-shadow: 0 1px 7px rgba(0,0,0,.65);
+  cursor: pointer;
+  opacity: .8;
+  transition: opacity .2s ease;
+}
+.hero-v3 > .hero-nav.prev { left: clamp(6px, 2vw, 32px); }
+.hero-v3 > .hero-nav.next { right: clamp(6px, 2vw, 32px); }
+.hero-v3 > .hero-nav:hover,
+.hero-v3 > .hero-nav:focus-visible { opacity: 1; }
+.hero-v3 > .hero-nav:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+@media (max-width: 600px) {
+  .hero-v3 > .hero-nav { width: 36px; height: 48px; font-size: 30px; }
+  .hero-v3 > .hero-nav.prev { left: 4px; }
+  .hero-v3 > .hero-nav.next { right: 4px; }
+}
