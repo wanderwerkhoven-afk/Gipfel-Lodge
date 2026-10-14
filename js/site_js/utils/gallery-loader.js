@@ -59,6 +59,10 @@
     }
 
     if (!zonesConfig) return; // Nothing configured yet — keep defaults
+    try {
+        const hero = zonesConfig.hero_slider;
+        if (Array.isArray(hero) && hero.length) localStorage.setItem('gipfel-hero-gallery-v1', JSON.stringify(hero));
+    } catch (_) { /* Browser storage is optional. */ }
 
     /* ───── Inject each zone ───── */
     for (const zone of ZONES) {
@@ -84,6 +88,8 @@
        ───────────────────────────────────────────────────────────── */
 
     async function injectHeroSlides(container, images) {
+        const cached = window.__gipfelCachedHero;
+        if (cached && JSON.stringify(cached) === JSON.stringify(images)) return;
         const first = images[0];
         const firstSrc = typeof first === 'string' ? first : (first.src || '');
         if (!firstSrc) return;
