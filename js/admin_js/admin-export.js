@@ -215,10 +215,22 @@ async function startStaticExport() {
             };
 
             if (zoneKey === 'hero_slider') {
-                el.innerHTML = items.map((item, i) => {
-                    const src = typeof item === 'string' ? item : (item.src || '');
-                    return `<div class="hero-v3-slide${i === 0 ? ' active' : ''}" style="background-image: url('${src}');"></div>`;
+                // SiteGround ships the definitive carousel in HTML: no Firebase hero swap.
+                const valid = items.map(item => typeof item === 'string' ? item : (item.src || ''))
+                    .filter(src => /^(https?:\\/\\/|assets\\/)/.test(src) && !/["'<>]/.test(src));
+                if (!valid.length) return;
+                el.innerHTML = valid.map((src, i) => {
+                    if (i === 0) {
+                        return `<div class="hero-v3-slide active"><img class="hero-v3-image" src="${src}" alt="" loading="eager" fetchpriority="high" decoding="async"></div>`;
+                    }
+                    return `<div class="hero-v3-slide" style="background-image: url(&quot;${src}&quot;);"></div>`;
                 }).join('');
+                // Preload precisely the first published image, not the preview's winter fallback.
+                docEl.querySelectorAll('link[rel="preload"][as="image"]').forEach(link => link.remove());
+                const preload = docEl.createElement('link');
+                preload.rel = 'preload'; preload.as = 'image'; preload.href = valid[0];
+                preload.setAttribute('fetchpriority', 'high');
+                docEl.head.appendChild(preload);
 
             } else if (zoneKey.startsWith('lodge_mini')) {
                 const prevBtn = el.querySelector('.mini-nav.prev')?.outerHTML || '';
@@ -259,6 +271,16 @@ async function startStaticExport() {
             }
             imagesReplaced++;
             el.removeAttribute('data-gallery-zone');
+        });
+
+        // The SiteGround ZIP is self-contained: remove preview-only hero cache
+        // bootstrap scripts and the runtime Firebase gallery injector.
+        docEl.querySelectorAll('script').forEach(script => {
+            if ((script.getAttribute('src') || '').includes('gallery-loader.js') ||
+                (script.textContent || '').includes('gipfel-hero-gallery-v1') ||
+                (script.textContent || '').includes('window.__gipfelCachedHero')) {
+                script.remove();
+            }
         });
 
         // ── 6d. Verberg lege review kaartjes server-side ────────────────────────
