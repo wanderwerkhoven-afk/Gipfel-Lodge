@@ -283,6 +283,7 @@ async function startStaticExport() {
         // bootstrap scripts and the runtime Firebase gallery injector.
         docEl.querySelectorAll('script').forEach(script => {
             if ((script.getAttribute('src') || '').includes('gallery-loader.js') ||
+                (script.getAttribute('src') || '').includes('single-image-loader.js') ||
                 (script.textContent || '').includes('gipfel-hero-gallery-v1') ||
                 (script.textContent || '').includes('window.__gipfelCachedHero')) {
                 script.remove();
@@ -444,6 +445,26 @@ $t = json_decode(base64_decode('${b64Json}'), true);
             throw new Error('Exportcontrole mislukt: PHP-taalroutering ontbreekt.');
         }
 
+        // Verify every local script, stylesheet, icon and eager image referenced by
+        // the generated page is actually packaged at the same relative path.
+        const assetReferences = [
+            ...published.querySelectorAll('script[src], link[rel="stylesheet"][href], link[rel="icon"][href], link[rel="manifest"][href], img[src], link[rel="preload"][as="image"][href]')
+        ];
+        for (const element of assetReferences) {
+            const reference = element.getAttribute('src') || element.getAttribute('href') || '';
+            if (!reference || /^(?:https?:)?\\/\\//i.test(reference) || /^(?:data:|blob:|#)/i.test(reference)) continue;
+            const cleanPath = reference.split(/[?#]/)[0].replace(/^\\.\\//, '').replace(/^\\//, '');
+            if (!cleanPath || cleanPath.includes('..')) {
+                throw new Error('Exportcontrole: onveilig of ongeldig bestandspad: ' + reference);
+            }
+            if (!zip.file(cleanPath)) {
+                throw new Error('Exportcontrole: website verwijst naar ontbrekend bestand: ' + cleanPath);
+            }
+        }
+        if (published.querySelector('script[src*="single-image-loader.js"]')) {
+            throw new Error('Exportcontrole: dynamische Firebase-afbeeldingslader is nog aanwezig.');
+        }
+
         // 8. Validate the finished archive before offering it for upload.
         const requiredOutput = ['index.php', '.htaccess', 'robots.txt', 'sitemap.xml',
             'invoice.html', 'favicon.ico', 'site.webmanifest',
@@ -465,6 +486,14 @@ $t = json_decode(base64_decode('${b64Json}'), true);
             compression: 'DEFLATE',
             compressionOptions: { level: 6 }
         });
+
+        // Re-open the final ZIP to catch packaging/corruption mistakes before download.
+        const verifiedZip = await JSZip.loadAsync(zipBlob, {checkCRC32: true});
+        for (const path of requiredOutput) {
+            if (!verifiedZip.file(path)) throw new Error('ZIP-integriteitscontrole: ontbrekend bestand ' + path);
+        }
+        const verifiedPhp = await verifiedZip.file('index.php').async('string');
+        if (verifiedPhp !== finalPhp) throw new Error('ZIP-integriteitscontrole: index.php wijkt af van de gegenereerde versie.');
 
         progressFill.style.width = '100%';
         statusDiv.innerText = `✅ Klaar! PHP Export voltooid. Bestand heet nu index.php.`;
