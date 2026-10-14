@@ -69,7 +69,7 @@ async function startStaticExport() {
 
         // Generate machine-readable discovery metadata from the same canonical host.
         zip.file('robots.txt', 'User-agent: *\\nAllow: /\\n\\nSitemap: https://gipfellodge.at/sitemap.xml\\n');
-        zip.file('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://gipfellodge.at/</loc></url></urlset>');
+        // Sitemap is copied verbatim from the versioned repository source.
 
         // 5. The exported site is always based on current GitHub index.html.
         statusDiv.innerText = 'Actuele GitHub index.html ophalen...';
@@ -383,6 +383,7 @@ $t = json_decode(base64_decode('${b64Json}'), true);
         const requiredOutput = ['index.php', '.htaccess', 'robots.txt', 'sitemap.xml',
             'invoice.html', 'favicon.ico', 'site.webmanifest',
             'llms.txt', 'index.md', 'openapi.json', 'agent-error.php',
+            'about/index.html', 'contact/index.html', 'privacy/index.html',
             'markdown-home.php', 'api/status.php', 'api/index.php',
             'css/site_css/base/style.css', 'js/site_js/core/firebase.js'];
         for (const path of requiredOutput) {
@@ -479,7 +480,8 @@ function mapPublicSiteFile(path) {
     if (path === 'invoice.html' || path === '.htaccess' || path === 'list-images.php' ||
         path === '404.php' || path === 'llms.txt' || path === 'index.md' ||
         path === 'openapi.json' || path === 'sitemap.xml' || path === 'agent-error.php' ||
-        path === 'markdown-home.php' || path === 'api/status.php' || path === 'api/index.php') return path;
+        path === 'markdown-home.php' || path === 'api/status.php' || path === 'api/index.php' ||
+        path === 'about/index.html' || path === 'contact/index.html' || path === 'privacy/index.html') return path;
     if (path.startsWith('css/site_css/') || path.startsWith('js/site_js/') ||
         path.startsWith('js/utils/') || path.startsWith('assets/')) return path;
     if (path === 'templates/invoice_template.html') return path;
