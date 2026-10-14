@@ -30,9 +30,23 @@
 
 
   <!-- Download de zichtbare home-hero al tijdens de splashanimatie; URL moet gelijk zijn aan de eerste slide. -->
-  <link rel="preload" as="image" type="image/webp"
-    href="assets/images/pictures/winter-outside.webp"
-    fetchpriority="high">
+  <script>
+    // Use the last configured Firebase hero before first paint on repeat visits.
+    (function () {
+      try {
+        const cached = JSON.parse(localStorage.getItem('gipfel-hero-gallery-v1') || 'null');
+        if (!Array.isArray(cached) || !cached.length) return;
+        const first = typeof cached[0] === 'string' ? cached[0] : cached[0].src;
+        if (!first || !/^https?:\/\/|^assets\//.test(first)) return;
+        window.__gipfelCachedHero = cached;
+        const link = document.createElement('link');
+        link.rel = 'preload'; link.as = 'image'; link.href = first;
+        link.fetchPriority = 'high';
+        document.head.appendChild(link);
+      } catch (_) { /* Storage is optional. */ }
+    })();
+  </script>
+  <script>if (!window.__gipfelCachedHero) { const l = document.createElement("link"); l.rel = "preload"; l.as = "image"; l.href = "assets/images/pictures/winter-outside.webp"; l.fetchPriority = "high"; document.head.appendChild(l); }</script>
 
   <!-- 1.2 STYLESHEETS -->
   <link rel="stylesheet" href="css/site_css/base/variables.css" />
@@ -328,7 +342,33 @@
     <!-- SECTION 1: HERO (CINEMA) -->
     <section class="hero-v3">
       <div class="hero-v3-carousel" data-gallery-zone="hero_slider">
-        <div class="hero-v3-slide active"><img class="hero-v3-image" src="assets/images/pictures/winter-outside.webp" alt="" fetchpriority="high" loading="eager" decoding="async"></div>
+        <script>
+          // The configured hero replaces the fallback before the page is painted.
+          (function () {
+            const images = window.__gipfelCachedHero;
+            if (!images || !images.length) return;
+            const parent = document.currentScript.parentElement;
+            const first = typeof images[0] === 'string' ? images[0] : images[0].src;
+            const safe = (src) => /^(https?:\/\/|assets\/)/.test(src) && !/["'<>]/.test(src);
+            if (!safe(first)) return;
+            const slides = images.map((item, i) => {
+              const src = typeof item === 'string' ? item : item.src;
+              if (!safe(src)) return '';
+              const div = document.createElement('div');
+              div.className = 'hero-v3-slide' + (i === 0 ? ' active' : '');
+              if (i === 0) {
+                const img = document.createElement('img');
+                img.className = 'hero-v3-image'; img.src = src;
+                img.alt = ''; img.loading = 'eager'; img.fetchPriority = 'high';
+                div.appendChild(img);
+              } else div.style.backgroundImage = 'url(' + JSON.stringify(src) + ')';
+              parent.insertBefore(div, document.currentScript);
+              return div;
+            });
+            parent.dataset.cachedHero = 'true';
+          })();
+        </script>
+        <div class="hero-v3-slide active hero-v3-fallback"><img class="hero-v3-image" src="assets/images/pictures/winter-outside.webp" alt="" fetchpriority="high" loading="eager" decoding="async"></div>
         <div class="hero-v3-slide" style="background-image: url('assets/images/pictures/summer-outside.png');"></div>
       </div>
       <div class="hero-v3-overlay"></div>

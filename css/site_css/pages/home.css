@@ -1129,3 +1129,7 @@
 .hero-v3-slide:first-child:not(.active) { opacity: 0; }
 .hero-v3-image { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 @media (prefers-reduced-motion: reduce) { .hero-v3-slide { transition: none; } }
+
+/* Do not show the hardcoded winter fallback when cached Firebase hero exists. */
+.hero-v3-carousel[data-cached-hero="true"] > .hero-v3-fallback,
+.hero-v3-carousel[data-cached-hero="true"] > .hero-v3-fallback + .hero-v3-slide { display: none; }
