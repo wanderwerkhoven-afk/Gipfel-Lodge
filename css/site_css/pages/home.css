@@ -1117,3 +1117,7 @@
     transform: none !important;
   }
 }
+
+/* Hidden review placeholders must not occupy a mobile carousel slot. */
+#home-page .review-card-v3[hidden],
+#home-page .reviews-toggle-wrap[hidden] { display: none !important; }
