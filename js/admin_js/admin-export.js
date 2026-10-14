@@ -25,7 +25,11 @@ async function startStaticExport() {
             getDoc(doc(db, 'settings', 'galleries')),
             getDoc(doc(db, 'settings', 'translations'))
         ]);
-        const galleryZones  = galleriesSnap.exists()    ? (galleriesSnap.data().zones || {}) : {};
+        if (!galleriesSnap.exists()) throw new Error('Firebase galerij-instellingen ontbreken. Export gestopt om een verkeerde hero te voorkomen.');
+        const galleryZones = galleriesSnap.data().zones || {};
+        if (!Array.isArray(galleryZones.hero_slider) || !galleryZones.hero_slider.length) {
+            throw new Error('Content Studio bevat geen hero-afbeeldingen. Stel eerst de hero-galerij in.');
+        }
         const textOverrides = translationsSnap.exists() ? translationsSnap.data()            : {};
         
         progressFill.style.width = '10%';
@@ -218,7 +222,9 @@ async function startStaticExport() {
                 // SiteGround ships the definitive carousel in HTML: no Firebase hero swap.
                 const valid = items.map(item => typeof item === 'string' ? item : (item.src || ''))
                     .filter(src => /^(https?:\/\/|assets\/)/.test(src) && !/["'<>]/.test(src));
-                if (!valid.length) return;
+                if (valid.length !== items.length || !valid.length) {
+                    throw new Error('Hero-galerij bevat een lege of ongeldige afbeeldings-URL. Corrigeer deze in Content Studio.');
+                }
                 el.innerHTML = valid.map((src, i) => {
                     if (i === 0) {
                         return `<div class="hero-v3-slide active"><img class="hero-v3-image" src="${src}" alt="" loading="eager" fetchpriority="high" decoding="async"></div>`;
@@ -408,6 +414,34 @@ $t = json_decode(base64_decode('${b64Json}'), true);
         if (zip.file('sitemap.xml')) {
             const previewSitemap = await zip.file('sitemap.xml').async('string');
             zip.file('sitemap.xml', previewSitemap.replaceAll(previewSite, productionSite));
+        }
+
+        // Validate the generated production HTML, not just ZIP filenames.
+        const published = new DOMParser().parseFromString(bodyHtml, 'text/html');
+        const publishedSlides = published.querySelectorAll('.hero-v3-carousel .hero-v3-slide');
+        const expectedHero = galleryZones.hero_slider.map(item => typeof item === 'string' ? item : item.src);
+        const firstHero = published.querySelector('.hero-v3-carousel .hero-v3-slide.active img.hero-v3-image');
+        const preloadedHero = published.querySelector('link[rel="preload"][as="image"][fetchpriority="high"]');
+        if (publishedSlides.length !== expectedHero.length || !firstHero ||
+            firstHero.getAttribute('src') !== expectedHero[0] ||
+            firstHero.getAttribute('fetchpriority') !== 'high' ||
+            firstHero.getAttribute('loading') !== 'eager' ||
+            !preloadedHero || preloadedHero.getAttribute('href') !== expectedHero[0]) {
+            throw new Error('Exportcontrole mislukt: eerste hero, preload of carousel komt niet overeen met Content Studio.');
+        }
+        if (published.querySelector('script[src*="gallery-loader.js"]') ||
+            bodyHtml.includes('gipfel-hero-gallery-v1') || bodyHtml.includes('window.__gipfelCachedHero')) {
+            throw new Error('Exportcontrole mislukt: dynamische Firebase-hero code is nog aanwezig.');
+        }
+        if (!published.querySelector('.hero-nav.prev') || !published.querySelector('.hero-nav.next') ||
+            !published.querySelector('script[src*="hero-carousel.js"]')) {
+            throw new Error('Exportcontrole mislukt: hero-navigatie of carousel-script ontbreekt.');
+        }
+        if (published.querySelector('[data-gallery-zone="hero_slider"]')) {
+            throw new Error('Exportcontrole mislukt: hero is niet statisch ingebakken.');
+        }
+        if (!finalPhp.includes('<?php') || !finalPhp.includes('htmlspecialchars(')) {
+            throw new Error('Exportcontrole mislukt: PHP-taalroutering ontbreekt.');
         }
 
         // 8. Validate the finished archive before offering it for upload.
