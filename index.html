@@ -29,7 +29,7 @@
     rel="stylesheet">
 
 
-  <!-- SEO: Preload eerste hero-afbeelding voor LCP-verbetering -->
+  <!-- Download de zichtbare home-hero al tijdens de splashanimatie; URL moet gelijk zijn aan de eerste slide. -->
   <link rel="preload" as="image" type="image/webp"
     href="assets/images/pictures/winter-outside.webp"
     fetchpriority="high">
@@ -326,7 +326,7 @@
     <!-- SECTION 1: HERO (CINEMA) -->
     <section class="hero-v3">
       <div class="hero-v3-carousel" data-gallery-zone="hero_slider">
-        <div class="hero-v3-slide active" style="background-image: url('assets/images/pictures/winter-outside.png');">
+        <div class="hero-v3-slide active" style="background-image: url('assets/images/pictures/winter-outside.webp');">
         </div>
         <div class="hero-v3-slide" style="background-image: url('assets/images/pictures/summer-outside.png');"></div>
       </div>
