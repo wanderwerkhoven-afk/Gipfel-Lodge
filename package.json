@@ -5,7 +5,8 @@
   "scripts": {
     "build:siteground": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1",
     "build:beheer": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1 -BeheerOnly",
-    "optimize-images": "node ./scripts/optimize-images.js"
+    "optimize-images": "node ./scripts/optimize-images.js",
+    "build:mpa": "node ./scripts/build-multipage.cjs"
   },
   "private": true,
   "dependencies": {
