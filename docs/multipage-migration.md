@@ -13,3 +13,9 @@ Acceptance checks before rollout:
 - Check Firebase images/translations and static PHP export consistency.
 - Run mobile browser checks, Core Web Vitals, canonical/hreflang and sitemap validation.
 - Switch GitHub Pages publishing only after the preview MPA passes all checks.
+
+## Follow-up implementation
+
+- Build validates exactly one matching `main.page`, the navigation adapter and locally referenced scripts/stylesheets for every generated page.
+- MPA navigation adapter now knows Dutch, German and English path names, but localized documents are **not yet generated**.
+- This remains a draft migration: GitHub Pages must not be pointed to `dist/mpa` until direct route refresh, CMS maintenance, language variants and export are tested end-to-end.
