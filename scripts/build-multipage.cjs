@@ -66,6 +66,15 @@ function build(domain, page) {
   doc.documentElement.dataset.mpaPage = page;
   doc.documentElement.lang = config.locale;
   staticTranslations(doc, config.lang);
+  // Write real page URLs into HTML; crawlers and keyboard navigation work without JS.
+  const pagePaths = Object.fromEntries(known.map(id => [id, config.pages[id].path + (config.pages[id].path === '/' ? '' : '/')]));
+  for (const anchor of doc.querySelectorAll('a[href]')) {
+    const href = anchor.getAttribute('href');
+    const pageId = href && href.startsWith('#') ? href.slice(1) : null;
+    if (pageId && Object.prototype.hasOwnProperty.call(pagePaths, pageId)) {
+      anchor.setAttribute('href', pagePaths[pageId]);
+    }
+  }
   const canonical = doc.querySelector('link[rel="canonical"]');
   if (canonical) canonical.href = 'https://' + domain + pageConfig.path;
   const description = doc.querySelector('meta[name="description"]');
