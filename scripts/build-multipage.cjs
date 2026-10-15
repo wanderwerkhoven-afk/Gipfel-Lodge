@@ -6,6 +6,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { JSDOM } = require('jsdom');
+const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist', 'mpa');
@@ -14,6 +15,28 @@ const seo = require(path.join(root, 'js/site_js/seo/seo-config.js'));
 const domains = ['gipfellodge.nl', 'gipfellodge.at', 'gipfellodge.de', 'gipfellodge.eu'];
 const known = ['home', 'lodge', 'activities', 'enjoyment', 'booking'];
 const scriptName = 'js/site_js/core/multipage.js';
+const translations = { de: {}, nl: {}, en: {} };
+const context = vm.createContext({ window: { gipfelTranslations: translations } });
+for (const filename of [
+  'i18n_home.js', 'i18n_lodge.js', 'i18n_activities.js',
+  'i18n_booking.js', 'i18n_enjoyment.js', 'i18n_global.js'
+]) {
+  vm.runInContext(
+    fs.readFileSync(path.join(root, 'js/site_js/i18n', filename), 'utf8'),
+    context, { filename, timeout: 2000 }
+  );
+}
+function staticTranslations(doc, lang) {
+  for (const element of doc.querySelectorAll('[data-i18n]')) {
+    const key = element.getAttribute('data-i18n');
+    const value = translations[lang]?.[key] ?? translations.nl?.[key];
+    if (typeof value !== 'string') continue;
+    if (element.matches('input, textarea')) element.setAttribute('placeholder', value);
+    else if (element.hasAttribute('title')) element.setAttribute('title', value);
+    else element.textContent = value;
+  }
+}
+
 
 function build(domain, page) {
   const config = seo.domains[domain];
@@ -41,6 +64,7 @@ function build(domain, page) {
   base.setAttribute('href', '/'); // Each domain directory is intended as its own document root.
   doc.documentElement.dataset.mpaPage = page;
   doc.documentElement.lang = config.locale;
+  staticTranslations(doc, config.lang);
   const canonical = doc.querySelector('link[rel="canonical"]');
   if (canonical) canonical.href = 'https://' + domain + pageConfig.path;
   const description = doc.querySelector('meta[name="description"]');
