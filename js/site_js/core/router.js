@@ -212,7 +212,22 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNavigationHrefs();
 
     // 2. Load the initial page based on URL path
-    const initialPage = getPageIdFromPath(window.location.pathname) || '404';
+    const params = new URLSearchParams(window.location.search);
+    const spaPage = window.location.hostname.endsWith('.github.io') ? params.get('spa') : null;
+    const spaPath = params.get('spaPath');
+    const validPages = ['home', 'lodge', 'activities', 'enjoyment', 'booking'];
+    const initialPage = spaPage && validPages.includes(spaPage)
+        ? spaPage : (getPageIdFromPath(window.location.pathname) || '404');
+    if (spaPage && validPages.includes(spaPage)) {
+        // Remove internal recovery parameters before the router updates the URL.
+        params.delete('spa');
+        params.delete('spaPath');
+        const query = params.toString();
+        const recoveredPath = spaPath && /^[a-z-]+$/.test(spaPath)
+            ? toPublicPath('/' + spaPath)
+            : toPublicPath('/');
+        window.history.replaceState(null, '', recoveredPath + (query ? '?' + query : '') + window.location.hash);
+    }
     window.navigateTo(initialPage);
 
     // 3. Intercept clicks on links for routing
