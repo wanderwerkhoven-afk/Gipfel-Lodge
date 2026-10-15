@@ -24,12 +24,15 @@ const HomePage = {
         }
 
         // Listen for dynamic gallery injections
-        document.addEventListener('galleriesUpdated', () => {
+        if (!this.galleryListenerBound) {
+          this.galleryListenerBound = true;
+          document.addEventListener('galleriesUpdated', () => {
             if (window.HeroCarousel) {
                 window.HeroCarousel.init();
             }
             if (window.GipfelScroll) window.GipfelScroll.init();
-        });
+          });
+        }
 
         // Initialize scroll reveal animations for new sections
         if (window.GipfelScroll) {

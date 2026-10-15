@@ -44,6 +44,12 @@
         }
     ];
 
+    // Keep the first paint independent of the Firebase SDK and network.
+    // Cached or fallback hero is already rendered in index.html.
+    if (document.readyState !== 'complete') {
+        await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+    }
+
     /* ───── Fetch gallery config from Firebase ───── */
     let zonesConfig = null;
 

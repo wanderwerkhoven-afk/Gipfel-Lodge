@@ -28,10 +28,10 @@
         }
 
         // Preserve the existing cinematic first-visit animation.
-        const animationDuration = 3600;
+        const animationDuration = 1800;
         setTimeout(() => {
             splash.classList.add('hidden');
-            setTimeout(() => splash.remove(), 1200);
+            setTimeout(() => splash.remove(), 450);
         }, animationDuration);
     });
 })();
