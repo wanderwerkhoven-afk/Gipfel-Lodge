@@ -42,7 +42,7 @@ function staticTranslations(doc, lang) {
 function build(domain, page) {
   const config = seo.domains[domain];
   const pageConfig = config.pages[page];
-  const route = pageConfig.path.replace(/^\\/+/, '');
+  const route = pageConfig.path.replace(new RegExp('^/+'), '');
   const dom = new JSDOM(source);
   const doc = dom.window.document;
   // Preserve shared navigation, splash, lightboxes, maintenance and footer.
@@ -92,7 +92,7 @@ for (const domain of domains) for (const page of known) build(domain, page);
 // Fail the build if a page accidentally contains another route's main section
 // or if its route adapter and essential shared assets are absent.
 for (const domain of domains) for (const page of known) {
-  const filename = path.join(output, domain, seo.domains[domain].pages[page].path.replace(/^\\/+/, ''), 'index.html');
+  const filename = path.join(output, domain, seo.domains[domain].pages[page].path.replace(new RegExp('^/+'), ''), 'index.html');
   const html = fs.readFileSync(filename, 'utf8');
   const dom = new JSDOM(html);
   const doc = dom.window.document;
@@ -105,8 +105,8 @@ for (const domain of domains) for (const page of known) {
   }
   for (const el of doc.querySelectorAll('script[src],link[rel="stylesheet"][href]')) {
     const url = el.getAttribute('src') || el.getAttribute('href');
-    if (!url || /^(https?:)?\\/\\//.test(url)) continue;
-    const relative = url.split(/[?#]/)[0].replace(/^\\.\\//, '');
+    if (!url || url.startsWith('http:') || url.startsWith('https:') || url.startsWith('//')) continue;
+    const relative = url.split(/[?#]/)[0].replace(new RegExp('^\\\\./'), '');
     if (relative.startsWith('/') || relative.includes('..')) continue;
     if (!fs.existsSync(path.join(output, domain, relative))) {
       throw new Error('Missing local dependency: ' + relative + ' in ' + filename);
