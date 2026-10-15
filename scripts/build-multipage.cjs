@@ -48,5 +48,13 @@ function build(page) {
   dom.window.close();
 }
 fs.rmSync(output, { recursive: true, force: true });
+for (const directory of ['assets', 'css', 'js']) {
+  const sourceDir = path.join(root, directory);
+  if (fs.existsSync(sourceDir)) fs.cpSync(sourceDir, path.join(output, directory), { recursive: true });
+}
+for (const filename of ['site.webmanifest', 'favicon.svg', 'favicon.ico', 'favicon-96x96.png', 'apple-touch-icon.png', 'robots.txt', 'sitemap.xml', 'llms.txt', 'index.md', '404.html']) {
+  const sourceFile = path.join(root, filename);
+  if (fs.existsSync(sourceFile)) fs.copyFileSync(sourceFile, path.join(output, filename));
+}
 for (const page of known) build(page);
 console.log('Generated ' + known.size + ' independent HTML documents in dist/mpa');
