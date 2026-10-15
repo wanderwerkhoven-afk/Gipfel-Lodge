@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <link rel="canonical" href="https://gipfellodge.at/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://gipfellodge.at/assets/images/pictures/livingroom.png" />
+  <meta property="og:url" content="https://gipfellodge.at/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gipfel Lodge | Luxe vakantiehuis in Eben im Pongau, Oostenrijk</title>
+  <meta name="description" content="Gipfel Lodge: vakantiehuis in Eben im Pongau, Salzburgerland, met 4 slaapkamers, 3 badkamers en privésauna. Ontdek het verblijf en de omgeving." />
+
+  <!-- PWA & ICON INTEGRATION -->
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#C5A059">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gipfel Lodge">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- 1.1 FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;700&family=Mrs+Saint+Delafield&display=swap"
+    rel="stylesheet">
+
+
+  <!-- Download de zichtbare home-hero al tijdens de splashanimatie; URL moet gelijk zijn aan de eerste slide. -->
+  <script>
+    // Use the last configured Firebase hero before first paint on repeat visits.
+    (function () {
+      try {
+        const cached = JSON.parse(localStorage.getItem('gipfel-hero-gallery-v1') || 'null');
+        if (!Array.isArray(cached) || !cached.length) return;
+        const first = typeof cached[0] === 'string' ? cached[0] : cached[0].src;
+        if (!first || !/^https?:\/\/|^assets\//.test(first)) return;
+        window.__gipfelCachedHero = cached;
+        const link = document.createElement('link');
+        link.rel = 'preload'; link.as = 'image'; link.href = first;
+        link.fetchPriority = 'high';
+        document.head.appendChild(link);
+      } catch (_) { /* Storage is optional. */ }
+    })();
+  </script>
+  <script>if (!window.__gipfelCachedHero) { const l = document.createElement("link"); l.rel = "preload"; l.as = "image"; l.href = "assets/images/pictures/winter-outside.webp"; l.fetchPriority = "high"; document.head.appendChild(l); }</script>
+
+  <!-- 1.2 STYLESHEETS -->
+  <link rel="stylesheet" href="css/site_css/base/variables.css" />
+  <link rel="stylesheet" href="css/site_css/base/style.css" />
+  <link rel="stylesheet" href="css/site_css/components/global.css" />
+  <link rel="stylesheet" href="css/site_css/components/splash.css" />
+  <link rel="stylesheet" href="css/site_css/components/maintenance.css" />
+  <link rel="stylesheet" href="css/site_css/pages/home.css" />
+  <link rel="stylesheet" href="css/site_css/pages/lodge.css" />
+  <link rel="stylesheet" href="css/site_css/pages/seizoenen.css" />
+  <link rel="stylesheet" href="css/site_css/pages/booking.css" />
+  <link rel="stylesheet" href="css/site_css/pages/enjoyment.css" />
+  <link rel="stylesheet" href="css/site_css/pages/seo-blocks.css" />
+  <link rel="stylesheet" href="css/site_css/pages/404.css" />
+
+  <!-- Flag Icons for Phone Selector -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+
+  <!-- Phosphor Icons (Bold Weight) -->
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
+
+  <!-- EmailJS SDK -->
+  <!-- 1.3 SPA LOGIC STYLES -->
+  <style>
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+  <!-- SEO: Structured Data — LodgingBusiness / VacationRental -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": ["LodgingBusiness", "VacationRental"],
+    "name": "Gipfel Lodge",
+    "description": "Luxe chalet voor 8-10 personen in Eben im Pongau, Oostenrijk. Met privé sauna, regendouche, 4 slaapkamers en panoramisch uitzicht. Direct nabij Flachau en Ski Amadé.",
+    "url": "https://gipfellodge.at",
+    "contactPoint": {"@type":"ContactPoint","contactType":"guest enquiries","url":"https://gipfellodge.at/contact/"},
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Eben im Pongau",
+      "addressRegion": "Salzburg",
+      "postalCode": "5531",
+      "addressCountry": "AT"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 47.4167,
+      "longitude": 13.3833
+    },
+    "image": [
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-luxe-chalet-oostenrijk.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-woonkamer-alpine-interieur.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-prive-sauna-salzburgerland.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-slaapkamer-luxe-chalet.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-keuken-eethoek-groep.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-terras-uitzicht-alpen.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-badkamer-regendouche.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-exterieur-winter-ski-amade.webp",
+      "https://gipfellodge.at/assets/images/seo/gipfel-lodge-villa-flachau-zomer.webp"
+    ],
+    "numberOfRooms": 4,
+    "amenityFeature": [
+      { "@type": "LocationFeatureSpecification", "name": "Privé sauna", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Regendouche", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Panoramaterras", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Skikelder", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Vrije WiFi", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "Parkeren", "value": true }
+    ],
+    "starRating": { "@type": "Rating", "ratingValue": "5" },
+    "priceRange": "€€€",
+    "checkinTime": "15:00",
+    "checkoutTime": "10:00",
+    "petsAllowed": false,
+    "tourBookingPage": "https://gipfellodge.nl/#booking",
+    "containedInPlace": {
+      "@type": "TouristDestination",
+      "name": "Ski Amadé",
+      "url": "https://www.skiamadc.com"
+    }
+  }
+  </script>
+  <!-- Determine same-day splash visibility before the first paint. -->
+  <script src="js/site_js/core/entry.js"></script>
+</head>
+
+<body>
+  <noscript><section aria-label="Gipfel Lodge accommodatie informatie" style="padding:2rem;max-width:900px;margin:auto;font:1rem/1.6 system-ui,sans-serif"><p><strong>Gipfel Lodge – vakantiehuis in Eben im Pongau</strong></p><p>Gipfel Lodge is een vakantiehuis in Eben im Pongau in het Oostenrijkse Salzburgerland, vlak bij Flachau en het skigebied Ski amadé. Het chalet biedt circa 135 vierkante meter woonruimte voor families en groepen tot tien personen. Er zijn vier slaapkamers, drie badkamers, een eigen sauna, een volledig uitgeruste keuken en een balkon en terras. In de winter kun je in de omgeving skiën en winterwandelen. In de zomer zijn wandelen, fietsen en uitstapjes in het Salzburgerland mogelijk. Op deze website vind je meer informatie over de lodge, de omgeving en de officiële boekingsmogelijkheden. Voor actuele prijzen, beschikbaarheid en voorwaarden raadpleeg je altijd de boekingspagina. Bekijk ook de <a href="index.md">tekstversie van de accommodatie-informatie</a> en de <a href="sitemap.xml">sitemap</a>.</p></section></noscript>
+
+
+  <!-- LIGHTBOX MODAL (Shared) -->
+  <div id="lightboxModal" class="lightbox-modal">
+    <div class="lightbox-content">
+      <button class="lightbox-close" aria-label="Schließen">×</button>
+      <button class="lightbox-nav lightbox-prev" aria-label="Vorheriges Foto">‹</button>
+      <img class="lightbox-image" src="" alt="">
+      <button class="lightbox-nav lightbox-next" aria-label="Nächstes Foto">›</button>
+      <div class="lightbox-counter">
+        <span class="lightbox-current">1</span> / <span class="lightbox-total">21</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.1 SPLASH SCREEN -->
+  <div id="splash-screen">
+    <div class="splash-logo-container">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="gipfel-logo-svg">
+        <path class="line mountain-1" d="M 65 210 L 160 50 L 220 145" fill="none" stroke="currentColor" stroke-width="4"
+          stroke-linecap="round" stroke-linejoin="round" />
+        <path class="line mountain-2" d="M 180 145 L 240 50 L 335 210" fill="none" stroke="currentColor"
+          stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+        <g class="stars">
+          <path d="M 155 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z"
+            fill="currentColor" />
+          <path d="M 185 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z"
+            fill="currentColor" />
+          <path d="M 215 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z"
+            fill="currentColor" />
+          <path d="M 245 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z"
+            fill="currentColor" />
+          <text x="265" y="190" font-size="28" class="text" style="text-transform: none; fill: currentColor;">s</text>
+        </g>
+        <text x="65" y="270" text-anchor="start" font-size="41" font-weight="700" letter-spacing="1" textLength="270"
+          lengthAdjust="spacing" class="text" style="text-transform: uppercase; fill: currentColor;">Gipfel Lodge</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- MAINTENANCE SCREEN -->
+  <div id="maintenance-screen">
+    <div class="maintenance-content">
+      <div class="maintenance-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="gipfel-logo-svg">
+          <path class="line mountain-1" d="M 65 210 L 160 50 L 220 145" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path class="line mountain-2" d="M 180 145 L 240 50 L 335 210" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <g class="stars">
+            <path d="M 155 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <path d="M 185 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <path d="M 215 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <path d="M 245 180 l 3.5 10 h 10.5 l -8.5 6 l 3.5 10 l -9 -7 l -9 7 l 3.5 -10 l -8.5 -6 h 10.5 z" fill="currentColor" />
+            <text x="265" y="190" font-size="28" class="text" style="text-transform: none; fill: currentColor;">s</text>
+          </g>
+        </svg>
+      </div>
+      <div class="maintenance-title" data-i18n="maint-title">Gipfel Lodge</div>
+      <div class="maintenance-subtitle" data-i18n="maint-subtitle">Under Construction</div>
+      <p class="maintenance-text" data-i18n="maint-text">Gipfel Lodge is currently being updated. We'll be back shortly.</p>
+      <a href="https://www.villaforyou.com/ho-16679/AT.5531.14" target="_blank" rel="noopener noreferrer" class="maintenance-btn" data-i18n="maint-btn">Book via Villa For You</a>
+      
+      <!-- Lang selector for maintenance mode -->
+      <div class="lang-dropdown" style="margin-top: 30px;">
+        <button class="lang-toggle" aria-haspopup="true" aria-expanded="false" style="color: rgba(255,255,255,0.6); padding: 5px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <span class="active-flag-container"><span class="fi fi-nl"></span></span>
+        </button>
+        <div class="lang-menu" style="bottom: 100%; top: auto; margin-bottom: 10px;">
+          <a href="#" class="lang-link" data-lang-switch="de"><span class="fi fi-de"></span> DEUTSCH</a>
+          <a href="#" class="lang-link" data-lang-switch="en"><span class="fi fi-gb"></span> ENGLISH</a>
+          <a href="#" class="lang-link is-active" data-lang-switch="nl"><span class="fi fi-nl"></span> NEDERLANDS</a>
+          <a href="#" class="lang-link" data-lang-switch="fr"><span class="fi fi-fr"></span> FRANÇAIS</a>
+          <a href="#" class="lang-link" data-lang-switch="it"><span class="fi fi-it"></span> ITALIANO</a>
+          <a href="#" class="lang-link" data-lang-switch="pl"><span class="fi fi-pl"></span> POLSKI</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2.2 HEADER (Shared) -->
+  <header class="topbar">
+    <div class="topbar-inner">
+
+      <!-- Left: 9-dot menu toggle -->
+      <button class="topbar-dots" aria-label="Menu" aria-expanded="false">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="4" fill="currentColor" />
+          <circle cx="20" cy="8" r="4" fill="currentColor" />
+          <circle cx="32" cy="8" r="4" fill="currentColor" />
+          <circle cx="8" cy="20" r="4" fill="currentColor" />
+          <circle cx="20" cy="20" r="4" fill="currentColor" />
+          <circle cx="32" cy="20" r="4" fill="currentColor" />
+          <circle cx="8" cy="32" r="4" fill="currentColor" />
+          <circle cx="20" cy="32" r="4" fill="currentColor" />
+          <circle cx="32" cy="32" r="4" fill="currentColor" />
+        </svg>
+      </button>
+
+      <!-- SVG GRADIENT FOR GOLD ICONS -->
+      <svg width="0" height="0" style="position: absolute; pointer-events: none;">
+        <defs>
+          <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#C5A059;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#dfc086;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#C5A059;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <!-- Center: logo -->
+      <div class="topbar-center">
+        <a class="topbar-logo" href="#home">
+          <span class="logo-text-part left">GIPFEL</span>
+          <img src="assets/images/logo-Topbar.png" alt="Gipfel Lodge" />
+          <span class="logo-text-part right">LODGE</span>
+        </a>
+      </div>
+
+      <!-- Right: lang + actions -->
+      <div class="topbar-actions">
+        <div class="lang-dropdown">
+          <button class="lang-toggle" aria-haspopup="true" aria-expanded="false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+              </path>
+            </svg>
+            <span class="active-flag-container">
+              <span class="fi fi-nl"></span>
+            </span>
+          </button>
+          <div class="lang-menu">
+            <a href="#" class="lang-link" data-lang-switch="de"><span class="fi fi-de"></span> DEUTSCH</a>
+            <a href="#" class="lang-link" data-lang-switch="en"><span class="fi fi-gb"></span> ENGLISH</a>
+            <a href="#" class="lang-link is-active" data-lang-switch="nl"><span class="fi fi-nl"></span> NEDERLANDS</a>
+            <a href="#" class="lang-link" data-lang-switch="fr"><span class="fi fi-fr"></span> FRANÇAIS</a>
+            <a href="#" class="lang-link" data-lang-switch="it"><span class="fi fi-it"></span> ITALIANO</a>
+            <a href="#" class="lang-link" data-lang-switch="pl"><span class="fi fi-pl"></span> POLSKI</a>
+          </div>
+        </div>
+        <a class="topbar-book" href="#booking" data-i18n="nav-book-short">BOOK</a>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="mobile-toggle" aria-label="Menu" aria-expanded="false">
+        <span class="hamburger"></span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- Mobile nav drawer (moved outside header for better isolation) -->
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="menu-close" aria-label="Close menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <a class="menu-link" href="#home" data-i18n="nav-home">HOME</a>
+    <a class="menu-link" href="#lodge" data-i18n="nav-lodge">DIE LODGE</a>
+    <a class="menu-link" href="#activities" data-i18n="nav-activities">AKTIVITÄTEN</a>
+    <a class="menu-link" href="#enjoyment" data-i18n="nav-enjoyment">GENUSS</a>
+    <a class="menu-link" href="#booking" data-i18n="nav-book">JETZT BUCHEN</a>
+
+    <!-- Mobile Language Selection -->
+    <div class="mobile-lang-selection">
+      <span class="mobile-lang-label" data-i18n="lang-select">Select Language</span>
+      <div class="mobile-lang-grid">
+        <a href="#" class="mobile-lang-item" data-lang-switch="de">DE</a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="en">EN</a>
+        <a href="#" class="mobile-lang-item is-active" data-lang-switch="nl">NL</a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="fr">FR</a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="it">IT</a>
+        <a href="#" class="mobile-lang-item" data-lang-switch="pl">PL</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 2.3 MAIN: HOME PAGE (EDITORIAL V3) -->
+  <!-- MPA_PAGE_MOUNT -->
+
+  <!-- 2.4 MAIN: LODGE PAGE -->
+  
+
+  <!-- 2.5 MAIN: ACTIVITIES PAGE (SPA Integrated from eben.html) -->
+  
+
+  <!-- 2.6 MAIN: ENJOYMENT PAGE -->
+  
+
+  <!-- 2.7 MAIN: BOOKING PAGE -->
+  
+ 
+  <!-- 2.7 404 NOT FOUND PAGE -->
+  
+ 
+  <!-- 2.8 FOOTER (Shared Footer) -->
+  <footer class="footer">
+    <div class="footer-divider">
+      <div class="footer-divider-inner"></div>
+    </div>
+    <div class="container footer-grid">
+      <div>
+        <h3 class="footer-title" data-i18n="footer-reservations">Reserveringen</h3>
+        <p>Eben im Pongau, Austria<br>+43 000 000 000<br><a
+            href="mailto:hello@gipfellodge.com">hello@gipfellodge.com</a></p>
+      </div>
+      <div class="footer-spacer">
+        <!-- Middle column removed as requested -->
+      </div>
+      <div style="text-align: right;">
+        <h3 class="footer-title" data-i18n="footer-follow">Volg ons</h3>
+        <p><a href="https://www.instagram.com/gipfellodge?igsh=MTZweDkxd2hqNGN6dg==" target="_blank">Instagram</a> | <a
+            href="#">Facebook</a></p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 Gipfel Lodge. <span data-i18n="footer-rights">Alle Rechte vorbehalten.</span></p>
+    </div>
+  </footer>
+
+  <!-- GALLERY LIGHTBOX MODAL -->
+  <div id="gallery-lightbox" class="lightbox-modal">
+    <div class="lightbox-overlay"></div>
+    <div class="lightbox-container">
+      <button class="lightbox-close" aria-label="Galerie schließen">&times;</button>
+      <div class="lightbox-content">
+        <button class="lightbox-nav prev" aria-label="Vorheriges Bild">‹</button>
+        <div class="lightbox-image-wrapper">
+          <img id="lightboxImage" src="" alt="Gallerie Bild">
+        </div>
+        <button class="lightbox-nav next" aria-label="Nächstes Bild">›</button>
+      </div>
+      <div class="lightbox-counter">
+        <span id="currentImgIndex">1</span> / <span id="totalImgCount">10</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3.1 UTILITIES -->
+  <script src="js/site_js/utils/scroll.js"></script>
+  <!-- I18n Data -->
+  <script src="js/site_js/i18n/i18n_core.js"></script>
+  <script src="js/site_js/i18n/i18n_global.js"></script>
+  <script src="js/site_js/i18n/i18n_home.js"></script>
+  <script src="js/site_js/i18n/i18n_lodge.js"></script>
+  <script src="js/site_js/i18n/i18n_activities.js"></script>
+  <script src="js/site_js/i18n/i18n_booking.js"></script>
+  <script src="js/site_js/i18n/i18n_enjoyment.js"></script>
+  <!-- I18n Engine -->
+  <script src="js/site_js/utils/i18n.js"></script>
+
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function () {
+      emailjs.init({ publicKey: "WC62OFB5MXpryYO1u" });
+    })();
+  </script>
+
+  <!-- 3.2 COMPONENTS -->
+  <!-- Dynamic Gallery Loader — must run BEFORE carousel init -->
+  <script type="module" src="js/site_js/utils/gallery-loader.js"></script>
+  <script type="module" src="js/site_js/utils/single-image-loader.js"></script>
+  <script src="js/site_js/components/hero-carousel.js"></script>
+  <script src="js/site_js/components/gallery-carousel.js"></script>
+  <script src="js/site_js/components/lightbox.js"></script>
+  <script explorer src="js/site_js/components/mobile-menu.js"></script>
+
+  <!-- SEO Configuration & Manager -->
+  <script src="js/site_js/seo/seo-config.js"></script>
+  <script src="js/site_js/seo/seo-manager.js"></script>
+  <!-- FAQ SEO Blocks -->
+  <script src="js/site_js/seo/faq-config.js"></script>
+  <script src="js/site_js/seo/faq-renderer.js"></script>
+  <script src="js/site_js/core/router.js"></script>
+  <script type="module" src="js/site_js/core/maintenance.js"></script>
+
+  <!-- 3.4 PAGES -->
+  <script src="js/site_js/pages/home.js"></script>
+  <script src="js/site_js/pages/lodge.js"></script>
+  <script src="js/site_js/pages/seizoenen.js"></script>
+  <script src="js/site_js/pages/enjoyment.js"></script>
+
+  <!-- FireBase and Booking logic as module -->
+  <script type="module" src="js/site_js/pages/booking.js"></script>
+
+  <!-- ============================================================
+       TIJDELIJKE BOOKING REDIRECT
+       Zet EXTERNAL_BOOKING_URL op null om terug te schakelen
+       naar de eigen booking pagina (#booking).
+       ============================================================ -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var EXTERNAL_BOOKING_URL = null; // 'https://www.villaforyou.com/ho-16679/AT.5531.14';
+
+      if (!EXTERNAL_BOOKING_URL) return; // schakel uit door null in te stellen
+
+      // Wijzig de actuele link (href) zodat mobiele browsers (Safari)
+      // de popup niet blokkeren en lang-indrukken de juiste URL toont.
+      document.querySelectorAll('a[href="#booking"]').forEach(function(anchor) {
+        anchor.href = EXTERNAL_BOOKING_URL;
+        anchor.target = "_blank";
+        anchor.rel = "noopener noreferrer";
+
+        // Track de klik (maar laat de browser de link normaal openen)
+        anchor.addEventListener('click', function () {
+          import('./js/site_js/utils/analytics.js').then(function(m) {
+            m.Analytics.logPageView('booking-click');
+          }).catch(function(e) {});
+        });
+      });
+    });
+  </script>
+
+  <!-- Reviews toggle & truncation -->
+  <script>
+    // Toggle extra reviews zichtbaarheid
+    function toggleReviews(btn) {
+      var extras = document.querySelectorAll('.review-card-v3.review-extra:not([data-hidden="true"])');
+      var arrow = btn.querySelector('.btn-arrow');
+      var label = btn.querySelector('.btn-label');
+      var isOpen = btn.getAttribute('data-open') === 'true';
+      var lang = (window.i18n && window.i18n.lang) || document.documentElement.lang || 'nl';
+      var t = (window.gipfelTranslations && window.gipfelTranslations[lang]) || {};
+
+      if (isOpen) {
+        extras.forEach(function(el) { el.classList.remove('review-visible'); });
+        arrow.textContent = '→';
+        if (label) label.textContent = t['reviews-show-more'] || 'MEER REVIEWS WEERGEVEN';
+        btn.setAttribute('data-open', 'false');
+      } else {
+        extras.forEach(function(el) { el.classList.add('review-visible'); });
+        arrow.textContent = '←';
+        if (label) label.textContent = t['reviews-show-less'] || 'MINDER REVIEWS WEERGEVEN';
+        btn.setAttribute('data-open', 'true');
+      }
+    }
+
+    // Review initialisatie: trunceer lange teksten
+    function initReviews() {
+      var MAX_CHARS = 150;
+      var lang = (window.i18n && window.i18n.lang) || document.documentElement.lang || 'nl';
+
+      var labelMore = { nl: 'Verder lezen', de: 'Weiterlesen', en: 'Read more' };
+      var labelLess = { nl: 'Minder lezen', de: 'Weniger lesen', en: 'Read less' };
+      var readMoreLabel = labelMore[lang] || labelMore['nl'];
+      var readLessLabel = labelLess[lang] || labelLess['nl'];
+
+      document.querySelectorAll('.review-card-v3').forEach(function(card) {
+        var textEl = card.querySelector('.review-text');
+        if (!textEl) return;
+
+        // Verwijder eventuele bestaande 'Verder lezen' knoppen
+        var existingReadMore = card.querySelector('.review-read-more');
+        if (existingReadMore) existingReadMore.remove();
+
+        // Herstel altijd eerst de originele volledige tekst (opgeslagen in data-attribuut)
+        if (textEl.dataset.fullText) {
+          textEl.textContent = textEl.dataset.fullText;
+        }
+
+        var fullText = textEl.textContent.trim();
+        var empty = !fullText || /^[-–—\s]+$/.test(fullText);
+        card.hidden = empty;
+        if (empty) return;
+
+        // Sla originele tekst op als data-attribuut (zodat herhaling altijd de volledige tekst heeft)
+        if (!textEl.dataset.fullText) {
+          textEl.dataset.fullText = fullText;
+        }
+
+        // Trunceer lange teksten (voorkom afbreken midden in een woord)
+        if (fullText.length > MAX_CHARS) {
+          var cutIndex = fullText.lastIndexOf(' ', MAX_CHARS);
+          if (cutIndex <= 0) cutIndex = MAX_CHARS;
+          var shortText = fullText.substring(0, cutIndex).trimEnd() + ' …';
+          textEl.textContent = shortText;
+
+          var toggleBtn = document.createElement('span');
+          toggleBtn.className = 'review-read-more';
+          toggleBtn.textContent = readMoreLabel;
+
+          var isExpanded = false;
+          toggleBtn.addEventListener('click', function () {
+            isExpanded = !isExpanded;
+            if (isExpanded) {
+              textEl.textContent = fullText;
+              toggleBtn.textContent = readLessLabel;
+            } else {
+              textEl.textContent = shortText;
+              toggleBtn.textContent = readMoreLabel;
+            }
+          });
+          textEl.parentNode.insertBefore(toggleBtn, textEl.nextSibling);
+        }
+      });
+      updateReviewToggleVisibility();
+    }
+
+    // Hide the expansion control when there are no non-empty extra reviews.
+    function updateReviewToggleVisibility() {
+      var toggle = document.querySelector('.reviews-toggle-wrap');
+      if (!toggle) return;
+      toggle.hidden = !document.querySelector('.review-card-v3.review-extra:not([hidden])');
+    }
+
+    // Luister naar het languageChanged event (wordt getriggerd na het laden van live teksten)
+    document.addEventListener('languageChanged', function() {
+      // Reset data-fullText attributen zodat initReviews de nieuwe vertaling oppikt
+      document.querySelectorAll('.review-text').forEach(function(el) {
+        delete el.dataset.fullText;
+      });
+      initReviews();
+      updateReviewToggleVisibility();
+    });
+    // Voor de initiële render: wacht tot i18n.js de teksten heeft ingevuld
+    // (languageChanged wordt daarna alsnog getriggerd, maar dit dekt de edge case)
+    document.addEventListener('DOMContentLoaded', function() {
+      // Kleine delay zodat i18n.js (async init) de vertalingen heeft toegepast
+      setTimeout(function() { initReviews(); updateReviewToggleVisibility(); }, 200);
+    });
+  </script>
+
+
+</body>
+
+</html>
