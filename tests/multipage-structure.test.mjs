@@ -28,3 +28,16 @@ test('legacy SiteGround entrypoint remains intact', () => {
   assert.ok(html.includes('id="booking-page"'));
   assert.ok(read('js/admin_js/admin-export.js').includes("sourceBase + 'index.html'"));
 });
+
+test('MPA builder uses canonical shared layout and page fragments', () => {
+  const builder = read('scripts/build-multipage.cjs');
+  assert.ok(builder.includes("src/layout.html"));
+  assert.ok(builder.includes("'pages', page + '.html'"));
+  assert.ok(builder.includes('MPA_PAGE_MOUNT'));
+});
+
+test('GitHub Pages workflow checks the MPA source before deployment', () => {
+  const workflow = read('.github/workflows/build-multipage.yml');
+  assert.ok(workflow.includes('node --test tests/multipage-structure.test.mjs'));
+  assert.ok(workflow.includes('MPA_PREVIEW=1 npm run build:mpa'));
+});
