@@ -8,6 +8,8 @@ on:
       - 'src/pages/**'
       - 'src/layout.html'
       - 'tests/multipage-structure.test.mjs'
+      - 'tests/404-navigation.test.mjs'
+      - '404.html'
       - 'tests/firestore-rules-safety.test.mjs'
       - 'firestore.rules'
       - 'js/**'
@@ -32,7 +34,7 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-audit --no-fund
-      - run: node --test tests/multipage-structure.test.mjs tests/firestore-rules-safety.test.mjs
+      - run: node --test tests/multipage-structure.test.mjs tests/firestore-rules-safety.test.mjs tests/404-navigation.test.mjs
       - run: MPA_PREVIEW=1 npm run build:mpa
       - name: Verify public page routes
         run: |
