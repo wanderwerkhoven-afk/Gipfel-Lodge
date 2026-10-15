@@ -31,3 +31,9 @@ The generator now creates 20 page documents under `dist/mpa/gipfellodge.nl/`, `d
 The MPA generator evaluates the repository's existing translation dictionaries in a sandboxed Node VM and embeds string values into leaf `[data-i18n]` elements, plus supported placeholders/title attributes. Nested HTML is deliberately left intact to avoid deleting buttons/icons. Firebase Content Studio overrides are **not** yet embedded, so the live i18n engine remains necessary for editorial overrides until export integration is implemented.
 
 Build validation should be run with `npm install && npm run build:mpa` and direct URL/browser tests for all four domains. No CI workflow has been added and no successful build has been verified in this session.
+
+## Source layout (October 2026)
+
+Each public page is now maintained in `src/pages/{home,lodge,activities,enjoyment,booking}.html`. The multipage builder assembles a page fragment with the shared shell from legacy `index.html`, then applies domain-specific translations, URLs and SEO metadata. Shared `css/`, `js/` and `assets/` remain central. The legacy SPA `index.html` remains in the repository for compatibility with the existing SiteGround PHP exporter; do not edit it as the canonical MPA page source. GitHub Pages uses the generated Dutch MPA preview build; domain-specific builds remain in `dist/mpa/<domain>/` when running without `MPA_PREVIEW=1`.
+
+Important: the GitHub Actions deployment still requires a successful workflow run and Pages configuration; this migration does not yet replace the SiteGround exporter or confirm browser-level behavior.
