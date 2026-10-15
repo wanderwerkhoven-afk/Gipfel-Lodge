@@ -4,14 +4,39 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,follow">
-<title>404 – Pagina niet gevonden | Gipfel Lodge</title>
-<style>body{font:1.05rem/1.7 system-ui,sans-serif;color:#26342c;background:#faf9f5;max-width:740px;margin:8vh auto;padding:1.5rem}a{color:#816329}h1{font-size:2rem}</style>
+<meta name="theme-color" content="#f8f5ee">
+<title>Pagina niet gevonden | Gipfel Lodge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--navy:#1a2830;--gold:#aa8950;--sand:#f8f5ee}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;}body{font-family:Inter,system-ui,sans-serif;background:var(--sand);color:var(--navy)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 25%,#fff 0%,transparent 62%)}
+header{position:relative;display:flex;justify-content:center;align-items:center;padding:34px 20px}
+.brand{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(25px,4vw,34px);font-weight:600;letter-spacing:.09em;text-decoration:none;color:var(--navy)}
+main{position:relative;min-height:calc(100svh - 160px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px 22px 80px}
+.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.28em;font-weight:600;text-transform:uppercase}
+.code{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(128px,27vw,250px);font-weight:400;line-height:.9;letter-spacing:-.055em;color:var(--navy);margin:22px 0 12px}
+.rule{width:55px;height:1px;background:var(--gold);margin:22px auto}
+h1{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(34px,6vw,55px);font-weight:500;line-height:1.1;margin:5px 0 15px}
+p{font-size:clamp(14px,2.5vw,16px);line-height:1.85;color:#626c6c;max-width:450px;margin:0 0 34px}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:15px;min-height:52px;padding:0 29px;background:var(--navy);color:#fff;text-decoration:none;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;transition:background .2s}
+.button:hover,.button:focus-visible{background:#33454d}.button span{color:#d7b67b;font-size:18px}
+footer{position:relative;text-align:center;padding:0 20px 25px;font-size:11px;letter-spacing:.13em;color:#a2a09a;text-transform:uppercase}
+@media(max-width:480px){header{padding:26px 15px}main{min-height:calc(100svh - 125px);padding-bottom:55px}.code{margin-top:15px}}
+</style>
 </head>
 <body>
+<header><a class="brand" href="/Gipfel-Lodge/" aria-label="Gipfel Lodge homepage">GIPFEL LODGE</a></header>
 <main>
-<h1>404 – Pagina niet gevonden</h1>
-<p>De opgevraagde pagina van Gipfel Lodge bestaat niet. Ga terug naar de officiële informatie over het vakantiehuis in Eben im Pongau, Oostenrijk. De website bevat informatie over vier slaapkamers, drie badkamers, de privésauna en de omgeving van Flachau en Ski amadé.</p>
-<p><a href="/Gipfel-Lodge/">Terug naar Gipfel Lodge</a> · <a href="/Gipfel-Lodge/index.md">Markdown-overzicht</a> · <a href="/Gipfel-Lodge/llms.txt">Instructies voor AI-agents</a> · <a href="/Gipfel-Lodge/sitemap.xml">Sitemap</a></p>
+<div class="eyebrow">Een onverwachte omweg</div>
+<div class="code" aria-hidden="true">404</div>
+<div class="rule"></div>
+<h1>Deze pagina is even zoek.</h1>
+<p>Maar het uitzicht is gelukkig nooit ver weg. Ga terug naar Gipfel Lodge en ontdek jouw verblijf in de Oostenrijkse Alpen.</p>
+<a class="button" href="/Gipfel-Lodge/">Terug naar de homepage <span aria-hidden="true">→</span></a>
 </main>
+<footer>Eben im Pongau · Salzburgerland · Oostenrijk</footer>
 </body>
 </html>
