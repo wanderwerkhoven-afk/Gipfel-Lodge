@@ -2,10 +2,15 @@
  * Compatible with existing component initializers and maintenance manager.
  */
 (function () {
-  const routes = {
-    home: '/', lodge: '/lodge/', activities: '/activiteiten/',
-    enjoyment: '/genieten/', booking: '/booking/'
+  const routesByLanguage = {
+    nl: { home: '/', lodge: '/lodge/', activities: '/activiteiten/', enjoyment: '/genieten/', booking: '/booking/' },
+    de: { home: '/', lodge: '/lodge/', activities: '/aktivitaeten/', enjoyment: '/genuss/', booking: '/buchen/' },
+    en: { home: '/', lodge: '/lodge/', activities: '/activities/', enjoyment: '/enjoyment/', booking: '/booking/' }
   };
+  const host = location.hostname;
+  const lang = host.endsWith('.at') || host.endsWith('.de') ? 'de'
+    : host.endsWith('.eu') ? 'en' : (window.i18n && window.i18n.lang) || 'nl';
+  const routes = routesByLanguage[lang] || routesByLanguage.nl;
   const base = location.hostname.endsWith('.github.io') ? '/Gipfel-Lodge' : '';
   const currentPageId = document.documentElement.dataset.mpaPage || 'home';
   window.router = {
@@ -33,5 +38,6 @@
     if (component && typeof component.init === 'function') component.init();
     if (window.GipfelLightbox) window.GipfelLightbox.init();
     if (window.GipfelScroll) window.GipfelScroll.init();
+    if (window.seoManager && typeof window.seoManager.update === 'function') window.seoManager.update(currentPageId);
   });
 })();
