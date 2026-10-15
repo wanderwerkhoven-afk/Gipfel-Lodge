@@ -4,6 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,follow">
+<script>
+/* GitHub Pages has no SPA rewrites. Redirect only known website routes;
+   unknown paths continue to show this genuine 404 page. */
+(function () {
+  var base = '/Gipfel-Lodge/';
+  var path = location.pathname;
+  if (path.indexOf(base) !== 0) return;
+  var route = path.slice(base.length).replace(/\\/+$/, '').toLowerCase();
+  var known = {
+    lodge:'lodge', activiteiten:'activities', aktivitaeten:'activities',
+    activities:'activities', genieten:'enjoyment', genuss:'enjoyment',
+    enjoyment:'enjoyment', booking:'booking', buchen:'booking'
+  };
+  if (!Object.prototype.hasOwnProperty.call(known, route)) return;
+  var url = new URL(base, location.origin);
+  url.searchParams.set('spa', known[route]);
+  url.searchParams.set('spaPath', route);
+  location.replace(url.pathname + url.search + location.hash);
+})();
+</script>
+
 <meta name="theme-color" content="#f8f5ee">
 <title>Pagina niet gevonden | Gipfel Lodge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
