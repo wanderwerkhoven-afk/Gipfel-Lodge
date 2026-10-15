@@ -32,3 +32,12 @@ Current `firestore.rules` checks for the existence of `users/{uid}` in `isAdmin(
 ## Safety decision
 
 No production Firebase rules or SiteGround exporter behavior was changed in this review. Do not describe the MPA as production-validated until the above checks pass.
+
+## Follow-up execution
+
+- Added `tests/firestore-rules-safety.test.mjs` with non-destructive access-control baseline assertions.
+- GitHub Pages workflow now runs these alongside the multipage structure tests before building.
+- **Important additional CRM finding:** `js/site_js/pages/booking.js` calls `goToStep(4)` and sends a confirmation email before Firestore writes finish; the writes run asynchronously after a delay, and failures are caught/logged. Therefore a guest may see a success screen even if saving fails. This requires a separate tested change to submission sequencing, idempotency and error handling; do not make unverified changes to live booking submission.
+- Public writes to `metadata/counters` are used by the booking transaction, so immediately denying them would break the current public booking flow. Move counter assignment and sensitive booking writes to a trusted server-side function as part of the secure CRM redesign.
+- The baseline tests are source assertions, **not** Firebase Emulator authorization tests. The admin-role escalation risk remains open.
+- No claim of passing tests or successful live deployment has been made.
