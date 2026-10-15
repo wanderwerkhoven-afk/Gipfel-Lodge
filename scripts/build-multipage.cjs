@@ -12,7 +12,7 @@ const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist', 'mpa');
 const source = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const seo = require(path.join(root, 'js/site_js/seo/seo-config.js'));
-const domains = ['gipfellodge.nl', 'gipfellodge.at', 'gipfellodge.de', 'gipfellodge.eu'];
+const domains = process.env.MPA_PREVIEW === '1' ? ['gipfellodge.nl'] : ['gipfellodge.nl', 'gipfellodge.at', 'gipfellodge.de', 'gipfellodge.eu'];
 const known = ['home', 'lodge', 'activities', 'enjoyment', 'booking'];
 const scriptName = 'js/site_js/core/multipage.js';
 const translations = { de: {}, nl: {}, en: {} };
@@ -67,12 +67,21 @@ function build(domain, page) {
   doc.documentElement.lang = config.locale;
   staticTranslations(doc, config.lang);
   // Write real page URLs into HTML; crawlers and keyboard navigation work without JS.
-  const pagePaths = Object.fromEntries(known.map(id => [id, config.pages[id].path + (config.pages[id].path === '/' ? '' : '/')]));
+  const pagePaths = Object.fromEntries(known.map(id => [id, config.pages[id].path === '/' ? '/' : config.pages[id].path + '/']));
   for (const anchor of doc.querySelectorAll('a[href]')) {
     const href = anchor.getAttribute('href');
     const pageId = href && href.startsWith('#') ? href.slice(1) : null;
     if (pageId && Object.prototype.hasOwnProperty.call(pagePaths, pageId)) {
       anchor.setAttribute('href', pagePaths[pageId]);
+    }
+  }
+  // GitHub Pages uses a project prefix; production domains use their own roots.
+  const isPreview = process.env.MPA_PREVIEW === '1';
+  if (isPreview) {
+    base.setAttribute('href', '/Gipfel-Lodge/');
+    for (const anchor of doc.querySelectorAll('a[href^="/"]')) {
+      const href = anchor.getAttribute('href');
+      if (!href.startsWith('//')) anchor.setAttribute('href', '/Gipfel-Lodge' + href);
     }
   }
   const canonical = doc.querySelector('link[rel="canonical"]');
@@ -83,7 +92,7 @@ function build(domain, page) {
   // Avoid loading page-specific CSS and scripts that belong to removed pages only.
   const title = doc.querySelector('title');
   if (title) title.textContent = pageConfig.title;
-  const folder = path.join(output, domain, route);
+  const folder = path.join(output, process.env.MPA_PREVIEW === '1' ? '' : domain, route);
   fs.mkdirSync(folder, { recursive: true });
   fs.writeFileSync(path.join(folder, 'index.html'), '<!doctype html>\n' + doc.documentElement.outerHTML);
   dom.window.close();
@@ -91,17 +100,17 @@ function build(domain, page) {
 fs.rmSync(output, { recursive: true, force: true });
 for (const directory of ['assets', 'css', 'js']) {
   const sourceDir = path.join(root, directory);
-  if (fs.existsSync(sourceDir)) for (const domain of domains) fs.cpSync(sourceDir, path.join(output, domain, directory), { recursive: true });
+  if (fs.existsSync(sourceDir)) for (const domain of domains) fs.cpSync(sourceDir, path.join(output, process.env.MPA_PREVIEW === '1' ? '' : domain, directory), { recursive: true });
 }
 for (const filename of ['site.webmanifest', 'favicon.svg', 'favicon.ico', 'favicon-96x96.png', 'apple-touch-icon.png', 'robots.txt', 'sitemap.xml', 'llms.txt', 'index.md', '404.html']) {
   const sourceFile = path.join(root, filename);
-  if (fs.existsSync(sourceFile)) for (const domain of domains) fs.copyFileSync(sourceFile, path.join(output, domain, filename));
+  if (fs.existsSync(sourceFile)) for (const domain of domains) fs.copyFileSync(sourceFile, path.join(output, process.env.MPA_PREVIEW === '1' ? '' : domain, filename));
 }
 for (const domain of domains) for (const page of known) build(domain, page);
 // Fail the build if a page accidentally contains another route's main section
 // or if its route adapter and essential shared assets are absent.
 for (const domain of domains) for (const page of known) {
-  const filename = path.join(output, domain, seo.domains[domain].pages[page].path.replace(new RegExp('^/+'), ''), 'index.html');
+  const filename = path.join(output, process.env.MPA_PREVIEW === '1' ? '' : domain, seo.domains[domain].pages[page].path.replace(new RegExp('^/+'), ''), 'index.html');
   const html = fs.readFileSync(filename, 'utf8');
   const dom = new JSDOM(html);
   const doc = dom.window.document;
@@ -115,9 +124,9 @@ for (const domain of domains) for (const page of known) {
   for (const el of doc.querySelectorAll('script[src],link[rel="stylesheet"][href]')) {
     const url = el.getAttribute('src') || el.getAttribute('href');
     if (!url || url.startsWith('http:') || url.startsWith('https:') || url.startsWith('//')) continue;
-    const relative = url.split(/[?#]/)[0].replace(new RegExp('^\\\\./'), '');
+    const relative = url.split(/[?#]/)[0].replace(new RegExp('^\\./'), '');
     if (relative.startsWith('/') || relative.includes('..')) continue;
-    if (!fs.existsSync(path.join(output, domain, relative))) {
+    if (!fs.existsSync(path.join(output, process.env.MPA_PREVIEW === '1' ? '' : domain, relative))) {
       throw new Error('Missing local dependency: ' + relative + ' in ' + filename);
     }
   }
