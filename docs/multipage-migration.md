@@ -19,3 +19,9 @@ Acceptance checks before rollout:
 - Build validates exactly one matching `main.page`, the navigation adapter and locally referenced scripts/stylesheets for every generated page.
 - MPA navigation adapter now knows Dutch, German and English path names, but localized documents are **not yet generated**.
 - This remains a draft migration: GitHub Pages must not be pointed to `dist/mpa` until direct route refresh, CMS maintenance, language variants and export are tested end-to-end.
+
+## Domain-specific output (current branch)
+
+The generator now creates 20 page documents under `dist/mpa/gipfellodge.nl/`, `dist/mpa/gipfellodge.at/`, `dist/mpa/gipfellodge.de/`, and `dist/mpa/gipfellodge.eu/`. Each folder is intended as an independent document root, with its own shared assets and SEO metadata from `seo-config.js`.
+
+**Important unresolved limitations:** HTML body translations still depend on the runtime i18n engine (they are not yet statically embedded); the new MPA output is not integrated with the Content Studio ZIP/PHP export, and the MPA adapter must be tested with CRM maintenance, booking and all language selectors. No deployment or successful end-to-end test is claimed.
