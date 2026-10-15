@@ -10,14 +10,15 @@ const { JSDOM } = require('jsdom');
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist', 'mpa');
 const source = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const routes = {
-  home: '', lodge: 'lodge', activities: 'activiteiten',
-  enjoyment: 'genieten', booking: 'booking'
-};
-const known = new Set(Object.keys(routes));
+const seo = require(path.join(root, 'js/site_js/seo/seo-config.js'));
+const domains = ['gipfellodge.nl', 'gipfellodge.at', 'gipfellodge.de', 'gipfellodge.eu'];
+const known = ['home', 'lodge', 'activities', 'enjoyment', 'booking'];
 const scriptName = 'js/site_js/core/multipage.js';
 
-function build(page) {
+function build(domain, page) {
+  const config = seo.domains[domain];
+  const pageConfig = config.pages[page];
+  const route = pageConfig.path.replace(/^\\/+/, '');
   const dom = new JSDOM(source);
   const doc = dom.window.document;
   // Preserve shared navigation, splash, lightboxes, maintenance and footer.
@@ -37,15 +38,18 @@ function build(page) {
     base = doc.createElement('base');
     doc.head.insertBefore(base, doc.head.firstChild);
   }
-  base.setAttribute('href', '/Gipfel-Lodge/');
+  base.setAttribute('href', '/');
   doc.documentElement.dataset.mpaPage = page;
+  doc.documentElement.lang = config.locale;
   const canonical = doc.querySelector('link[rel="canonical"]');
-  if (canonical) canonical.href = 'https://gipfellodge.nl/' + (routes[page] ? routes[page] + '/' : '');
+  if (canonical) canonical.href = 'https://' + domain + pageConfig.path;
+  const description = doc.querySelector('meta[name="description"]');
+  if (description) description.setAttribute('content', pageConfig.description);
   // The full page is already present, no need for dynamic page selection.
   // Avoid loading page-specific CSS and scripts that belong to removed pages only.
   const title = doc.querySelector('title');
-  if (title) title.textContent = 'Gipfel Lodge – ' + ({home:'Home',lodge:'De Lodge',activities:'Activiteiten',enjoyment:'Genieten',booking:'Beschikbaarheid'}[page]);
-  const folder = path.join(output, routes[page]);
+  if (title) title.textContent = pageConfig.title;
+  const folder = path.join(output, domain, route);
   fs.mkdirSync(folder, { recursive: true });
   fs.writeFileSync(path.join(folder, 'index.html'), '<!doctype html>\n' + doc.documentElement.outerHTML);
   dom.window.close();
@@ -59,11 +63,11 @@ for (const filename of ['site.webmanifest', 'favicon.svg', 'favicon.ico', 'favic
   const sourceFile = path.join(root, filename);
   if (fs.existsSync(sourceFile)) fs.copyFileSync(sourceFile, path.join(output, filename));
 }
-for (const page of known) build(page);
+for (const domain of domains) for (const page of known) build(domain, page);
 // Fail the build if a page accidentally contains another route's main section
 // or if its route adapter and essential shared assets are absent.
-for (const page of known) {
-  const filename = path.join(output, routes[page], 'index.html');
+for (const domain of domains) for (const page of known) {
+  const filename = path.join(output, domain, seo.domains[domain].pages[page].path.replace(/^\\/+/, ''), 'index.html');
   const html = fs.readFileSync(filename, 'utf8');
   const dom = new JSDOM(html);
   const doc = dom.window.document;
@@ -85,4 +89,4 @@ for (const page of known) {
   }
   dom.window.close();
 }
-console.log('Generated ' + known.size + ' independent HTML documents in dist/mpa');
+console.log('Generated ' + (known.length * domains.length) + ' independent HTML documents across ' + domains.length + ' domains in dist/mpa');
