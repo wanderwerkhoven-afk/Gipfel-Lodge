@@ -38,7 +38,7 @@ function build(domain, page) {
     base = doc.createElement('base');
     doc.head.insertBefore(base, doc.head.firstChild);
   }
-  base.setAttribute('href', '/');
+  base.setAttribute('href', '/'); // Each domain directory is intended as its own document root.
   doc.documentElement.dataset.mpaPage = page;
   doc.documentElement.lang = config.locale;
   const canonical = doc.querySelector('link[rel="canonical"]');
@@ -57,11 +57,11 @@ function build(domain, page) {
 fs.rmSync(output, { recursive: true, force: true });
 for (const directory of ['assets', 'css', 'js']) {
   const sourceDir = path.join(root, directory);
-  if (fs.existsSync(sourceDir)) fs.cpSync(sourceDir, path.join(output, directory), { recursive: true });
+  if (fs.existsSync(sourceDir)) for (const domain of domains) fs.cpSync(sourceDir, path.join(output, domain, directory), { recursive: true });
 }
 for (const filename of ['site.webmanifest', 'favicon.svg', 'favicon.ico', 'favicon-96x96.png', 'apple-touch-icon.png', 'robots.txt', 'sitemap.xml', 'llms.txt', 'index.md', '404.html']) {
   const sourceFile = path.join(root, filename);
-  if (fs.existsSync(sourceFile)) fs.copyFileSync(sourceFile, path.join(output, filename));
+  if (fs.existsSync(sourceFile)) for (const domain of domains) fs.copyFileSync(sourceFile, path.join(output, domain, filename));
 }
 for (const domain of domains) for (const page of known) build(domain, page);
 // Fail the build if a page accidentally contains another route's main section
@@ -83,7 +83,7 @@ for (const domain of domains) for (const page of known) {
     if (!url || /^(https?:)?\\/\\//.test(url)) continue;
     const relative = url.split(/[?#]/)[0].replace(/^\\.\\//, '');
     if (relative.startsWith('/') || relative.includes('..')) continue;
-    if (!fs.existsSync(path.join(output, relative))) {
+    if (!fs.existsSync(path.join(output, domain, relative))) {
       throw new Error('Missing local dependency: ' + relative + ' in ' + filename);
     }
   }
