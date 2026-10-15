@@ -42,6 +42,9 @@ function build(page) {
   const canonical = doc.querySelector('link[rel="canonical"]');
   if (canonical) canonical.href = 'https://gipfellodge.nl/' + (routes[page] ? routes[page] + '/' : '');
   // The full page is already present, no need for dynamic page selection.
+  // Avoid loading page-specific CSS and scripts that belong to removed pages only.
+  const title = doc.querySelector('title');
+  if (title) title.textContent = 'Gipfel Lodge – ' + ({home:'Home',lodge:'De Lodge',activities:'Activiteiten',enjoyment:'Genieten',booking:'Beschikbaarheid'}[page]);
   const folder = path.join(output, routes[page]);
   fs.mkdirSync(folder, { recursive: true });
   fs.writeFileSync(path.join(folder, 'index.html'), '<!doctype html>\n' + doc.documentElement.outerHTML);
@@ -57,4 +60,29 @@ for (const filename of ['site.webmanifest', 'favicon.svg', 'favicon.ico', 'favic
   if (fs.existsSync(sourceFile)) fs.copyFileSync(sourceFile, path.join(output, filename));
 }
 for (const page of known) build(page);
+// Fail the build if a page accidentally contains another route's main section
+// or if its route adapter and essential shared assets are absent.
+for (const page of known) {
+  const filename = path.join(output, routes[page], 'index.html');
+  const html = fs.readFileSync(filename, 'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const mains = [...doc.querySelectorAll('main.page')];
+  if (mains.length !== 1 || mains[0].id !== page + '-page') {
+    throw new Error('Invalid MPA document: ' + filename);
+  }
+  if (!doc.querySelector('script[src="' + scriptName + '"]')) {
+    throw new Error('Missing MPA navigation adapter: ' + filename);
+  }
+  for (const el of doc.querySelectorAll('script[src],link[rel="stylesheet"][href]')) {
+    const url = el.getAttribute('src') || el.getAttribute('href');
+    if (!url || /^(https?:)?\\/\\//.test(url)) continue;
+    const relative = url.split(/[?#]/)[0].replace(/^\\.\\//, '');
+    if (relative.startsWith('/') || relative.includes('..')) continue;
+    if (!fs.existsSync(path.join(output, relative))) {
+      throw new Error('Missing local dependency: ' + relative + ' in ' + filename);
+    }
+  }
+  dom.window.close();
+}
 console.log('Generated ' + known.size + ' independent HTML documents in dist/mpa');
