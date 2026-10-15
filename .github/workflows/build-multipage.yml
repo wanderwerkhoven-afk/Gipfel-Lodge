@@ -6,6 +6,7 @@ on:
     paths:
       - 'index.html'
       - 'src/pages/**'
+      - 'src/layout.html'
       - 'js/**'
       - 'css/**'
       - 'assets/**'
