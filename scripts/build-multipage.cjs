@@ -33,7 +33,8 @@ function staticTranslations(doc, lang) {
     if (typeof value !== 'string') continue;
     if (element.matches('input, textarea')) element.setAttribute('placeholder', value);
     else if (element.hasAttribute('title')) element.setAttribute('title', value);
-    else element.textContent = value;
+    else if (element.children.length === 0) element.textContent = value;
+    // Preserve nested markup for complex translated elements until a safe HTML-aware renderer is added.
   }
 }
 
