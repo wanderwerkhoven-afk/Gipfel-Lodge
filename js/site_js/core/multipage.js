@@ -10,7 +10,9 @@
   const host = location.hostname;
   const lang = host.endsWith('.at') || host.endsWith('.de') ? 'de'
     : host.endsWith('.eu') ? 'en' : (window.i18n && window.i18n.lang) || 'nl';
-  const routes = routesByLanguage[lang] || routesByLanguage.nl;
+  const routes = Object.assign({}, routesByLanguage[lang] || routesByLanguage.nl);
+  // Austrian booking URL differs from the German one.
+  if (host.endsWith('.at')) routes.booking = '/booking/';
   const base = location.hostname.endsWith('.github.io') ? '/Gipfel-Lodge' : '';
   const currentPageId = document.documentElement.dataset.mpaPage || 'home';
   window.router = {
