@@ -1,32 +1,79 @@
-# Gipfel Lodge
+# Gipfel Lodge — repository
 
-Source repository for the public Gipfel Lodge website and its private administration interface.
+De repository bevat **één website met twee publicatiepaden**: de nieuwe multipage-site en de bestaande SiteGround/PHP-export. De gedeelde bronbestanden staan centraal. Gegenereerde uitvoer is geen broncode.
 
-## Source files
+## Waar pas je iets aan?
 
-- `index.html`, `invoice.html`: public site source
-- `admin.html`, `admin-sw.js`: admin interface source
-- `css/site_css/`, `js/site_js/`: public site styles and scripts
-- `css/admin_css/`, `js/admin_js/`: admin styles and scripts
-- `js/utils/`, `assets/`, `templates/`, `site_manifest/`: shared resources and branding
-- `build-siteground.ps1`, `build-images-index.js`: required publication tooling
-- `scripts/optimize-images.js`: optional image-size optimization tooling
-- `firebase.json`, `firestore.rules`: configuration for the existing Firebase backend
+| Onderdeel | Bronlocatie |
+| --- | --- |
+| Gedeelde HTML (head, menu, footer, overlays) | `src/layout.html` |
+| Home | `src/pages/home.html` |
+| Lodge | `src/pages/lodge.html` |
+| Activiteiten | `src/pages/activities.html` |
+| Genieten | `src/pages/enjoyment.html` |
+| Boeken | `src/pages/booking.html` |
+| Niet gevonden | `src/pages/404.html` |
+| Website-stijlen | `css/site_css/` |
+| Website-interactie | `js/site_js/` |
+| Taalteksten | `js/site_js/i18n/` |
+| SEO/URL-configuratie | `js/site_js/seo/seo-config.js` |
+| Foto's en overige media | `assets/` |
+| CRM/beheer | `admin.html`, `js/admin_js/`, `css/admin_css/` |
+| Multipage-build | `scripts/build-multipage.cjs` |
+| SiteGround-build | `build-siteground.ps1`, `js/admin_js/admin-export.js` |
 
-## Build and publish
+## Overzicht van de mappen
 
-Run `npm install`, then `npm run build:siteground` on a system with PowerShell and Node.
+```text
+Gipfel-Lodge/
+├── src/
+│   ├── layout.html             # gedeelde HTML-schil
+│   └── pages/                 # losse paginatemplates
+├── assets/                    # afbeeldingen, iconen en media
+├── css/
+│   ├── site_css/              # publieke website
+│   └── admin_css/             # beheeromgeving
+├── js/
+│   ├── site_js/               # publieke website
+│   ├── admin_js/              # beheeromgeving
+│   └── utils/                 # gedeelde utilities
+├── scripts/                   # build- en optimalisatiescripts
+├── tests/                     # regressietests
+├── docs/                      # technische documentatie
+├── templates/                 # overige bestaande templates
+├── site_manifest/             # publicatiemetadata
+├── .github/workflows/         # CI en publicatie
+├── index.html                 # LEGACY: bestaande SPA / PHP-exportbron
+├── admin.html                 # beheeromgeving
+├── build-siteground.ps1       # bestaande SiteGround-build
+└── package.json
+```
 
-The build creates **two generated folders**, not source files:
-- `siteground_upload/`: upload its contents to SiteGround `public_html`
-- `beheer/`: admin deployment bundle; keep access restricted
+## Publiceren en testen
 
-Both are in `.gitignore`. IMPORTANT: Git ignores only **untracked** files. Old versions of these folders previously checked into Git may still be tracked. Remove remaining tracked generated bundles in a dedicated cleanup after reviewing the complete file inventory, using `git rm -r --cached siteground_upload beheer`. This removes them from Git tracking but preserves local files. Confirm that a fresh build recreates both outputs before merging that larger cleanup.
+**Multipage / GitHub Pages**
 
-Do not delete scripts based only on their filenames. Remove a source script only after checking that it is unused by HTML, JavaScript imports, admin features, tests, and the release pipeline.
+```bash
+npm install
+MPA_PREVIEW=1 npm run build:mpa
+```
 
-## Verification
+Dit genereert de Nederlandse preview in `dist/mpa/`. Zonder `MPA_PREVIEW=1` worden de vier domeinen afzonderlijk gebouwd onder `dist/mpa/<domein>/`. De GitHub Actions-workflow `build-multipage.yml` bouwt en probeert de preview naar GitHub Pages te publiceren. De daadwerkelijke publicatie hangt af van een geslaagde workflow en de Pages-instellingen.
 
-- `node --test tests/*.test.mjs` for available regression tests
-- Build, and confirm all expected public assets and admin assets are in their corresponding deployment folders
-- Smoke-test homepage, languages, bookings, admin login, and image gallery before publishing
+**SiteGround / PHP (bestaand)**
+
+```powershell
+npm install
+npm run build:siteground
+```
+
+Deze route gebruikt voorlopig nog `index.html` en het bestaande exportsysteem. **Niet verwijderen of verplaatsen:** totdat de PHP-export is aangepast en getest, blijft deze legacy-bron nodig. Wijzigingen in `src/pages/` komen daardoor niet automatisch in de huidige SiteGround-PHP-export terecht. De bestaande `siteground_upload/` en `beheer/` zijn gegenereerde uitvoer, geen plaats voor handmatige broncodewijzigingen.
+
+## Veilig wijzigen
+
+1. Wijzig de gedeelde layout uitsluitend in `src/layout.html` en pagina-inhoud in `src/pages/` voor de MPA.
+2. Laat `index.html`, `admin.html`, Firebase-configuratie en de SiteGround-export ongemoeid zolang de legacy-export niet is gemigreerd.
+3. Voer `npm run build:mpa` en `node --test tests/*.test.mjs` uit; controleer daarnaast menu, boeking, talen, galerij en beheer handmatig.
+4. Verwijder of verplaats geen rootbestanden zonder referenties, publicatiescripts en live-routes te controleren.
+
+Zie `docs/multipage-migration.md` voor migratiestatus en resterende afhankelijkheden.
