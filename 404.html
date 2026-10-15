@@ -5,23 +5,23 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,follow">
 <script>
-/* GitHub Pages has no SPA rewrites. Redirect only known website routes;
-   unknown paths continue to show this genuine 404 page. */
+/* Recover known routes when GitHub Pages serves this document as its 404 fallback.
+   Preserve direct multipage routes if they exist; this runs only on the 404 response. */
 (function () {
+  if (!location.hostname.endsWith('.github.io')) return;
   var base = '/Gipfel-Lodge/';
-  var path = location.pathname;
-  if (path.indexOf(base) !== 0) return;
-  var route = path.slice(base.length).replace(/\\/+$/, '').toLowerCase();
-  var known = {
+  if (!location.pathname.startsWith(base)) return;
+  var route = location.pathname.slice(base.length).replace(/\/+$/, '').toLowerCase();
+  var pages = {
     lodge:'lodge', activiteiten:'activities', aktivitaeten:'activities',
     activities:'activities', genieten:'enjoyment', genuss:'enjoyment',
     enjoyment:'enjoyment', booking:'booking', buchen:'booking'
   };
-  if (!Object.prototype.hasOwnProperty.call(known, route)) return;
-  var url = new URL(base, location.origin);
-  url.searchParams.set('spa', known[route]);
-  url.searchParams.set('spaPath', route);
-  location.replace(url.pathname + url.search + location.hash);
+  if (!Object.prototype.hasOwnProperty.call(pages, route)) return;
+  var destination = new URL(base, location.origin);
+  destination.searchParams.set('spa', pages[route]);
+  destination.searchParams.set('spaPath', route);
+  location.replace(destination.pathname + destination.search + location.hash);
 })();
 </script>
 
@@ -86,7 +86,18 @@ footer nav{display:flex;gap:12px 26px;flex-wrap:wrap;align-content:start;justify
   var de=host.endsWith('.at')||host.endsWith('.de'),en=host.endsWith('.eu');
   var paths={home:'/',lodge:'/lodge/',activities:de?'/aktivitaeten/':en?'/activities/':'/activiteiten/',booking:host.endsWith('.de')?'/buchen/':'/booking/'};
   document.querySelectorAll('[data-home]').forEach(function(a){a.href=base+'/';});
-  document.querySelectorAll('[data-route]').forEach(function(a){a.href=base+paths[a.dataset.route];});
+  document.querySelectorAll('[data-route]').forEach(function(a){
+    var page=a.dataset.route;
+    if(preview && page!=='home'){
+      // Use the existing SPA recovery contract instead of another missing route.
+      var recovery=new URL(base+'/',location.origin);
+      recovery.searchParams.set('spa',page);
+      recovery.searchParams.set('spaPath',paths[page].replace(/^\\/+|\\/+$/g,''));
+      a.href=recovery.pathname+recovery.search;
+    } else {
+      a.href=base+paths[page];
+    }
+  });
   var track=document.getElementById('suggestions'),cards=Array.from(track.children),progress=document.getElementById('card-progress');
   function current(){return Math.max(0,Math.min(cards.length-1,Math.round(track.scrollLeft/(cards[0].getBoundingClientRect().width+16))));}
   function update(){progress.style.width=((current()+1)/cards.length*100)+'%';}
