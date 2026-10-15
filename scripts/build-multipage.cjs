@@ -10,6 +10,7 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist', 'mpa');
+// The legacy index supplies shared head/header/footer only; each page has its own source file.
 const source = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const seo = require(path.join(root, 'js/site_js/seo/seo-config.js'));
 const domains = process.env.MPA_PREVIEW === '1' ? ['gipfellodge.nl'] : ['gipfellodge.nl', 'gipfellodge.at', 'gipfellodge.de', 'gipfellodge.eu'];
@@ -45,11 +46,16 @@ function build(domain, page) {
   const route = pageConfig.path.replace(new RegExp('^/+'), '');
   const dom = new JSDOM(source);
   const doc = dom.window.document;
-  // Preserve shared navigation, splash, lightboxes, maintenance and footer.
-  for (const el of [...doc.querySelectorAll('main.page')]) {
-    if (el.id !== page + '-page') el.remove();
-    else el.classList.add('active');
-  }
+  // Assemble shared layout with one independent page template.
+  const template = fs.readFileSync(path.join(root, 'src', 'pages', page + '.html'), 'utf8');
+  const originalPages = [...doc.querySelectorAll('main.page')];
+  if (originalPages.length === 0) throw new Error('Shared layout is missing page mount points');
+  const mount = originalPages[0];
+  mount.insertAdjacentHTML('beforebegin', template);
+  originalPages.forEach(el => el.remove());
+  const activePage = doc.getElementById(page + '-page');
+  if (!activePage) throw new Error('Missing page template: ' + page);
+  activePage.classList.add('active');
   for (const el of [...doc.querySelectorAll('script[src]')]) {
     const src = el.getAttribute('src') || '';
     if (src.endsWith('js/site_js/core/router.js')) {
