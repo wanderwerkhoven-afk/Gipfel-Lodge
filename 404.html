@@ -31,33 +31,70 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light;--navy:#1a2830;--gold:#aa8950;--sand:#f8f5ee}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;}body{font-family:Inter,system-ui,sans-serif;background:var(--sand);color:var(--navy)}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 25%,#fff 0%,transparent 62%)}
-header{position:relative;display:flex;justify-content:center;align-items:center;padding:34px 20px}
-.brand{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(25px,4vw,34px);font-weight:600;letter-spacing:.09em;text-decoration:none;color:var(--navy)}
-main{position:relative;min-height:calc(100svh - 160px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px 22px 80px}
-.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.28em;font-weight:600;text-transform:uppercase}
-.code{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(128px,27vw,250px);font-weight:400;line-height:.9;letter-spacing:-.055em;color:var(--navy);margin:22px 0 12px}
-.rule{width:55px;height:1px;background:var(--gold);margin:22px auto}
-h1{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(34px,6vw,55px);font-weight:500;line-height:1.1;margin:5px 0 15px}
-p{font-size:clamp(14px,2.5vw,16px);line-height:1.85;color:#626c6c;max-width:450px;margin:0 0 34px}
-.button{display:inline-flex;align-items:center;justify-content:center;gap:15px;min-height:52px;padding:0 29px;background:var(--navy);color:#fff;text-decoration:none;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;transition:background .2s}
-.button:hover,.button:focus-visible{background:#33454d}.button span{color:#d7b67b;font-size:18px}
-footer{position:relative;text-align:center;padding:0 20px 25px;font-size:11px;letter-spacing:.13em;color:#a2a09a;text-transform:uppercase}
-@media(max-width:480px){header{padding:26px 15px}main{min-height:calc(100svh - 125px);padding-bottom:55px}.code{margin-top:15px}}
+:root{--ink:#172b35;--gold:#ad8950;--sand:#f5f4ef;--muted:#62717a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--sand);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+a{color:inherit}button{font:inherit}header{max-width:1240px;margin:auto;padding:27px 22px 10px}
+.brand{text-decoration:none;letter-spacing:.12em;font:600 clamp(24px,4vw,35px) "Cormorant Garamond",Georgia,serif}
+main{max-width:1240px;margin:auto;padding:65px 22px 95px}
+.crumb{font-size:13px;color:var(--muted);margin-bottom:16px}.crumb a{text-decoration:none}.crumb a:hover{text-decoration:underline}
+.code{font:500 clamp(70px,13vw,125px)/.95 "Cormorant Garamond",Georgia,serif;color:var(--gold);letter-spacing:-.045em}
+h1{font:600 clamp(35px,6vw,65px)/1.05 "Cormorant Garamond",Georgia,serif;margin:12px 0 22px;max-width:780px}
+.lead{font-size:clamp(16px,2.4vw,21px);line-height:1.65;color:var(--muted);max-width:670px;margin:0}
+.discover{margin-top:clamp(70px,12vw,150px)}
+.discover h2{font:600 clamp(26px,4vw,40px) "Cormorant Garamond",Georgia,serif;margin:0 0 20px}
+.cards{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 0 10px}.cards::-webkit-scrollbar{display:none}
+.card{position:relative;isolation:isolate;flex:0 0 min(80vw,420px);height:380px;border-radius:16px;overflow:hidden;scroll-snap-align:start;background:#203a43;color:white;text-decoration:none;display:flex;align-items:end;padding:30px;transition:transform .2s}
+.card:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.04) 12%,rgba(5,18,23,.94) 100%),linear-gradient(125deg,#71848a,#1b333b 62%,#0d1c23)}
+.card:nth-child(2):before{background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(5,18,23,.94)),linear-gradient(125deg,#c6b28c,#6b7668 55%,#142d37)}
+.card:nth-child(3):before{background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(5,18,23,.94)),linear-gradient(125deg,#7d9e9f,#3d5d66 55%,#142d37)}
+.card:nth-child(4):before{background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(5,18,23,.94)),linear-gradient(125deg,#c3a36e,#5d6e72 55%,#142d37)}
+.card h3{font:600 30px/1.1 "Cormorant Garamond",Georgia,serif;margin:0 0 10px}.card p{font-size:14px;line-height:1.5;margin:0 0 22px;color:#e6e9e8}
+.pill{display:inline-flex;align-items:center;border-radius:30px;background:var(--gold);color:#101f25;font-size:13px;font-weight:700;padding:12px 18px}
+.card:hover,.card:focus-visible{transform:translateY(-3px)}
+.controls{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:20px}
+.progress{height:2px;background:#d4d8d5;flex:1;max-width:200px}.progress span{display:block;height:100%;width:25%;background:var(--gold);transition:width .2s}
+.arrows{display:flex;gap:10px}.arrows button{width:42px;height:42px;border:1px solid #bbc4c2;background:transparent;border-radius:50%;cursor:pointer;color:var(--ink);font-size:20px}.arrows button:hover,.arrows button:focus-visible{background:var(--ink);color:white}
+footer{background:#fff;border-radius:22px 22px 0 0;padding:52px 22px 70px}footer .inner{max-width:1196px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:35px}
+footer h2{font:600 32px "Cormorant Garamond",Georgia,serif;margin:0 0 14px}footer p{color:var(--muted);font-size:14px;line-height:1.7;max-width:380px}
+footer nav{display:flex;gap:12px 26px;flex-wrap:wrap;align-content:start;justify-content:flex-end}footer nav a{font-size:14px;text-underline-offset:4px}
+@media(max-width:640px){main{padding-top:60px;padding-bottom:70px}.discover{margin-top:105px}.card{flex-basis:85vw;height:355px;padding:26px}footer .inner{grid-template-columns:1fr}footer nav{justify-content:flex-start}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.progress span{transition:none}}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/Gipfel-Lodge/" aria-label="Gipfel Lodge homepage">GIPFEL LODGE</a></header>
+<header><a class="brand" data-home href="/Gipfel-Lodge/" aria-label="Gipfel Lodge homepage">GIPFEL LODGE</a></header>
 <main>
-<div class="eyebrow">Een onverwachte omweg</div>
-<div class="code" aria-hidden="true">404</div>
-<div class="rule"></div>
-<h1>Deze pagina is even zoek.</h1>
-<p>Maar het uitzicht is gelukkig nooit ver weg. Ga terug naar Gipfel Lodge en ontdek jouw verblijf in de Oostenrijkse Alpen.</p>
-<a class="button" href="/Gipfel-Lodge/">Terug naar de homepage <span aria-hidden="true">→</span></a>
+  <div class="crumb"><a data-home href="/Gipfel-Lodge/">Home</a> &rsaquo; 404</div>
+  <div class="code">404</div>
+  <h1>Deze pagina konden we niet vinden.</h1>
+  <p class="lead">De pagina die je zoekt bestaat niet meer of is verplaatst. Maar jouw volgende avontuur in de Oostenrijkse Alpen is slechts een paar klikken verwijderd.</p>
+  <section class="discover" aria-labelledby="discover-heading">
+    <h2 id="discover-heading">Ontdek Gipfel Lodge</h2>
+    <div class="cards" id="suggestions" tabindex="0" aria-label="Ontdek andere pagina's">
+      <a class="card" data-route="home" href="/Gipfel-Lodge/"><div><h3>Terug naar home</h3><p>Ontdek Gipfel Lodge en laat je inspireren door de Alpen.</p><span class="pill">Naar de homepage &rarr;</span></div></a>
+      <a class="card" data-route="lodge" href="/Gipfel-Lodge/lodge/"><div><h3>Bekijk de lodge</h3><p>Een bijzonder verblijf met alle ruimte om te ontspannen.</p><span class="pill">Ontdek de lodge &rarr;</span></div></a>
+      <a class="card" data-route="activities" href="/Gipfel-Lodge/activiteiten/"><div><h3>De omgeving</h3><p>Van winterse bergdagen tot zomerse avonturen.</p><span class="pill">Bekijk activiteiten &rarr;</span></div></a>
+      <a class="card" data-route="booking" href="/Gipfel-Lodge/booking/"><div><h3>Plan je verblijf</h3><p>Bekijk de mogelijkheden voor jouw vakantie in Eben im Pongau.</p><span class="pill">Naar boeken &rarr;</span></div></a>
+    </div>
+    <div class="controls"><div class="progress" aria-hidden="true"><span id="card-progress"></span></div><div class="arrows"><button type="button" id="previous" aria-label="Vorige kaart">&larr;</button><button type="button" id="next" aria-label="Volgende kaart">&rarr;</button></div></div>
+  </section>
 </main>
-<footer>Eben im Pongau · Salzburgerland · Oostenrijk</footer>
+<footer><div class="inner"><div><h2>Gipfel Lodge</h2><p>Vragen over je verblijf? Ontdek ons vakantiehuis in Eben im Pongau en neem gerust contact met ons op via de website.</p></div><nav aria-label="Snelle links"><a data-route="home" href="/Gipfel-Lodge/">Home</a><a data-route="lodge" href="/Gipfel-Lodge/lodge/">De lodge</a><a data-route="activities" href="/Gipfel-Lodge/activiteiten/">Activiteiten</a><a data-route="booking" href="/Gipfel-Lodge/booking/">Boeken</a></nav></div></footer>
+<script>
+(function(){
+  var host=location.hostname,preview=host.endsWith('.github.io'),base=preview?'/Gipfel-Lodge':'';
+  var de=host.endsWith('.at')||host.endsWith('.de'),en=host.endsWith('.eu');
+  var paths={home:'/',lodge:'/lodge/',activities:de?'/aktivitaeten/':en?'/activities/':'/activiteiten/',booking:host.endsWith('.de')?'/buchen/':'/booking/'};
+  document.querySelectorAll('[data-home]').forEach(function(a){a.href=base+'/';});
+  document.querySelectorAll('[data-route]').forEach(function(a){a.href=base+paths[a.dataset.route];});
+  var track=document.getElementById('suggestions'),cards=Array.from(track.children),progress=document.getElementById('card-progress');
+  function current(){return Math.max(0,Math.min(cards.length-1,Math.round(track.scrollLeft/(cards[0].getBoundingClientRect().width+16))));}
+  function update(){progress.style.width=((current()+1)/cards.length*100)+'%';}
+  function move(delta){var index=Math.max(0,Math.min(cards.length-1,current()+delta));cards[index].scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest',inline:'start'});}
+  document.getElementById('previous').addEventListener('click',function(){move(-1);});
+  document.getElementById('next').addEventListener('click',function(){move(1);});
+  track.addEventListener('scroll',update,{passive:true});update();
+})();
+</script>
 </body>
 </html>
