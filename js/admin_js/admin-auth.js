@@ -37,25 +37,38 @@
                     window.currentUserRole = currentUserRole;
                     window.currentUserName = currentUserName;
 
-                    // If superuser, fetch all users for dropdowns
-                    if (currentUserRole === 'superuser') {
-                        try {
-                            const { db, collection, getDocs } = await import('../site_js/core/firebase.js');
-                            const usersSnap = await getDocs(collection(db, 'users'));
-                            window.allUsers = [];
-                            usersSnap.forEach(doc => {
-                                window.allUsers.push({
-                                    uid: doc.id,
-                                    displayName: doc.data().displayName || doc.data().email.split('@')[0],
-                                    email: doc.data().email
-                                });
-                            });
-                        } catch (e) {
-                            console.error("Could not fetch all users list:", e);
-                            window.allUsers = [];
-                        }
-                    } else {
+                    // Load the shared staff directory for collaborative features such as team to-do's.
+                    // Only non-sensitive fields are exposed to browser modules.
+                    try {
+                        const { db, collection, getDocs } = await import('../site_js/core/firebase.js');
+                        const usersSnap = await getDocs(collection(db, 'users'));
                         window.allUsers = [];
+                        usersSnap.forEach(userDoc => {
+                            const userData = userDoc.data();
+                            window.allUsers.push({
+                                uid: userDoc.id,
+                                displayName: userData.displayName || userData.email?.split('@')[0] || 'Medewerker',
+                                role: userData.role === 'superuser' ? 'superuser' : 'user'
+                            });
+                        });
+
+                        // Keep the current employee available even when the profile query is incomplete.
+                        if (!window.allUsers.some(staffUser => staffUser.uid === currentUser.uid)) {
+                            window.allUsers.push({
+                                uid: currentUser.uid,
+                                displayName: currentUserName || currentUser.email?.split('@')[0] || 'Medewerker',
+                                role: currentUserRole
+                            });
+                        }
+
+                        window.allUsers.sort((a, b) => a.displayName.localeCompare(b.displayName, 'nl'));
+                    } catch (e) {
+                        console.error("Could not fetch shared staff list:", e);
+                        window.allUsers = [{
+                            uid: currentUser.uid,
+                            displayName: currentUserName || currentUser.email?.split('@')[0] || 'Medewerker',
+                            role: currentUserRole
+                        }];
                     }
 
                     showDashboard();
