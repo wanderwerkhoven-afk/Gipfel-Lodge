@@ -3984,3 +3984,76 @@ textarea.eb2-input {
     resize: vertical;
 }
 
+
+
+/* ============================================================
+ * SHARED TEAM TO-DO EXTENSIONS
+ * ============================================================ */
+.todo-section-description {
+    margin: 5px 0 0;
+    color: #94a3b8;
+    font-size: 0.82rem;
+}
+
+.todo-assignee-select {
+    min-width: 185px;
+    max-width: 240px;
+    padding: 10px 34px 10px 12px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    background: #f8fafc;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.todo-assignee-select:focus {
+    border-color: var(--color-gold, #c8a96e);
+    box-shadow: 0 0 0 3px rgba(200, 169, 110, 0.12);
+    background: #fff;
+}
+
+.todo-assignee-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    color: #475569;
+    background: #e2e8f0;
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.todo-created-by {
+    color: #94a3b8;
+    font-size: 0.74rem;
+}
+
+.todo-add-btn:disabled {
+    opacity: 0.55;
+    cursor: wait;
+    transform: none;
+}
+
+@media (max-width: 600px) {
+    .todo-assignee-select,
+    .todo-priority-select {
+        width: 100%;
+        max-width: none;
+    }
+
+    .todo-user-pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+    }
+
+    .todo-user-pill {
+        flex: 0 0 auto;
+    }
+}
