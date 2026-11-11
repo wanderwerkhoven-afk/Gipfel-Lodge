@@ -6,7 +6,8 @@
     "build:siteground": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1",
     "build:beheer": "powershell -ExecutionPolicy Bypass -File ./build-siteground.ps1 -BeheerOnly",
     "optimize-images": "node ./scripts/optimize-images.js",
-    "build:mpa": "node ./scripts/build-multipage.cjs"
+    "build:mpa": "node ./scripts/build-multipage.cjs",
+    "test:todos": "node --test tests/todo-team-collaboration.test.mjs"
   },
   "private": true,
   "dependencies": {
