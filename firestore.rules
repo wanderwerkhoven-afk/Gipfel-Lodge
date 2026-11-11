@@ -9,6 +9,13 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/users/$(request.auth.uid));
     }
 
+    // Every authenticated account with a profile in /users is a Gipfel Admin employee.
+    // Kept separate from isAdmin() so collaborative modules can express staff access clearly.
+    function isStaff() {
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
     // [USERS] Only user themselves can read their profile; superuser has full access.
     match /users/{userId} {
       allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
@@ -63,9 +70,30 @@ service cloud.firestore {
       allow read, delete: if isAdmin();
     }
 
-    // [TODOS] Users can read/write their own todo list. Admins can read/write all.
-    match /todos/{userId} {
-      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    // [TEAM TODOS] All registered employees share one real-time task board.
+    // New tasks use one document per task; legacy todos/{userId}.items documents remain supported.
+    match /todos/{todoId} {
+      allow read: if isStaff();
+
+      allow create: if isStaff() && (
+        (
+          request.resource.data.keys().hasAll(['text', 'assigneeUserId', 'createdBy']) &&
+          request.resource.data.createdBy == request.auth.uid &&
+          request.resource.data.text is string &&
+          request.resource.data.text.size() > 0 &&
+          request.resource.data.text.size() <= 500 &&
+          request.resource.data.assigneeUserId is string
+        ) ||
+        (
+          todoId == request.auth.uid &&
+          request.resource.data.keys().hasAll(['items']) &&
+          request.resource.data.items is list
+        )
+      );
+
+      // Employees may collaborate on completion and assignment. The UI records who created
+      // and completed each task; audit hardening can be added when roles are expanded.
+      allow update, delete: if isStaff();
     }
 
     // [SYSTEM CHECKS] Publicly accessible for health checks
